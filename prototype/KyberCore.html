@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUNA: Prototipo Funcional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Subtle & Sophisticated (#F5F5F5, #E0E0E0, #212121, #1976D2) -->
+    <!-- Application Structure Plan: A functional SPA prototype with a sidebar navigation to switch between distinct modules (Dashboard, AI Recommender, Failure Analysis, Fleet Management, Settings). This structure mimics a real-world application, allowing the user to explore specific features at will. The goal is to demonstrate the *how* of the application's core value propositions in an interactive sandbox. -->
+    <!-- Visualization & Content Choices: 1. Dashboard (HTML/CSS): Goal: Inform. Method: Status cards, progress bars, and a job queue to simulate a live operational view. 2. AI Recommender (JS Logic): Goal: Guide. Method: A multi-step form that simulates an AI call (with a delay) to provide a recommended profile. Justification: Directly demonstrates the core value proposition of solving the "configuration maze". 3. Failure Analysis (JS Logic): Goal: Diagnose. Method: Simulated file uploads and AI analysis results for logs and photos. Justification: Shows how the app translates cryptic errors into actionable advice. 4. Fleet Management (HTML/CSS Grid): Goal: Organize. Method: A grid of printer status cards and a central queue. Justification: Visualizes the "big picture" for power users. 5. Settings (HTML Forms): Goal: Configure. Method: A simple toggle for the community data contribution. Justification: Explains the viral loop mechanism. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .sidebar-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .sidebar-link.active, .sidebar-link:hover {
+            background-color: #1e88e5;
+            color: white;
+            transform: translateX(5px);
+        }
+        .main-content > section {
+            display: none;
+        }
+        .main-content > section.active {
+            display: block;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1976D2;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .step { display: none; }
+        .step.active { display: block; }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-800 text-white flex flex-col">
+            <div class="h-24 flex flex-col items-center justify-center border-b border-gray-700 px-4 text-center">
+                <h1 class="text-3xl font-bold">KUNA</h1>
+                <p class="text-xs text-gray-400 mt-1">Klipper Unified Neural Assistant</p>
+            </div>
+            <nav class="flex-1 px-4 py-6 space-y-2">
+                <a href="#dashboard" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3">📊</span> Panel de Control
+                </a>
+                <a href="#new-job" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3">🚀</span> Nuevo Trabajo IA
+                </a>
+                <a href="#recommender" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3">🤖</span> Perfiles IA
+                </a>
+                <a href="#analysis" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3">🔍</span> Análisis de Fallos
+                </a>
+                <a href="#fleet" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3">🏭</span> Gestión de Flota
+                </a>
+                <a href="#settings" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3">⚙️</span> Ajustes
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 overflow-y-auto">
+            <div class="main-content">
+                
+                <!-- Dashboard Section -->
+                <section id="dashboard">
+                    <h2 class="text-3xl font-bold mb-6">Panel de Control</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold mb-4">Impresora Activa: Prusa MK4</h3>
+                            <div id="active-print-status">
+                                <p class="text-gray-600">Estado: <span class="font-semibold text-green-600">Imprimiendo</span></p>
+                                <p class="text-gray-600 mt-2">Trabajo: <span class="font-semibold">Soporte_Camara_v3.gcode</span></p>
+                                <div class="mt-4">
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Progreso</span>
+                                        <span class="text-sm font-medium text-gray-700">68%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-4">
+                                        <div class="bg-blue-600 h-4 rounded-full" style="width: 68%;"></div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
+                                    <p>🌡️ Boquilla: <span class="font-semibold">215°C</span> / 215°C</p>
+                                    <p>🌡️ Cama: <span class="font-semibold">60°C</span> / 60°C</p>
+                                    <p>⏳ Tiempo Restante: <span class="font-semibold">~ 42 min</span></p>
+                                    <p>📦 Filamento Usado: <span class="font-semibold">~ 34.5g</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold mb-4">Cola de Impresión</h3>
+                            <ul class="space-y-3" id="print-queue">
+                                <!-- Jobs will be injected by JS -->
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- New AI Job Section -->
+                <section id="new-job">
+                    <h2 class="text-3xl font-bold mb-6">Nuevo Trabajo Inteligente</h2>
+                    <div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+                        <!-- Step 1: Upload STL -->
+                        <div id="step1" class="step active">
+                            <h3 class="text-xl font-bold text-center">Paso 1: Cargar Modelo 3D</h3>
+                            <p class="text-center text-gray-600 mt-2 mb-6">Comienza cargando tu archivo STL. KUNA analizará la geometría para optimizar todo el proceso.</p>
+                            <div class="mt-4 text-center">
+                                <button id="upload-stl-btn" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors">
+                                    Seleccionar Archivo STL
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Analysis & Orientation -->
+                        <div id="step2" class="step">
+                            <h3 class="text-xl font-bold text-center">Paso 2: Análisis y Orientación de la Pieza</h3>
+                            <div id="analysis-loader" class="text-center py-8">
+                                <div class="loader mx-auto"></div>
+                                <p class="mt-4 font-semibold">Analizando geometría 360°...</p>
+                                <p class="text-sm text-gray-500">Optimizando para menor uso de soportes y mayor área de contacto.</p>
+                            </div>
+                            <div id="analysis-result" class="hidden">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                                    <div>
+                                        <p class="font-semibold text-center mb-2">Orientación Óptima Encontrada</p>
+                                        <img src="https://placehold.co/600x400/e0e0e0/333333?text=Pieza+Optimizada" alt="Pieza Optimizada" class="rounded-lg shadow-md w-full">
+                                    </div>
+                                    <div class="bg-green-100 p-4 rounded-lg">
+                                        <h4 class="font-bold text-green-800">Resultados del Análisis:</h4>
+                                        <ul class="mt-2 text-sm text-green-700 space-y-1">
+                                            <li><strong>Rotación Aplicada:</strong> -15° (Eje X), 90° (Eje Z)</li>
+                                            <li><strong>Reducción de Soportes:</strong> 45%</li>
+                                            <li><strong>Aumento de Contacto:</strong> 70%</li>
+                                            <li><strong>Tiempo de Impresión Estimado:</strong> Reducido en 22 min.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <button id="goto-step3-btn" class="mt-8 w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                                    Continuar a Definir Objetivos
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Define Goals -->
+                        <div id="step3" class="step">
+                            <h3 class="text-xl font-bold text-center">Paso 3: Define tus Objetivos</h3>
+                            <p class="text-center text-gray-600 mt-2 mb-6">Dile a KUNA qué es lo más importante para esta pieza.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="quality-select" class="block text-sm font-medium text-gray-700">Calidad Deseada</label>
+                                    <select id="quality-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm">
+                                        <option>Borrador Rápido (0.28mm)</option>
+                                        <option selected>Calidad Estándar (0.20mm)</option>
+                                        <option>Alta Definición (0.12mm)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="resistance-select" class="block text-sm font-medium text-gray-700">Resistencia Esperada</label>
+                                    <select id="resistance-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm">
+                                        <option>Prototipo Visual</option>
+                                        <option selected>Pieza Funcional</option>
+                                        <option>Componente Estructural</option>
+                                    </select>
+                                </div>
+                                <div class="md:col-span-2">
+                                     <label for="job-filament-select" class="block text-sm font-medium text-gray-700">Material</label>
+                                     <select id="job-filament-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm"></select>
+                                </div>
+                            </div>
+                             <button id="goto-step4-btn" class="mt-8 w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                                Continuar a Configuración de Perfil
+                            </button>
+                        </div>
+
+                        <!-- Step 4: Profile Configuration -->
+                        <div id="step4" class="step">
+                            <h3 class="text-xl font-bold text-center">Paso 4: Configuración de Perfil</h3>
+                            <p class="text-center text-gray-600 mt-2 mb-6">Elige cómo quieres configurar los ajustes del laminador para este trabajo.</p>
+                            <div class="flex flex-col md:flex-row gap-6 justify-center">
+                                <button id="auto-profile-btn" class="flex-1 bg-blue-600 text-white p-6 rounded-lg hover:bg-blue-700 transition-colors text-left">
+                                    <h4 class="font-bold text-lg">🤖 Usar Perfil Automático de KUNA</h4>
+                                    <p class="text-sm mt-1 text-blue-100">Deja que la IA configure los más de 50 parámetros del laminador para un resultado óptimo basado en tus objetivos.</p>
+                                </button>
+                                <button id="upload-profile-btn" class="flex-1 bg-gray-200 text-gray-800 p-6 rounded-lg hover:bg-gray-300 border border-gray-400 text-left">
+                                     <h4 class="font-bold text-lg">📁 Cargar Perfil de OrcaSlicer</h4>
+                                     <p class="text-sm mt-1 text-gray-600">Usa tu propio perfil de laminado exportado (.3mf) para un control total sobre los ajustes.</p>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 5: Slice & Print -->
+                        <div id="step5" class="step">
+                            <h3 class="text-xl font-bold text-center">Paso 5: Laminar e Imprimir</h3>
+                             <div id="slicing-loader" class="text-center py-8">
+                                <div class="loader mx-auto"></div>
+                                <p class="mt-4 font-semibold" id="slicing-loader-text">...</p>
+                            </div>
+                            <div id="slicing-result" class="hidden">
+                                <div class="bg-blue-100 border-t-4 border-blue-500 p-6 rounded-b-lg shadow-lg text-center">
+                                    <h4 class="font-bold text-lg text-blue-900">Impresora Recomendada: <span id="recommended-printer" class="underline"></span></h4>
+                                    <p class="text-sm text-blue-800 mt-1" id="recommendation-reason"></p>
+                                </div>
+                                <p class="text-center text-gray-600 mt-8 mb-4">¿Cómo quieres laminar este trabajo?</p>
+                                <div class="flex flex-col md:flex-row gap-4 justify-center">
+                                    <button id="cloud-slice-btn" class="flex-1 bg-gray-700 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-800">☁️ Laminar en la Nube (Automático)</button>
+                                    <button id="local-slice-btn" class="flex-1 bg-gray-200 text-gray-800 font-bold py-3 px-4 rounded-lg hover:bg-gray-300 border border-gray-400">🖥️ Laminar con OrcaSlicer Local</button>
+                                </div>
+                                <div id="slicing-status" class="mt-6 text-center"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- Recommender Section -->
+                <section id="recommender">
+                    <h2 class="text-3xl font-bold mb-2">Recomendador de Perfiles por IA</h2>
+                    <p class="text-gray-600 mb-6">Elimina las conjeturas. Obtén un perfil de laminado optimizado para tu hardware y material.</p>
+                    <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto">
+                        <div id="recommender-form">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <label for="printer-select" class="block text-sm font-medium text-gray-700">Selecciona tu Impresora</label>
+                                    <select id="printer-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                        <!-- Options will be injected by JS -->
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="filament-select" class="block text-sm font-medium text-gray-700">Selecciona tu Filamento</label>
+                                    <select id="filament-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                        <!-- Options will be injected by JS -->
+                                    </select>
+                                </div>
+                            </div>
+                            <button id="get-profile-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                                Obtener Perfil IA
+                            </button>
+                        </div>
+                        <div id="recommender-result" class="hidden">
+                            <!-- Result will be injected by JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Analysis Section -->
+                <section id="analysis">
+                    <h2 class="text-3xl font-bold mb-6">Análisis Inteligente de Fallos</h2>
+                    <div class="w-full">
+                        <div class="flex justify-center border-b border-gray-300">
+                            <button data-tab="log" class="analysis-tab px-6 py-3 font-semibold border-b-2 border-blue-600 text-blue-600">Analizar Registro (Log)</button>
+                            <button data-tab="photo" class="analysis-tab px-6 py-3 font-semibold text-gray-500 border-b-2 border-transparent">Analizar Foto</button>
+                        </div>
+                        <div class="mt-8">
+                            <div id="log-analysis" class="analysis-content">
+                                <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto text-center">
+                                    <h3 class="text-xl font-bold mb-4">Analizador de Registros de Klipper</h3>
+                                    <p class="text-gray-600 mb-6">¿Tu impresión falló con un error críptico? Sube tu archivo `klippy.log` y deja que la IA lo traduzca por ti.</p>
+                                    <button id="analyze-log-btn" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors">Simular Análisis de Log</button>
+                                    <div id="log-result" class="hidden mt-6 text-left"></div>
+                                </div>
+                            </div>
+                            <div id="photo-analysis" class="analysis-content hidden">
+                                <div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+                                    <h3 class="text-xl font-bold mb-4 text-center">Diagnóstico por Imagen</h3>
+                                    <p class="text-gray-600 mb-6 text-center">Toma una foto de tu impresión fallida o de mala calidad. La IA identificará el problema y te sugerirá cómo solucionarlo.</p>
+                                    <button id="analyze-photo-btn" class="block mx-auto bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors">Simular Análisis de Foto</button>
+                                    <div id="photo-result" class="hidden mt-6"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Fleet Section -->
+                <section id="fleet">
+                    <h2 class="text-3xl font-bold mb-6">Gestión de Flota</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="fleet-printers">
+                        <!-- Fleet printers will be injected by JS -->
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings">
+                    <h2 class="text-3xl font-bold mb-6">Ajustes y Comunidad</h2>
+                    <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto">
+                        <h3 class="text-xl font-bold mb-4">Contribución a la Comunidad KUNA</h3>
+                        <p class="text-gray-600 mb-6">Al compartir tus datos de impresión de forma anónima, ayudas a entrenar el modelo de IA de KUNA, lo que mejora las recomendaciones para todos. Este es el corazón de nuestro bucle viral.</p>
+                        <div class="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
+                            <span class="font-medium">Contribuir datos anónimos</span>
+                            <label for="community-toggle" class="inline-flex relative items-center cursor-pointer">
+                                <input type="checkbox" value="" id="community-toggle" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- MOCK DATA ---
+    const mockData = {
+        printers: [
+            { id: 'ender3', name: 'Creality Ender 3 V2', capabilities: ['PLA', 'PETG'] },
+            { id: 'prusamk4', name: 'Prusa MK4', capabilities: ['PLA', 'PETG', 'ABS'] },
+            { id: 'bambulab', name: 'Bambu Lab P1S', capabilities: ['PLA', 'PETG', 'ABS', 'PAHT-CF'] },
+            { id: 'voron24', name: 'Voron 2.4', capabilities: ['PLA', 'PETG', 'ABS', 'PAHT-CF'] }
+        ],
+        filaments: [
+            { id: 'esunpla', name: 'eSUN PLA+', type: 'PLA'},
+            { id: 'polypetg', name: 'Polymaker PolyLite PETG', type: 'PETG'},
+            { id: 'sunluabs', name: 'SUNLU ABS', type: 'ABS'},
+            { id: 'bambu_cf', name: 'Bambu Lab PAHT-CF', type: 'PAHT-CF'}
+        ],
+        printQueue: [
+            { name: 'Caja_Bateria.gcode', eta: '1h 15m' },
+            { name: 'Soporte_Tablet.gcode', eta: '3h 45m' },
+            { name: 'Figura_Accion.gcode', eta: '8h 20m' }
+        ],
+        fleet: [
+            { id: 1, name: 'Ender 3 (Taller)', status: 'Imprimiendo', job: 'Pieza_Motor_v4', progress: 85, color: 'green' },
+            { id: 2, name: 'Prusa MK4 (Oficina)', status: 'Inactiva', job: 'N/A', progress: 0, color: 'gray' },
+            { id: 3, name: 'Bambu Lab P1S', status: 'Requiere Mantenimiento', job: 'N/A', progress: 0, color: 'yellow' },
+            { id: 4, name: 'Voron 2.4', status: 'Inactiva', job: 'N/A', progress: 0, color: 'gray' }
+        ]
+    };
+
+    // --- DOM ELEMENTS ---
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    const contentSections = document.querySelectorAll('.main-content > section');
+    const printerSelect = document.getElementById('printer-select');
+    const filamentSelect = document.getElementById('filament-select');
+    const getProfileBtn = document.getElementById('get-profile-btn');
+    const recommenderForm = document.getElementById('recommender-form');
+    const recommenderResult = document.getElementById('recommender-result');
+    const analysisTabs = document.querySelectorAll('.analysis-tab');
+    const analysisContents = document.querySelectorAll('.analysis-content');
+    const analyzeLogBtn = document.getElementById('analyze-log-btn');
+    const logResult = document.getElementById('log-result');
+    const analyzePhotoBtn = document.getElementById('analyze-photo-btn');
+    const photoResult = document.getElementById('photo-result');
+    const printQueueEl = document.getElementById('print-queue');
+    const fleetPrintersEl = document.getElementById('fleet-printers');
+
+    // New Job AI Elements
+    const steps = document.querySelectorAll('.step');
+    const uploadStlBtn = document.getElementById('upload-stl-btn');
+    const analysisLoader = document.getElementById('analysis-loader');
+    const analysisResult = document.getElementById('analysis-result');
+    const gotoStep3Btn = document.getElementById('goto-step3-btn');
+    const jobFilamentSelect = document.getElementById('job-filament-select');
+    const gotoStep4Btn = document.getElementById('goto-step4-btn');
+    const autoProfileBtn = document.getElementById('auto-profile-btn');
+    const uploadProfileBtn = document.getElementById('upload-profile-btn');
+    const slicingLoader = document.getElementById('slicing-loader');
+    const slicingLoaderText = document.getElementById('slicing-loader-text');
+    const slicingResult = document.getElementById('slicing-result');
+    const recommendedPrinterEl = document.getElementById('recommended-printer');
+    const recommendationReasonEl = document.getElementById('recommendation-reason');
+    const cloudSliceBtn = document.getElementById('cloud-slice-btn');
+    const localSliceBtn = document.getElementById('local-slice-btn');
+    const slicingStatus = document.getElementById('slicing-status');
+
+
+    // --- INITIALIZATION ---
+    function init() {
+        // Navigation
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                navigateTo(targetId);
+            });
+        });
+        navigateTo('dashboard'); // Default view
+
+        // Populate Selects
+        mockData.printers.forEach(p => {
+            printerSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+        });
+        mockData.filaments.forEach(f => {
+            filamentSelect.innerHTML += `<option value="${f.id}">${f.name}</option>`;
+            jobFilamentSelect.innerHTML += `<option value="${f.id}">${f.name}</option>`;
+        });
+        
+        // Populate Queues & Fleets
+        updatePrintQueue();
+        updateFleetStatus();
+
+
+        // Event Listeners
+        getProfileBtn.addEventListener('click', getAIProfile);
+        analysisTabs.forEach(tab => tab.addEventListener('click', switchAnalysisTab));
+        analyzeLogBtn.addEventListener('click', simulateLogAnalysis);
+        analyzePhotoBtn.addEventListener('click', simulatePhotoAnalysis);
+
+        // New Job AI Listeners
+        uploadStlBtn.addEventListener('click', () => goToStep('step2'));
+        gotoStep3Btn.addEventListener('click', () => goToStep('step3'));
+        gotoStep4Btn.addEventListener('click', () => goToStep('step4'));
+        autoProfileBtn.addEventListener('click', () => goToStep('step5', { profileChoice: 'auto' }));
+        uploadProfileBtn.addEventListener('click', () => goToStep('step5', { profileChoice: 'upload' }));
+        cloudSliceBtn.addEventListener('click', simulateCloudSlicing);
+        localSliceBtn.addEventListener('click', simulateLocalSlicing);
+    }
+    
+    function updatePrintQueue() {
+        printQueueEl.innerHTML = '';
+        mockData.printQueue.forEach(job => {
+            printQueueEl.innerHTML += `<li class="text-sm text-gray-700 p-2 bg-gray-100 rounded">📄 ${job.name} (~${job.eta})</li>`;
+        });
+    }
+    
+    function updateFleetStatus() {
+        fleetPrintersEl.innerHTML = '';
+        mockData.fleet.forEach(printer => {
+            const statusColor = { green: 'text-green-600', gray: 'text-gray-500', yellow: 'text-yellow-600'}[printer.color];
+            fleetPrintersEl.innerHTML += `
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="font-bold">${printer.name}</h4>
+                    <p class="text-sm text-gray-500 mt-1">Estado: <span class="font-semibold ${statusColor}">${printer.status}</span></p>
+                    <p class="text-sm text-gray-500 mt-1">Trabajo: <span class="font-semibold">${printer.job}</span></p>
+                    ${printer.progress > 0 ? `
+                    <div class="mt-3">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-blue-600 h-2.5 rounded-full" style="width: ${printer.progress}%"></div>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        });
+    }
+
+
+    // --- NAVIGATION ---
+    function navigateTo(id) {
+        sidebarLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+        });
+        contentSections.forEach(section => {
+            section.classList.toggle('active', section.id === id);
+        });
+        if (id === 'new-job') {
+            goToStep('step1'); // Reset the new job flow
+        }
+    }
+
+    // --- NEW JOB AI WORKFLOW ---
+    function goToStep(stepId, options = {}) {
+        steps.forEach(step => step.classList.remove('active'));
+        document.getElementById(stepId).classList.add('active');
+
+        if (stepId === 'step2') {
+            analysisLoader.style.display = 'block';
+            analysisResult.classList.add('hidden');
+            setTimeout(() => {
+                analysisLoader.style.display = 'none';
+                analysisResult.classList.remove('hidden');
+            }, 2500);
+        }
+        if (stepId === 'step5') {
+            slicingLoader.style.display = 'block';
+            slicingResult.classList.add('hidden');
+            slicingStatus.innerHTML = ''; // Clear previous status
+            
+            if (options.profileChoice === 'auto') {
+                slicingLoaderText.textContent = 'Configurando perfil con IA...';
+                setTimeout(() => {
+                    slicingLoaderText.textContent = 'Buscando la mejor impresora en tu flota...';
+                    setTimeout(() => {
+                        slicingLoader.style.display = 'none';
+                        slicingResult.classList.remove('hidden');
+                        recommendPrinter();
+                    }, 1500);
+                }, 2000);
+            } else { // 'upload'
+                slicingLoaderText.textContent = 'Analizando perfil cargado y buscando la mejor impresora...';
+                 setTimeout(() => {
+                    slicingLoader.style.display = 'none';
+                    slicingResult.classList.remove('hidden');
+                    recommendPrinter();
+                }, 2000);
+            }
+        }
+    }
+    
+    function recommendPrinter() {
+        const resistance = document.getElementById('resistance-select').value;
+        let recommendedPrinter;
+        let reason;
+
+        if (resistance === 'Componente Estructural') {
+            recommendedPrinter = mockData.printers.find(p => p.id === 'voron24');
+            reason = "Recomendada por su alta rigidez y capacidad para materiales de ingeniería como ABS/ASA.";
+        } else {
+            recommendedPrinter = mockData.printers.find(p => p.id === 'prusamk4');
+            reason = "Recomendada por su fiabilidad y excelente calidad para piezas funcionales.";
+        }
+        
+        recommendedPrinterEl.textContent = recommendedPrinter.name;
+        recommendationReasonEl.textContent = reason;
+    }
+    
+    function simulateCloudSlicing() {
+        slicingStatus.innerHTML = `
+            <div class="mt-6 p-4 bg-gray-100 rounded-lg">
+                <p class="font-semibold">☁️ Laminando en la Nube...</p>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                    <div id="slice-progress" class="bg-blue-600 h-2.5 rounded-full transition-all duration-1000" style="width: 10%"></div>
+                </div>
+            </div>
+        `;
+        const progressBar = document.getElementById('slice-progress');
+        setTimeout(() => { progressBar.style.width = '50%'; }, 1000);
+        setTimeout(() => { 
+            progressBar.style.width = '100%';
+            slicingStatus.innerHTML = `
+                <div class="mt-6 p-4 bg-green-100 text-green-800 rounded-lg">
+                    <p class="font-bold">✅ ¡Laminado Completo!</p>
+                    <p>Enviando G-code a la impresora y añadiendo a la cola de impresión...</p>
+                </div>
+            `;
+            mockData.printQueue.unshift({ name: 'Pieza_Optimizada_IA.gcode', eta: '2h 30m' });
+            updatePrintQueue();
+        }, 2500);
+    }
+
+    function simulateLocalSlicing() {
+        slicingStatus.innerHTML = `
+            <div class="mt-6 p-4 bg-yellow-100 text-yellow-800 rounded-lg">
+                <p class="font-bold">🖥️ Acción Requerida</p>
+                <p>El proyecto ha sido enviado a tu OrcaSlicer local. Por favor, abre la aplicación, revisa los ajustes y haz clic en "Laminar".</p>
+                <p class="mt-2">KUNA está esperando el G-code...</p>
+            </div>
+        `;
+        setTimeout(() => {
+            slicingStatus.innerHTML = `
+                <div class="mt-6 p-4 bg-green-100 text-green-800 rounded-lg">
+                    <p class="font-bold">✅ ¡G-code Recibido!</p>
+                    <p>Enviando G-code a la impresora y añadiendo a la cola de impresión...</p>
+                </div>
+            `;
+            mockData.printQueue.unshift({ name: 'Pieza_Optimizada_Local.gcode', eta: '2h 35m' });
+            updatePrintQueue();
+        }, 8000); // Simulate user taking time to slice
+    }
+
+
+    // --- RECOMMENDER LOGIC ---
+    function getAIProfile() {
+        recommenderForm.classList.add('hidden');
+        recommenderResult.classList.remove('hidden');
+        recommenderResult.innerHTML = `
+            <div class="text-center">
+                <div class="loader mx-auto"></div>
+                <p class="mt-4 font-semibold">Analizando millones de impresiones...</p>
+                <p class="text-sm text-gray-500">El cerebro IA de KUNA está encontrando el perfil óptimo para ti.</p>
+            </div>
+        `;
+
+        setTimeout(() => {
+            const printerName = printerSelect.options[printerSelect.selectedIndex].text;
+            const filamentName = filamentSelect.options[filamentSelect.selectedIndex].text;
+            recommenderResult.innerHTML = `
+                <h3 class="text-xl font-bold text-center">Perfil Optimizado por KUNA</h3>
+                <p class="text-center text-gray-500 mb-4">Para ${printerName} con ${filamentName}</p>
+                <div class="bg-gray-100 p-4 rounded-lg">
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                        <p>Altura de Capa: <span class="font-bold">0.2mm</span></p>
+                        <p>Temperatura Boquilla: <span class="font-bold">215°C</span></p>
+                        <p>Temperatura Cama: <span class="font-bold">60°C</span></p>
+                        <p>Velocidad de Impresión: <span class="font-bold">80 mm/s</span></p>
+                        <p>Velocidad de Retracción: <span class="font-bold">45 mm/s</span></p>
+                        <p>Distancia de Retracción: <span class="font-bold">5 mm</span></p>
+                        <p>Ventilador: <span class="font-bold">100%</span></p>
+                        <p>Avance de Presión: <span class="font-bold">0.045</span></p>
+                    </div>
+                </div>
+                <div class="mt-4 text-center bg-green-100 text-green-800 p-3 rounded-lg">
+                    <p class="font-bold">Tasa de Éxito Predicha: 96%</p>
+                    <p class="text-xs">Basado en 1,284 impresiones similares de la comunidad.</p>
+                </div>
+                <button class="mt-6 w-full bg-gray-700 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-800" onclick="document.getElementById('recommender-form').classList.remove('hidden'); document.getElementById('recommender-result').classList.add('hidden');">Empezar de Nuevo</button>
+            `;
+        }, 2500);
+    }
+
+    // --- ANALYSIS LOGIC ---
+    function switchAnalysisTab(e) {
+        const targetTab = e.currentTarget.dataset.tab;
+        analysisTabs.forEach(tab => {
+            const isTarget = tab.dataset.tab === targetTab;
+            tab.classList.toggle('border-blue-600', isTarget);
+            tab.classList.toggle('text-blue-600', isTarget);
+            tab.classList.toggle('border-transparent', !isTarget);
+            tab.classList.toggle('text-gray-500', !isTarget);
+        });
+        analysisContents.forEach(content => {
+            content.classList.toggle('hidden', content.id !== `${targetTab}-analysis`);
+        });
+    }
+
+    function simulateLogAnalysis() {
+        logResult.classList.remove('hidden');
+        logResult.innerHTML = `<div class="loader mx-auto"></div>`;
+        setTimeout(() => {
+            logResult.innerHTML = `
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg" role="alert">
+                  <p class="font-bold">Error Detectado: Heater not heating at expected rate</p>
+                  <p class="mt-2"><strong class="text-gray-800">Traducción IA de KUNA:</strong> El calentador de la boquilla no está alcanzando la temperatura objetivo lo suficientemente rápido.</p>
+                  <div class="mt-4">
+                    <p class="font-semibold text-gray-800">Causas Probables:</p>
+                    <ul class="list-disc list-inside text-sm">
+                        <li>Conexión del termistor suelta o dañada.</li>
+                        <li>Cartucho calentador defectuoso.</li>
+                        <li>Ventilador de capa soplando directamente sobre el bloque calentador.</li>
+                    </ul>
+                    <p class="font-semibold text-gray-800 mt-2">Acción Recomendada:</p>
+                    <p class="text-sm">Verifique visualmente la conexión del termistor en el bloque calentador. Asegúrese de que esté firme.</p>
+                  </div>
+                </div>
+            `;
+        }, 2000);
+    }
+
+    function simulatePhotoAnalysis() {
+        photoResult.classList.remove('hidden');
+        photoResult.innerHTML = `<div class="loader mx-auto mt-4"></div>`;
+        setTimeout(() => {
+            photoResult.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center mt-4">
+                    <div>
+                        <p class="font-semibold text-center mb-2">Imagen Analizada</p>
+                        <img src="https://placehold.co/600x400/e0e0e0/333333?text=Impresión+con+Hilos" alt="Impresión con hilos" class="rounded-lg shadow-md w-full">
+                    </div>
+                    <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 rounded-r-lg">
+                        <p class="font-bold">Diagnóstico IA de KUNA: Hilos Severos (Stringing)</p>
+                        <p class="mt-2"><strong class="text-gray-800">Análisis:</strong> Se detectan finos hilos de plástico entre las partes separadas del modelo. Esto ocurre cuando el filamento gotea de la boquilla mientras se desplaza.</p>
+                        <div class="mt-4">
+                            <p class="font-semibold text-gray-800">Sugerencias de Ajuste:</p>
+                            <ul class="list-disc list-inside text-sm">
+                                <li><strong>Aumentar Retracción:</strong> Incrementa la distancia de retracción en 0.5mm.</li>
+                                <li><strong>Bajar Temperatura:</strong> Reduce la temperatura de impresión en 5-10°C.</li>
+                                <li><strong>Aumentar Velocidad de Desplazamiento:</strong> Incrementa la velocidad de los movimientos sin impresión.</li>
+                                <li><strong>Verificar Humedad del Filamento:</strong> El filamento húmedo puede causar hilos. Considera secarlo.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }, 2000);
+    }
+
+    // --- START THE APP ---
+    init();
+});
+</script>
+
+</body>
+</html>

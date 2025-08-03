@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  kybercore:
+    build: .
+    container_name: kybercore
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+# Agrega aquí otros servicios (db, cache, etc.) si es necesario

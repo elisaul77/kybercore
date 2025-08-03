@@ -1,0 +1,83 @@
+# Archivos y carpetas a ignorar por Git
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.db
+*.sqlite3
+*.pkl
+*.h5
+*.egg-info/
+.env
+.env.*
+.DS_Store
+.AppleDouble
+.LSOverride
+.idea/
+.vscode/
+node_modules/
+dist/
+build/
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.~
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+/*~
+# Archivos de prototipo y pruebas
+prototype/*.tmp
+prototype/*.log
+prototype/__pycache__/
+prototype/.pytest_cache/
+# Archivos de configuración local
+*.local
+*.sublime-workspace
+*.sublime-project
+# Archivos de entorno virtual
+venv/
+.venv/
+ENV/
+env/
+# Archivos de cobertura y pruebas
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+.pytest_cache/
+.mypy_cache/
+.hypothesis/
+.cache/
+# Archivos de documentación generada
+docs/_build/
+docs/.doctrees/
+docs/.buildinfo
+# Otros
+infografia/*.tmp
+infografia/*.bak
+infografia/*.log
+# Archivos de sistema y temporales
+*.orig
+*.rej
+# Archivos de backup de editores
+*~
+*.bak
+# Archivos de lock y dependencias
+Pipfile.lock
+poetry.lock
+requirements.txt.lock
+# Archivos de exportación de notebooks
+*.ipynb_checkpoints
+# Archivos de seguridad
+.secret
+.secrets
+# Archivos de configuración de Copilot
+.copilot
+.copilot*
+.copilotignore
+.copilot2
+.github/*
+docs/investigacion.md
