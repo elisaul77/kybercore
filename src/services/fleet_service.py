@@ -1,10 +1,24 @@
 import uuid
+import json
+import os
 from src.models.printer import Printer
 from src.schemas.printer import PrinterCreate
 
 class FleetService:
-    def __init__(self):
-        self.printers = {}
+    def __init__(self, printers_file='printers.json'):
+        self.printers_file = printers_file
+        self.printers = self._load_printers()
+
+    def _load_printers(self):
+        if os.path.exists(self.printers_file):
+            with open(self.printers_file, 'r') as f:
+                printers_data = json.load(f)
+                return {p_id: Printer(**p_data) for p_id, p_data in printers_data.items()}
+        return {}
+
+    def _save_printers(self):
+        with open(self.printers_file, 'w') as f:
+            json.dump({p_id: p.model_dump() for p_id, p in self.printers.items()}, f, indent=4)
 
     def list_printers(self):
         return list(self.printers.values())
@@ -14,31 +28,26 @@ class FleetService:
 
     def add_printer(self, printer_data: PrinterCreate):
         printer_id = str(uuid.uuid4())
-        printer = Printer(
-            id=printer_id,
-            name=printer_data.name,
-            model=printer_data.model,
-            ip=printer_data.ip,
-            status=printer_data.status,
-            capabilities=printer_data.capabilities,
-            location=printer_data.location
-        )
+        printer = Printer(id=printer_id, **printer_data.model_dump())
         self.printers[printer_id] = printer
+        self._save_printers()
         return printer
 
     def update_printer(self, printer_id, printer_data: PrinterCreate):
         if printer_id in self.printers:
             printer = self.printers[printer_id]
-            printer.name = printer_data.name
-            printer.model = printer_data.model
-            printer.ip = printer_data.ip
-            printer.status = printer_data.status
-            printer.capabilities = printer_data.capabilities
-            printer.location = printer_data.location
+            update_data = printer_data.model_dump(exclude_unset=True)
+            for key, value in update_data.items():
+                setattr(printer, key, value)
+            self._save_printers()
             return printer
         return None
 
     def delete_printer(self, printer_id):
-        return self.printers.pop(printer_id, None)
+        if printer_id in self.printers:
+            deleted_printer = self.printers.pop(printer_id)
+            self._save_printers()
+            return deleted_printer
+        return None
 
 fleet_service = FleetService()

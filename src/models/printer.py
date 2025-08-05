@@ -1,11 +1,11 @@
-# Modelo de impresora para lógica interna
+from pydantic import BaseModel
+from typing import Optional, List
 
-class Printer:
-    def __init__(self, id, name, model, ip, status="offline", capabilities=None, location=None):
-        self.id = id
-        self.name = name
-        self.model = model
-        self.ip = ip
-        self.status = status
-        self.capabilities = capabilities
-        self.location = location
+class Printer(BaseModel):
+    id: str
+    name: str
+    model: str
+    ip: str
+    status: str = "offline"
+    capabilities: Optional[List[str]] = None
+    location: Optional[str] = None

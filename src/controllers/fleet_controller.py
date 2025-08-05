@@ -30,7 +30,7 @@ def get_fleet_data():
         } for p in printers
     ]
     return {
-        "printers": [p.dict() for p in printers],
+        "printers": [vars(p) for p in printers],
         "filaments": filaments,
         "print_queue": print_queue,
         "fleet": fleet

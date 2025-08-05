@@ -1,0 +1,14 @@
+{
+    "63f60b20-618b-4ba0-9c62-827643e4e2c5": {
+        "id": "63f60b20-618b-4ba0-9c62-827643e4e2c5",
+        "name": "Prusa MK3S+",
+        "model": "Original Prusa i3 MK3S+",
+        "ip": "192.168.1.100",
+        "status": "operational",
+        "capabilities": [
+            "PLA",
+            "PETG"
+        ],
+        "location": "Taller"
+    }
+}
