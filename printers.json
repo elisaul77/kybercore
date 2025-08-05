@@ -1,11 +1,30 @@
 {
-  "printer-test-1": {
-    "id": "printer-test-1",
-    "name": "Impresora Prueba",
-    "model": "Generic",
-    "ip": "10.10.10.71:7126",
-    "status": "offline",
-    "capabilities": ["print", "pause", "resume", "cancel"],
-    "location": "Laboratorio"
-  }
+    "printer-test-1": {
+        "id": "printer-test-1",
+        "name": "Impresora Prueba",
+        "model": "Generic",
+        "ip": "10.10.10.71:7126",
+        "status": "ready",
+        "capabilities": [
+            "print",
+            "pause",
+            "resume",
+            "cancel"
+        ],
+        "location": "Laboratorio"
+    },
+    "5085cd86-c6b6-48cb-b707-857481ddbc6b": {
+        "id": "5085cd86-c6b6-48cb-b707-857481ddbc6b",
+        "name": "impresora 2",
+        "model": "ender 3 v3",
+        "ip": "10.10.10.71:7125",
+        "status": "offline",
+        "capabilities": [
+            "print",
+            "pause",
+            "resume",
+            "cancel"
+        ],
+        "location": "casa"
+    }
 }
