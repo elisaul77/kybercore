@@ -1,36 +1,11 @@
 {
-    "63f60b20-618b-4ba0-9c62-827643e4e2c5": {
-        "id": "63f60b20-618b-4ba0-9c62-827643e4e2c5",
-        "name": "Prusa MK3S+",
-        "model": "Original Prusa i3 MK3S+",
-        "ip": "192.168.1.100",
-        "status": "operational",
-        "capabilities": [
-            "PLA",
-            "PETG"
-        ],
-        "location": "Taller"
-    },
-    "1d807520-e5e2-4fc9-a6b9-4b30667e5308": {
-        "id": "1d807520-e5e2-4fc9-a6b9-4b30667e5308",
-        "name": "nueva",
-        "model": "hola",
-        "ip": "qw",
-        "status": "offline",
-        "capabilities": [
-            "qw"
-        ],
-        "location": "qw"
-    },
-    "b94a3c18-c874-4ed8-bffa-bd0869b584e3": {
-        "id": "b94a3c18-c874-4ed8-bffa-bd0869b584e3",
-        "name": "casa",
-        "model": "15050",
-        "ip": "10.10.1.20",
-        "status": "offline",
-        "capabilities": [
-            "pla"
-        ],
-        "location": "casa"
-    }
+  "printer-test-1": {
+    "id": "printer-test-1",
+    "name": "Impresora Prueba",
+    "model": "Generic",
+    "ip": "10.10.10.71:7126",
+    "status": "offline",
+    "capabilities": ["print", "pause", "resume", "cancel"],
+    "location": "Laboratorio"
+  }
 }
