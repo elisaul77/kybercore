@@ -148,14 +148,11 @@ async def handle_client_message(websocket: WebSocket, message: dict):
         elif message_type == 'get_initial_data':
             # Enviar datos iniciales de la flota
             from src.services.fleet_service import fleet_service
-            
             try:
                 printers = await asyncio.wait_for(
                     fleet_service.list_printers(),
                     timeout=8.0
                 )
-                
-                # Convertir printers a diccionarios para JSON
                 printers_data = []
                 for printer in printers:
                     printer_dict = {
@@ -169,18 +166,24 @@ async def handle_client_message(websocket: WebSocket, message: dict):
                         'realtime_data': printer.realtime_data
                     }
                     printers_data.append(printer_dict)
-                
-                await websocket_manager.send_personal_message({
-                    'type': 'initial_data',
-                    'printers': printers_data
-                }, websocket)
-                
+                if not printers_data:
+                    await websocket_manager.send_personal_message({
+                        'type': 'info',  # Cambiado de error a info
+                        'message': 'No hay impresoras registradas en la flota.'
+                    }, websocket)
+                else:
+                    await websocket_manager.send_personal_message({
+                        'type': 'initial_data',
+                        'printers': printers_data
+                    }, websocket)
             except asyncio.TimeoutError:
-                await websocket_manager.send_personal_message({
-                    'type': 'error',
-                    'message': 'Timeout obteniendo datos iniciales'
-                }, websocket)
-        
+                logger.warning("Timeout obteniendo datos iniciales")  # Log en lugar de enviar error
+        elif message_type == 'unknown':
+            logger.info(f"Tipo de mensaje desconocido recibido: {message_type}")  # Log en lugar de error
+            await websocket_manager.send_personal_message({
+                'type': 'info',
+                'message': f'Tipo de mensaje desconocido: {message_type}'
+            }, websocket)
         elif message_type == 'get_status':
             # Enviar estado del monitoreo
             status = realtime_monitor.get_monitoring_status()

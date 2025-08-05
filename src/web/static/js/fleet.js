@@ -106,7 +106,7 @@ window.initFleetModule = function() {
                     
                     // Si no se ha intentado WebSocket aún, intentarlo
                     if (!websocket || websocket.readyState === WebSocket.CLOSED) {
-                        setTimeout(connectWebSocket, 2000);
+                        setTimeout(connectWebSocketOptimized, 2000);
                     }
                 }
             } else {
@@ -166,12 +166,25 @@ window.initFleetModule = function() {
     };
     
     // Función para actualizar estado de la flota (solo cuando cambie)
-    function updateFleetStatus() {
+    function updateFleetStatus(hasError = null, printerCount = null) {
+        // Si se pasan parámetros, actualizar el estado global
+        if (hasError !== null) {
+            fleetState.hasError = hasError;
+        }
+        if (printerCount !== null) {
+            fleetState.printerCount = printerCount;
+        }
+        
+        // Actualizar la UI basado en el estado actual
         if (fleetState.hasError) {
             updateStatus('Error en la flota de impresoras', 'error');
         } else if (fleetState.isConnected) {
-            const printerText = fleetState.printerCount === 1 ? 'impresora conectada' : 'impresoras conectadas';
-            updateStatus(`${fleetState.printerCount} ${printerText}`, 'connected');
+            if (fleetState.printerCount === 0) {
+                updateStatus('Conectado - Sin impresoras registradas', 'connected');
+            } else {
+                const printerText = fleetState.printerCount === 1 ? 'impresora conectada' : 'impresoras conectadas';
+                updateStatus(`${fleetState.printerCount} ${printerText}`, 'connected');
+            }
         } else {
             updateStatus('Conectando...', 'connecting');
         }
@@ -190,16 +203,18 @@ window.initFleetModule = function() {
     function startOptimizedCommunication() {
         if (isSystemActive) return;
         
-        console.log('� Iniciando sistema de comunicación optimizado (WebSocket principal)');
+        console.log('🚀 Iniciando sistema de comunicación optimizado (WebSocket principal)');
         isSystemActive = true;
         
+        // Mostrar estado inicial
+        updateLastUpdateStatus('connecting');
         // Intentar WebSocket inmediatamente
         connectWebSocketOptimized();
-        
         // Solo polling de emergencia si WebSocket falla completamente
         setTimeout(() => {
             if (!isWebSocketConnected) {
                 console.log('⚠️ WebSocket no disponible, activando polling de emergencia');
+                updateLastUpdateStatus('disconnected');
                 startEmergencyPolling();
             }
         }, 5000);
@@ -244,23 +259,21 @@ window.initFleetModule = function() {
             websocket.onopen = () => {
                 console.log('✅ WebSocket conectado exitosamente');
                 isWebSocketConnected = true;
+                fleetState.isConnected = true; // Establecer estado de conexión de la flota
                 reconnectAttempts = 0;
-                
+                updateLastUpdateStatus('connected');
                 // Detener polling de emergencia si estaba activo
                 if (emergencyPollingInterval) {
                     console.log('🛑 Deteniendo polling de emergencia - WebSocket conectado');
                     clearInterval(emergencyPollingInterval);
                     emergencyPollingInterval = null;
                 }
-                
                 // Suscribirse a actualizaciones
                 const subscriptionMessage = { type: 'subscribe_all' };
                 websocket.send(JSON.stringify(subscriptionMessage));
                 console.log('📡 Suscripción enviada');
-                
                 // Iniciar heartbeat para mantener conexión
                 startHeartbeat();
-                
                 // Cargar datos iniciales vía WebSocket
                 requestInitialData();
             };
@@ -298,6 +311,14 @@ window.initFleetModule = function() {
                             console.log('💓 Heartbeat confirmado');
                             break;
                             
+                        case 'info':
+                            console.log('ℹ️ Información del servidor:', message.message);
+                            // Si el mensaje es sobre no hay impresoras, mostrar estado conectado pero sin impresoras
+                            if (message.message.includes('No hay impresoras registradas')) {
+                                updateFleetStatus(false, 0);
+                            }
+                            break;
+                            
                         case 'error':
                             console.error('❌ Error del servidor:', message.message);
                             updateFleetStatus(true, 0);
@@ -311,24 +332,25 @@ window.initFleetModule = function() {
             websocket.onclose = (event) => {
                 console.log('❌ WebSocket desconectado:', event.code, event.reason);
                 isWebSocketConnected = false;
-                
+                fleetState.isConnected = false; // Establecer estado de desconexión de la flota
+                updateLastUpdateStatus('disconnected');
                 if (heartbeatInterval) {
                     clearInterval(heartbeatInterval);
                     heartbeatInterval = null;
                 }
-                
                 if (isSystemActive && reconnectAttempts < maxReconnectAttempts) {
                     reconnectAttempts++;
                     const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 10000); // Backoff exponencial
                     console.log(`🔄 Reintentando conexión en ${delay}ms (intento ${reconnectAttempts}/${maxReconnectAttempts})`);
-                    
                     setTimeout(() => {
                         if (isSystemActive) {
+                            updateLastUpdateStatus('connecting');
                             connectWebSocketOptimized();
                         }
                     }, delay);
                 } else if (isSystemActive) {
                     console.log('⚠️ Máximo de reintentos alcanzado, activando polling de emergencia');
+                    updateLastUpdateStatus('disconnected');
                     startEmergencyPolling();
                 }
             };
@@ -336,6 +358,7 @@ window.initFleetModule = function() {
             websocket.onerror = (error) => {
                 console.error('🔥 Error WebSocket:', error);
                 isWebSocketConnected = false;
+                updateLastUpdateStatus('disconnected');
             };
             
         } catch (error) {
@@ -344,6 +367,32 @@ window.initFleetModule = function() {
                 setTimeout(() => startEmergencyPolling(), 2000);
             }
         }
+    }
+
+    // Actualiza el estado visual del span #last-update
+    function updateLastUpdateStatus(state) {
+        const el = document.getElementById('last-update');
+        if (!el) return;
+        let icon = '', text = '', color = '';
+        switch (state) {
+            case 'connected':
+                icon = '🟢';
+                text = 'Conectado';
+                color = 'color: #16a34a;'; // verde
+                break;
+            case 'disconnected':
+                icon = '🔴';
+                text = 'Desconectado';
+                color = 'color: #dc2626;'; // rojo
+                break;
+            case 'connecting':
+            default:
+                icon = '🔄';
+                text = 'Conectando...';
+                color = 'color: #2563eb;'; // azul
+                break;
+        }
+        el.innerHTML = `<span style="${color} font-weight: 500;">${icon} ${text}</span>`;
     }
     
     // Heartbeat para mantener conexión WebSocket activa
