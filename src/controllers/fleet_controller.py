@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
@@ -12,9 +11,9 @@ templates = Jinja2Templates(directory="src/web/templates")
 
 # Endpoint para datos globales de la flota (estructura SPA)
 @router.get("/data")
-def get_fleet_data():
+async def get_fleet_data():
     # Obtener impresoras reales
-    printers = fleet_service.list_printers()
+    printers = await fleet_service.list_printers()
     # Simular filamentos y cola de impresión
     filaments = [
         {"id": "pla1", "name": "PLA Blanco"},
@@ -39,8 +38,8 @@ def get_fleet_data():
 
 # REST API: CRUD impresoras
 @router.get("/printers", response_model=list[Printer])
-def list_printers():
-    printers = fleet_service.list_printers()
+async def list_printers():
+    printers = await fleet_service.list_printers()
     result = []
     for p in printers:
         d = p.model_dump()
@@ -50,8 +49,8 @@ def list_printers():
     return result
 
 @router.get("/printers/{printer_id}", response_model=Printer)
-def get_printer(printer_id: str):
-    printer = fleet_service.get_printer(printer_id)
+async def get_printer(printer_id: str):
+    printer = await fleet_service.get_printer(printer_id)
     if not printer:
         raise HTTPException(status_code=404, detail="Impresora no encontrada")
     return printer

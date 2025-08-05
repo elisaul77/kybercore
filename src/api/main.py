@@ -13,11 +13,25 @@ async def lifespan(app: FastAPI):
     yield
     # Shutdown
     print("🛑 Cerrando KyberCore...")
-    from src.services.websocket_service import websocket_manager
-    from src.services.realtime_monitor import realtime_monitor
-    await realtime_monitor.stop_monitoring()
-    await websocket_manager.shutdown()
-    print("✅ KyberCore cerrado limpiamente")
+    try:
+        # Importar servicios para limpieza
+        from src.services.websocket_service import websocket_manager
+        from src.services.realtime_monitor import realtime_monitor
+        from src.services.fleet_service import fleet_service
+        
+        # Detener monitoreo primero
+        await realtime_monitor.cleanup()
+        
+        # Cerrar WebSocket manager
+        await websocket_manager.shutdown()
+        
+        # Limpiar fleet service
+        await fleet_service.cleanup()
+        
+        print("✅ KyberCore cerrado limpiamente")
+    except Exception as e:
+        print(f"❌ Error durante shutdown: {e}")
+        print("✅ KyberCore cerrado con errores")
 
 app = FastAPI(
     title="KyberCore API",

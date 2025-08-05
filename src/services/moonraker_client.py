@@ -1,4 +1,4 @@
-import requests
+import aiohttp
 import websockets
 import json
 import asyncio
@@ -9,53 +9,61 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class MoonrakerClient:
-    def __init__(self, printer_ip, port=7125):
+    def __init__(self, printer_ip, port=7125, session=None):
         self.base_url = f"http://{printer_ip}:{port}"
         self.websocket_url = f"ws://{printer_ip}:{port}/websocket"
-        self.session = requests.Session()
+        self._session = session
+        self._owns_session = False
+        if self._session is None:
+            self._session = aiohttp.ClientSession()
+            self._owns_session = True
 
-    def get_printer_info(self):
+    async def close(self):
+        if self._owns_session:
+            await self._session.close()
+
+    async def get_printer_info(self):
         """Obtiene información general de la impresora."""
         try:
-            response = self.session.get(f"{self.base_url}/printer/info")
-            response.raise_for_status()
-            printer_info = response.json()
-            logger.info(f"Respuesta completa de la impresora: {json.dumps(printer_info, indent=2)}")
-            return printer_info
-        except requests.exceptions.RequestException as e:
+            async with self._session.get(f"{self.base_url}/printer/info") as response:
+                response.raise_for_status()
+                printer_info = await response.json()
+                logger.info(f"Respuesta completa de la impresora: {json.dumps(printer_info, indent=2)}")
+                return printer_info
+        except aiohttp.ClientError as e:
             logger.error(f"Error al obtener información de la impresora: {e}")
             return None
 
-    def get_gcode_help(self):
+    async def get_gcode_help(self):
         """Obtiene la lista de comandos G-code disponibles."""
         try:
-            response = self.session.get(f"{self.base_url}/printer/gcode/help")
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.RequestException as e:
+            async with self._session.get(f"{self.base_url}/printer/gcode/help") as response:
+                response.raise_for_status()
+                return await response.json()
+        except aiohttp.ClientError as e:
             logger.error(f"Error al obtener ayuda de G-code: {e}")
             return None
 
-    def post_gcode_script(self, script):
+    async def post_gcode_script(self, script):
         """Envía un script G-code a la impresora."""
         try:
-            response = self.session.post(f"{self.base_url}/printer/gcode/script", params={'script': script})
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.RequestException as e:
+            async with self._session.post(f"{self.base_url}/printer/gcode/script", params={'script': script}) as response:
+                response.raise_for_status()
+                return await response.json()
+        except aiohttp.ClientError as e:
             logger.error(f"Error al enviar script G-code: {e}")
             return None
 
-    def get_temperatures(self):
+    async def get_temperatures(self):
         """Obtiene las temperaturas del hotend y la cama."""
         try:
             # Usamos un GET request con los objetos como parámetros en la URL
-            response = self.session.get(f"{self.base_url}/printer/objects/query?extruder&heater_bed")
-            response.raise_for_status()
-            temperatures = response.json()
-            logger.info(f"Temperaturas obtenidas: {json.dumps(temperatures, indent=2)}")
-            return temperatures
-        except requests.exceptions.RequestException as e:
+            async with self._session.get(f"{self.base_url}/printer/objects/query?extruder&heater_bed") as response:
+                response.raise_for_status()
+                temperatures = await response.json()
+                logger.info(f"Temperaturas obtenidas: {json.dumps(temperatures, indent=2)}")
+                return temperatures
+        except aiohttp.ClientError as e:
             logger.error(f"Error al obtener temperaturas: {e}")
             return None
 
@@ -103,22 +111,18 @@ class MoonrakerClient:
 async def example_callback(data):
     logger.info(f"Datos recibidos: {json.dumps(data, indent=2)}")
 
-if __name__ == "__main__":
+async def main():
     # Reemplazar con la IP de tu impresora de prueba
     PRINTER_IP = "10.10.10.71"
     client = MoonrakerClient(PRINTER_IP)
 
     # Probar endpoints HTTP
-    printer_info = client.get_printer_info()
+    printer_info = await client.get_printer_info()
     if printer_info:
         logger.info("Información de la impresora:")
         logger.info(json.dumps(printer_info, indent=2))
+    
+    await client.close()
 
-    # Probar WebSocket (ejecutar en un bucle de eventos asyncio)
-    # loop = asyncio.get_event_loop()
-    # try:
-    #     loop.run_until_complete(client.subscribe_to_updates(example_callback))
-    # except KeyboardInterrupt:
-    #     pass
-    # finally:
-    #     loop.close()
+if __name__ == "__main__":
+    asyncio.run(main())

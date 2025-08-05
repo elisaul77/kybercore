@@ -7,9 +7,38 @@ services:
       - "8000:8000"
     volumes:
       - ./:/app
-      - ./kybercore.log:/app/kybercore.log
+      - ./logs:/app/logs
     environment:
       - PYTHONUNBUFFERED=1
-    command: ["/bin/sh", "-c", "uvicorn src.api.main:app --host 0.0.0.0 --port 8000 2>&1 | tee /app/kybercore.log"]
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONOPTIMIZE=1
+    # Límites de recursos para evitar consumo excesivo de CPU/memoria
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    # Comando optimizado con parámetros válidos de Uvicorn
+    command: [
+      "uvicorn", "src.api.main:app", 
+      "--host", "0.0.0.0", 
+      "--port", "8000",
+      "--workers", "1",
+      "--backlog", "32",
+      "--timeout-keep-alive", "5",
+      "--timeout-graceful-shutdown", "10",
+      "--log-level", "info"
+    ]
     restart: unless-stopped
+    # Configuración de salud del contenedor
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/fleet/printers", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
 # Agrega aquí otros servicios (db, cache, etc.) si es necesario
