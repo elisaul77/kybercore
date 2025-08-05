@@ -45,16 +45,54 @@ Integrar Moonraker permite que KyberCore gestione impresoras reales, no solo dat
 
 ---
 
+
 ## 4. Ejemplo de flujo típico
 
-1. **Carga de la flota**:
-   - Frontend pide datos → Backend consulta `printers.json` y Moonraker → Fusiona datos → Devuelve al frontend.
+### 1. Carga de la flota
 
-2. **Acción de usuario (ej. iniciar impresión)**:
-   - Frontend envía acción → Backend valida → Llama a Moonraker para ejecutar comando → Actualiza `printers.json` si aplica → Devuelve resultado.
+```mermaid
+flowchart TD
+    Usuario([Usuario]) -->|Solicita datos| Frontend
+    Frontend -->|GET /data| Backend
+    Backend -->|Lee config| PrintersJSON[printers.json]
+    Backend -->|Consulta estado| MoonrakerAPI[Moonraker API]
+    PrintersJSON -->|Config| Backend
+    MoonrakerAPI -->|Estado| Backend
+    Backend -->|Fusiona y responde| Frontend
+    Frontend -->|Renderiza| Usuario
+```
 
-3. **Actualización en tiempo real**:
-   - Moonraker emite evento (ej. impresión completada) → Backend recibe por WebSocket → Reenvía al frontend → UI se actualiza automáticamente.
+### 2. Acción de usuario (ej. iniciar impresión)
+
+```mermaid
+flowchart TD
+    usuario -->|"Acción: iniciar"| frontend
+    frontend -->|"POST /printers"| backend
+    backend -->|"Valida"| ia_validacion
+    ia_validacion -- OK --> backend
+    backend -->|"Comando HW"| moonraker_api
+    backend -->|"Actualiza config"| printersjson
+    moonraker_api -->|"Confirma"| backend
+    printersjson -->|"Confirma"| backend
+    backend -->|"Resultado"| frontend
+    frontend -->|"Feedback"| usuario
+
+    usuario["Usuario"]
+    frontend["Frontend"]
+    backend["Backend"]
+    ia_validacion["IA Validacion"]
+    moonraker_api["Moonraker API"]
+    printersjson["printers.json"]
+```
+
+### 3. Actualización en tiempo real
+
+```mermaid
+flowchart TD
+    MoonrakerWS[Moonraker WS] -- Evento --> BackendWS[Backend WS]
+    BackendWS -- Notifica --> FrontendWS[Frontend WS]
+    FrontendWS -- Actualiza UI --> Usuario([Usuario])
+```
 
 ---
 
