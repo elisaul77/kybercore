@@ -1,0 +1,31 @@
+---
+title: Flujo Principal KyberCore
+---
+flowchart TD
+    Usuario([Usuario]) -->|Solicitud nuevo trabajo| API[API FastAPI/Flask]
+    API --> Controlador[Controlador correspondiente]
+    Controlador --> Servicio[Servicio de negocio]
+    Servicio -->|Gestion de trabajos| Jobs[Módulo de Jobs]
+    Servicio -->|Gestion de impresoras| Printers[Módulo de Impresoras]
+    Servicio -->|Analisis IA| IA[Análisis IA / Recomendador]
+    Printers -->|Estado comandos| Moonraker[API Moonraker / G-code]
+    Jobs --> Printers
+    IA --> Servicio
+    Moonraker --> Printers
+    Printers --> Servicio
+    Jobs --> Servicio
+    Servicio --> Controlador
+    Controlador --> API
+    API -->|Respuesta| Usuario
+
+    subgraph Backend_KyberCore
+        API
+        Controlador
+        Servicio
+        Jobs
+        Printers
+        IA
+    end
+    subgraph Integracion
+        Moonraker
+    end

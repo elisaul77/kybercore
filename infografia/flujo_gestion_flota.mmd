@@ -1,0 +1,54 @@
+---
+title: Flujo Gestión de Flota KyberCore
+---
+flowchart TD
+    Usuario([Usuario Navegador]) -->|1 Clic Gestion de Flota| appjs[app.js]
+    appjs -->|2 navigateTo fleet| appjs
+    appjs -->|3 Pide HTML modulo| fleet_controller[fleet_controller.py]
+    fleet_controller -->|4 Devuelve fleet.html| fleethtml[fleet.html inyectado en DOM]
+    appjs -->|5 Llama initFleetModule| fleetjs[fleet.js]
+    fleetjs -->|6 GET printers| fleet_controller
+    fleet_controller -->|7 Llama servicio| fleet_service[fleet_service.py]
+    fleet_service -->|8 Lee printers.json| printersjson[printers.json]
+    printersjson -->|9 Devuelve lista| fleet_service
+    fleet_service -->|10 Devuelve lista| fleet_controller
+    fleet_controller -->|11 Devuelve JSON| fleetjs
+    fleetjs -->|12 Dibuja tabla| fleethtml
+    Usuario -->|13 Rellena formulario y clic Agregar| fleethtml
+    fleethtml -->|14 Captura evento y POST printers| fleetjs
+    fleetjs -->|15 Envia datos nueva impresora| fleet_controller
+    fleet_controller -->|16 Valida datos| validador[Validador/IA]
+    validador -- Error --> fleet_controller
+    validador -- OK --> fleet_service
+    fleet_controller -->|17 Error validación| fleetjs
+    fleet_service -->|18 Crea/actualiza/elimina impresora| printersjson
+    fleet_service -->|19 Devuelve éxito o error| fleet_controller
+    fleet_controller -->|20 Devuelve JSON resultado| fleetjs
+    fleetjs -->|21 Alerta éxito/error y refresca tabla| Usuario
+
+    %% CRUD extra
+    fleetjs -->|GET printer por ID| fleet_controller
+    fleet_controller -->|Busca impresora| fleet_service
+    fleet_service -->|Devuelve impresora o error| fleet_controller
+    fleet_controller -->|Devuelve JSON| fleetjs
+
+    fleetjs -->|PUT/DELETE printer| fleet_controller
+    fleet_controller -->|Valida y llama servicio| validador
+    validador -- Error --> fleet_controller
+    validador -- OK --> fleet_service
+    fleet_service -->|Actualiza/elimina| printersjson
+    fleet_service -->|Devuelve éxito o error| fleet_controller
+    fleet_controller -->|Devuelve JSON resultado| fleetjs
+    fleetjs -->|Alerta éxito/error y refresca tabla| Usuario
+
+    subgraph Frontend
+        appjs
+        fleetjs
+        fleethtml
+    end
+    subgraph Backend
+        fleet_controller
+        fleet_service
+        printersjson
+        validador
+    end
