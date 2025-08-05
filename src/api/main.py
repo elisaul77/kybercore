@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from src.controllers import fleet_controller, recommender_controller, analysis_controller, dashboard_controller, new_job_controller, settings_controller
+from src.controllers import fleet_controller, recommender_controller, analysis_controller, dashboard_controller, new_job_controller, settings_controller, websocket_controller
 
 app = FastAPI(
     title="KyberCore API",
@@ -37,6 +37,9 @@ app.include_router(analysis_controller.router, prefix="/api/analysis", tags=["An
 app.include_router(dashboard_controller.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(new_job_controller.router, prefix="/api/new-job", tags=["NewJob"])
 app.include_router(settings_controller.router, prefix="/api/settings", tags=["Settings"])
+
+# Incluir WebSocket endpoints
+app.include_router(websocket_controller.router, prefix="/api", tags=["WebSocket"])
 
 # Servir la SPA: una sola plantilla con todas las secciones
 @app.get("/", response_class=HTMLResponse)

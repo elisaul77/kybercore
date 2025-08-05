@@ -46,13 +46,17 @@ flowchart TD
     subgraph "Flujo Asíncrono: Actualizaciones en Tiempo Real"
         direction TB
         fleetjs_ws[fleet.js] -.->|AbreConexionWS| backend_ws[Backend WS]
-        backend_ws -.->|SuscribeWS| moonraker_ws["Moonraker WS"]
-        moonraker_ws <-->|EventosHW| backend_ws
-        backend_ws <-->|ComunicacionBidireccional| fleetjs_ws
-        backend_ws -->|NotificaCambios| fleetjs_ws
+        backend_ws -.->|IniciaMonitor| monitor_ws["RealtimeMonitor"]
+        monitor_ws -.->|Consulta periódica| moonraker_ws["Moonraker WS"]
+        moonraker_ws -- EventosHW --> monitor_ws
+        monitor_ws -- Cambios relevantes --> backend_ws
+        backend_ws <==>|ComunicacionBidireccional| fleetjs_ws
+        backend_ws -- AlertaCrítica --> fleetjs_ws
         fleetjs_ws -->|ActualizaUI| fleethtml
+        fleetjs_ws -.->|Reconexión automática| backend_ws
     end
 
+    %% Leyenda de colores y tipos de línea
     classDef frontend fill:#dae8fc,stroke:#6c8ebf;
     classDef backend fill:#d5e8d4,stroke:#82b366;
     classDef db fill:#f8cecc,stroke:#b85450;
@@ -60,7 +64,7 @@ flowchart TD
     classDef moonraker fill:#fff,stroke:#ff9800,stroke-width:2px;
 
     class appjs,fleetjs,fleethtml,fleetjs_ws frontend;
-    class fleet_controller_html,fleet_controller_data,fleet_controller_crud,fleet_service,fleet_service_crud,ia_validator,backend_ws backend;
+    class fleet_controller_html,fleet_controller_data,fleet_controller_crud,fleet_service,fleet_service_crud,ia_validator,backend_ws,monitor_ws backend;
     class printersjson,printersjson_crud db;
     class Usuario user;
     class moonraker_api,moonraker_api_crud,moonraker_ws moonraker;

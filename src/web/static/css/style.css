@@ -30,3 +30,82 @@ body {
 }
 .step { display: none; }
 .step.active { display: block; }
+
+/* Estilos para WebSocket en tiempo real */
+.status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-ready {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.status-printing {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.status-offline {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.status-unreachable {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.temperature-cell {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+}
+
+/* Animación para filas actualizadas */
+@keyframes rowUpdate {
+    0% {
+        background-color: #fef3c7;
+        transform: scale(1.01);
+    }
+    100% {
+        background-color: transparent;
+        transform: scale(1);
+    }
+}
+
+.updated {
+    animation: rowUpdate 0.3s ease-out;
+}
+
+/* Indicadores de conexión WebSocket */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Estados de temperatura con colores */
+.temp-normal {
+    color: #059669;
+}
+
+.temp-warning {
+    color: #d97706;
+}
+
+.temp-critical {
+    color: #dc2626;
+    font-weight: bold;
+}
