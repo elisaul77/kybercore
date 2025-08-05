@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div id="main-content"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// SPA: Carga dinámica de módulos
+const moduleEndpoints = {
+    dashboard: '/api/dashboard/dashboard',
+    'new-job': '/api/new-job/new-job',
+    recommender: '/api/recommender/recommender',
+    analysis: '/api/analysis/analysis',
+    fleet: '/api/fleet/fleet',
+    settings: '/api/settings/settings'
+};
+
+function loadModule(module) {
+    const url = moduleEndpoints[module];
+    if (!url) return;
+    fetch(url)
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('main-content').innerHTML = html;
+        });
+}
+
+// Inicializar con dashboard
+window.addEventListener('DOMContentLoaded', () => {
+    loadModule('dashboard');
+    // Asume que los botones del menú tienen data-module="modulo"
+    document.querySelectorAll('[data-module]').forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.preventDefault();
+            const mod = btn.getAttribute('data-module');
+            loadModule(mod);
+        });
+    });
+});
+</script>
+{% endblock %}

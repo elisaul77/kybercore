@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUNA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+</head>
+<body class="bg-gray-100">
+
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-800 text-white flex flex-col">
+            <div class="h-24 flex flex-col items-center justify-center border-b border-gray-700 px-4 text-center">
+                <h1 class="text-3xl font-bold">KUNA</h1>
+                <p class="text-xs text-gray-400 mt-1">Klipper Unified Neural Assistant</p>
+            </div>
+            <nav class="flex-1 px-4 py-6 space-y-2">
+                <a href="#dashboard" data-module="dashboard" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3">📊</span> Panel de Control
+                </a>
+                <a href="#new-job" data-module="new-job" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3">🚀</span> Nuevo Trabajo IA
+                </a>
+                <a href="#recommender" data-module="recommender" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3">🤖</span> Perfiles IA
+                </a>
+                <a href="#analysis" data-module="analysis" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3">🔍</span> Análisis de Fallos
+                </a>
+                <a href="#fleet" data-module="fleet" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3">🏭</span> Gestión de Flota
+                </a>
+                <a href="#settings" data-module="settings" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3">⚙️</span> Ajustes
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 overflow-y-auto">
+            <div class="main-content">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+<script src="{{ url_for('static', path='/js/app.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
