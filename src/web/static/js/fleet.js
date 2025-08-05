@@ -42,24 +42,36 @@ window.initFleetModule = function() {
         }, 3000);
     }
     
-    // Función para cargar datos reales
+    // Función para cargar datos reales (mejorada)
     async function loadRealData() {
         try {
-            console.log('Cargando datos reales...');
-            updateStatus('Cargando datos reales...');
+            const updateTime = new Date().toLocaleTimeString();
+            console.log(`📊 Cargando datos reales a las ${updateTime}...`);
+            updateStatus(`Actualizando... (${updateTime})`);
             
             const response = await fetch('/api/fleet/printers');
             if (response.ok) {
                 const printers = await response.json();
-                console.log('Impresoras recibidas:', printers.length);
+                console.log(`📊 Recibidas ${printers.length} impresoras a las ${updateTime}`);
                 
                 const tbody = document.getElementById('fleet-printers');
                 if (tbody) {
-                    tbody.innerHTML = '';
+                    // Limpiar tabla solo si no hay filas o es la primera vez
+                    const existingRows = tbody.querySelectorAll('tr[data-printer-id]');
+                    if (existingRows.length === 0) {
+                        tbody.innerHTML = '';
+                    }
                     
                     printers.forEach(printer => {
-                        const row = document.createElement('tr');
-                        row.setAttribute('data-printer-id', printer.id);
+                        let row = document.querySelector(`tr[data-printer-id="${printer.id}"]`);
+                        
+                        if (!row) {
+                            // Crear nueva fila
+                            row = document.createElement('tr');
+                            row.setAttribute('data-printer-id', printer.id);
+                            tbody.appendChild(row);
+                            console.log(`➕ Nueva impresora agregada: ${printer.name}`);
+                        }
                         
                         const extTemp = printer.realtime_data?.extruder_temp || 'N/A';
                         const extTarget = printer.realtime_data?.extruder_target || 'N/A';
@@ -83,18 +95,27 @@ window.initFleetModule = function() {
                                 </button>
                             </td>
                         `;
-                        tbody.appendChild(row);
+                        
+                        // Efecto visual de actualización
+                        row.classList.add('bg-blue-50');
+                        setTimeout(() => {
+                            row.classList.remove('bg-blue-50');
+                        }, 500);
                     });
                     
-                    updateStatus('Datos reales cargados');
-                    setTimeout(connectWebSocket, 2000);
+                    updateStatus(`Actualizado a las ${updateTime} (${printers.length} impresoras)`);
+                    
+                    // Si no se ha intentado WebSocket aún, intentarlo
+                    if (!websocket || websocket.readyState === WebSocket.CLOSED) {
+                        setTimeout(connectWebSocket, 2000);
+                    }
                 }
             } else {
-                console.error('Error en respuesta:', response.status);
-                updateStatus('Error cargando datos');
+                console.error('❌ Error en respuesta:', response.status);
+                updateStatus(`Error ${response.status} al actualizar`);
             }
         } catch (error) {
-            console.error('Error de red:', error);
+            console.error('❌ Error de red:', error);
             updateStatus('Error de conexión');
         }
     }
@@ -108,33 +129,182 @@ window.initFleetModule = function() {
         console.log('Estado:', message);
     }
     
-    // Función WebSocket simplificada
+    // Variables para actualizaciones automáticas
+    let updateInterval = null;
+    let websocket = null;
+    let isAutoUpdating = false;
+    
+    // Función para iniciar actualizaciones automáticas con polling
+    function startAutoUpdates() {
+        if (isAutoUpdating) return;
+        
+        console.log('🔄 Iniciando actualizaciones automáticas cada 5 segundos');
+        updateStatus('Actualizaciones automáticas activadas');
+        isAutoUpdating = true;
+        
+        // Actualizar inmediatamente
+        loadRealData();
+        
+        // Configurar intervalo de actualización cada 5 segundos
+        updateInterval = setInterval(() => {
+            console.log('🔄 Actualizando datos automáticamente...');
+            loadRealData();
+        }, 5000);
+    }
+    
+    // Función para detener actualizaciones automáticas
+    function stopAutoUpdates() {
+        if (!isAutoUpdating) return;
+        
+        console.log('🛑 Deteniendo actualizaciones automáticas');
+        isAutoUpdating = false;
+        
+        if (updateInterval) {
+            clearInterval(updateInterval);
+            updateInterval = null;
+        }
+        
+        if (websocket && websocket.readyState === WebSocket.OPEN) {
+            websocket.close();
+        }
+    }
+    
+    // Función WebSocket mejorada con manejo de mensajes
     function connectWebSocket() {
+        if (websocket && websocket.readyState === WebSocket.OPEN) {
+            return;
+        }
+        
         try {
             const wsUrl = `ws://${window.location.host}/api/ws/fleet`;
-            console.log('Conectando WebSocket:', wsUrl);
+            console.log('🌐 Conectando WebSocket:', wsUrl);
             updateStatus('Conectando WebSocket...');
             
-            const ws = new WebSocket(wsUrl);
+            websocket = new WebSocket(wsUrl);
             
-            ws.onopen = () => {
-                console.log('WebSocket conectado');
-                updateStatus('Conectado en tiempo real');
+            websocket.onopen = () => {
+                console.log('✅ WebSocket conectado');
+                updateStatus('WebSocket conectado - Tiempo real activo');
+                
+                // Suscribirse a todas las actualizaciones de impresoras
+                const subscriptionMessage = {
+                    type: 'subscribe_all'
+                };
+                websocket.send(JSON.stringify(subscriptionMessage));
+                console.log('📡 Suscripción enviada:', subscriptionMessage);
             };
             
-            ws.onclose = () => {
-                console.log('WebSocket cerrado');
-                updateStatus('Desconectado');
+            websocket.onmessage = (event) => {
+                try {
+                    const message = JSON.parse(event.data);
+                    console.log('📨 Mensaje WebSocket recibido:', message);
+                    
+                    switch (message.type) {
+                        case 'connection_established':
+                            console.log('🎯 Conexión establecida, ID:', message.client_id);
+                            break;
+                            
+                        case 'subscription_all_confirmed':
+                            console.log(`✅ Suscrito a ${message.printer_count} impresoras`);
+                            updateStatus('Tiempo real: ' + message.printer_count + ' impresoras monitoreadas');
+                            break;
+                            
+                        case 'printer_update':
+                            console.log('🔄 Actualización de impresora:', message.printer_id);
+                            updateSinglePrinter(message.printer_id, message.data);
+                            break;
+                            
+                        case 'pong':
+                            console.log('💓 Pong recibido');
+                            break;
+                            
+                        case 'error':
+                            console.error('❌ Error del servidor:', message.message);
+                            updateStatus('Error: ' + message.message);
+                            break;
+                            
+                        default:
+                            console.log('📦 Mensaje no manejado:', message.type);
+                    }
+                } catch (error) {
+                    console.error('❌ Error procesando mensaje WebSocket:', error);
+                }
             };
             
-            ws.onerror = (error) => {
-                console.error('Error WebSocket:', error);
-                updateStatus('Error WebSocket');
+            websocket.onclose = (event) => {
+                console.log('❌ WebSocket cerrado:', event.code, event.reason);
+                updateStatus('WebSocket desconectado - Usando polling');
+                
+                // Si el WebSocket se cierra, continuar con polling
+                if (isAutoUpdating && !updateInterval) {
+                    console.log('🔄 WebSocket cerrado, continuando con polling');
+                    updateInterval = setInterval(() => {
+                        loadRealData();
+                    }, 5000);
+                }
+            };
+            
+            websocket.onerror = (error) => {
+                console.error('🔥 Error WebSocket:', error);
+                updateStatus('Error WebSocket - Usando polling');
             };
             
         } catch (error) {
-            console.error('Error creando WebSocket:', error);
-            updateStatus('Error WebSocket');
+            console.error('❌ Error creando WebSocket:', error);
+            updateStatus('Error iniciando WebSocket - Usando polling');
+        }
+    }
+    
+    // Función para actualizar una sola impresora desde WebSocket
+    function updateSinglePrinter(printerId, printerData) {
+        try {
+            console.log(`🔧 Actualizando impresora ${printerId} vía WebSocket`);
+            
+            const tbody = document.getElementById('fleet-printers');
+            if (!tbody) return;
+            
+            let row = document.querySelector(`tr[data-printer-id="${printerId}"]`);
+            
+            if (!row) {
+                console.log(`➕ Creando nueva fila para ${printerId}`);
+                row = document.createElement('tr');
+                row.setAttribute('data-printer-id', printerId);
+                tbody.appendChild(row);
+            }
+            
+            const extTemp = printerData.realtime_data?.extruder_temp || 'N/A';
+            const extTarget = printerData.realtime_data?.extruder_target || 'N/A';
+            const bedTemp = printerData.realtime_data?.bed_temp || 'N/A';
+            const bedTarget = printerData.realtime_data?.bed_target || 'N/A';
+            
+            row.innerHTML = `
+                <td class="px-4 py-2">${printerData.name}</td>
+                <td class="px-4 py-2">${printerData.model}</td>
+                <td class="px-4 py-2">${printerData.ip}</td>
+                <td class="px-4 py-2">
+                    <span class="status-badge status-${printerData.status}">${printerData.status}</span>
+                </td>
+                <td class="px-4 py-2">${extTemp}°C / ${extTarget}°C</td>
+                <td class="px-4 py-2">${bedTemp}°C / ${bedTarget}°C</td>
+                <td class="px-4 py-2">${(printerData.capabilities || []).join(', ')}</td>
+                <td class="px-4 py-2">${printerData.location || ''}</td>
+                <td class="px-4 py-2">
+                    <button onclick="deletePrinter('${printerId}')" class="text-red-600 hover:underline">
+                        Eliminar
+                    </button>
+                </td>
+            `;
+            
+            // Efecto visual de actualización
+            row.classList.add('bg-yellow-100');
+            setTimeout(() => {
+                row.classList.remove('bg-yellow-100');
+            }, 1000);
+            
+            console.log(`✅ Impresora ${printerData.name} actualizada vía WebSocket`);
+            
+        } catch (error) {
+            console.error('❌ Error actualizando impresora individual:', error);
         }
     }
     
@@ -155,9 +325,10 @@ window.initFleetModule = function() {
         }
     };
     
-    // Función pública para detener
+    // Función pública para detener actualizaciones (mejorada)
     window.stopFleetUpdates = function() {
-        console.log('Deteniendo actualizaciones');
+        console.log('🛑 Deteniendo todas las actualizaciones de flota');
+        stopAutoUpdates();
     };
     
     // Configurar formulario
@@ -195,19 +366,32 @@ window.initFleetModule = function() {
         });
     }
     
-    // INICIALIZACIÓN
-    console.log('Iniciando Fleet...');
+    // INICIALIZACIÓN MEJORADA
+    console.log('🚀 Iniciando Fleet con actualizaciones automáticas...');
     
     const tbody = document.getElementById('fleet-printers');
-    console.log('tbody disponible:', !!tbody);
+    console.log('🔍 tbody disponible:', !!tbody);
     
     if (!tbody) {
-        console.error('ERROR: No se encontró tbody');
+        console.error('❌ ERROR: No se encontró tbody');
         return;
     }
     
-    tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">Iniciando...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">Iniciando sistema de monitoreo...</td></tr>';
     updateStatus('Iniciando...');
     
-    setTimeout(loadTestData, 500);
+    // Cargar datos iniciales y luego activar actualizaciones automáticas
+    setTimeout(() => {
+        loadTestData();
+        
+        // Después de cargar datos de prueba, activar actualizaciones automáticas
+        setTimeout(() => {
+            startAutoUpdates();
+            
+            // Intentar WebSocket para tiempo real después de activar polling
+            setTimeout(() => {
+                connectWebSocket();
+            }, 2000);
+        }, 1000);
+    }, 500);
 };
