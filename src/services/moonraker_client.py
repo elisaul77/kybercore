@@ -19,7 +19,9 @@ class MoonrakerClient:
         try:
             response = self.session.get(f"{self.base_url}/printer/info")
             response.raise_for_status()
-            return response.json()
+            printer_info = response.json()
+            logger.info(f"Respuesta completa de la impresora: {json.dumps(printer_info, indent=2)}")
+            return printer_info
         except requests.exceptions.RequestException as e:
             logger.error(f"Error al obtener información de la impresora: {e}")
             return None
@@ -42,6 +44,19 @@ class MoonrakerClient:
             return response.json()
         except requests.exceptions.RequestException as e:
             logger.error(f"Error al enviar script G-code: {e}")
+            return None
+
+    def get_temperatures(self):
+        """Obtiene las temperaturas del hotend y la cama."""
+        try:
+            # Usamos un GET request con los objetos como parámetros en la URL
+            response = self.session.get(f"{self.base_url}/printer/objects/query?extruder&heater_bed")
+            response.raise_for_status()
+            temperatures = response.json()
+            logger.info(f"Temperaturas obtenidas: {json.dumps(temperatures, indent=2)}")
+            return temperatures
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error al obtener temperaturas: {e}")
             return None
 
     async def subscribe_to_updates(self, callback):

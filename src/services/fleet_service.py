@@ -40,6 +40,26 @@ class FleetService:
                 logger.info(f"Estado de la impresora {printer.name}: {printer_info['result'].get('state', 'unknown')}")
                 printer.status = printer_info['result'].get('state', 'unknown')
                 printer.realtime_data = printer_info['result']
+
+                # Obtener temperaturas usando el nuevo método
+                temperatures = client.get_temperatures()
+                if temperatures and 'result' in temperatures and 'status' in temperatures['result']:
+                    extruder_data = temperatures['result']['status'].get('extruder', {})
+                    heater_bed_data = temperatures['result']['status'].get('heater_bed', {})
+
+                    extruder_temp = extruder_data.get('temperature', 'N/A')
+                    extruder_target = extruder_data.get('target', 'N/A')
+                    bed_temp = heater_bed_data.get('temperature', 'N/A')
+                    bed_target = heater_bed_data.get('target', 'N/A')
+
+                    printer.realtime_data['extruder_temp'] = extruder_temp
+                    printer.realtime_data['extruder_target'] = extruder_target
+                    printer.realtime_data['bed_temp'] = bed_temp
+                    printer.realtime_data['bed_target'] = bed_target
+
+                    logger.info(f"Temperatura del hotend: {extruder_temp}/{extruder_target}, Temperatura de la cama: {bed_temp}/{bed_target}")
+                else:
+                    logger.warning(f"No se pudieron obtener las temperaturas para la impresora {printer.name}")
             else:
                 logger.warning(f"No se pudo conectar a la impresora {printer.name} en {ip}:{port}")
                 printer.status = "unreachable"
