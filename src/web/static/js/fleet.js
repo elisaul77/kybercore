@@ -19,43 +19,62 @@ window.initFleetModule = function() {
         console.log('Intentando conectar WebSocket...');
         updateConnectionStatus(false, 'Conectando...');
         
-        ws = new WebSocket(wsUrl);
-        
-        ws.onopen = function(event) {
-            console.log('✅ Conexión WebSocket establecida');
-            isConnected = true;
-            reconnectAttempts = 0;
-            updateConnectionStatus(true, 'Conectado en tiempo real');
+        try {
+            ws = new WebSocket(wsUrl);
             
-            // Suscribirse a todas las impresoras
-            sendMessage({
-                type: 'subscribe_all'
-            });
-        };
-        
-        ws.onmessage = function(event) {
-            try {
-                const message = JSON.parse(event.data);
-                handleWebSocketMessage(message);
-            } catch (error) {
-                console.error('Error parseando mensaje WebSocket:', error);
-            }
-        };
-        
-        ws.onclose = function(event) {
-            console.log('❌ Conexión WebSocket cerrada');
-            isConnected = false;
-            updateConnectionStatus(false, 'Desconectado');
+            // Timeout para conexión
+            const connectionTimeout = setTimeout(() => {
+                if (ws.readyState === WebSocket.CONNECTING) {
+                    console.warn('⏰ Timeout de conexión WebSocket');
+                    ws.close();
+                }
+            }, 10000); // 10 segundos
             
-            if (event.code !== 1000) { // No fue cierre normal
-                attemptReconnect();
-            }
-        };
-        
-        ws.onerror = function(error) {
-            console.error('🔥 Error WebSocket:', error);
+            ws.onopen = function(event) {
+                clearTimeout(connectionTimeout);
+                console.log('✅ Conexión WebSocket establecida');
+                isConnected = true;
+                reconnectAttempts = 0;
+                updateConnectionStatus(true, 'Conectado en tiempo real');
+                
+                // Suscribirse a todas las impresoras
+                sendMessage({
+                    type: 'subscribe_all'
+                });
+            };
+            
+            ws.onmessage = function(event) {
+                try {
+                    const message = JSON.parse(event.data);
+                    handleWebSocketMessage(message);
+                } catch (error) {
+                    console.error('Error parseando mensaje WebSocket:', error);
+                }
+            };
+            
+            ws.onclose = function(event) {
+                clearTimeout(connectionTimeout);
+                console.log('❌ Conexión WebSocket cerrada:', event.code, event.reason);
+                isConnected = false;
+                updateConnectionStatus(false, 'Desconectado');
+                
+                // Solo reconectar si no fue un cierre intencional
+                if (event.code !== 1000 && reconnectAttempts < maxReconnectAttempts) {
+                    attemptReconnect();
+                }
+            };
+            
+            ws.onerror = function(error) {
+                clearTimeout(connectionTimeout);
+                console.error('🔥 Error WebSocket:', error);
+                updateConnectionStatus(false, 'Error de conexión');
+            };
+            
+        } catch (error) {
+            console.error('Error creando WebSocket:', error);
             updateConnectionStatus(false, 'Error de conexión');
-        };
+            attemptReconnect();
+        }
     }
 
     function sendMessage(message) {
@@ -216,12 +235,35 @@ window.initFleetModule = function() {
     // Función para limpiar conexiones al cambiar de módulo
     window.stopFleetUpdates = function() {
         console.log('🛑 Deteniendo actualizaciones de flota');
-        if (ws) {
+        if (ws && ws.readyState === WebSocket.OPEN) {
             ws.close(1000, 'Módulo cambiado'); // Cierre normal
-            ws = null;
         }
+        ws = null;
         isConnected = false;
+        reconnectAttempts = 0;
     };
+
+    // Limpiar al cerrar la página o recargar
+    window.addEventListener('beforeunload', function() {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.close(1000, 'Página cerrada');
+        }
+    });
+
+    // Limpiar al cambiar de pestaña (pausa/resume)
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            // Página oculta, pausar reconexiones
+            if (ws && ws.readyState === WebSocket.CONNECTING) {
+                ws.close();
+            }
+        } else {
+            // Página visible, reconectar si es necesario
+            if (!isConnected && ws && ws.readyState === WebSocket.CLOSED) {
+                setTimeout(connectWebSocket, 1000);
+            }
+        }
+    });
 
     // Funciones existentes para manejo de formularios
     window.deletePrinter = async function(id) {

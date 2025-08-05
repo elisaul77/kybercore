@@ -1,9 +1,9 @@
-from fastapi import WebSocket
+from fastapi import WebSocket, WebSocketDisconnect
 from typing import List, Dict, Set
 import json
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +12,8 @@ class WebSocketManager:
         self.active_connections: List[WebSocket] = []
         self.printer_subscriptions: Dict[str, Set[WebSocket]] = {}
         self.connection_metadata: Dict[WebSocket, Dict] = {}
+        self._cleanup_task = None
+        self._start_cleanup_task()
     
     async def connect(self, websocket: WebSocket, client_id: str = None):
         """Acepta una nueva conexión WebSocket"""
@@ -20,6 +22,7 @@ class WebSocketManager:
         self.connection_metadata[websocket] = {
             'client_id': client_id or f"client_{len(self.active_connections)}",
             'connected_at': datetime.now(),
+            'last_ping': datetime.now(),
             'subscriptions': set()
         }
         logger.info(f"Cliente conectado: {self.connection_metadata[websocket]['client_id']}")
@@ -76,10 +79,28 @@ class WebSocketManager:
             'timestamp': datetime.now().isoformat()
         }
         
+        await self._send_to_subscribers(printer_id, message)
+    
+    async def _send_to_subscribers(self, printer_id: str, message: dict):
+        """Envía mensaje a suscriptores con manejo robusto de errores"""
         disconnected_clients = []
-        for websocket in self.printer_subscriptions[printer_id]:
+        subscribers = list(self.printer_subscriptions.get(printer_id, set()))
+        
+        for websocket in subscribers:
             try:
+                # Verificar si la conexión está viva
+                if not await self._is_connection_alive(websocket):
+                    disconnected_clients.append(websocket)
+                    continue
+                    
                 await websocket.send_text(json.dumps(message))
+                # Actualizar último ping exitoso
+                if websocket in self.connection_metadata:
+                    self.connection_metadata[websocket]['last_ping'] = datetime.now()
+                    
+            except WebSocketDisconnect:
+                logger.info(f"Cliente desconectado durante envío de datos")
+                disconnected_clients.append(websocket)
             except Exception as e:
                 logger.error(f"Error enviando datos a cliente: {e}")
                 disconnected_clients.append(websocket)
@@ -87,6 +108,21 @@ class WebSocketManager:
         # Limpiar clientes desconectados
         for websocket in disconnected_clients:
             self.disconnect(websocket)
+    
+    async def _is_connection_alive(self, websocket: WebSocket) -> bool:
+        """Verifica si una conexión WebSocket está viva"""
+        try:
+            # Enviar ping si no se ha hecho recientemente
+            metadata = self.connection_metadata.get(websocket, {})
+            last_ping = metadata.get('last_ping', datetime.min)
+            
+            if datetime.now() - last_ping > timedelta(seconds=30):
+                await websocket.ping()
+                metadata['last_ping'] = datetime.now()
+            
+            return websocket.client_state.value == 1  # CONNECTED
+        except Exception:
+            return False
     
     async def broadcast_to_all(self, message: dict):
         """Envía un mensaje a todos los clientes conectados"""
@@ -120,6 +156,56 @@ class WebSocketManager:
     def get_printer_subscriber_count(self, printer_id: str) -> int:
         """Retorna el número de clientes suscritos a una impresora"""
         return len(self.printer_subscriptions.get(printer_id, set()))
+    
+    def _start_cleanup_task(self):
+        """Inicia la tarea de limpieza automática"""
+        if self._cleanup_task is None or self._cleanup_task.done():
+            self._cleanup_task = asyncio.create_task(self._cleanup_dead_connections())
+    
+    async def _cleanup_dead_connections(self):
+        """Tarea en segundo plano para limpiar conexiones muertas"""
+        while True:
+            try:
+                await asyncio.sleep(30)  # Verificar cada 30 segundos
+                await self._check_and_cleanup_connections()
+            except Exception as e:
+                logger.error(f"Error en limpieza de conexiones: {e}")
+                await asyncio.sleep(5)
+    
+    async def _check_and_cleanup_connections(self):
+        """Verifica y limpia conexiones muertas"""
+        disconnected_clients = []
+        
+        for websocket in list(self.active_connections):
+            try:
+                if not await self._is_connection_alive(websocket):
+                    logger.warning(f"Conexión muerta detectada, limpiando...")
+                    disconnected_clients.append(websocket)
+            except Exception:
+                disconnected_clients.append(websocket)
+        
+        # Limpiar conexiones muertas
+        for websocket in disconnected_clients:
+            self.disconnect(websocket)
+        
+        if disconnected_clients:
+            logger.info(f"Limpiadas {len(disconnected_clients)} conexiones muertas")
+    
+    async def shutdown(self):
+        """Limpieza al cerrar el servidor"""
+        if self._cleanup_task:
+            self._cleanup_task.cancel()
+        
+        # Cerrar todas las conexiones activas
+        for websocket in list(self.active_connections):
+            try:
+                await websocket.close()
+            except Exception:
+                pass
+        
+        self.active_connections.clear()
+        self.connection_metadata.clear()
+        self.printer_subscriptions.clear()
 
 # Instancia global del manager
 websocket_manager = WebSocketManager()
