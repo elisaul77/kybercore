@@ -1,0 +1,96 @@
+---
+title: Arquitectura General de KyberCore
+---
+flowchart TD
+    subgraph "Usuario y Entorno"
+        direction LR
+        Usuario([<fa:fa-user> Usuario])
+        Impresoras3D[<fa:fa-print> Impresoras 3D]
+    end
+
+    subgraph "Entorno de Despliegue (Docker)"
+        direction TB
+        
+        subgraph "Contenedor KyberCore"
+            direction TB
+
+            subgraph "Frontend (SPA - Single Page Application)"
+                style Frontend fill:#dae8fc,stroke:#6c8ebf
+                WebUI["<fa:fa-window-maximize> Interfaz Web<br>src/web/static<br>src/web/templates"]
+            end
+
+            subgraph "Backend (Python - FastAPI)"
+                style Backend fill:#d5e8d4,stroke:#82b366
+                API["<fa:fa-server> API Gateway<br>src/api/main.py"]
+
+                subgraph "Capa de Controladores"
+                    style Controladores fill:#e1d5e7,stroke:#9673a6
+                    FleetController["<fa:fa-gamepad> Fleet<br>fleet_controller.py"]
+                    JobsController["<fa:fa-tasks> Jobs<br>jobs_controller.py"]
+                    AIController["<fa:fa-brain> IA<br>recommender_controller.py<br>analysis_controller.py"]
+                end
+
+                subgraph "Capa de Servicios (Lógica de Negocio)"
+                    style Servicios fill:#f8cecc,stroke:#b85450
+                    FleetService["<fa:fa-cogs> Fleet<br>fleet_service.py"]
+                    JobsService["<fa:fa-industry> Jobs<br>jobs_service.py"]
+                    
+                    subgraph "Servicios de Inteligencia Artificial"
+                        style IA fill:#fff2cc,stroke:#d6b656
+                        RecommenderService["<fa:fa-magic> Recommender<br>recommender_service.py"]
+                        AnalysisService["<fa:fa-chart-bar> Analysis<br>analysis_service.py"]
+                        ValidationService["<fa:fa-check-circle> Validator (IA)<br>(Conceptual)"]
+                    end
+                end
+
+                subgraph "Capa de Datos y Modelos"
+                    style Datos fill:#b4e1d3,stroke:#548a77
+                    Models["<fa:fa-database> Modelos Pydantic<br>src/models"]
+                    PrintersJSON["<fa:fa-file-code> printers.json"]
+                    KlippyLog["<fa:fa-file-alt> klippy.log"]
+                end
+            end
+        end
+    end
+
+    subgraph "Integraciones Externas"
+        MoonrakerAPI[<fa:fa-network-wired> Moonraker API]
+    end
+
+    %% --- Conexiones del Flujo ---
+    
+    %% Usuario -> Frontend -> Backend
+    Usuario --> WebUI
+    WebUI --> API
+
+    %% API -> Controladores
+    API --> FleetController
+    API --> JobsController
+    API --> AIController
+
+    %% Controladores -> Servicios
+    FleetController --> FleetService
+    JobsController --> JobsService
+    AIController --> RecommenderService
+    AIController --> AnalysisService
+    FleetController --> ValidationService
+
+    %% Servicios -> Lógica Interna y Datos
+    FleetService --> Models
+    FleetService --> PrintersJSON
+    JobsService --> Models
+    JobsService --> FleetService
+    
+    %% Servicios IA
+    RecommenderService --> FleetService
+    RecommenderService --> JobsService
+    AnalysisService --> KlippyLog
+    ValidationService --> FleetService
+
+    %% Conexión con el mundo físico
+    FleetService --> MoonrakerAPI
+    MoonrakerAPI <--> Impresoras3D
+    Impresoras3D -- Genera logs --> KlippyLog
+
+    %% --- Estilos (ya definidos en los subgráficos) ---
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
