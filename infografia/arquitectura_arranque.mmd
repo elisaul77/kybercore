@@ -1,0 +1,41 @@
+---
+title: Flujo de Arranque de KyberCore
+---
+flowchart TD
+    subgraph "Fase 1: Inicio del Servidor"
+        direction TB
+        A["Ejecución de docker-compose up / run.sh"] --> B{"Inicia Servidor Uvicorn"}
+        B --> C["Uvicorn carga 'src.api.main:app'"]
+    end
+
+    subgraph "Fase 2: Inicialización de la Aplicación FastAPI"
+        direction TB
+        C --> D["src/api/main.py\n1. app = FastAPI()\n2. app.include_router(...)"]
+        D --> E{"Se registran los Controladores"}
+    end
+
+    subgraph "Fase 3: Carga de Servicios y Datos (Inyección de Dependencias)"
+        direction TB
+        E -- "Importa" --> F["src/controllers/*.py\nImporta los servicios necesarios"]
+        F -- "Importa" --> G["src/services/*.py\nSe ejecuta el código del módulo"]
+        G --> H["Creación de Instancia Única (Singleton)\nej: fleet_service = FleetService()"]
+        H --> I{"Se ejecuta __init__() del Servicio"}
+        I --> J["Lee estado inicial desde printers.json"]
+        J --> K["Datos cargados en la memoria de la instancia del servicio"]
+    end
+
+    subgraph "Fase 4: Aplicación Lista"
+        direction TB
+        K --> L{"Todos los módulos cargados"}
+        L --> M["KyberCore listo y escuchando en el puerto 8000"]
+    end
+
+    classDef start fill:#d5e8d4,stroke:#82b366;
+    classDef app_init fill:#dae8fc,stroke:#6c8ebf;
+    classDef services fill:#fff2cc,stroke:#d6b656;
+    classDef ready fill:#f8cecc,stroke:#b85450;
+
+    class A,B,C start;
+    class D,E app_init;
+    class F,G,H,I,J,K services;
+    class L,M ready;
