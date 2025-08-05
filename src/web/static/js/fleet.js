@@ -32,12 +32,13 @@ window.initFleetModule = function() {
     if (form) {
         form.addEventListener('submit', async e => {
             e.preventDefault();
+            const capabilitiesValue = document.getElementById('printer-capabilities').value;
             const data = {
                 name: document.getElementById('printer-name').value,
                 model: document.getElementById('printer-model').value,
                 ip: document.getElementById('printer-ip').value,
                 status: 'offline',
-                capabilities: document.getElementById('printer-capabilities').value,
+                capabilities: capabilitiesValue.split(',').map(item => item.trim()).filter(item => item),
                 location: document.getElementById('printer-location').value
             };
             try {

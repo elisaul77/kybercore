@@ -10,5 +10,16 @@
             "PETG"
         ],
         "location": "Taller"
+    },
+    "1d807520-e5e2-4fc9-a6b9-4b30667e5308": {
+        "id": "1d807520-e5e2-4fc9-a6b9-4b30667e5308",
+        "name": "nueva",
+        "model": "hola",
+        "ip": "qw",
+        "status": "offline",
+        "capabilities": [
+            "qw"
+        ],
+        "location": "qw"
     }
 }
