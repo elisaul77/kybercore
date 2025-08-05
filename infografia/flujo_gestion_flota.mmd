@@ -10,13 +10,15 @@ flowchart TD
         appjs -->|InicializaJS| fleetjs[fleet.js]
         fleetjs -->|PideDatos| fleet_controller_data["GET /data"]
         
-        subgraph "Proceso Backend (Carga)"
-            direction TB
-            fleet_controller_data -->|LlamaServicio| fleet_service["fleet_service.py"]
-            fleet_service -->|LeeDatos| printersjson["printers.json"]
-            printersjson -->|RetornaDatos| fleet_service
-            fleet_service -->|RetornaDatos| fleet_controller_data
-        end
+    subgraph "Proceso Backend (Carga)"
+        direction TB
+        fleet_controller_data -->|LlamaServicio| fleet_service["fleet_service.py"]
+        fleet_service -->|LeeDatos| printersjson["printers.json"]
+        fleet_service -->|ConsultaEstado| moonraker_api["Moonraker API (HTTP)"]
+        printersjson -->|RetornaDatos| fleet_service
+        moonraker_api -->|RetornaEstado| fleet_service
+        fleet_service -->|RetornaDatos| fleet_controller_data
+    end
 
         fleet_controller_data -->|DevuelveJSON| fleetjs
         fleetjs -->|DibujaUI| fleethtml
@@ -31,7 +33,9 @@ flowchart TD
             ia_validator -- OK --> fleet_service_crud["fleet_service.py"]
             ia_validator -- Error --- fleet_controller_crud
             fleet_service_crud -->|EjecutaCRUD| printersjson_crud["printers.json"]
+            fleet_service_crud -->|ComandoHW| moonraker_api_crud["Moonraker API (HTTP)"]
             printersjson_crud -->|Confirma| fleet_service_crud
+            moonraker_api_crud -->|ConfirmaHW| fleet_service_crud
             fleet_service_crud -->|RetornaResultado| fleet_controller_crud
         end
         
@@ -42,6 +46,8 @@ flowchart TD
     subgraph "Flujo Asíncrono: Actualizaciones en Tiempo Real"
         direction TB
         fleetjs_ws[fleet.js] -.->|AbreConexionWS| backend_ws[Backend WS]
+        backend_ws -.->|SuscribeWS| moonraker_ws["Moonraker WS"]
+        moonraker_ws <-->|EventosHW| backend_ws
         backend_ws <-->|ComunicacionBidireccional| fleetjs_ws
         backend_ws -->|NotificaCambios| fleetjs_ws
         fleetjs_ws -->|ActualizaUI| fleethtml
@@ -51,8 +57,10 @@ flowchart TD
     classDef backend fill:#d5e8d4,stroke:#82b366;
     classDef db fill:#f8cecc,stroke:#b85450;
     classDef user fill:#fff2cc,stroke:#d6b656;
+    classDef moonraker fill:#fff,stroke:#ff9800,stroke-width:2px;
 
     class appjs,fleetjs,fleethtml,fleetjs_ws frontend;
     class fleet_controller_html,fleet_controller_data,fleet_controller_crud,fleet_service,fleet_service_crud,ia_validator,backend_ws backend;
     class printersjson,printersjson_crud db;
     class Usuario user;
+    class moonraker_api,moonraker_api_crud,moonraker_ws moonraker;
