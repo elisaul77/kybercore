@@ -1,54 +1,58 @@
 ---
-title: Flujo Gestión de Flota KyberCore
+title: Flujo Gestión de Flota KyberCore - Mejorado
 ---
 flowchart TD
-    Usuario([Usuario Navegador]) -->|1 Clic Gestion de Flota| appjs[app.js]
-    appjs -->|2 navigateTo fleet| appjs
-    appjs -->|3 Pide HTML modulo| fleet_controller[fleet_controller.py]
-    fleet_controller -->|4 Devuelve fleet.html| fleethtml[fleet.html inyectado en DOM]
-    appjs -->|5 Llama initFleetModule| fleetjs[fleet.js]
-    fleetjs -->|6 GET printers| fleet_controller
-    fleet_controller -->|7 Llama servicio| fleet_service[fleet_service.py]
-    fleet_service -->|8 Lee printers.json| printersjson[printers.json]
-    printersjson -->|9 Devuelve lista| fleet_service
-    fleet_service -->|10 Devuelve lista| fleet_controller
-    fleet_controller -->|11 Devuelve JSON| fleetjs
-    fleetjs -->|12 Dibuja tabla| fleethtml
-    Usuario -->|13 Rellena formulario y clic Agregar| fleethtml
-    fleethtml -->|14 Captura evento y POST printers| fleetjs
-    fleetjs -->|15 Envia datos nueva impresora| fleet_controller
-    fleet_controller -->|16 Valida datos| validador[Validador/IA]
-    validador -- Error --> fleet_controller
-    validador -- OK --> fleet_service
-    fleet_controller -->|17 Error validación| fleetjs
-    fleet_service -->|18 Crea/actualiza/elimina impresora| printersjson
-    fleet_service -->|19 Devuelve éxito o error| fleet_controller
-    fleet_controller -->|20 Devuelve JSON resultado| fleetjs
-    fleetjs -->|21 Alerta éxito/error y refresca tabla| Usuario
+    subgraph "Flujo Principal: Carga y CRUD"
+        direction LR
+        Usuario([Usuario Navegador]) -->|1. Clic| appjs[app.js]
+        appjs -->|2. Carga Módulo| fleet_controller_html["GET /fleet"]
+        fleet_controller_html -->|3. Renderiza HTML| fleethtml[fleet.html]
+        appjs -->|4. Inicializa JS| fleetjs[fleet.js]
+        fleetjs -->|5. Pide Datos| fleet_controller_data["GET /data"]
+        
+        subgraph "Proceso Backend (Carga)"
+            direction TB
+            fleet_controller_data -->|6. Llama Servicio| fleet_service[fleet_service.py]
+            fleet_service -->|7. Lee Datos| printersjson[printers.json]
+            printersjson -->|8. Retorna Datos| fleet_service
+            fleet_service -->|9. Retorna Datos| fleet_controller_data
+        end
 
-    %% CRUD extra
-    fleetjs -->|GET printer por ID| fleet_controller
-    fleet_controller -->|Busca impresora| fleet_service
-    fleet_service -->|Devuelve impresora o error| fleet_controller
-    fleet_controller -->|Devuelve JSON| fleetjs
+        fleet_controller_data -->|10. Devuelve JSON| fleetjs
+        fleetjs -->|11. Dibuja UI| fleethtml
 
-    fleetjs -->|PUT/DELETE printer| fleet_controller
-    fleet_controller -->|Valida y llama servicio| validador
-    validador -- Error --> fleet_controller
-    validador -- OK --> fleet_service
-    fleet_service -->|Actualiza/elimina| printersjson
-    fleet_service -->|Devuelve éxito o error| fleet_controller
-    fleet_controller -->|Devuelve JSON resultado| fleetjs
-    fleetjs -->|Alerta éxito/error y refresca tabla| Usuario
-
-    subgraph Frontend
-        appjs
-        fleetjs
-        fleethtml
+        Usuario -->|12. Acción CRUD| fleethtml
+        fleethtml -->|13. Llama JS| fleetjs
+        fleetjs -->|14. Petición API| fleet_controller_crud["POST/PUT/DELETE /printers"]
+        
+        subgraph "Proceso Backend (CRUD)"
+            direction TB
+            fleet_controller_crud -->|15. Valida| ia_validator[Servicio Validación/IA]
+            ia_validator -- OK --> fleet_service_crud[fleet_service.py]
+            ia_validator -- Error --- fleet_controller_crud
+            fleet_service_crud -->|16. Ejecuta CRUD| printersjson_crud[printers.json]
+            printersjson_crud -->|17. Confirma| fleet_service_crud
+            fleet_service_crud -->|18. Retorna Resultado| fleet_controller_crud
+        end
+        
+        fleet_controller_crud -->|19. Devuelve JSON| fleetjs
+        fleetjs -->|20. Feedback y Refresca UI| Usuario
     end
-    subgraph Backend
-        fleet_controller
-        fleet_service
-        printersjson
-        validador
+
+    subgraph "Flujo Asíncrono: Actualizaciones en Tiempo Real"
+        direction TB
+        fleetjs_ws[fleet.js] -.->|Abre Conexión WebSocket| backend_ws[Backend WS]
+        backend_ws <-->|Comunicación Bidireccional| fleetjs_ws
+        backend_ws -->|Notifica Cambios| fleetjs_ws
+        fleetjs_ws -->|Actualiza UI| fleethtml
     end
+
+    classDef frontend fill:#dae8fc,stroke:#6c8ebf;
+    classDef backend fill:#d5e8d4,stroke:#82b366;
+    classDef db fill:#f8cecc,stroke:#b85450;
+    classDef user fill:#fff2cc,stroke:#d6b656;
+
+    class appjs,fleetjs,fleethtml,fleetjs_ws frontend;
+    class fleet_controller_html,fleet_controller_data,fleet_controller_crud,fleet_service,fleet_service_crud,ia_validator,backend_ws backend;
+    class printersjson,printersjson_crud db;
+    class Usuario user;
