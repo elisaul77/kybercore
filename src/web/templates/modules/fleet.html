@@ -1,6 +1,81 @@
 <section id="fleet">
     <h2 class="text-3xl font-bold mb-6">Gestión de Flota</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="fleet-printers">
-        <!-- Fleet printers will be injected by JS -->
+    <div class="mb-8">
+        <form id="add-printer-form" class="flex flex-wrap gap-4 items-end bg-white p-4 rounded-lg shadow">
+            <input type="text" id="printer-name" placeholder="Nombre" class="border p-2 rounded w-32" required>
+            <input type="text" id="printer-model" placeholder="Modelo" class="border p-2 rounded w-32" required>
+            <input type="text" id="printer-ip" placeholder="IP" class="border p-2 rounded w-32" required>
+            <input type="text" id="printer-capabilities" placeholder="Capacidades" class="border p-2 rounded w-32">
+            <input type="text" id="printer-location" placeholder="Ubicación" class="border p-2 rounded w-32">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Agregar</button>
+        </form>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white rounded-lg shadow">
+            <thead>
+                <tr>
+                    <th class="px-4 py-2">Nombre</th>
+                    <th class="px-4 py-2">Modelo</th>
+                    <th class="px-4 py-2">IP</th>
+                    <th class="px-4 py-2">Estado</th>
+                    <th class="px-4 py-2">Capacidades</th>
+                    <th class="px-4 py-2">Ubicación</th>
+                    <th class="px-4 py-2">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="fleet-printers">
+                <!-- Impresoras serán inyectadas por JS -->
+            </tbody>
+        </table>
     </div>
 </section>
+<script>
+async function fetchPrinters() {
+    const res = await fetch('/api/fleet/printers');
+    const printers = await res.json();
+    const tbody = document.getElementById('fleet-printers');
+    tbody.innerHTML = '';
+    printers.forEach(printer => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="px-4 py-2">${printer.name}</td>
+            <td class="px-4 py-2">${printer.model}</td>
+            <td class="px-4 py-2">${printer.ip}</td>
+            <td class="px-4 py-2">${printer.status}</td>
+            <td class="px-4 py-2">${printer.capabilities || ''}</td>
+            <td class="px-4 py-2">${printer.location || ''}</td>
+            <td class="px-4 py-2">
+                <button onclick="deletePrinter('${printer.id}')" class="text-red-600 hover:underline">Eliminar</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+async function deletePrinter(id) {
+    await fetch(`/api/fleet/printers/${id}`, { method: 'DELETE' });
+    fetchPrinters();
+}
+
+document.getElementById('add-printer-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const data = {
+        name: document.getElementById('printer-name').value,
+        model: document.getElementById('printer-model').value,
+        ip: document.getElementById('printer-ip').value,
+        status: 'offline',
+        capabilities: document.getElementById('printer-capabilities').value,
+        location: document.getElementById('printer-location').value
+    };
+    await fetch('/api/fleet/printers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    e.target.reset();
+    fetchPrinters();
+});
+
+// Inicializar lista al cargar el módulo
+fetchPrinters();
+</script>

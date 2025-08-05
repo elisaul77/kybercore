@@ -1,32 +1,44 @@
-from src.models.models import AppData, Printer, Filament, PrintJob, FleetPrinter
+import uuid
+from src.models.printer import Printer
+from src.schemas.printer import PrinterCreate
 
 class FleetService:
     def __init__(self):
-        self._app_data = AppData(
-            printers=[
-                Printer(id='ender3', name='Creality Ender 3 V2', capabilities=['PLA', 'PETG']),
-                Printer(id='prusamk4', name='Prusa MK4', capabilities=['PLA', 'PETG', 'ABS']),
-                Printer(id='bambulab', name='Bambu Lab P1S', capabilities=['PLA', 'PETG', 'ABS', 'PAHT-CF']),
-                Printer(id='voron24', name='Voron 2.4', capabilities=['PLA', 'PETG', 'ABS', 'PAHT-CF'])
-            ],
-            filaments=[
-                Filament(id='esunpla', name='eSUN PLA+', type='PLA'),
-                Filament(id='polypetg', name='Polymaker PolyLite PETG', type='PETG'),
-                Filament(id='sunluabs', name='SUNLU ABS', type='ABS'),
-                Filament(id='bambu_cf', name='Bambu Lab PAHT-CF', type='PAHT-CF')
-            ],
-            print_queue=[
-                PrintJob(name='Caja_Bateria.gcode', eta='1h 15m'),
-                PrintJob(name='Soporte_Tablet.gcode', eta='3h 45m'),
-                PrintJob(name='Figura_Accion.gcode', eta='8h 20m')
-            ],
-            fleet=[
-                FleetPrinter(id=1, name='Ender 3 (Taller)', status='Imprimiendo', job='Pieza_Motor_v4', progress=85, color='green'),
-                FleetPrinter(id=2, name='Prusa MK4 (Oficina)', status='Inactiva', job='N/A', progress=0, color='gray'),
-                FleetPrinter(id=3, name='Bambu Lab P1S', status='Requiere Mantenimiento', job='N/A', progress=0, color='yellow'),
-                FleetPrinter(id=4, name='Voron 2.4', status='Inactiva', job='N/A', progress=0, color='gray')
-            ]
-        )
+        self.printers = {}
 
-    def get_app_data(self) -> AppData:
-        return self._app_data
+    def list_printers(self):
+        return list(self.printers.values())
+
+    def get_printer(self, printer_id):
+        return self.printers.get(printer_id)
+
+    def add_printer(self, printer_data: PrinterCreate):
+        printer_id = str(uuid.uuid4())
+        printer = Printer(
+            id=printer_id,
+            name=printer_data.name,
+            model=printer_data.model,
+            ip=printer_data.ip,
+            status=printer_data.status,
+            capabilities=printer_data.capabilities,
+            location=printer_data.location
+        )
+        self.printers[printer_id] = printer
+        return printer
+
+    def update_printer(self, printer_id, printer_data: PrinterCreate):
+        if printer_id in self.printers:
+            printer = self.printers[printer_id]
+            printer.name = printer_data.name
+            printer.model = printer_data.model
+            printer.ip = printer_data.ip
+            printer.status = printer_data.status
+            printer.capabilities = printer_data.capabilities
+            printer.location = printer_data.location
+            return printer
+        return None
+
+    def delete_printer(self, printer_id):
+        return self.printers.pop(printer_id, None)
+
+fleet_service = FleetService()
