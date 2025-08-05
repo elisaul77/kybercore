@@ -7,7 +7,7 @@ from src.services.fleet_service import FleetService
 router = APIRouter()
 recommender_service = RecommenderService()
 fleet_service = FleetService() # Usamos este servicio para obtener los datos de las impresoras y filamentos
-templates = Jinja2Templates(directory="src/templates")
+templates = Jinja2Templates(directory="src/web/templates")
 
 @router.get("/get_profile")
 def get_ai_profile(printer_id: str, filament_id: str):

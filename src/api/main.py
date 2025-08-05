@@ -25,10 +25,10 @@ app.add_middleware(
 )
 
 # Montar el directorio de archivos estáticos
-app.mount("/static", StaticFiles(directory="src/static"), name="static")
+app.mount("/static", StaticFiles(directory="src/web/static"), name="static")
 
 # Configurar Jinja2Templates
-templates = Jinja2Templates(directory="src/templates")
+templates = Jinja2Templates(directory="src/web/templates")
 
 # Incluir los routers de los controladores
 app.include_router(fleet_controller.router, prefix="/api/fleet", tags=["Fleet"])

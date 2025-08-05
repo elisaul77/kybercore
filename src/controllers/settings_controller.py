@@ -3,7 +3,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 
 router = APIRouter()
-templates = Jinja2Templates(directory="src/templates")
+templates = Jinja2Templates(directory="src/web/templates")
 
 @router.get("/settings", response_class=HTMLResponse)
 def settings_view(request: Request):

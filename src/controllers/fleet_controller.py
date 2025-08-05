@@ -7,7 +7,7 @@ from src.models.models import AppData
 
 router = APIRouter()
 fleet_service = FleetService()
-templates = Jinja2Templates(directory="src/templates")
+templates = Jinja2Templates(directory="src/web/templates")
 
 @router.get("/data", response_model=AppData)
 def get_app_data():
