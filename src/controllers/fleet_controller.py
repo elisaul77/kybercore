@@ -3,7 +3,8 @@ from fastapi import APIRouter, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from src.services.fleet_service import FleetService
-from src.schemas.printer import Printer, PrinterCreate
+from src.models.printer import Printer
+from src.schemas.printer import PrinterCreate
 
 from src.services.fleet_service import fleet_service
 router = APIRouter()
@@ -39,7 +40,14 @@ def get_fleet_data():
 # REST API: CRUD impresoras
 @router.get("/printers", response_model=list[Printer])
 def list_printers():
-    return fleet_service.list_printers()
+    printers = fleet_service.list_printers()
+    result = []
+    for p in printers:
+        d = p.model_dump()
+        if 'realtime_data' not in d or d['realtime_data'] is None:
+            d['realtime_data'] = {}
+        result.append(d)
+    return result
 
 @router.get("/printers/{printer_id}", response_model=Printer)
 def get_printer(printer_id: str):

@@ -9,4 +9,4 @@ class Printer(BaseModel):
     status: str = "offline"
     capabilities: Optional[List[str]] = None
     location: Optional[str] = None
-    realtime_data: Optional[dict] = None
+    realtime_data: dict = {}

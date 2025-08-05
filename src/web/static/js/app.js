@@ -28,6 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- NAVIGATION ---
     async function navigateTo(moduleId) {
+        // Detener actualizaciones automáticas de otros módulos
+        if (typeof stopFleetUpdates === 'function') {
+            stopFleetUpdates();
+        }
+        
         // Update active link
         sidebarLinks.forEach(link => {
             link.classList.toggle('active', link.getAttribute('data-module') === moduleId);

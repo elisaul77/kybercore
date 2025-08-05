@@ -64,6 +64,15 @@ class FleetService:
                 logger.warning(f"No se pudo conectar a la impresora {printer.name} en {ip}:{port}")
                 printer.status = "unreachable"
                 printer.realtime_data = None
+        # Asegurarse de que realtime_data siempre esté presente
+        for i, printer in enumerate(printers_list):
+            if not hasattr(printer, 'realtime_data') or printer.realtime_data is None:
+                printers_list[i] = Printer(**printer.model_dump(), realtime_data={})
+
+        # Log para inspeccionar los datos de las impresoras
+        for printer in printers_list:
+            logger.debug(f"Datos de la impresora {printer.name}: {printer.model_dump()}")
+            
         return printers_list
 
     def _parse_ip_port(self, ip_field):
