@@ -321,32 +321,11 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // --- MOCK DATA ---
-    const mockData = {
-        printers: [
-            { id: 'ender3', name: 'Creality Ender 3 V2', capabilities: ['PLA', 'PETG'] },
-            { id: 'prusamk4', name: 'Prusa MK4', capabilities: ['PLA', 'PETG', 'ABS'] },
-            { id: 'bambulab', name: 'Bambu Lab P1S', capabilities: ['PLA', 'PETG', 'ABS', 'PAHT-CF'] },
-            { id: 'voron24', name: 'Voron 2.4', capabilities: ['PLA', 'PETG', 'ABS', 'PAHT-CF'] }
-        ],
-        filaments: [
-            { id: 'esunpla', name: 'eSUN PLA+', type: 'PLA'},
-            { id: 'polypetg', name: 'Polymaker PolyLite PETG', type: 'PETG'},
-            { id: 'sunluabs', name: 'SUNLU ABS', type: 'ABS'},
-            { id: 'bambu_cf', name: 'Bambu Lab PAHT-CF', type: 'PAHT-CF'}
-        ],
-        printQueue: [
-            { name: 'Caja_Bateria.gcode', eta: '1h 15m' },
-            { name: 'Soporte_Tablet.gcode', eta: '3h 45m' },
-            { name: 'Figura_Accion.gcode', eta: '8h 20m' }
-        ],
-        fleet: [
-            { id: 1, name: 'Ender 3 (Taller)', status: 'Imprimiendo', job: 'Pieza_Motor_v4', progress: 85, color: 'green' },
-            { id: 2, name: 'Prusa MK4 (Oficina)', status: 'Inactiva', job: 'N/A', progress: 0, color: 'gray' },
-            { id: 3, name: 'Bambu Lab P1S', status: 'Requiere Mantenimiento', job: 'N/A', progress: 0, color: 'yellow' },
-            { id: 4, name: 'Voron 2.4', status: 'Inactiva', job: 'N/A', progress: 0, color: 'gray' }
-        ]
-    };
+    // --- GLOBAL STATE ---
+    let appData = {};
+
+    // --- API URL ---
+    const API_URL = 'http://127.0.0.1:8000';
 
     // --- DOM ELEMENTS ---
     const sidebarLinks = document.querySelectorAll('.sidebar-link');
@@ -544,7 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p>Enviando G-code a la impresora y añadiendo a la cola de impresión...</p>
                 </div>
             `;
-            mockData.printQueue.unshift({ name: 'Pieza_Optimizada_IA.gcode', eta: '2h 30m' });
+            appData.print_queue.unshift({ name: 'Pieza_Optimizada_IA.gcode', eta: '2h 30m' });
             updatePrintQueue();
         }, 2500);
     }
@@ -564,14 +543,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p>Enviando G-code a la impresora y añadiendo a la cola de impresión...</p>
                 </div>
             `;
-            mockData.printQueue.unshift({ name: 'Pieza_Optimizada_Local.gcode', eta: '2h 35m' });
+            appData.print_queue.unshift({ name: 'Pieza_Optimizada_Local.gcode', eta: '2h 35m' });
             updatePrintQueue();
         }, 8000); // Simulate user taking time to slice
     }
 
 
     // --- RECOMMENDER LOGIC ---
-    function getAIProfile() {
+    async function getAIProfile() {
         recommenderForm.classList.add('hidden');
         recommenderResult.classList.remove('hidden');
         recommenderResult.innerHTML = `
@@ -582,7 +561,16 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        setTimeout(() => {
+        const printerId = printerSelect.value;
+        const filamentId = filamentSelect.value;
+
+        try {
+            const response = await fetch(`${API_URL}/api/recommender/get_profile?printer_id=${printerId}&filament_id=${filamentId}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const profile = await response.json();
+
             const printerName = printerSelect.options[printerSelect.selectedIndex].text;
             const filamentName = filamentSelect.options[filamentSelect.selectedIndex].text;
             recommenderResult.innerHTML = `
@@ -590,23 +578,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p class="text-center text-gray-500 mb-4">Para ${printerName} con ${filamentName}</p>
                 <div class="bg-gray-100 p-4 rounded-lg">
                     <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                        <p>Altura de Capa: <span class="font-bold">0.2mm</span></p>
-                        <p>Temperatura Boquilla: <span class="font-bold">215°C</span></p>
-                        <p>Temperatura Cama: <span class="font-bold">60°C</span></p>
-                        <p>Velocidad de Impresión: <span class="font-bold">80 mm/s</span></p>
-                        <p>Velocidad de Retracción: <span class="font-bold">45 mm/s</span></p>
-                        <p>Distancia de Retracción: <span class="font-bold">5 mm</span></p>
-                        <p>Ventilador: <span class="font-bold">100%</span></p>
-                        <p>Avance de Presión: <span class="font-bold">0.045</span></p>
+                        <p>Altura de Capa: <span class="font-bold">${profile.layer_height}</span></p>
+                        <p>Temperatura Boquilla: <span class="font-bold">${profile.nozzle_temp}</span></p>
+                        <p>Temperatura Cama: <span class="font-bold">${profile.bed_temp}</span></p>
+                        <p>Velocidad de Impresión: <span class="font-bold">${profile.print_speed}</span></p>
+                        <p>Velocidad de Retracción: <span class="font-bold">${profile.retraction_speed}</span></p>
+                        <p>Distancia de Retracción: <span class="font-bold">${profile.retraction_distance}</span></p>
+                        <p>Ventilador: <span class="font-bold">${profile.fan_speed}</span></p>
+                        <p>Avance de Presión: <span class="font-bold">${profile.pressure_advance}</span></p>
                     </div>
                 </div>
                 <div class="mt-4 text-center bg-green-100 text-green-800 p-3 rounded-lg">
-                    <p class="font-bold">Tasa de Éxito Predicha: 96%</p>
-                    <p class="text-xs">Basado en 1,284 impresiones similares de la comunidad.</p>
+                    <p class="font-bold">Tasa de Éxito Predicha: ${profile.success_rate}</p>
+                    <p class="text-xs">${profile.reason}</p>
                 </div>
                 <button class="mt-6 w-full bg-gray-700 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-800" onclick="document.getElementById('recommender-form').classList.remove('hidden'); document.getElementById('recommender-result').classList.add('hidden');">Empezar de Nuevo</button>
             `;
-        }, 2500);
+        } catch (error) {
+            console.error("Failed to fetch AI profile:", error);
+            recommenderResult.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert"><strong class="font-bold">Error!</strong><span class="block sm:inline"> No se pudo obtener el perfil de la IA.</span></div>`;
+        }
     }
 
     // --- ANALYSIS LOGIC ---
