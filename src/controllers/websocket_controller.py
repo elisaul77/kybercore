@@ -145,6 +145,42 @@ async def handle_client_message(websocket: WebSocket, message: dict):
                 'type': 'pong'
             }, websocket)
         
+        elif message_type == 'get_initial_data':
+            # Enviar datos iniciales de la flota
+            from src.services.fleet_service import fleet_service
+            
+            try:
+                printers = await asyncio.wait_for(
+                    fleet_service.list_printers(),
+                    timeout=8.0
+                )
+                
+                # Convertir printers a diccionarios para JSON
+                printers_data = []
+                for printer in printers:
+                    printer_dict = {
+                        'id': printer.id,
+                        'name': printer.name,
+                        'model': printer.model,
+                        'ip': printer.ip,
+                        'status': printer.status,
+                        'capabilities': printer.capabilities,
+                        'location': printer.location,
+                        'realtime_data': printer.realtime_data
+                    }
+                    printers_data.append(printer_dict)
+                
+                await websocket_manager.send_personal_message({
+                    'type': 'initial_data',
+                    'printers': printers_data
+                }, websocket)
+                
+            except asyncio.TimeoutError:
+                await websocket_manager.send_personal_message({
+                    'type': 'error',
+                    'message': 'Timeout obteniendo datos iniciales'
+                }, websocket)
+        
         elif message_type == 'get_status':
             # Enviar estado del monitoreo
             status = realtime_monitor.get_monitoring_status()

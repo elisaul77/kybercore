@@ -177,79 +177,102 @@ window.initFleetModule = function() {
         }
     }
     
-    // Variables para actualizaciones automáticas
-    let updateInterval = null;
+    // Variables para actualizaciones optimizadas
     let websocket = null;
-    let isAutoUpdating = false;
+    let isWebSocketConnected = false;
+    let reconnectAttempts = 0;
+    let maxReconnectAttempts = 5;
+    let emergencyPollingInterval = null;
+    let heartbeatInterval = null;
+    let isSystemActive = false;
     
-    // Función para iniciar actualizaciones automáticas (simplificada)
-    function startAutoUpdates() {
-        if (isAutoUpdating) return;
+    // Sistema de comunicación optimizado - WebSocket principal
+    function startOptimizedCommunication() {
+        if (isSystemActive) return;
         
-        console.log('🔄 Iniciando actualizaciones automáticas cada 5 segundos');
-        isAutoUpdating = true;
+        console.log('� Iniciando sistema de comunicación optimizado (WebSocket principal)');
+        isSystemActive = true;
         
-        // Actualizar inmediatamente
-        loadRealData();
+        // Intentar WebSocket inmediatamente
+        connectWebSocketOptimized();
         
-        // Configurar intervalo de actualización cada 5 segundos
-        updateInterval = setInterval(() => {
-            console.log('🔄 Actualizando datos automáticamente...');
-            loadRealData();
+        // Solo polling de emergencia si WebSocket falla completamente
+        setTimeout(() => {
+            if (!isWebSocketConnected) {
+                console.log('⚠️ WebSocket no disponible, activando polling de emergencia');
+                startEmergencyPolling();
+            }
         }, 5000);
     }
     
-    // Función para detener actualizaciones automáticas (simplificada)
-    function stopAutoUpdates() {
-        if (!isAutoUpdating) return;
+    // Función para detener todo el sistema de comunicación
+    function stopOptimizedCommunication() {
+        if (!isSystemActive) return;
         
-        console.log('🛑 Deteniendo actualizaciones automáticas');
-        isAutoUpdating = false;
-        
-        if (updateInterval) {
-            clearInterval(updateInterval);
-            updateInterval = null;
-        }
+        console.log('🛑 Deteniendo sistema de comunicación');
+        isSystemActive = false;
+        isWebSocketConnected = false;
         
         if (websocket && websocket.readyState === WebSocket.OPEN) {
             websocket.close();
         }
+        
+        if (emergencyPollingInterval) {
+            clearInterval(emergencyPollingInterval);
+            emergencyPollingInterval = null;
+        }
+        
+        if (heartbeatInterval) {
+            clearInterval(heartbeatInterval);
+            heartbeatInterval = null;
+        }
     }
     
-    // Función WebSocket mejorada con manejo de mensajes
-    function connectWebSocket() {
+    // WebSocket optimizado con reconexión inteligente
+    function connectWebSocketOptimized() {
         if (websocket && websocket.readyState === WebSocket.OPEN) {
+            console.log('🔌 WebSocket ya está conectado');
             return;
         }
         
         try {
             const wsUrl = `ws://${window.location.host}/api/ws/fleet`;
-            console.log('🌐 Conectando WebSocket:', wsUrl);
-            updateStatus('Conectando WebSocket...');
+            console.log(`🌐 Conectando WebSocket optimizado (intento ${reconnectAttempts + 1}/${maxReconnectAttempts}):`, wsUrl);
             
             websocket = new WebSocket(wsUrl);
             
             websocket.onopen = () => {
-                console.log('🔗 WebSocket conectado exitosamente');
-                updateStatus('Conectado en tiempo real al servidor', 'realtime');
+                console.log('✅ WebSocket conectado exitosamente');
+                isWebSocketConnected = true;
+                reconnectAttempts = 0;
                 
-                // Suscribirse a todas las actualizaciones de impresoras
-                const subscriptionMessage = {
-                    type: 'subscribe_all'
-                };
+                // Detener polling de emergencia si estaba activo
+                if (emergencyPollingInterval) {
+                    console.log('🛑 Deteniendo polling de emergencia - WebSocket conectado');
+                    clearInterval(emergencyPollingInterval);
+                    emergencyPollingInterval = null;
+                }
+                
+                // Suscribirse a actualizaciones
+                const subscriptionMessage = { type: 'subscribe_all' };
                 websocket.send(JSON.stringify(subscriptionMessage));
-                console.log('📡 Suscripción enviada:', subscriptionMessage);
+                console.log('📡 Suscripción enviada');
+                
+                // Iniciar heartbeat para mantener conexión
+                startHeartbeat();
+                
+                // Cargar datos iniciales vía WebSocket
+                requestInitialData();
             };
             
             websocket.onmessage = (event) => {
                 try {
                     const message = JSON.parse(event.data);
-                    console.log('📨 Mensaje WebSocket recibido:', message);
+                    console.log('📨 Mensaje WebSocket:', message.type);
                     
                     switch (message.type) {
                         case 'connection_established':
                             console.log('🎯 Conexión establecida, ID:', message.client_id);
-                            // No actualizar estado aquí, mantener la última información
                             break;
                             
                         case 'subscription_all_confirmed':
@@ -257,52 +280,153 @@ window.initFleetModule = function() {
                             updateFleetStatus(false, message.printer_count);
                             break;
                             
+                        case 'initial_data':
+                        case 'fleet_data':
+                            if (message.printers) {
+                                console.log(`📊 Datos de flota recibidos: ${message.printers.length} impresoras`);
+                                populateFleetTable(message.printers);
+                                updateFleetStatus(false, message.printers.length);
+                            }
+                            break;
+                            
                         case 'printer_update':
                             console.log('🔄 Actualización de impresora:', message.printer_id);
                             updateSinglePrinter(message.printer_id, message.data);
-                            // No mostrar mensajes de tiempo real que distraen
                             break;
                             
                         case 'pong':
-                            console.log('💓 Pong recibido');
+                            console.log('💓 Heartbeat confirmado');
                             break;
                             
                         case 'error':
                             console.error('❌ Error del servidor:', message.message);
                             updateFleetStatus(true, 0);
                             break;
-                            
-                        default:
-                            console.log('📦 Mensaje no manejado:', message.type);
                     }
                 } catch (error) {
                     console.error('❌ Error procesando mensaje WebSocket:', error);
-                    updateStatus('Error procesando datos en tiempo real', 'error');
                 }
             };
             
             websocket.onclose = (event) => {
-                console.log('❌ WebSocket cerrado:', event.code, event.reason);
-                // No mostrar mensaje de tiempo real desconectado
+                console.log('❌ WebSocket desconectado:', event.code, event.reason);
+                isWebSocketConnected = false;
                 
-                // Si el WebSocket se cierra, continuar con polling
-                if (isAutoUpdating && !updateInterval) {
-                    console.log('🔄 WebSocket cerrado, continuando con polling');
-                    updateInterval = setInterval(() => {
-                        loadRealData();
-                    }, 5000);
+                if (heartbeatInterval) {
+                    clearInterval(heartbeatInterval);
+                    heartbeatInterval = null;
+                }
+                
+                if (isSystemActive && reconnectAttempts < maxReconnectAttempts) {
+                    reconnectAttempts++;
+                    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 10000); // Backoff exponencial
+                    console.log(`🔄 Reintentando conexión en ${delay}ms (intento ${reconnectAttempts}/${maxReconnectAttempts})`);
+                    
+                    setTimeout(() => {
+                        if (isSystemActive) {
+                            connectWebSocketOptimized();
+                        }
+                    }, delay);
+                } else if (isSystemActive) {
+                    console.log('⚠️ Máximo de reintentos alcanzado, activando polling de emergencia');
+                    startEmergencyPolling();
                 }
             };
             
             websocket.onerror = (error) => {
                 console.error('🔥 Error WebSocket:', error);
-                updateFleetStatus(true, 0);
+                isWebSocketConnected = false;
             };
             
         } catch (error) {
             console.error('❌ Error creando WebSocket:', error);
-            // No mostrar mensaje de error, solo usar modo de polling
+            if (isSystemActive && reconnectAttempts < maxReconnectAttempts) {
+                setTimeout(() => startEmergencyPolling(), 2000);
+            }
         }
+    }
+    
+    // Heartbeat para mantener conexión WebSocket activa
+    function startHeartbeat() {
+        if (heartbeatInterval) return;
+        
+        heartbeatInterval = setInterval(() => {
+            if (websocket && websocket.readyState === WebSocket.OPEN) {
+                websocket.send(JSON.stringify({ type: 'ping' }));
+            }
+        }, 30000); // Ping cada 30 segundos
+    }
+    
+    // Solicitar datos iniciales vía WebSocket
+    function requestInitialData() {
+        if (websocket && websocket.readyState === WebSocket.OPEN) {
+            websocket.send(JSON.stringify({ type: 'get_initial_data' }));
+        }
+    }
+    
+    // Polling de emergencia - solo cuando WebSocket falla completamente
+    function startEmergencyPolling() {
+        if (emergencyPollingInterval || isWebSocketConnected) return;
+        
+        console.log('� Activando polling de emergencia (cada 15 segundos)');
+        
+        // Cargar datos inmediatamente
+        loadRealData();
+        
+        // Polling cada 15 segundos (menos frecuente que antes)
+        emergencyPollingInterval = setInterval(() => {
+            if (!isWebSocketConnected && isSystemActive) {
+                console.log('📊 Polling de emergencia...');
+                loadRealData();
+            } else {
+                // Si WebSocket se reconectó, detener polling
+                clearInterval(emergencyPollingInterval);
+                emergencyPollingInterval = null;
+                console.log('✅ WebSocket reconectado, deteniendo polling de emergencia');
+            }
+        }, 15000); // 15 segundos en lugar de 5
+    }
+    
+    // Función mejorada para poblar tabla (reutilizable)
+    function populateFleetTable(printers) {
+        const tbody = document.getElementById('fleet-printers');
+        if (!tbody) return;
+        
+        // Limpiar y poblar tabla
+        tbody.innerHTML = '';
+        
+        printers.forEach(printer => {
+            const row = document.createElement('tr');
+            row.setAttribute('data-printer-id', printer.id);
+            tbody.appendChild(row);
+            
+            const extTemp = printer.realtime_data?.extruder_temp || 'N/A';
+            const extTarget = printer.realtime_data?.extruder_target || 'N/A';
+            const bedTemp = printer.realtime_data?.bed_temp || 'N/A';
+            const bedTarget = printer.realtime_data?.bed_target || 'N/A';
+            
+            row.innerHTML = `
+                <td class="px-4 py-2">${printer.name}</td>
+                <td class="px-4 py-2">${printer.model}</td>
+                <td class="px-4 py-2">${printer.ip}</td>
+                <td class="px-4 py-2">
+                    <span class="status-badge status-${printer.status}">${printer.status}</span>
+                </td>
+                <td class="px-4 py-2">${extTemp}°C / ${extTarget}°C</td>
+                <td class="px-4 py-2">${bedTemp}°C / ${bedTarget}°C</td>
+                <td class="px-4 py-2">${(printer.capabilities || []).join(', ')}</td>
+                <td class="px-4 py-2">${printer.location || ''}</td>
+                <td class="px-4 py-2">
+                    <button onclick="deletePrinter('${printer.id}')" class="text-red-600 hover:underline">
+                        Eliminar
+                    </button>
+                </td>
+            `;
+            
+            // Efecto visual sutil
+            row.classList.add('bg-blue-50');
+            setTimeout(() => row.classList.remove('bg-blue-50'), 500);
+        });
     }
     
     // Función para actualizar una sola impresora desde WebSocket
@@ -375,10 +499,10 @@ window.initFleetModule = function() {
         }
     };
     
-    // Función pública para detener actualizaciones (mejorada)
+    // Función pública para detener actualizaciones (optimizada)
     window.stopFleetUpdates = function() {
-        console.log('🛑 Deteniendo todas las actualizaciones de flota');
-        stopAutoUpdates();
+        console.log('🛑 Deteniendo sistema de comunicación optimizado');
+        stopOptimizedCommunication();
     };
     
     // Configurar formulario
@@ -416,8 +540,8 @@ window.initFleetModule = function() {
         });
     }
     
-    // INICIALIZACIÓN MEJORADA
-    console.log('🚀 Iniciando Fleet con actualizaciones automáticas...');
+    // INICIALIZACIÓN OPTIMIZADA
+    console.log('🚀 Iniciando Fleet con sistema de comunicación optimizado...');
     
     const tbody = document.getElementById('fleet-printers');
     console.log('🔍 tbody disponible:', !!tbody);
@@ -428,21 +552,16 @@ window.initFleetModule = function() {
         return;
     }
     
-    tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">🔄 Iniciando sistema de monitoreo KyberCore...</td></tr>';
-    updateStatus('Iniciando sistema de gestión de flota...', 'loading');
+    tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">🔄 Iniciando sistema optimizado KyberCore...</td></tr>';
+    updateStatus('Iniciando sistema optimizado...', 'loading');
     
-    // Cargar datos iniciales y luego activar actualizaciones automáticas
+    // Cargar datos de prueba iniciales y luego activar sistema optimizado
     setTimeout(() => {
         loadTestData();
         
-        // Después de cargar datos de prueba, activar actualizaciones automáticas
+        // Activar sistema de comunicación optimizado después de datos de prueba
         setTimeout(() => {
-            startAutoUpdates();
-            
-            // Intentar WebSocket para tiempo real después de activar polling
-            setTimeout(() => {
-                connectWebSocket();
-            }, 2000);
-        }, 1000);
+            startOptimizedCommunication();
+        }, 2000);
     }, 500);
 };
