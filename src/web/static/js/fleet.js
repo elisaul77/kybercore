@@ -82,9 +82,43 @@ window.initFleetModule = function() {
                             <td class="px-4 py-2">${(printer.capabilities || []).join(', ')}</td>
                             <td class="px-4 py-2">${printer.location || ''}</td>
                             <td class="px-4 py-2">
-                                <button onclick="deletePrinter('${printer.id}')" class="text-red-600 hover:underline">
-                                    Eliminar
-                                </button>
+                                <div class="flex flex-wrap gap-1">
+                                    <button onclick="homePrinter('${printer.id}', 'X')" 
+                                            class="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" 
+                                            title="Homing X">
+                                        🏠X
+                                    </button>
+                                    <button onclick="homePrinter('${printer.id}', 'Y')" 
+                                            class="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" 
+                                            title="Homing Y">
+                                        🏠Y
+                                    </button>
+                                    <button onclick="homePrinter('${printer.id}', 'Z')" 
+                                            class="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" 
+                                            title="Homing Z">
+                                        🏠Z
+                                    </button>
+                                    <button onclick="pausePrinter('${printer.id}')" 
+                                            class="text-xs bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600" 
+                                            title="Pausar">
+                                        ⏸️
+                                    </button>
+                                    <button onclick="resumePrinter('${printer.id}')" 
+                                            class="text-xs bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600" 
+                                            title="Reanudar">
+                                        ▶️
+                                    </button>
+                                    <button onclick="cancelPrinter('${printer.id}')" 
+                                            class="text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" 
+                                            title="Cancelar">
+                                        ❌
+                                    </button>
+                                    <button onclick="deletePrinter('${printer.id}')" 
+                                            class="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700" 
+                                            title="Eliminar">
+                                        🗑️
+                                    </button>
+                                </div>
                             </td>
                         `;
                         
@@ -466,9 +500,43 @@ window.initFleetModule = function() {
                 <td class="px-4 py-2">${(printer.capabilities || []).join(', ')}</td>
                 <td class="px-4 py-2">${printer.location || ''}</td>
                 <td class="px-4 py-2">
-                    <button onclick="deletePrinter('${printer.id}')" class="text-red-600 hover:underline">
-                        Eliminar
-                    </button>
+                    <div class="flex flex-wrap gap-1">
+                        <button onclick="homePrinter('${printer.id}', 'X')" 
+                                class="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" 
+                                title="Homing X">
+                            🏠X
+                        </button>
+                        <button onclick="homePrinter('${printer.id}', 'Y')" 
+                                class="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" 
+                                title="Homing Y">
+                            🏠Y
+                        </button>
+                        <button onclick="homePrinter('${printer.id}', 'Z')" 
+                                class="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" 
+                                title="Homing Z">
+                            🏠Z
+                        </button>
+                        <button onclick="pausePrinter('${printer.id}')" 
+                                class="text-xs bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600" 
+                                title="Pausar">
+                            ⏸️
+                        </button>
+                        <button onclick="resumePrinter('${printer.id}')" 
+                                class="text-xs bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600" 
+                                title="Reanudar">
+                            ▶️
+                        </button>
+                        <button onclick="cancelPrinter('${printer.id}')" 
+                                class="text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" 
+                                title="Cancelar">
+                            ❌
+                        </button>
+                        <button onclick="deletePrinter('${printer.id}')" 
+                                class="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700" 
+                                title="Eliminar">
+                            🗑️
+                        </button>
+                    </div>
                 </td>
             `;
             
@@ -512,9 +580,43 @@ window.initFleetModule = function() {
                 <td class="px-4 py-2">${(printerData.capabilities || []).join(', ')}</td>
                 <td class="px-4 py-2">${printerData.location || ''}</td>
                 <td class="px-4 py-2">
-                    <button onclick="deletePrinter('${printerId}')" class="text-red-600 hover:underline">
-                        Eliminar
-                    </button>
+                    <div class="flex flex-wrap gap-1">
+                        <button onclick="homePrinter('${printerId}', 'X')" 
+                                class="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" 
+                                title="Homing X">
+                            🏠X
+                        </button>
+                        <button onclick="homePrinter('${printerId}', 'Y')" 
+                                class="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" 
+                                title="Homing Y">
+                            🏠Y
+                        </button>
+                        <button onclick="homePrinter('${printerId}', 'Z')" 
+                                class="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" 
+                                title="Homing Z">
+                            🏠Z
+                        </button>
+                        <button onclick="pausePrinter('${printerId}')" 
+                                class="text-xs bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600" 
+                                title="Pausar">
+                            ⏸️
+                        </button>
+                        <button onclick="resumePrinter('${printerId}')" 
+                                class="text-xs bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600" 
+                                title="Reanudar">
+                            ▶️
+                        </button>
+                        <button onclick="cancelPrinter('${printerId}')" 
+                                class="text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" 
+                                title="Cancelar">
+                            ❌
+                        </button>
+                        <button onclick="deletePrinter('${printerId}')" 
+                                class="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700" 
+                                title="Eliminar">
+                            🗑️
+                        </button>
+                    </div>
                 </td>
             `;
             
@@ -541,6 +643,142 @@ window.initFleetModule = function() {
                 console.log('Impresora eliminada');
             } else {
                 alert('Error al eliminar');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error de conexión');
+        }
+    };
+
+    // Función para hacer homing en ejes específicos
+    window.homePrinter = async function(printerId, axis) {
+        try {
+            console.log(`🏠 Ejecutando homing ${axis} en impresora ${printerId}`);
+            
+            const response = await fetch(`/api/fleet/printers/${printerId}/command`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    command: 'home',
+                    axis: axis
+                })
+            });
+            
+            if (response.ok) {
+                console.log(`✅ Homing ${axis} ejecutado exitosamente`);
+                // Mostrar feedback visual temporal
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = '✅';
+                button.disabled = true;
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 2000);
+            } else {
+                console.error('Error en homing:', response.status);
+                alert(`Error al ejecutar homing ${axis}`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error de conexión');
+        }
+    };
+
+    // Función para pausar impresión
+    window.pausePrinter = async function(printerId) {
+        try {
+            console.log(`⏸️ Pausando impresora ${printerId}`);
+            
+            const response = await fetch(`/api/fleet/printers/${printerId}/command`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    command: 'pause'
+                })
+            });
+            
+            if (response.ok) {
+                console.log('✅ Impresión pausada exitosamente');
+                // Mostrar feedback visual
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = '✅';
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                }, 2000);
+            } else {
+                console.error('Error pausando:', response.status);
+                alert('Error al pausar impresión');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error de conexión');
+        }
+    };
+
+    // Función para reanudar impresión
+    window.resumePrinter = async function(printerId) {
+        try {
+            console.log(`▶️ Reanudando impresora ${printerId}`);
+            
+            const response = await fetch(`/api/fleet/printers/${printerId}/command`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    command: 'resume'
+                })
+            });
+            
+            if (response.ok) {
+                console.log('✅ Impresión reanudada exitosamente');
+                // Mostrar feedback visual
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = '✅';
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                }, 2000);
+            } else {
+                console.error('Error reanudando:', response.status);
+                alert('Error al reanudar impresión');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error de conexión');
+        }
+    };
+
+    // Función para cancelar impresión
+    window.cancelPrinter = async function(printerId) {
+        try {
+            // Confirmar la acción porque es destructiva
+            if (!confirm('¿Estás seguro de que quieres cancelar la impresión? Esta acción no se puede deshacer.')) {
+                return;
+            }
+            
+            console.log(`❌ Cancelando impresión en impresora ${printerId}`);
+            
+            const response = await fetch(`/api/fleet/printers/${printerId}/command`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    command: 'cancel'
+                })
+            });
+            
+            if (response.ok) {
+                console.log('✅ Impresión cancelada exitosamente');
+                // Mostrar feedback visual
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = '✅';
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                }, 2000);
+            } else {
+                console.error('Error cancelando:', response.status);
+                alert('Error al cancelar impresión');
             }
         } catch (error) {
             console.error('Error:', error);

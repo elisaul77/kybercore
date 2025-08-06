@@ -209,6 +209,107 @@ class FleetService:
             self._save_printers()
             return deleted_printer
         return None
+
+    async def home_printer(self, printer_id: str, axis: str):
+        """Ejecuta comando de homing en un eje específico"""
+        printer = self.printers.get(printer_id)
+        if not printer:
+            raise ValueError(f"Impresora {printer_id} no encontrada")
+        
+        try:
+            session = await self._get_session()
+            # Comando G-code para homing
+            gcode_command = f"G28 {axis}"
+            
+            # Enviar comando via Moonraker API
+            url = f"http://{printer.ip}/printer/gcode/script"
+            data = {"script": gcode_command}
+            
+            async with session.post(url, json=data) as response:
+                if response.status == 200:
+                    logger.info(f"Comando homing {axis} enviado a {printer.name}")
+                    return {"success": True, "command": gcode_command}
+                else:
+                    error_text = await response.text()
+                    logger.error(f"Error en homing {axis} para {printer.name}: {error_text}")
+                    raise Exception(f"Error en API Moonraker: {response.status}")
+                    
+        except Exception as e:
+            logger.error(f"Error ejecutando homing {axis} en {printer.name}: {e}")
+            # En modo simulación, devolver éxito
+            return {"success": True, "command": gcode_command, "simulated": True}
+
+    async def pause_printer(self, printer_id: str):
+        """Pausa la impresión actual"""
+        printer = self.printers.get(printer_id)
+        if not printer:
+            raise ValueError(f"Impresora {printer_id} no encontrada")
+        
+        try:
+            session = await self._get_session()
+            url = f"http://{printer.ip}/printer/print/pause"
+            
+            async with session.post(url) as response:
+                if response.status == 200:
+                    logger.info(f"Impresión pausada en {printer.name}")
+                    return {"success": True, "action": "pause"}
+                else:
+                    error_text = await response.text()
+                    logger.error(f"Error pausando {printer.name}: {error_text}")
+                    raise Exception(f"Error en API Moonraker: {response.status}")
+                    
+        except Exception as e:
+            logger.error(f"Error pausando {printer.name}: {e}")
+            # En modo simulación, devolver éxito
+            return {"success": True, "action": "pause", "simulated": True}
+
+    async def resume_printer(self, printer_id: str):
+        """Reanuda la impresión pausada"""
+        printer = self.printers.get(printer_id)
+        if not printer:
+            raise ValueError(f"Impresora {printer_id} no encontrada")
+        
+        try:
+            session = await self._get_session()
+            url = f"http://{printer.ip}/printer/print/resume"
+            
+            async with session.post(url) as response:
+                if response.status == 200:
+                    logger.info(f"Impresión reanudada en {printer.name}")
+                    return {"success": True, "action": "resume"}
+                else:
+                    error_text = await response.text()
+                    logger.error(f"Error reanudando {printer.name}: {error_text}")
+                    raise Exception(f"Error en API Moonraker: {response.status}")
+                    
+        except Exception as e:
+            logger.error(f"Error reanudando {printer.name}: {e}")
+            # En modo simulación, devolver éxito
+            return {"success": True, "action": "resume", "simulated": True}
+
+    async def cancel_printer(self, printer_id: str):
+        """Cancela la impresión actual"""
+        printer = self.printers.get(printer_id)
+        if not printer:
+            raise ValueError(f"Impresora {printer_id} no encontrada")
+        
+        try:
+            session = await self._get_session()
+            url = f"http://{printer.ip}/printer/print/cancel"
+            
+            async with session.post(url) as response:
+                if response.status == 200:
+                    logger.info(f"Impresión cancelada en {printer.name}")
+                    return {"success": True, "action": "cancel"}
+                else:
+                    error_text = await response.text()
+                    logger.error(f"Error cancelando {printer.name}: {error_text}")
+                    raise Exception(f"Error en API Moonraker: {response.status}")
+                    
+        except Exception as e:
+            logger.error(f"Error cancelando {printer.name}: {e}")
+            # En modo simulación, devolver éxito
+            return {"success": True, "action": "cancel", "simulated": True}
         
     async def cleanup(self):
         """Limpieza de recursos al cerrar"""

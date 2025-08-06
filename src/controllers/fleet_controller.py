@@ -4,8 +4,15 @@ from fastapi.responses import HTMLResponse
 from src.services.fleet_service import FleetService
 from src.models.printer import Printer
 from src.schemas.printer import PrinterCreate
+from pydantic import BaseModel
 
 from src.services.fleet_service import fleet_service
+
+# Schema para comandos de impresora
+class PrinterCommand(BaseModel):
+    command: str  # 'home', 'pause', 'resume', 'cancel'
+    axis: str = None  # Para comando home: 'X', 'Y', 'Z'
+    parameters: dict = None  # Parámetros adicionales
 router = APIRouter()
 templates = Jinja2Templates(directory="src/web/templates")
 
@@ -72,6 +79,43 @@ def delete_printer(printer_id: str):
     if not deleted:
         raise HTTPException(status_code=404, detail="Impresora no encontrada")
     return {"ok": True}
+
+# Endpoint para enviar comandos a impresoras
+@router.post("/printers/{printer_id}/command")
+async def send_printer_command(printer_id: str, command: PrinterCommand):
+    """Envía un comando a una impresora específica."""
+    try:
+        # Verificar que la impresora existe
+        printer = await fleet_service.get_printer(printer_id)
+        if not printer:
+            raise HTTPException(status_code=404, detail="Impresora no encontrada")
+        
+        # Ejecutar comando según el tipo
+        result = None
+        if command.command == "home":
+            if not command.axis or command.axis not in ["X", "Y", "Z"]:
+                raise HTTPException(status_code=400, detail="Eje no válido para comando home")
+            result = await fleet_service.home_printer(printer_id, command.axis)
+        elif command.command == "pause":
+            result = await fleet_service.pause_printer(printer_id)
+        elif command.command == "resume":
+            result = await fleet_service.resume_printer(printer_id)
+        elif command.command == "cancel":
+            result = await fleet_service.cancel_printer(printer_id)
+        else:
+            raise HTTPException(status_code=400, detail=f"Comando no válido: {command.command}")
+        
+        return {
+            "success": True,
+            "message": f"Comando {command.command} ejecutado exitosamente",
+            "printer_id": printer_id,
+            "command": command.command,
+            "result": result
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error ejecutando comando: {str(e)}")
 
 # Endpoint para renderizar el módulo de gestión de flota como HTML
 @router.get("/fleet", response_class=HTMLResponse)
