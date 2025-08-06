@@ -141,6 +141,54 @@ class FleetService:
                     logger.warning(f"Timeout obteniendo temperaturas para {printer.name}")
                 except Exception as e:
                     logger.warning(f"Error obteniendo temperaturas para {printer.name}: {e}")
+
+                # Obtener progreso de impresión
+                try:
+                    print_stats = await asyncio.wait_for(
+                        client.get_print_stats(),
+                        timeout=3.0
+                    )
+                    
+                    if print_stats and 'result' in print_stats and 'status' in print_stats['result']:
+                        virtual_sdcard_data = print_stats['result']['status'].get('virtual_sdcard', {})
+                        print_stats_data = print_stats['result']['status'].get('print_stats', {})
+                        
+                        # Calcular progreso basado en virtual_sdcard
+                        progress = virtual_sdcard_data.get('progress', 0.0) * 100
+                        
+                        # Información adicional de estadísticas de impresión
+                        state = print_stats_data.get('state', 'unknown')
+                        filename = print_stats_data.get('filename', '')
+                        
+                        printer.realtime_data.update({
+                            'print_progress': round(progress, 1),
+                            'print_state': state,
+                            'print_filename': filename
+                        })
+                        
+                        logger.debug(f"Progreso de impresión para {printer.name}: {progress:.1f}% - Estado: {state}")
+                    else:
+                        logger.debug(f"No se pudieron obtener estadísticas de impresión para {printer.name}")
+                        printer.realtime_data.update({
+                            'print_progress': 0,
+                            'print_state': 'unknown',
+                            'print_filename': ''
+                        })
+                        
+                except asyncio.TimeoutError:
+                    logger.warning(f"Timeout obteniendo progreso de impresión para {printer.name}")
+                    printer.realtime_data.update({
+                        'print_progress': 0,
+                        'print_state': 'unknown',
+                        'print_filename': ''
+                    })
+                except Exception as e:
+                    logger.warning(f"Error obteniendo progreso de impresión para {printer.name}: {e}")
+                    printer.realtime_data.update({
+                        'print_progress': 0,
+                        'print_state': 'unknown',
+                        'print_filename': ''
+                    })
                     
             else:
                 logger.warning(f"No se pudo conectar a la impresora {printer.name} en {ip}:{port}")

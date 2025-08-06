@@ -67,6 +67,18 @@ class MoonrakerClient:
             logger.error(f"Error al obtener temperaturas: {e}")
             return None
 
+    async def get_print_stats(self):
+        """Obtiene las estadísticas de impresión incluyendo el progreso."""
+        try:
+            async with self._session.get(f"{self.base_url}/printer/objects/query?print_stats&virtual_sdcard") as response:
+                response.raise_for_status()
+                stats = await response.json()
+                logger.info(f"Estadísticas de impresión obtenidas: {json.dumps(stats, indent=2)}")
+                return stats
+        except aiohttp.ClientError as e:
+            logger.error(f"Error al obtener estadísticas de impresión: {e}")
+            return None
+
     async def subscribe_to_updates(self, callback):
         """Se suscribe a actualizaciones de estado vía WebSocket."""
         try:

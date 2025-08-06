@@ -2,6 +2,29 @@
 window.initFleetModule = function() {
     console.log('🚀 Fleet module iniciado');
     
+    // Función para crear barra de progreso
+    function createProgressBar(percentage, status, printState) {
+        // Mostrar barra de progreso si está imprimiendo o pausado
+        if (printState === 'printing' || printState === 'paused' || (percentage && percentage > 0)) {
+            const progress = Math.round(percentage || 0);
+            const barColor = printState === 'paused' ? 'bg-yellow-500' : 'bg-blue-600';
+            const statusText = printState === 'paused' ? `${progress}% (Pausado)` : `${progress}%`;
+            
+            return `
+                <div class="w-full bg-gray-200 rounded-full h-4 relative">
+                    <div class="${barColor} h-4 rounded-full transition-all duration-300" style="width: ${progress}%"></div>
+                    <span class="absolute inset-0 flex items-center justify-center text-xs font-medium text-white">${statusText}</span>
+                </div>
+            `;
+        } else if (status === 'ready') {
+            return '<span class="text-sm text-gray-500">Listo</span>';
+        } else if (status === 'error') {
+            return '<span class="text-sm text-red-500">Error</span>';
+        } else {
+            return '<span class="text-sm text-gray-400">-</span>';
+        }
+    }
+    
     // Función para cargar datos de prueba
     function loadTestData() {
         console.log('📊 Cargando datos de prueba...');
@@ -69,6 +92,8 @@ window.initFleetModule = function() {
                         const extTarget = printer.realtime_data?.extruder_target || 'N/A';
                         const bedTemp = printer.realtime_data?.bed_temp || 'N/A';
                         const bedTarget = printer.realtime_data?.bed_target || 'N/A';
+                        const progress = printer.realtime_data?.print_progress || 0;
+                        const printState = printer.realtime_data?.print_state || 'unknown';
                         
                         row.innerHTML = `
                             <td class="px-4 py-2">${printer.name}</td>
@@ -76,6 +101,9 @@ window.initFleetModule = function() {
                             <td class="px-4 py-2">${printer.ip}</td>
                             <td class="px-4 py-2">
                                 <span class="status-badge status-${printer.status}">${printer.status}</span>
+                            </td>
+                            <td class="px-4 py-2 w-32">
+                                ${createProgressBar(progress, printer.status, printState)}
                             </td>
                             <td class="px-4 py-2">${extTemp}°C / ${extTarget}°C</td>
                             <td class="px-4 py-2">${bedTemp}°C / ${bedTarget}°C</td>
@@ -487,6 +515,8 @@ window.initFleetModule = function() {
             const extTarget = printer.realtime_data?.extruder_target || 'N/A';
             const bedTemp = printer.realtime_data?.bed_temp || 'N/A';
             const bedTarget = printer.realtime_data?.bed_target || 'N/A';
+            const progress = printer.realtime_data?.print_progress || 0;
+            const printState = printer.realtime_data?.print_state || 'unknown';
             
             row.innerHTML = `
                 <td class="px-4 py-2">${printer.name}</td>
@@ -494,6 +524,9 @@ window.initFleetModule = function() {
                 <td class="px-4 py-2">${printer.ip}</td>
                 <td class="px-4 py-2">
                     <span class="status-badge status-${printer.status}">${printer.status}</span>
+                </td>
+                <td class="px-4 py-2 w-32">
+                    ${createProgressBar(progress, printer.status, printState)}
                 </td>
                 <td class="px-4 py-2">${extTemp}°C / ${extTarget}°C</td>
                 <td class="px-4 py-2">${bedTemp}°C / ${bedTarget}°C</td>
@@ -567,6 +600,8 @@ window.initFleetModule = function() {
             const extTarget = printerData.realtime_data?.extruder_target || 'N/A';
             const bedTemp = printerData.realtime_data?.bed_temp || 'N/A';
             const bedTarget = printerData.realtime_data?.bed_target || 'N/A';
+            const progress = printerData.realtime_data?.print_progress || 0;
+            const printState = printerData.realtime_data?.print_state || 'unknown';
             
             row.innerHTML = `
                 <td class="px-4 py-2">${printerData.name}</td>
@@ -574,6 +609,9 @@ window.initFleetModule = function() {
                 <td class="px-4 py-2">${printerData.ip}</td>
                 <td class="px-4 py-2">
                     <span class="status-badge status-${printerData.status}">${printerData.status}</span>
+                </td>
+                <td class="px-4 py-2 w-32">
+                    ${createProgressBar(progress, printerData.status, printState)}
                 </td>
                 <td class="px-4 py-2">${extTemp}°C / ${extTarget}°C</td>
                 <td class="px-4 py-2">${bedTemp}°C / ${bedTarget}°C</td>
@@ -847,7 +885,7 @@ window.initFleetModule = function() {
         return;
     }
     
-    tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">🔄 Iniciando sistema optimizado KyberCore...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4">🔄 Iniciando sistema optimizado KyberCore...</td></tr>';
     updateStatus('Iniciando sistema optimizado...', 'loading');
     
     // Cargar datos de prueba iniciales y luego activar sistema optimizado
