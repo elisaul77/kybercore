@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Build Docker image
+      run: |
+        docker build -t kybercore:${{ github.ref_name }} .
+        docker tag kybercore:${{ github.ref_name }} kybercore:latest
+    
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          ## Cambios en esta versión
+          
+          ### 🚀 Nuevas características
+          - [Añadir descripción de nuevas funcionalidades]
+          
+          ### 🐛 Correcciones
+          - [Añadir descripción de bugs corregidos]
+          
+          ### 🔧 Mejoras
+          - [Añadir descripción de mejoras]
+          
+          ### 📦 Instalación con Docker
+          ```bash
+          docker pull ghcr.io/tu_usuario/kybercore:${{ github.ref_name }}
+          docker run -p 8000:8000 ghcr.io/tu_usuario/kybercore:${{ github.ref_name }}
+          ```
+        draft: false
+        prerelease: false

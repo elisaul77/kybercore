@@ -1,6 +1,21 @@
 # KyberCore
 
-Orquestador local de múltiples impresoras 3D, desarrollado 100% en Python y diseñado para ejecutarse en entornos Docker.
+[![CI/CD Pipeline](https://github.com/tu_usuario/kybercore/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/tu_usuario/kybercore/actions/workflows/ci-cd.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+Orquestador local de múltiples impresoras 3D con **Inteligencia Artificial integrada**, desarrollado 100% en Python y diseñado para ejecutarse en entornos Docker.
+
+## ✨ Características principales
+
+- 🤖 **IA como diferenciador**: Análisis inteligente, recomendaciones automáticas y optimización
+- 🖨️ **Gestión de flota**: Control centralizado de múltiples impresoras 3D
+- 🔄 **Tiempo real**: Monitoreo y actualizaciones en vivo via WebSocket
+- 🐳 **Containerizado**: Despliegue simple con Docker
+- 🏗️ **Arquitectura modular**: Fácil extensión y mantenimiento
+- 📊 **Análisis de fallos**: Diagnóstico automático y sugerencias de solución
 
 ## Despliegue rápido con Docker
 
@@ -20,6 +35,24 @@ Orquestador local de múltiples impresoras 3D, desarrollado 100% en Python y dis
 - `docs/` : Documentación estratégica y técnica
 - `infografia/` : Material visual y justificación del proyecto
 - `tests/` : Pruebas automatizadas
+
+## 🤝 Contribuir
+
+¡Las contribuciones son bienvenidas! Por favor lee [CONTRIBUTING.md](CONTRIBUTING.md) para más detalles sobre nuestro proceso de contribución.
+
+## 📋 Roadmap
+
+Consulta la hoja de ruta completa en [`docs/investigacion.md`](docs/investigacion.md) sección 4.3.
+
+## 📚 Documentación
+
+- [Instrucciones de desarrollo](INSTRUCCIONES.md)
+- [Documentación técnica](docs/)
+- [Material visual](infografia/)
+
+## 🐛 Reportar problemas
+
+Usa el [sistema de issues](https://github.com/tu_usuario/kybercore/issues) de GitHub para reportar bugs o sugerir mejoras.
 
 ## Licencia
 

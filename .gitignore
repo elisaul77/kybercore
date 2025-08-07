@@ -79,5 +79,6 @@ requirements.txt.lock
 .copilot*
 .copilotignore
 .copilot2
-.github/*
+.github/copilot-instructions.md
+.github/chatmodes/
 docs/investigacion.md
