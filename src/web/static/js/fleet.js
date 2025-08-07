@@ -71,7 +71,7 @@ window.initFleetModule = function() {
             const updateTime = new Date().toLocaleTimeString();
             console.log(`📊 Cargando datos reales a las ${updateTime}...`);
             
-            const response = await fetch('/api/fleet/printers');
+            const response = await fetch('/api/fleet/printers', { cache: 'no-store' });
             if (response.ok) {
                 const printers = await response.json();
                 console.log(`📊 Recibidas ${printers.length} impresoras a las ${updateTime}`);
@@ -157,13 +157,16 @@ window.initFleetModule = function() {
                         }, 500);
                     });
                     
-                    // Actualizar estado de la flota solo si cambió
+                    // Verificar si al menos una impresora está conectada
+                    const isAnyPrinterConnected = printers.some(printer => printer.status !== 'unreachable');
                     const newPrinterCount = printers.length;
-                    if (!fleetState.isConnected || fleetState.printerCount !== newPrinterCount || fleetState.hasError) {
-                        fleetState.isConnected = true;
+                    
+                    // Actualizar estado de la flota solo si cambió
+                    if (fleetState.isConnected !== isAnyPrinterConnected || fleetState.printerCount !== newPrinterCount || fleetState.hasError) {
+                        fleetState.isConnected = isAnyPrinterConnected;
                         fleetState.printerCount = newPrinterCount;
                         fleetState.hasError = false;
-                        updateFleetStatus();
+                        syncConnectionStatus();
                     }
                     
                     // Si no se ha intentado WebSocket aún, intentarlo
@@ -200,6 +203,10 @@ window.initFleetModule = function() {
                 case 'connected':
                     icon = '🟢 ';
                     className = 'text-green-600';
+                    break;
+                case 'disconnected':
+                    icon = '🔴 ';
+                    className = 'text-red-600';
                     break;
                 case 'error':
                     icon = '❌ ';
@@ -321,7 +328,7 @@ window.initFleetModule = function() {
             websocket.onopen = () => {
                 console.log('✅ WebSocket conectado exitosamente');
                 isWebSocketConnected = true;
-                fleetState.isConnected = true; // Establecer estado de conexión de la flota
+                // No forzar fleetState.isConnected aquí - se actualizará con datos reales
                 reconnectAttempts = 0;
                 updateLastUpdateStatus('connected');
                 // Detener polling de emergencia si estaba activo
@@ -353,6 +360,7 @@ window.initFleetModule = function() {
                         case 'subscription_all_confirmed':
                             console.log(`✅ Suscrito a ${message.printer_count} impresoras`);
                             updateFleetStatus(false, message.printer_count);
+                            syncConnectionStatus();
                             break;
                             
                         case 'initial_data':
@@ -361,6 +369,7 @@ window.initFleetModule = function() {
                                 console.log(`📊 Datos de flota recibidos: ${message.printers.length} impresoras`);
                                 populateFleetTable(message.printers);
                                 updateFleetStatus(false, message.printers.length);
+                                // syncConnectionStatus() ya se llama desde populateFleetTable
                             }
                             break;
                             
@@ -378,12 +387,14 @@ window.initFleetModule = function() {
                             // Si el mensaje es sobre no hay impresoras, mostrar estado conectado pero sin impresoras
                             if (message.message.includes('No hay impresoras registradas')) {
                                 updateFleetStatus(false, 0);
+                                syncConnectionStatus();
                             }
                             break;
                             
                         case 'error':
                             console.error('❌ Error del servidor:', message.message);
                             updateFleetStatus(true, 0);
+                            syncConnectionStatus();
                             break;
                     }
                 } catch (error) {
@@ -394,7 +405,7 @@ window.initFleetModule = function() {
             websocket.onclose = (event) => {
                 console.log('❌ WebSocket desconectado:', event.code, event.reason);
                 isWebSocketConnected = false;
-                fleetState.isConnected = false; // Establecer estado de desconexión de la flota
+                // No forzar fleetState.isConnected aquí - mantener el estado basado en datos reales
                 updateLastUpdateStatus('disconnected');
                 if (heartbeatInterval) {
                     clearInterval(heartbeatInterval);
@@ -577,6 +588,13 @@ window.initFleetModule = function() {
             row.classList.add('bg-blue-50');
             setTimeout(() => row.classList.remove('bg-blue-50'), 500);
         });
+        
+        // Actualizar estados después de poblar la tabla
+        const isAnyPrinterConnected = printers.some(printer => printer.status !== 'unreachable');
+        fleetState.isConnected = isAnyPrinterConnected;
+        fleetState.printerCount = printers.length;
+        fleetState.hasError = false;
+        syncConnectionStatus();
     }
     
     // Función para actualizar una sola impresora desde WebSocket
@@ -666,6 +684,22 @@ window.initFleetModule = function() {
             
             console.log(`✅ Impresora ${printerData.name} actualizada vía WebSocket`);
             
+            // Actualizar estado global de la flota después de cambio individual
+            const tbodyElement = document.getElementById('fleet-printers');
+            const allRows = tbodyElement.querySelectorAll('tr[data-printer-id]');
+            let connectedCount = 0;
+            allRows.forEach(row => {
+                const statusSpan = row.querySelector('.status-badge');
+                if (statusSpan && !statusSpan.textContent.includes('unreachable')) {
+                    connectedCount++;
+                }
+            });
+            
+            fleetState.isConnected = connectedCount > 0;
+            fleetState.printerCount = allRows.length;
+            fleetState.hasError = false;
+            syncConnectionStatus();
+            
         } catch (error) {
             console.error('❌ Error actualizando impresora individual:', error);
         }
@@ -674,11 +708,30 @@ window.initFleetModule = function() {
     // Función pública para eliminar
     window.deletePrinter = async function(id) {
         try {
-            const response = await fetch(`/api/fleet/printers/${id}`, { method: 'DELETE' });
+            const response = await fetch(`/api/fleet/printers/${id}`, { 
+                method: 'DELETE',
+                cache: 'no-store'
+            });
             if (response.ok) {
                 const row = document.querySelector(`tr[data-printer-id="${id}"]`);
                 if (row) row.remove();
                 console.log('Impresora eliminada');
+                
+                // Actualizar estado de la flota después de eliminar
+                const tbody = document.getElementById('fleet-printers');
+                const remainingRows = tbody.querySelectorAll('tr[data-printer-id]');
+                let connectedCount = 0;
+                remainingRows.forEach(row => {
+                    const statusSpan = row.querySelector('.status-badge');
+                    if (statusSpan && !statusSpan.textContent.includes('unreachable')) {
+                        connectedCount++;
+                    }
+                });
+                
+                fleetState.isConnected = connectedCount > 0;
+                fleetState.printerCount = remainingRows.length;
+                fleetState.hasError = false;
+                syncConnectionStatus();
             } else {
                 alert('Error al eliminar');
             }
@@ -696,6 +749,7 @@ window.initFleetModule = function() {
             const response = await fetch(`/api/fleet/printers/${printerId}/command`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                cache: 'no-store',
                 body: JSON.stringify({
                     command: 'home',
                     axis: axis
@@ -733,6 +787,7 @@ window.initFleetModule = function() {
             const response = await fetch(`/api/fleet/printers/${printerId}/command`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                cache: 'no-store',
                 body: JSON.stringify({
                     command: 'pause'
                 })
@@ -767,6 +822,7 @@ window.initFleetModule = function() {
             const response = await fetch(`/api/fleet/printers/${printerId}/command`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                cache: 'no-store',
                 body: JSON.stringify({
                     command: 'resume'
                 })
@@ -806,6 +862,7 @@ window.initFleetModule = function() {
             const response = await fetch(`/api/fleet/printers/${printerId}/command`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                cache: 'no-store',
                 body: JSON.stringify({
                     command: 'cancel'
                 })
@@ -857,6 +914,7 @@ window.initFleetModule = function() {
                 const response = await fetch('/api/fleet/printers', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    cache: 'no-store',
                     body: JSON.stringify(data)
                 });
                 
@@ -897,4 +955,35 @@ window.initFleetModule = function() {
             startOptimizedCommunication();
         }, 2000);
     }, 500);
+    
+    // Sincronizar estados visuales de conexión
+    function syncConnectionStatus() {
+        // Si no hay impresoras conectadas (todas están unreachable o no hay impresoras)
+        if (!fleetState.isConnected || fleetState.printerCount === 0) {
+            updateStatus('Sin impresoras conectadas', 'disconnected');
+            updateLastUpdateStatus('disconnected');
+        } else {
+            // Contar cuántas impresoras están realmente conectadas
+            const tbody = document.getElementById('fleet-printers');
+            let connectedCount = 0;
+            if (tbody) {
+                const rows = tbody.querySelectorAll('tr[data-printer-id]');
+                rows.forEach(row => {
+                    const statusSpan = row.querySelector('.status-badge');
+                    if (statusSpan && !statusSpan.textContent.includes('unreachable')) {
+                        connectedCount++;
+                    }
+                });
+            }
+            
+            if (connectedCount > 0) {
+                updateStatus(`${connectedCount} ${connectedCount === 1 ? 'impresora conectada' : 'impresoras conectadas'}`, 'connected');
+                updateLastUpdateStatus('connected');
+            } else {
+                updateStatus('Sin impresoras conectadas', 'disconnected');
+                updateLastUpdateStatus('disconnected');
+            }
+        }
+    }
+    // (La llamada a syncConnectionStatus y la lógica de fleetState se hace solo dentro de loadRealData)
 };
