@@ -48,8 +48,8 @@ jobs:
           
           ### 📦 Instalación con Docker
           ```bash
-          docker pull ghcr.io/tu_usuario/kybercore:${{ github.ref_name }}
-          docker run -p 8000:8000 ghcr.io/tu_usuario/kybercore:${{ github.ref_name }}
+          docker pull ghcr.io/elisaul77/kybercore:${{ github.ref_name }}
+          docker run -p 8000:8000 ghcr.io/elisaul77/kybercore:${{ github.ref_name }}
           ```
         draft: false
         prerelease: false

@@ -1,6 +1,6 @@
 # KyberCore
 
-[![CI/CD Pipeline](https://github.com/tu_usuario/kybercore/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/tu_usuario/kybercore/actions/workflows/ci-cd.yml)
+[![CI/CD Pipeline](https://github.com/elisaul77/kybercore/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/elisaul77/kybercore/actions/workflows/ci-cd.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
@@ -52,7 +52,7 @@ Consulta la hoja de ruta completa en [`docs/investigacion.md`](docs/investigacio
 
 ## 🐛 Reportar problemas
 
-Usa el [sistema de issues](https://github.com/tu_usuario/kybercore/issues) de GitHub para reportar bugs o sugerir mejoras.
+Usa el [sistema de issues](https://github.com/elisaul77/kybercore/issues) de GitHub para reportar bugs o sugerir mejoras.
 
 ## Licencia
 
