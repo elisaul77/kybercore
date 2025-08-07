@@ -1,5 +1,5 @@
 ---
-title: Flujo Gestión de Flota KyberCore - Mejorado
+title: Flujo Gestión de Flota KyberCore - Arquitectura Modular Actualizada
 ---
 flowchart TD
     subgraph "Flujo Principal: Carga y CRUD"
@@ -7,25 +7,58 @@ flowchart TD
         Usuario([Usuario Navegador]) -->|Clic| appjs[app.js]
         appjs -->|CargaModulo| fleet_controller_html["GET /fleet"]
         fleet_controller_html -->|RenderizaHTML| fleethtml[fleet.html]
-        appjs -->|InicializaJS| fleetjs[fleet.js]
-        fleetjs -->|PideDatos| fleet_controller_data["GET /data"]
+        appjs -->|InicializaJS| fleetjs_main[fleet.js - Orquestador Principal]
         
-    subgraph "Proceso Backend (Carga)"
-        direction TB
-        fleet_controller_data -->|LlamaServicio| fleet_service["fleet_service.py"]
-        fleet_service -->|LeeDatos| printersjson["printers.json"]
-        fleet_service -->|ConsultaEstado| moonraker_api["Moonraker API (HTTP)"]
-        printersjson -->|RetornaDatos| fleet_service
-        moonraker_api -->|RetornaEstado| fleet_service
-        fleet_service -->|RetornaDatos| fleet_controller_data
-    end
+        subgraph "Módulos JS Fleet (Arquitectura Modular)"
+            direction TB
+            fleetjs_main -->|Inicializa| fleet_state[state.js - Estado Global]
+            fleetjs_main -->|Inicializa| fleet_ui[ui.js - Interfaz Usuario]
+            fleetjs_main -->|Inicializa| fleet_data[data.js - Gestión Datos]
+            fleetjs_main -->|Inicializa| fleet_table[table.js - Renderizado Tabla]
+            fleetjs_main -->|Inicializa| fleet_commands[commands.js - Comandos Impresora]
+            fleetjs_main -->|Inicializa| fleet_forms[forms.js - Formularios]
+            fleetjs_main -->|Inicializa| fleet_msg_handler[message-handler.js - Mensajes WebSocket]
+            fleetjs_main -->|Inicializa| fleet_comm[communication.js - Comunicación WebSocket]
+            
+            fleet_data -->|PideDatos| fleet_controller_data["GET /data"]
+            fleet_commands -->|ComandosHW| fleet_controller_commands["POST /printers/{id}/command"]
+            fleet_forms -->|CRUD| fleet_controller_crud["POST / PUT / DELETE /printers"]
+        end
+        
+        subgraph "Proceso Backend (Carga)"
+            direction TB
+            fleet_controller_data -->|LlamaServicio| fleet_service["fleet_service.py"]
+            fleet_service -->|LeeDatos| printersjson["printers.json"]
+            fleet_service -->|ConsultaEstado| moonraker_api["Moonraker API (HTTP)"]
+            printersjson -->|RetornaDatos| fleet_service
+            moonraker_api -->|RetornaEstado| fleet_service
+            fleet_service -->|RetornaDatos| fleet_controller_data
+        end
 
-        fleet_controller_data -->|DevuelveJSON| fleetjs
-        fleetjs -->|DibujaUI| fleethtml
+        fleet_controller_data -->|DevuelveJSON| fleet_data
+        fleet_data -->|ActualizaEstado| fleet_state
+        fleet_state -->|NotificaCambios| fleet_ui
+        fleet_ui -->|ActualizaDOM| fleethtml
+        fleet_table -->|RenderizaFilas| fleethtml
 
-        Usuario -->|AccionCRUD| fleethtml
-        fleethtml -->|LlamaJS| fleetjs
-        fleetjs -->|PeticionAPI| fleet_controller_crud["POST / PUT / DELETE /printers"]
+        Usuario -->|AccionComando| fleethtml
+        fleethtml -->|EventoClick| fleet_commands
+        
+        subgraph "Comandos Hardware Implementados"
+            direction LR
+            fleet_controller_commands -->|Procesa| command_validator{Validador Comandos}
+            command_validator -->|home| fleet_service_home[fleet_service.home_printer]
+            command_validator -->|pause/resume/cancel| fleet_service_print[fleet_service.pause/resume/cancel]
+            command_validator -->|restart_klipper| fleet_service_restart_k[fleet_service.restart_klipper]
+            command_validator -->|restart_firmware| fleet_service_restart_fw[fleet_service.restart_firmware]
+            command_validator -->|restart_klipper_service| fleet_service_restart_svc[fleet_service.restart_klipper_service]
+            
+            fleet_service_home -->|G-code| moonraker_gcode["POST /printer/gcode/script"]
+            fleet_service_print -->|Control| moonraker_print["POST /printer/print/{action}"]
+            fleet_service_restart_k -->|Host Restart| moonraker_restart["POST /printer/restart"]
+            fleet_service_restart_fw -->|MCU Restart| moonraker_firmware["POST /printer/firmware_restart"]
+            fleet_service_restart_svc -->|Service Restart| moonraker_service["POST /machine/services/restart"]
+        end
         
         subgraph "Proceso Backend (CRUD)"
             direction TB
@@ -39,32 +72,40 @@ flowchart TD
             fleet_service_crud -->|RetornaResultado| fleet_controller_crud
         end
         
-        fleet_controller_crud -->|DevuelveJSON| fleetjs
-        fleetjs -->|FeedbackUI| Usuario
+        fleet_controller_crud -->|DevuelveJSON| fleet_forms
+        fleet_forms -->|FeedbackUI| fleet_ui
+        fleet_ui -->|NotificaUsuario| Usuario
     end
 
     subgraph "Flujo Asíncrono: Actualizaciones en Tiempo Real"
         direction TB
-        fleetjs_ws[fleet.js] -.->|AbreConexionWS| backend_ws[Backend WS]
+        fleet_comm -.->|AbreConexionWS| backend_ws[Backend WebSocket]
         backend_ws -.->|IniciaMonitor| monitor_ws["RealtimeMonitor"]
-        monitor_ws -.->|Consulta periódica| moonraker_ws["Moonraker WS"]
+        monitor_ws -.->|Consulta periódica| moonraker_ws["Moonraker WebSocket"]
         moonraker_ws -- EventosHW --> monitor_ws
         monitor_ws -- Cambios relevantes --> backend_ws
-        backend_ws <==>|ComunicacionBidireccional| fleetjs_ws
-        backend_ws -- AlertaCrítica --> fleetjs_ws
-        fleetjs_ws -->|ActualizaUI| fleethtml
-        fleetjs_ws -.->|Reconexión automática| backend_ws
+        backend_ws <==>|ComunicacionBidireccional| fleet_comm
+        fleet_comm -->|ProcesaMensajes| fleet_msg_handler
+        fleet_msg_handler -->|ActualizaEstado| fleet_state
+        fleet_state -->|NotificaCambios| fleet_ui
+        backend_ws -- AlertaCrítica --> fleet_msg_handler
+        fleet_ui -->|ActualizaUI| fleethtml
+        fleet_comm -.->|Reconexión automática| backend_ws
     end
 
     %% Leyenda de colores y tipos de línea
     classDef frontend fill:#dae8fc,stroke:#6c8ebf;
     classDef backend fill:#d5e8d4,stroke:#82b366;
+    classDef modules fill:#e1d5e7,stroke:#9673a6;
     classDef db fill:#f8cecc,stroke:#b85450;
     classDef user fill:#fff2cc,stroke:#d6b656;
     classDef moonraker fill:#fff,stroke:#ff9800,stroke-width:2px;
+    classDef commands fill:#fce4ec,stroke:#ad1457;
 
-    class appjs,fleetjs,fleethtml,fleetjs_ws frontend;
-    class fleet_controller_html,fleet_controller_data,fleet_controller_crud,fleet_service,fleet_service_crud,ia_validator,backend_ws,monitor_ws backend;
+    class appjs,fleethtml,fleet_comm,fleet_msg_handler frontend;
+    class fleetjs_main,fleet_state,fleet_ui,fleet_data,fleet_table,fleet_commands,fleet_forms modules;
+    class fleet_controller_html,fleet_controller_data,fleet_controller_crud,fleet_controller_commands,fleet_service,fleet_service_crud,ia_validator,backend_ws,monitor_ws,command_validator backend;
+    class fleet_service_home,fleet_service_print,fleet_service_restart_k,fleet_service_restart_fw,fleet_service_restart_svc commands;
     class printersjson,printersjson_crud db;
     class Usuario user;
-    class moonraker_api,moonraker_api_crud,moonraker_ws moonraker;
+    class moonraker_api,moonraker_api_crud,moonraker_ws,moonraker_gcode,moonraker_print,moonraker_restart,moonraker_firmware,moonraker_service moonraker;
