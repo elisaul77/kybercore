@@ -79,6 +79,16 @@ window.FleetTable = (function() {
                             title="Cancelar">
                         ❌
                     </button>
+                    <button onclick="window.FleetCommands.restartKlipper('${printer.id}', event)" 
+                            class="text-xs bg-purple-500 text-white px-2 py-1 rounded hover:bg-purple-600" 
+                            title="Reiniciar Klipper">
+                        🔄K
+                    </button>
+                    <button onclick="window.FleetCommands.restartFirmware('${printer.id}', event)" 
+                            class="text-xs bg-indigo-500 text-white px-2 py-1 rounded hover:bg-indigo-600" 
+                            title="Reiniciar Firmware">
+                        🔧FW
+                    </button>
                     <button onclick="window.FleetCommands.deletePrinter('${printer.id}')" 
                             class="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700" 
                             title="Eliminar">

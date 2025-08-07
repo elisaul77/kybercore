@@ -10,7 +10,7 @@ from src.services.fleet_service import fleet_service
 
 # Schema para comandos de impresora
 class PrinterCommand(BaseModel):
-    command: str  # 'home', 'pause', 'resume', 'cancel'
+    command: str  # 'home', 'pause', 'resume', 'cancel', 'restart_klipper', 'restart_firmware', 'restart_klipper_service'
     axis: str = None  # Para comando home: 'X', 'Y', 'Z'
     parameters: dict = None  # Parámetros adicionales
 router = APIRouter()
@@ -102,6 +102,12 @@ async def send_printer_command(printer_id: str, command: PrinterCommand):
             result = await fleet_service.resume_printer(printer_id)
         elif command.command == "cancel":
             result = await fleet_service.cancel_printer(printer_id)
+        elif command.command == "restart_klipper":
+            result = await fleet_service.restart_klipper(printer_id)
+        elif command.command == "restart_firmware":
+            result = await fleet_service.restart_firmware(printer_id)
+        elif command.command == "restart_klipper_service":
+            result = await fleet_service.restart_klipper_service(printer_id)
         else:
             raise HTTPException(status_code=400, detail=f"Comando no válido: {command.command}")
         

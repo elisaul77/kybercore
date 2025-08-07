@@ -187,12 +187,88 @@ window.FleetCommands = (function() {
             alert('Error de conexión');
         }
     }
+
+    // Función para reiniciar Klipper
+    async function restartKlipper(printerId, event = null) {
+        try {
+            console.log(`🔄 Reiniciando Klipper en impresora ${printerId}`);
+            
+            const response = await fetch(`/api/fleet/printers/${printerId}/command`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                cache: 'no-store',
+                body: JSON.stringify({
+                    command: 'restart_klipper'
+                })
+            });
+            
+            if (response.ok) {
+                console.log(`✅ Klipper reiniciado exitosamente`);
+                // Mostrar feedback visual temporal si hay evento
+                if (event && event.target) {
+                    const button = event.target;
+                    const originalText = button.innerHTML;
+                    button.innerHTML = '✅';
+                    button.disabled = true;
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }, 3000); // 3 segundos para reinicio
+                }
+            } else {
+                console.error('Error reiniciando Klipper:', response.status);
+                alert('Error al reiniciar Klipper');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error de conexión');
+        }
+    }
+
+    // Función para reiniciar firmware
+    async function restartFirmware(printerId, event = null) {
+        try {
+            console.log(`🔧 Reiniciando firmware en impresora ${printerId}`);
+            
+            const response = await fetch(`/api/fleet/printers/${printerId}/command`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                cache: 'no-store',
+                body: JSON.stringify({
+                    command: 'restart_firmware'
+                })
+            });
+            
+            if (response.ok) {
+                console.log(`✅ Firmware reiniciado exitosamente`);
+                // Mostrar feedback visual temporal si hay evento
+                if (event && event.target) {
+                    const button = event.target;
+                    const originalText = button.innerHTML;
+                    button.innerHTML = '✅';
+                    button.disabled = true;
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }, 5000); // 5 segundos para reinicio de firmware
+                }
+            } else {
+                console.error('Error reiniciando firmware:', response.status);
+                alert('Error al reiniciar firmware');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error de conexión');
+        }
+    }
     
     return {
         homePrinter,
         pausePrinter,
         resumePrinter,
         cancelPrinter,
-        deletePrinter
+        deletePrinter,
+        restartKlipper,
+        restartFirmware
     };
 })();
