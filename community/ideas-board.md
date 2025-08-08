@@ -29,9 +29,31 @@
 **Estado:** 🆕 Nueva  
 **Votos:** ⭐⭐⭐⭐ (4)
 
+### ID-008: Diagrama de Gantt para Objetos en Impresión Multi-Objeto
+**Autor:** @elisaul77  
+**Fecha:** 2025-08-07  
+**Descripción:** Sistema de visualización tipo Gantt que muestre el progreso individual de cada objeto en impresiones multi-objeto, permitiendo pausas opcionales para retirar objetos terminados y análisis granular de fallos por objeto específico.  
+**Categoría:** 🌐 Interfaz, 🔍 Análisis, 🤖 IA  
+**Estado:** 🔍 En Evaluación  
+**Votos:** ⭐⭐⭐⭐⭐ (5)  
+**Complejidad:** 🟠 Alta  
+**Impacto:** 🌟 Crítico - Mejora significativa del control de impresión  
+**Issue:** [#12](https://github.com/elisaul77/kybercore/issues/12)
+
 ---
 
 ## 🔍 En Evaluación
+
+### ID-008: Diagrama de Gantt para Objetos en Impresión Multi-Objeto
+**Autor:** @elisaul77  
+**Fecha:** 2025-08-07  
+**Descripción:** Sistema de visualización tipo Gantt que muestre el progreso individual de cada objeto en impresiones multi-objeto, permitiendo pausas opcionales para retirar objetos terminados y análisis granular de fallos por objeto específico.  
+**Categoría:** 🌐 Interfaz, 🔍 Análisis, 🤖 IA  
+**Estado:** 🔍 En Evaluación  
+**Votos:** ⭐⭐⭐⭐⭐ (5)  
+**Complejidad:** 🟠 Alta  
+**Impacto:** 🌟 Crítico - Mejora significativa del control de impresión  
+**Issue:** [#12](https://github.com/elisaul77/kybercore/issues/12)
 
 ### ID-004: Plugin System para Extensibilidad
 **Autor:** @developer  
@@ -85,9 +107,9 @@
 
 ## 📊 Estadísticas
 
-- **Total de Ideas:** 7
+- **Total de Ideas:** 8
 - **Nuevas:** 3
-- **En Evaluación:** 1  
+- **En Evaluación:** 2  
 - **Aprobadas:** 1
 - **En Desarrollo:** 1
 - **Completadas:** 1
