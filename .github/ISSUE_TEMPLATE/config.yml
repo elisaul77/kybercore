@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discusión General
+    url: https://github.com/elisaul77/KyberCore/discussions
+    about: Para preguntas generales, debates técnicos y discusiones de la comunidad
+  - name: 📚 Documentación
+    url: https://github.com/elisaul77/KyberCore/blob/main/README.md
+    about: Consulta la documentación oficial del proyecto
+  - name: 🚀 Ideas Rápidas
+    url: https://github.com/elisaul77/KyberCore/blob/main/community/ideas-board.md
+    about: Para ideas rápidas que no requieren un issue completo
+  - name: 🏗️ Propuestas Técnicas
+    url: https://github.com/elisaul77/KyberCore/blob/main/community/technical-proposals/
+    about: Para propuestas técnicas complejas que requieren diseño detallado

@@ -1,0 +1,292 @@
+name: 📐 Technical Proposal
+description: Propuesta técnica detallada para cambios arquitectónicos o nuevos módulos
+title: "[PROPOSAL] "
+labels: ["proposal", "technical", "needs: review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ¿Tienes una propuesta técnica compleja para KyberCore? 🏗️
+        
+        Este template es para propuestas que involucran cambios arquitectónicos, nuevos módulos, o decisiones técnicas importantes.
+
+  - type: input
+    id: proposal-title
+    attributes:
+      label: "📋 Título de la Propuesta"
+      description: "Un título técnico descriptivo"
+      placeholder: "Ej: Migración del sistema de cola a Redis con persistencia"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: proposal-type
+    attributes:
+      label: "🏗️ Tipo de Propuesta"
+      description: "¿Qué tipo de cambio técnico propones?"
+      options:
+        - "🔧 Refactoring de Módulo Existente"
+        - "➕ Nuevo Módulo/Componente"
+        - "🏛️ Cambio Arquitectónico"
+        - "📚 Nueva Dependencia/Librería"
+        - "🔄 Migración de Tecnología"
+        - "⚡ Optimización de Rendimiento"
+        - "🛡️ Mejora de Seguridad"
+        - "📈 Escalabilidad"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact-scope
+    attributes:
+      label: "📊 Alcance del Impacto"
+      description: "¿Qué tanto del sistema se vería afectado?"
+      options:
+        - "🎯 Localizado - Un módulo específico"
+        - "📦 Módular - Varios módulos relacionados"
+        - "🌐 Sistema - Cambios transversales"
+        - "🏗️ Arquitectónico - Cambios fundamentales"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: "❓ Planteamiento del Problema"
+      description: "¿Qué problema técnico o limitación actual aborda esta propuesta?"
+      placeholder: |
+        Describe el problema técnico actual:
+        - Limitaciones de la implementación actual
+        - Problemas de rendimiento/escalabilidad
+        - Deuda técnica acumulada
+        - Nuevos requisitos que no se pueden cumplir
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: "💡 Solución Propuesta"
+      description: "Describe tu propuesta técnica en detalle"
+      placeholder: |
+        **Resumen Ejecutivo:**
+        [Descripción en 2-3 líneas]
+        
+        **Detalles Técnicos:**
+        - Componente/Módulo a cambiar: [nombre]
+        - Tecnologías involucradas: [lista]
+        - Cambios en la arquitectura: [descripción]
+        - Nuevas dependencias: [si aplica]
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-design
+    attributes:
+      label: "🏗️ Diseño Técnico"
+      description: "Proporciona detalles del diseño técnico"
+      placeholder: |
+        **Arquitectura:**
+        [Diagrama o descripción de la arquitectura]
+        
+        **Estructura de Datos:**
+        [Modelos, esquemas, etc.]
+        
+        **APIs/Interfaces:**
+        [Nuevos endpoints, interfaces, contratos]
+        
+        **Flujo de Datos:**
+        [Cómo fluye la información]
+        
+        **Patrones de Diseño:**
+        [Patrones aplicados]
+
+  - type: textarea
+    id: implementation-plan
+    attributes:
+      label: "🗓️ Plan de Implementación"
+      description: "¿Cómo se implementaría esta propuesta?"
+      placeholder: |
+        **Fase 1:** [Descripción - Tiempo estimado]
+        - [ ] Tarea 1
+        - [ ] Tarea 2
+        
+        **Fase 2:** [Descripción - Tiempo estimado]
+        - [ ] Tarea 3
+        - [ ] Tarea 4
+        
+        **Fase 3:** [Descripción - Tiempo estimado]
+        - [ ] Tarea 5
+        - [ ] Tarea 6
+    validations:
+      required: true
+
+  - type: textarea
+    id: breaking-changes
+    attributes:
+      label: "⚠️ Cambios Disruptivos"
+      description: "¿Qué se rompería con esta implementación?"
+      placeholder: |
+        **APIs Afectadas:**
+        - [API 1]: [cómo cambia]
+        - [API 2]: [cómo cambia]
+        
+        **Configuraciones:**
+        - [Config 1]: [migración necesaria]
+        
+        **Datos:**
+        - [Migración de base de datos necesaria? ¿Cómo?]
+        
+        **Retrocompatibilidad:**
+        - [¿Se mantiene? ¿Por cuánto tiempo?]
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "🔄 Alternativas Consideradas"
+      description: "¿Qué otras opciones evaluaste?"
+      placeholder: |
+        **Alternativa 1:**
+        - Descripción: [qué es]
+        - Pros: [ventajas]
+        - Contras: [desventajas]
+        - Razón para descartar: [por qué no]
+        
+        **Alternativa 2:**
+        - Descripción: [qué es]
+        - Pros: [ventajas]
+        - Contras: [desventajas]
+        - Razón para descartar: [por qué no]
+
+  - type: textarea
+    id: testing-strategy
+    attributes:
+      label: "🧪 Estrategia de Pruebas"
+      description: "¿Cómo validarás que la implementación funciona?"
+      placeholder: |
+        **Pruebas Unitarias:**
+        - [Qué componentes necesitan pruebas]
+        
+        **Pruebas de Integración:**
+        - [Qué integraciones probar]
+        
+        **Pruebas de Rendimiento:**
+        - [Métricas a validar]
+        
+        **Pruebas de Migración:**
+        - [Cómo probar la migración]
+
+  - type: textarea
+    id: performance-impact
+    attributes:
+      label: "⚡ Impacto en Rendimiento"
+      description: "¿Cómo afecta al rendimiento del sistema?"
+      placeholder: |
+        **Métricas Actuales:**
+        - CPU: [uso actual]
+        - Memoria: [uso actual]
+        - I/O: [patrones actuales]
+        - Latencia: [valores actuales]
+        
+        **Métricas Esperadas:**
+        - CPU: [cambio esperado]
+        - Memoria: [cambio esperado]
+        - I/O: [cambio esperado]
+        - Latencia: [cambio esperado]
+
+  - type: textarea
+    id: security-considerations
+    attributes:
+      label: "🛡️ Consideraciones de Seguridad"
+      description: "¿Hay implicaciones de seguridad?"
+      placeholder: |
+        - Nuevas superficies de ataque: [descripción]
+        - Datos sensibles involucrados: [cuáles]
+        - Autenticación/Autorización: [cambios]
+        - Encriptación: [requisitos]
+        - Auditoría: [qué registrar]
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: "📦 Dependencias y Recursos"
+      description: "¿Qué se necesita para implementar esto?"
+      placeholder: |
+        **Nuevas Dependencias:**
+        - [Librería 1]: [versión] - [propósito]
+        - [Librería 2]: [versión] - [propósito]
+        
+        **Recursos de Infraestructura:**
+        - [Recurso 1]: [especificaciones]
+        - [Recurso 2]: [especificaciones]
+        
+        **Conocimiento Técnico Requerido:**
+        - [Habilidad 1]: [nivel necesario]
+        - [Habilidad 2]: [nivel necesario]
+
+  - type: textarea
+    id: rollback-plan
+    attributes:
+      label: "🔙 Plan de Rollback"
+      description: "¿Cómo revertir si algo sale mal?"
+      placeholder: |
+        **Puntos de No Retorno:**
+        - [Momento 1]: [por qué no se puede revertir después]
+        
+        **Estrategia de Rollback:**
+        - Paso 1: [acción]
+        - Paso 2: [acción]
+        - Paso 3: [acción]
+        
+        **Tiempo de Rollback Estimado:**
+        - [tiempo] en condiciones normales
+        
+        **Datos de Respaldo Necesarios:**
+        - [qué respaldar antes de empezar]
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: "🎯 Complejidad Técnica"
+      description: "¿Qué tan compleja es esta propuesta?"
+      options:
+        - "🟢 Baja - Cambios menores y bien entendidos"
+        - "🟡 Media - Requiere planificación cuidadosa"
+        - "🟠 Alta - Múltiples componentes y riesgos"
+        - "🔴 Muy Alta - Cambios fundamentales con alto riesgo"
+
+  - type: dropdown
+    id: timeline
+    attributes:
+      label: "⏱️ Timeline Estimado"
+      description: "¿Cuánto tiempo tomaría implementar esto?"
+      options:
+        - "⚡ 1-3 días"
+        - "📅 1 semana"
+        - "📆 2-4 semanas"
+        - "🗓️ 1-2 meses"
+        - "⏳ 3+ meses"
+
+  - type: checkboxes
+    id: proposal-checklist
+    attributes:
+      label: "✅ Checklist de Propuesta"
+      description: "Confirma que has considerado estos aspectos"
+      options:
+        - label: "He evaluado el impacto en rendimiento"
+        - label: "He considerado las implicaciones de seguridad"
+        - label: "He documentado los cambios disruptivos"
+        - label: "He evaluado alternativas"
+        - label: "He definido una estrategia de pruebas"
+        - label: "He creado un plan de rollback"
+        - label: "Estoy disponible para implementar/revisar esta propuesta"
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        **¡Gracias por contribuir al crecimiento técnico de KyberCore!** 🏗️
+        
+        Las propuestas técnicas son revisadas por el equipo de arquitectura y desarrolladores senior.
+        Podríamos solicitar más detalles o una reunión técnica para discutir la propuesta.

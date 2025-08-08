@@ -1,0 +1,181 @@
+name: 🚀 Feature Request
+description: Solicita una nueva funcionalidad para KyberCore
+title: "[FEATURE] "
+labels: ["feature request", "needs: evaluation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ¿Necesitas una nueva funcionalidad en KyberCore? 🛠️
+        
+        Este template te ayudará a describir detalladamente la funcionalidad que necesitas.
+
+  - type: input
+    id: feature-title
+    attributes:
+      label: "🎯 Nombre de la Funcionalidad"
+      description: "Un nombre claro para la funcionalidad solicitada"
+      placeholder: "Ej: API para gestión remota de trabajos"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "⚡ Prioridad"
+      description: "¿Qué tan urgente es esta funcionalidad?"
+      options:
+        - "🔴 Crítica - Bloquea el uso del sistema"
+        - "🟠 Alta - Mejora significativamente la productividad"
+        - "🟡 Media - Sería útil tenerla"
+        - "🟢 Baja - Nice to have"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "📂 Categoría"
+      description: "¿A qué módulo pertenece esta funcionalidad?"
+      options:
+        - "🤖 Inteligencia Artificial"
+        - "🏭 Gestión de Flota"
+        - "🔍 Análisis y Diagnóstico"
+        - "🌐 API y Endpoints"
+        - "🎨 Interfaz de Usuario"
+        - "🔧 Configuración"
+        - "📊 Reportes"
+        - "🔌 Integraciones"
+        - "⚙️ Infraestructura"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "📋 Descripción Detallada"
+      description: "¿Qué debería hacer esta funcionalidad?"
+      placeholder: "Describe en detalle qué funcionalidad necesitas y cómo debería comportarse..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: user-story
+    attributes:
+      label: "👤 Historia de Usuario"
+      description: "Describe quién usará esta funcionalidad y por qué"
+      placeholder: |
+        **Como** [tipo de usuario]
+        **Quiero** [funcionalidad]
+        **Para** [propósito/beneficio]
+        
+        **Ejemplo:**
+        Como administrador de flota
+        Quiero poder programar trabajos de impresión desde una API
+        Para integrar KyberCore con nuestro sistema de gestión existente
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: "✅ Criterios de Aceptación"
+      description: "¿Cómo sabremos que la funcionalidad está completa?"
+      placeholder: |
+        - [ ] Criterio 1: El sistema debe poder...
+        - [ ] Criterio 2: La interfaz debe mostrar...
+        - [ ] Criterio 3: Los usuarios pueden...
+    validations:
+      required: true
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: "🎨 Diseño/Mockups (Opcional)"
+      description: "¿Tienes alguna idea visual de cómo debería verse?"
+      placeholder: "Enlaces a mockups, wireframes, o descripciones visuales..."
+
+  - type: textarea
+    id: technical-requirements
+    attributes:
+      label: "⚙️ Requisitos Técnicos"
+      description: "¿Hay consideraciones técnicas específicas?"
+      placeholder: |
+        - Rendimiento: [especificaciones]
+        - Compatibilidad: [sistemas/versiones]
+        - Seguridad: [consideraciones]
+        - Escalabilidad: [requisitos]
+
+  - type: textarea
+    id: current-workaround
+    attributes:
+      label: "🔄 Solución Temporal Actual"
+      description: "¿Cómo resuelves esto actualmente? (si aplica)"
+      placeholder: "Describe cualquier workaround que estés usando..."
+
+  - type: dropdown
+    id: user-type
+    attributes:
+      label: "👥 Tipo de Usuario Afectado"
+      description: "¿Quién se beneficiaría de esta funcionalidad?"
+      options:
+        - "🏠 Usuarios Domésticos"
+        - "🏢 Usuarios Empresariales"
+        - "🔧 Administradores de Sistema"
+        - "👨‍💻 Desarrolladores/Integradores"
+        - "📊 Analistas/Supervisores"
+        - "🌐 Todos los Usuarios"
+
+  - type: textarea
+    id: business-impact
+    attributes:
+      label: "💼 Impacto en el Negocio"
+      description: "¿Cómo esta funcionalidad mejora el valor del producto?"
+      placeholder: |
+        - Reduce tiempo de: [proceso]
+        - Elimina la necesidad de: [tarea manual]
+        - Permite: [nueva capacidad]
+        - Mejora: [aspecto específico]
+
+  - type: textarea
+    id: integration
+    attributes:
+      label: "🔌 Integraciones Requeridas"
+      description: "¿Necesita integrarse con sistemas externos?"
+      placeholder: |
+        - Sistema 1: [propósito]
+        - API externa: [cual y para qué]
+        - Formato de datos: [especificación]
+
+  - type: checkboxes
+    id: feature-flags
+    attributes:
+      label: "🚩 Características Especiales"
+      description: "Marca todo lo que aplique"
+      options:
+        - label: "Requiere autenticación/autorización"
+        - label: "Necesita persistencia de datos"
+        - label: "Implica procesamiento en tiempo real"
+        - label: "Requiere notificaciones/alertas"
+        - label: "Necesita ser configurable por usuario"
+        - label: "Debe ser accesible vía API"
+        - label: "Requiere documentación especial"
+
+  - type: textarea
+    id: related-issues
+    attributes:
+      label: "🔗 Issues Relacionados"
+      description: "¿Está relacionado con otros issues o funcionalidades?"
+      placeholder: |
+        - #123 - [descripción de la relación]
+        - #456 - [dependencia o conflicto]
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        **¡Gracias por ayudarnos a mejorar KyberCore!** 🚀
+        
+        Tu solicitud será evaluada por el equipo de desarrollo y la comunidad.
+        Nos pondremos en contacto si necesitamos más información.

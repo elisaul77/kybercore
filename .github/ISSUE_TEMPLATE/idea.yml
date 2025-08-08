@@ -1,0 +1,134 @@
+name: 💡 Community Idea
+description: Propone una nueva idea para KyberCore
+title: "[IDEA] "
+labels: ["idea: new", "community"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ¡Gracias por contribuir con una idea a KyberCore! 🚀
+        
+        Este template te ayudará a estructurar tu propuesta para que la comunidad pueda entender y evaluar tu idea.
+
+  - type: input
+    id: idea-title
+    attributes:
+      label: "🎯 Título de la Idea"
+      description: "Un título claro y descriptivo para tu idea"
+      placeholder: "Ej: Dashboard predictivo con Machine Learning"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "📂 Categoría"
+      description: "¿En qué área se enfoca tu idea?"
+      options:
+        - "🤖 Inteligencia Artificial"
+        - "🏭 Gestión de Flota"
+        - "🔍 Análisis y Diagnóstico"
+        - "🌐 Interfaz y UX"
+        - "🔧 Infraestructura"
+        - "🔌 Integraciones"
+        - "📊 Reportes y Analytics"
+        - "🛠️ Herramientas de Desarrollo"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "❓ Problema que Resuelve"
+      description: "¿Qué problema o necesidad aborda tu idea?"
+      placeholder: "Describe el problema actual o la oportunidad de mejora..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: "💡 Solución Propuesta"
+      description: "Explica tu idea en detalle"
+      placeholder: "¿Cómo funcionaría tu idea? ¿Qué componentes involucra?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: benefits
+    attributes:
+      label: "✨ Beneficios Esperados"
+      description: "¿Qué beneficios traería esta implementación?"
+      placeholder: |
+        - Beneficio 1: [Descripción]
+        - Beneficio 2: [Descripción]
+        - Beneficio 3: [Descripción]
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: "🎯 Casos de Uso"
+      description: "Proporciona ejemplos específicos de cómo se usaría"
+      placeholder: |
+        **Caso 1:** [Escenario específico]
+        **Caso 2:** [Otro escenario]
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: "⚡ Complejidad Estimada"
+      description: "¿Qué tan compleja crees que sería implementar esta idea?"
+      options:
+        - "🟢 Baja (1-2 días)"
+        - "🟡 Media (1 semana)"
+        - "🟠 Alta (2-4 semanas)"
+        - "🔴 Muy Alta (1+ mes)"
+        - "🤷 No estoy seguro"
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: "📈 Impacto Esperado"
+      description: "¿Cuántos usuarios se beneficiarían?"
+      options:
+        - "🌟 Crítico - Todos los usuarios"
+        - "🔥 Alto - Mayoría de usuarios"
+        - "💪 Medio - Usuarios avanzados"
+        - "🎯 Bajo - Casos específicos"
+
+  - type: textarea
+    id: references
+    attributes:
+      label: "🔗 Referencias (Opcional)"
+      description: "Enlaces a documentación, ejemplos similares, o recursos relacionados"
+      placeholder: |
+        - [Referencia 1](URL)
+        - [Referencia 2](URL)
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: "💬 Información Adicional"
+      description: "Cualquier detalle adicional que consideres relevante"
+
+  - type: checkboxes
+    id: collaboration
+    attributes:
+      label: "🤝 Colaboración"
+      description: "Marca si aplica"
+      options:
+        - label: "Estoy dispuesto(a) a ayudar con la implementación"
+        - label: "Puedo proporcionar más detalles técnicos si es necesario"
+        - label: "Esta idea está basada en experiencia real de uso"
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        **¡Gracias por contribuir a KyberCore!** 🙏
+        
+        Tu idea será revisada por la comunidad y el equipo de desarrollo. 
+        Si es aprobada, recibirás crédito completo en la implementación.
