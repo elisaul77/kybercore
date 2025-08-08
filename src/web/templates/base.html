@@ -14,35 +14,55 @@
 
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <aside class="w-64 bg-gray-800 text-white flex flex-col">
-            <div class="h-24 flex flex-col items-center justify-center border-b border-gray-700 px-4 text-center">
-                <h1 class="text-3xl font-bold">KyberCore</h1>
-                <p class="text-xs text-gray-400 mt-1">Intelligent 3D Printer Orchestrator</p>
+        <aside id="sidebar" class="w-64 bg-gray-800 text-white flex flex-col transition-all duration-300 ease-in-out">
+            <div class="h-24 flex items-center justify-between border-b border-gray-700 px-4">
+                <div class="flex flex-col items-center justify-center text-center flex-1" id="sidebar-title">
+                    <h1 class="text-3xl font-bold">KyberCore</h1>
+                    <p class="text-xs text-gray-400 mt-1">Intelligent 3D Printer Orchestrator</p>
+                </div>
+                <!-- Botón hamburguesa -->
+                <button id="sidebar-toggle" class="p-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <svg id="hamburger-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
             </div>
-            <nav class="flex-1 px-4 py-6 space-y-2">
-                <a href="#dashboard" data-module="dashboard" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
-                    <span class="mr-3">📊</span> Panel de Control
+            <nav id="sidebar-nav" class="flex-1 px-4 py-6 space-y-2">
+                <a href="#dashboard" data-module="dashboard" data-tooltip="Panel de Control" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3 text-xl">📊</span> 
+                    <span class="sidebar-text">Panel de Control</span>
                 </a>
-                <a href="#new-job" data-module="new-job" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
-                    <span class="mr-3">🚀</span> Nuevo Trabajo IA
+                <a href="#new-job" data-module="new-job" data-tooltip="Nuevo Trabajo IA" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3 text-xl">🚀</span> 
+                    <span class="sidebar-text">Nuevo Trabajo IA</span>
                 </a>
-                <a href="#recommender" data-module="recommender" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
-                    <span class="mr-3">🤖</span> Perfiles IA
+                <a href="#recommender" data-module="recommender" data-tooltip="Perfiles IA" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3 text-xl">🤖</span> 
+                    <span class="sidebar-text">Perfiles IA</span>
                 </a>
-                <a href="#analysis" data-module="analysis" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
-                    <span class="mr-3">🔍</span> Análisis de Fallos
+                <a href="#analysis" data-module="analysis" data-tooltip="Análisis de Fallos" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3 text-xl">🔍</span> 
+                    <span class="sidebar-text">Análisis de Fallos</span>
                 </a>
-                <a href="#fleet" data-module="fleet" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
-                    <span class="mr-3">🏭</span> Gestión de Flota
+                <a href="#fleet" data-module="fleet" data-tooltip="Gestión de Flota" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3 text-xl">🏭</span> 
+                    <span class="sidebar-text">Gestión de Flota</span>
                 </a>
-                <a href="#settings" data-module="settings" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
-                    <span class="mr-3">⚙️</span> Ajustes
+                <a href="#settings" data-module="settings" data-tooltip="Ajustes" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3 text-xl">⚙️</span> 
+                    <span class="sidebar-text">Ajustes</span>
                 </a>
             </nav>
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 p-8 overflow-y-auto">
+        <main id="main-content" class="flex-1 p-8 overflow-y-auto transition-all duration-300 ease-in-out">
+            <!-- Overlay para móviles -->
+            <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden lg:hidden"></div>
+            
             <div class="main-content">
                 {% block content %}{% endblock %}
             </div>

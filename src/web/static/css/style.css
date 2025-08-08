@@ -2,6 +2,89 @@ body {
     font-family: 'Inter', sans-serif;
     background-color: #f0f2f5;
 }
+
+/* Estilos para sidebar colapsable */
+#sidebar {
+    z-index: 30;
+    position: relative;
+}
+
+#sidebar.collapsed {
+    width: 4rem; /* 16 en Tailwind */
+}
+
+#sidebar.collapsed #sidebar-title {
+    display: none;
+}
+
+#sidebar.collapsed .sidebar-text {
+    display: none;
+}
+
+#sidebar.collapsed #sidebar-nav {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+#sidebar.collapsed .sidebar-link {
+    justify-content: center;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+
+#sidebar.collapsed .sidebar-link span:first-child {
+    margin-right: 0;
+}
+
+/* Transiciones suaves */
+#sidebar, #main-content {
+    transition: all 0.3s ease-in-out;
+}
+
+.sidebar-text {
+    transition: opacity 0.2s ease-in-out;
+}
+
+#sidebar.collapsed .sidebar-text {
+    opacity: 0;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+    #sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+        z-index: 40;
+    }
+    
+    #sidebar.mobile-open {
+        transform: translateX(0);
+    }
+    
+    #main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    #sidebar-overlay.show {
+        display: block !important;
+    }
+}
+
+@media (min-width: 1025px) {
+    #sidebar-overlay {
+        display: none !important;
+    }
+    
+    #sidebar {
+        position: relative;
+        transform: translateX(0);
+    }
+}
+
 .sidebar-link {
     transition: all 0.2s ease-in-out;
 }
@@ -108,4 +191,76 @@ body {
 .temp-critical {
     color: #dc2626;
     font-weight: bold;
+}
+
+/* Mejoras adicionales para el sidebar */
+#sidebar-toggle {
+    transition: all 0.2s ease-in-out;
+}
+
+#sidebar-toggle:hover {
+    background-color: #374151;
+    transform: scale(1.05);
+}
+
+#sidebar-toggle:active {
+    transform: scale(0.95);
+}
+
+/* Tooltip para botones colapsados */
+#sidebar.collapsed .sidebar-link {
+    position: relative;
+}
+
+#sidebar.collapsed .sidebar-link:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #1f2937;
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    z-index: 50;
+    margin-left: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+#sidebar.collapsed .sidebar-link:hover::before {
+    content: '';
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 5px solid transparent;
+    border-right-color: #1f2937;
+    z-index: 50;
+    margin-left: 2px;
+}
+
+/* Animación para iconos del menú */
+.sidebar-link span:first-child {
+    transition: transform 0.2s ease-in-out;
+}
+
+.sidebar-link:hover span:first-child {
+    transform: scale(1.1);
+}
+
+/* Mejorar la apariencia del overlay */
+#sidebar-overlay {
+    backdrop-filter: blur(2px);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Estados del toggle button */
+#sidebar-toggle svg {
+    transition: all 0.2s ease-in-out;
+}
+
+#sidebar-toggle:hover svg {
+    stroke-width: 2.5;
 }
