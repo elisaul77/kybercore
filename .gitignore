@@ -82,3 +82,6 @@ requirements.txt.lock
 .github/copilot-instructions.md
 .github/chatmodes/
 docs/investigacion.md
+
+# Log files
+logs/
