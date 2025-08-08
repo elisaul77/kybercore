@@ -442,5 +442,31 @@ class FleetService:
         await self.close_session()
         logger.info("FleetService limpiado")
 
+    def get_app_data(self):
+        """Obtiene datos de la aplicación para el recomendador IA (modo síncrono)"""
+        from collections import namedtuple
+        
+        # Crear estructuras simples para printers y filaments
+        PrinterData = namedtuple('PrinterData', ['id', 'name', 'model', 'status'])
+        FilamentData = namedtuple('FilamentData', ['id', 'name', 'material'])
+        AppData = namedtuple('AppData', ['printers', 'filaments'])
+        
+        # Datos simulados de impresoras (para usar en modo síncrono)
+        printers = [
+            PrinterData(id="printer-test-1", name="Impresora Prueba", model="Generic", status="idle"),
+            PrinterData(id="prusamk4", name="Prusa MK4", model="Prusa MK4", status="idle"),
+            PrinterData(id="generic", name="Impresora Genérica", model="Generic", status="idle")
+        ]
+        
+        # Datos simulados de filamentos
+        filaments = [
+            FilamentData(id="pla", name="PLA", material="PLA"),
+            FilamentData(id="pla1", name="PLA Blanco", material="PLA"),
+            FilamentData(id="abs1", name="ABS Negro", material="ABS"),
+            FilamentData(id="invalid", name="Material Inválido", material="UNKNOWN")
+        ]
+        
+        return AppData(printers=printers, filaments=filaments)
+
 # Instancia global del servicio
 fleet_service = FleetService()

@@ -72,3 +72,14 @@ app.include_router(settings_controller.router, prefix="/api/settings", tags=["Se
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
+
+# Endpoint de health check para monitoreo y testing
+@app.get("/health")
+async def health_check():
+    """Endpoint de health check para verificar el estado de la aplicación"""
+    return {
+        "status": "healthy",
+        "service": "KyberCore",
+        "version": "0.1.0",
+        "message": "API funcionando correctamente"
+    }
