@@ -408,33 +408,6 @@ class FleetService:
             # En modo simulación, devolver éxito
             return {"success": True, "action": "restart_firmware", "simulated": True}
 
-    async def restart_klipper_service(self, printer_id: str):
-        """Reinicia el servicio Klipper a nivel de sistema (systemctl restart klipper)"""
-        printer = self.printers.get(printer_id)
-        if not printer:
-            raise ValueError(f"Impresora {printer_id} no encontrada")
-        
-        try:
-            session = await self._get_session()
-            # Usar la API de system administration para reiniciar el servicio
-            url = f"http://{printer.ip}/machine/services/restart"
-            
-            # Reiniciar el servicio Klipper específicamente
-            payload = {"service": "klipper"}
-            
-            async with session.post(url, json=payload) as response:
-                if response.status == 200:
-                    logger.info(f"Servicio Klipper reiniciado en {printer.name}")
-                    return {"success": True, "action": "restart_klipper_service"}
-                else:
-                    error_text = await response.text()
-                    logger.error(f"Error reiniciando servicio Klipper en {printer.name}: {error_text}")
-                    raise Exception(f"Error en API Moonraker: {response.status}")
-                    
-        except Exception as e:
-            logger.error(f"Error reiniciando servicio Klipper en {printer.name}: {e}")
-            # En modo simulación, devolver éxito
-            return {"success": True, "action": "restart_klipper_service", "simulated": True}
         
     async def cleanup(self):
         """Limpieza de recursos al cerrar"""

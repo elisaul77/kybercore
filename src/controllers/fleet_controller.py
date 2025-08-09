@@ -11,7 +11,7 @@ from src.services.fleet_service import fleet_service
 
 # Schema para comandos de impresora
 class PrinterCommand(BaseModel):
-    command: str  # 'home', 'pause', 'resume', 'cancel', 'restart_klipper', 'restart_firmware', 'restart_klipper_service'
+    command: str  # 'home', 'pause', 'resume', 'cancel', 'restart_klipper', 'restart_firmware'
     axis: str = None  # Para comando home: 'X', 'Y', 'Z'
     parameters: dict = None  # Parámetros adicionales
 
@@ -124,8 +124,6 @@ async def send_printer_command(printer_id: str, command: PrinterCommand):
             result = await fleet_service.restart_klipper(printer_id)
         elif command.command == "restart_firmware":
             result = await fleet_service.restart_firmware(printer_id)
-        elif command.command == "restart_klipper_service":
-            result = await fleet_service.restart_klipper_service(printer_id)
         else:
             raise HTTPException(status_code=400, detail=f"Comando no válido: {command.command}")
         
@@ -156,7 +154,7 @@ async def send_bulk_command(bulk_command: BulkCommand):
             raise HTTPException(status_code=400, detail="No se encontraron impresoras que cumplan los criterios")
         
         # Validar comando
-        valid_commands = ["home", "pause", "resume", "cancel", "restart_klipper", "restart_firmware", "restart_klipper_service"]
+        valid_commands = ["home", "pause", "resume", "cancel", "restart_klipper", "restart_firmware"]
         if bulk_command.command not in valid_commands:
             raise HTTPException(status_code=400, detail=f"Comando no válido: {bulk_command.command}")
         
