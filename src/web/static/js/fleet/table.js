@@ -34,6 +34,9 @@ window.FleetTable = (function() {
         const printState = printer.realtime_data?.print_state || 'unknown';
         
         return `
+            <td class="px-4 py-2">
+                <input type="checkbox" class="printer-checkbox rounded" data-printer-id="${printer.id}" data-printer-name="${printer.name}">
+            </td>
             <td class="px-4 py-2">${printer.name}</td>
             <td class="px-4 py-2">${printer.model}</td>
             <td class="px-4 py-2">${printer.ip}</td>
@@ -119,6 +122,9 @@ window.FleetTable = (function() {
             setTimeout(() => row.classList.remove('bg-blue-50'), 500);
         });
         
+        // Configurar evento para el checkbox "Seleccionar todo"
+        setupTableCheckboxEvents();
+        
         // Actualizar estados después de poblar la tabla
         const isAnyPrinterConnected = printers.some(printer => printer.status !== 'unreachable');
         const state = window.FleetState;
@@ -128,6 +134,33 @@ window.FleetTable = (function() {
             hasError: false
         });
         window.FleetUI.syncConnectionStatus();
+    }
+    
+    // Función para configurar eventos de checkboxes
+    function setupTableCheckboxEvents() {
+        const selectAllCheckbox = document.getElementById('select-all-table');
+        const printerCheckboxes = document.querySelectorAll('.printer-checkbox');
+        
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                printerCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+        }
+        
+        // Configurar eventos individuales para sincronizar con el "seleccionar todo"
+        printerCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const allChecked = Array.from(printerCheckboxes).every(cb => cb.checked);
+                const noneChecked = Array.from(printerCheckboxes).every(cb => !cb.checked);
+                
+                if (selectAllCheckbox) {
+                    selectAllCheckbox.checked = allChecked;
+                    selectAllCheckbox.indeterminate = !allChecked && !noneChecked;
+                }
+            });
+        });
     }
     
     // Función para actualizar una sola impresora desde WebSocket
@@ -148,6 +181,9 @@ window.FleetTable = (function() {
             }
             
             row.innerHTML = createPrinterRow(printerData);
+            
+            // Reconfigurar eventos de checkboxes después de actualizar
+            setupTableCheckboxEvents();
             
             // Efecto visual de actualización más sutil
             row.classList.add('bg-green-50');
@@ -203,6 +239,9 @@ window.FleetTable = (function() {
                     row.classList.remove('bg-blue-50');
                 }, 500);
             });
+            
+            // Configurar eventos de checkboxes después de renderizar
+            setupTableCheckboxEvents();
         }
     }
     
@@ -211,6 +250,7 @@ window.FleetTable = (function() {
         createPrinterRow,
         populateFleetTable,
         updateSinglePrinter,
-        renderPrinters
+        renderPrinters,
+        setupTableCheckboxEvents
     };
 })();

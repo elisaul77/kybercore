@@ -8,6 +8,9 @@ window.FleetState = (function() {
         hasError: false
     };
     
+    // Lista de impresoras
+    let printers = [];
+    
     // Variables para actualizaciones optimizadas
     let websocket = null;
     let isWebSocketConnected = false;
@@ -56,6 +59,33 @@ window.FleetState = (function() {
         },
         
         isSystemActive: () => isSystemActive,
-        setSystemActive: (active) => { isSystemActive = active; }
+        setSystemActive: (active) => { isSystemActive = active; },
+        
+        // Métodos para manejar impresoras
+        getPrinters: () => [...printers],
+        setPrinters: (newPrinters) => { 
+            printers = newPrinters || []; 
+            fleetState.printerCount = printers.length;
+        },
+        getPrinterById: (id) => printers.find(p => p.id === id),
+        updatePrinter: (id, updateData) => {
+            const index = printers.findIndex(p => p.id === id);
+            if (index !== -1) {
+                printers[index] = { ...printers[index], ...updateData };
+            }
+        },
+        addPrinter: (printer) => {
+            const existingIndex = printers.findIndex(p => p.id === printer.id);
+            if (existingIndex !== -1) {
+                printers[existingIndex] = printer;
+            } else {
+                printers.push(printer);
+            }
+            fleetState.printerCount = printers.length;
+        },
+        removePrinter: (id) => {
+            printers = printers.filter(p => p.id !== id);
+            fleetState.printerCount = printers.length;
+        }
     };
 })();
