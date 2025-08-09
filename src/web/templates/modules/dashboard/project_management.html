@@ -1,0 +1,376 @@
+  <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-white">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-2xl font-bold">🚀 Centro de Gestión de Proyectos</h3>
+              <p class="text-indigo-100 mt-1">Vista integral: proyectos, impresoras y cronograma</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="bg-white/20 backdrop-blur-lg rounded-xl px-4 py-2">
+                <div class="text-sm font-medium">Vista Activa</div>
+                <div class="flex items-center gap-2 mt-1">
+                  <button data-view="detail" class="px-3 py-1 bg-white rounded-lg text-indigo-600 text-xs font-medium">📊 Detalle</button>
+                  <button data-view="gantt" class="px-3 py-1 bg-white/20 rounded-lg text-xs border border-white/30">📈 Gantt</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 flex items-center gap-4 text-sm">
+            <div class="bg-white/20 px-3 py-1 rounded-full">
+              Total: <span class="font-bold" data-kpi="active-projects-inline">3</span>
+            </div>
+            <div class="bg-white/20 px-3 py-1 rounded-full">
+              Activos: <span class="font-bold">2</span>
+            </div>
+            <div class="bg-white/20 px-3 py-1 rounded-full">
+              Impresoras trabajando: <span class="font-bold">3</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="p-6 space-y-6">
+          
+          <!-- Vista Gantt Simplificada -->
+          <div id="gantt-view" class="bg-gray-50 rounded-xl p-4 border-2 border-dashed border-gray-200 hidden">
+            <h4 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              📊 Cronograma de Proyectos (Vista Gantt)
+            </h4>
+            <div class="space-y-3">
+              <!-- Timeline Header -->
+              <div class="flex items-center text-xs text-gray-500 font-medium">
+                <div class="w-48">Proyecto</div>
+                <div class="flex-1 grid grid-cols-7 gap-1 text-center">
+                  <div>Lun</div>
+                  <div>Mar</div>
+                  <div>Mié</div>
+                  <div>Jue</div>
+                  <div>Vie</div>
+                  <div>Sáb</div>
+                  <div>Dom</div>
+                </div>
+              </div>
+              
+              <!-- AlphaCAM Gantt -->
+              <div class="flex items-center">
+                <div class="w-48 text-sm font-medium text-indigo-600">AlphaCAM v2.1</div>
+                <div class="flex-1 grid grid-cols-7 gap-1 h-8">
+                  <div class="bg-indigo-500 rounded-lg flex items-center justify-center">
+                    <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  </div>
+                  <div class="bg-indigo-400 rounded-lg"></div>
+                  <div class="bg-indigo-300 rounded-lg"></div>
+                  <div class="bg-gray-200 rounded-lg"></div>
+                  <div class="bg-gray-200 rounded-lg"></div>
+                  <div class="bg-gray-200 rounded-lg"></div>
+                  <div class="bg-gray-200 rounded-lg"></div>
+                </div>
+              </div>
+              
+              <!-- SensorHub Gantt -->
+              <div class="flex items-center">
+                <div class="w-48 text-sm font-medium text-amber-600">SensorHub IoT</div>
+                <div class="flex-1 grid grid-cols-7 gap-1 h-8">
+                  <div class="bg-gray-200 rounded-lg"></div>
+                  <div class="bg-amber-500 rounded-lg flex items-center justify-center">
+                    <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  </div>
+                  <div class="bg-amber-400 rounded-lg"></div>
+                  <div class="bg-amber-300 rounded-lg"></div>
+                  <div class="bg-amber-200 rounded-lg"></div>
+                  <div class="bg-gray-200 rounded-lg"></div>
+                  <div class="bg-gray-200 rounded-lg"></div>
+                </div>
+              </div>
+              
+              <!-- BetaRig Gantt -->
+              <div class="flex items-center">
+                <div class="w-48 text-sm font-medium text-emerald-600">BetaRig Testing</div>
+                <div class="flex-1 grid grid-cols-7 gap-1 h-8">
+                  <div class="bg-gray-200 rounded-lg"></div>
+                  <div class="bg-gray-200 rounded-lg"></div>
+                  <div class="bg-gray-200 rounded-lg"></div>
+                  <div class="bg-emerald-500 rounded-lg flex items-center justify-center">
+                    <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  </div>
+                  <div class="bg-emerald-400 rounded-lg"></div>
+                  <div class="bg-emerald-300 rounded-lg"></div>
+                  <div class="bg-emerald-200 rounded-lg"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mt-4 flex items-center gap-4 text-xs text-gray-500">
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 bg-indigo-500 rounded-full"></div>
+                <span>En progreso</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 bg-indigo-300 rounded-full"></div>
+                <span>Planificado</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 bg-gray-200 rounded-full"></div>
+                <span>Disponible</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vista Detallada de Proyectos -->
+          <div id="detail-view" class="space-y-4">
+            
+            <!-- Proyecto AlphaCAM con impresoras integradas -->
+            <div class="bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-xl p-5 border-l-4 border-indigo-500 hover:shadow-lg transition-all duration-300">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg">
+                    AC
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-bold text-indigo-800">AlphaCAM v2.1</h4>
+                    <p class="text-indigo-600 text-sm">Prototipo mecánico • Prioridad Alta</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="bg-indigo-500 text-white px-3 py-1 rounded-full text-xs font-medium animate-pulse">
+                    🔄 En Progreso
+                  </span>
+                  <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium">
+                    75% Completado
+                  </span>
+                </div>
+              </div>
+              
+              <!-- Impresoras asignadas a este proyecto -->
+              <div class="mb-4">
+                <h5 class="text-sm font-semibold text-indigo-700 mb-2 flex items-center gap-2">
+                  🖨️ Impresoras Activas Asignadas (2)
+                </h5>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div class="bg-white rounded-lg p-3 border border-indigo-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                        <span class="font-medium text-gray-800">Ender 3 Pro #01</span>
+                      </div>
+                      <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Activa</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-600">
+                      <div class="flex justify-between">
+                        <span>Progreso:</span>
+                        <span class="font-medium">67%</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span>Tiempo restante:</span>
+                        <span class="font-medium">2h 15m</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span>Material:</span>
+                        <span class="font-medium">PLA Negro</span>
+                      </div>
+                    </div>
+                    <div class="mt-2 bg-gray-200 rounded-full h-2">
+                      <div class="bg-indigo-500 h-2 rounded-full" style="width: 67%"></div>
+                    </div>
+                  </div>
+                  
+                  <div class="bg-white rounded-lg p-3 border border-indigo-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                        <span class="font-medium text-gray-800">Prusa i3 MK3S #03</span>
+                      </div>
+                      <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Activa</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-600">
+                      <div class="flex justify-between">
+                        <span>Progreso:</span>
+                        <span class="font-medium">42%</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span>Tiempo restante:</span>
+                        <span class="font-medium">4h 32m</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span>Material:</span>
+                        <span class="font-medium">PETG Transparente</span>
+                      </div>
+                    </div>
+                    <div class="mt-2 bg-gray-200 rounded-full h-2">
+                      <div class="bg-indigo-500 h-2 rounded-full" style="width: 42%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Información del proyecto -->
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <span class="text-indigo-600 font-medium">Inicio:</span>
+                  <div class="text-gray-700">15 Ene 2025</div>
+                </div>
+                <div>
+                  <span class="text-indigo-600 font-medium">Entrega:</span>
+                  <div class="text-gray-700">22 Ene 2025</div>
+                </div>
+                <div>
+                  <span class="text-indigo-600 font-medium">Piezas:</span>
+                  <div class="text-gray-700">24 / 32</div>
+                </div>
+                <div>
+                  <span class="text-indigo-600 font-medium">Tiempo total:</span>
+                  <div class="text-gray-700">28h estimadas</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Proyecto SensorHub con impresoras integradas -->
+            <div class="bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl p-5 border-l-4 border-amber-500 hover:shadow-lg transition-all duration-300">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg">
+                    SH
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-bold text-amber-800">SensorHub IoT</h4>
+                    <p class="text-amber-600 text-sm">Sistema de sensores • Prioridad Media</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-medium animate-pulse">
+                    🔄 En Progreso
+                  </span>
+                  <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
+                    45% Completado
+                  </span>
+                </div>
+              </div>
+              
+              <!-- Impresoras asignadas a este proyecto -->
+              <div class="mb-4">
+                <h5 class="text-sm font-semibold text-amber-700 mb-2 flex items-center gap-2">
+                  🖨️ Impresoras Activas Asignadas (1)
+                </h5>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div class="bg-white rounded-lg p-3 border border-amber-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                        <span class="font-medium text-gray-800">Bambu Lab X1 #02</span>
+                      </div>
+                      <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Activa</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-600">
+                      <div class="flex justify-between">
+                        <span>Progreso:</span>
+                        <span class="font-medium">89%</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span>Tiempo restante:</span>
+                        <span class="font-medium">0h 45m</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span>Material:</span>
+                        <span class="font-medium">ABS Blanco</span>
+                      </div>
+                    </div>
+                    <div class="mt-2 bg-gray-200 rounded-full h-2">
+                      <div class="bg-amber-500 h-2 rounded-full" style="width: 89%"></div>
+                    </div>
+                  </div>
+                  
+                  <div class="bg-gray-50 rounded-lg p-3 border border-gray-200 opacity-60">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                        <span class="font-medium text-gray-500">Proxima asignación</span>
+                      </div>
+                      <span class="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full">Pendiente</span>
+                    </div>
+                    <div class="text-xs text-gray-400">
+                      Carcasa principal en cola
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Información del proyecto -->
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <span class="text-amber-600 font-medium">Inicio:</span>
+                  <div class="text-gray-700">18 Ene 2025</div>
+                </div>
+                <div>
+                  <span class="text-amber-600 font-medium">Entrega:</span>
+                  <div class="text-gray-700">25 Ene 2025</div>
+                </div>
+                <div>
+                  <span class="text-amber-600 font-medium">Piezas:</span>
+                  <div class="text-gray-700">9 / 20</div>
+                </div>
+                <div>
+                  <span class="text-amber-600 font-medium">Tiempo total:</span>
+                  <div class="text-gray-700">16h estimadas</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Proyecto BetaRig pausado -->
+            <div class="bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-xl p-5 border-l-4 border-emerald-500 opacity-75 hover:opacity-100 hover:shadow-lg transition-all duration-300">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg">
+                    BR
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-bold text-emerald-800">BetaRig Testing</h4>
+                    <p class="text-emerald-600 text-sm">Banco de pruebas • Prioridad Baja</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="bg-gray-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                    ⏸️ Pausado
+                  </span>
+                  <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">
+                    15% Completado
+                  </span>
+                </div>
+              </div>
+              
+              <!-- Impresoras asignadas a este proyecto -->
+              <div class="mb-4">
+                <h5 class="text-sm font-semibold text-emerald-700 mb-2 flex items-center gap-2">
+                  🖨️ Impresoras Asignadas (0 activas)
+                </h5>
+                <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                  <div class="text-center text-gray-500 text-sm">
+                    <span>⏸️ Proyecto pausado - Sin impresoras activas</span>
+                    <div class="mt-1 text-xs">
+                      Reanudación programada: Jueves 23 Ene
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Información del proyecto -->
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <span class="text-emerald-600 font-medium">Inicio:</span>
+                  <div class="text-gray-700">20 Ene 2025</div>
+                </div>
+                <div>
+                  <span class="text-emerald-600 font-medium">Entrega:</span>
+                  <div class="text-gray-700">30 Ene 2025</div>
+                </div>
+                <div>
+                  <span class="text-emerald-600 font-medium">Piezas:</span>
+                  <div class="text-gray-700">3 / 15</div>
+                </div>
+                <div>
+                  <span class="text-emerald-600 font-medium">Tiempo total:</span>
+                  <div class="text-gray-700">22h estimadas</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
