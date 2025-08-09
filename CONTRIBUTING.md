@@ -102,9 +102,35 @@ python -m pytest tests/
 - **Documentación clara**: Código auto-documentado y guías comprensibles
 - **Calidad sobre cantidad**: Preferimos contribuciones bien pensadas y testeadas
 
-## 📞 Contacto
+## � Otras formas de contribuir
+
+### 💰 Apoyo financiero
+Si no puedes contribuir con código pero encuentras valor en KyberCore, considera apoyar financieramente el proyecto:
+
+- 🌟 **[GitHub Sponsors](https://github.com/sponsors/elisaul77)** - Sponsorship mensual
+- 💳 **[PayPal](https://paypal.me/eflorezp)** - Donaciones únicas
+- ☕ **[Buy Me a Coffee](https://buymeacoffee.com/elisaul77)** - Apoyo rápido
+- 🎁 **[Ko-fi](https://ko-fi.com/elisaul77)** - Donaciones sin comisiones
+- 🟠 **[Patreon](https://patreon.com/elisaul77)** - Sponsorship con beneficios exclusivos
+
+Ver todas las opciones y beneficios en **[FUNDING.md](FUNDING.md)**
+
+### 📢 Difusión
+- ⭐ Dale una estrella al repositorio
+- 🐦 Comparte en redes sociales
+- 📝 Escribe sobre KyberCore en tu blog
+- 🎤 Presenta el proyecto en meetups o conferencias
+
+### 🧪 Testing y feedback
+- 🐛 Reporta bugs que encuentres
+- 💡 Sugiere mejoras en la experiencia de usuario
+- 📊 Comparte métricas de uso real
+- 🔍 Valida nuevas funcionalidades en beta
+
+## �📞 Contacto
 
 - Abre un Issue para discusiones técnicas
 - Revisa la documentación en `docs/investigacion.md` para contexto estratégico
+- Para temas de donaciones: donations@kybercore.dev
 
 ¡Esperamos tu contribución! 🎯

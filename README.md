@@ -9,6 +9,10 @@
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+[![GitHub Sponsors](https://img.shields.io/badge/GitHub-Sponsors-pink?style=for-the-badge&logo=githubsponsors)](https://github.com/sponsors/elisaul77)
+[![PayPal](https://img.shields.io/badge/PayPal-Donate-blue?style=for-the-badge&logo=paypal)](https://paypal.me/eflorezp)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Support-yellow?style=for-the-badge&logo=buymeacoffee)](https://buymeacoffee.com/elisaul77)
+
 Orquestador local de múltiples impresoras 3D con **Inteligencia Artificial integrada**, desarrollado 100% en Python y diseñado para ejecutarse en entornos Docker.
 
 ## ✨ Características principales
@@ -42,6 +46,21 @@ Orquestador local de múltiples impresoras 3D con **Inteligencia Artificial inte
 ## 🤝 Contribuir
 
 ¡Las contribuciones son bienvenidas! Por favor lee [CONTRIBUTING.md](CONTRIBUTING.md) para más detalles sobre nuestro proceso de contribución.
+
+### 💖 Apoya el Proyecto
+
+Si KyberCore te resulta útil, considera apoyar su desarrollo:
+
+- ⭐ **Dale una estrella** al repositorio
+- 💰 **[Haz una donación](FUNDING.md)** para apoyar el desarrollo continuo
+- 🐛 **Reporta bugs** y sugiere mejoras
+- 📝 **Contribuye con código** o documentación
+- 📢 **Comparte** el proyecto con otros makers
+
+[![GitHub Sponsors](https://img.shields.io/badge/❤️%20Sponsor-GitHub-pink)](https://github.com/sponsors/elisaul77)
+[![PayPal](https://img.shields.io/badge/💰%20Donate-PayPal-blue)](https://paypal.me/eflorezp)
+
+Ver todas las opciones de donación en **[FUNDING.md](FUNDING.md)**
 
 ## 📋 Roadmap
 

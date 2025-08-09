@@ -29,6 +29,17 @@
 **Estado:** 🆕 Nueva  
 **Votos:** ⭐⭐⭐⭐ (4)
 
+### ID-009: Galería Inteligente de Proyectos STL/G-code
+**Autor:** @elisaul77  
+**Fecha:** 2025-08-08  
+**Descripción:** Sistema de galería inteligente para organizar archivos STL y G-code por proyecto, con asociación a máquinas específicas, historial detallado de impresiones por máquina, registro de errores y búsqueda visual avanzada con IA.  
+**Categoría:** 🌐 Interfaz, 🤖 IA, 📊 Gestión de Archivos  
+**Estado:** 🔍 En Evaluación  
+**Votos:** ⭐⭐⭐⭐⭐ (5)  
+**Complejidad:** 🟠 Alta  
+**Impacto:** 🌟 Crítico - Soluciona organización y trazabilidad de proyectos  
+**Issue:** [#13](https://github.com/elisaul77/kybercore/issues/13)
+
 ### ID-008: Diagrama de Gantt para Objetos en Impresión Multi-Objeto
 **Autor:** @elisaul77  
 **Fecha:** 2025-08-07  
@@ -43,6 +54,17 @@
 ---
 
 ## 🔍 En Evaluación
+
+### ID-009: Galería Inteligente de Proyectos STL/G-code
+**Autor:** @elisaul77  
+**Fecha:** 2025-08-08  
+**Descripción:** Sistema de galería inteligente para organizar archivos STL y G-code por proyecto, con asociación a máquinas específicas, historial detallado de impresiones por máquina, registro de errores y búsqueda visual avanzada con IA.  
+**Categoría:** 🌐 Interfaz, 🤖 IA, 📊 Gestión de Archivos  
+**Estado:** 🔍 En Evaluación  
+**Votos:** ⭐⭐⭐⭐⭐ (5)  
+**Complejidad:** 🟠 Alta  
+**Impacto:** 🌟 Crítico - Soluciona organización y trazabilidad de proyectos  
+**Issue:** [#13](https://github.com/elisaul77/kybercore/issues/13)
 
 ### ID-008: Diagrama de Gantt para Objetos en Impresión Multi-Objeto
 **Autor:** @elisaul77  
@@ -107,9 +129,9 @@
 
 ## 📊 Estadísticas
 
-- **Total de Ideas:** 8
+- **Total de Ideas:** 9
 - **Nuevas:** 3
-- **En Evaluación:** 2  
+- **En Evaluación:** 3  
 - **Aprobadas:** 1
 - **En Desarrollo:** 1
 - **Completadas:** 1
