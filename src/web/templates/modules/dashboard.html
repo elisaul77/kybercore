@@ -1,33 +1,1047 @@
-<section id="dashboard" class="active">
-    <h2 class="text-3xl font-bold mb-6">Panel de Control</h2>
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-xl font-bold mb-4">Impresora Activa: Prusa MK4</h3>
-            <div id="active-print-status">
-                <p class="text-gray-600">Estado: <span class="font-semibold text-green-600">Imprimiendo</span></p>
-                <p class="text-gray-600 mt-2">Trabajo: <span class="font-semibold">Soporte_Camara_v3.gcode</span></p>
-                <div class="mt-4">
-                    <div class="flex justify-between mb-1">
-                        <span class="text-sm font-medium text-gray-700">Progreso</span>
-                        <span class="text-sm font-medium text-gray-700">68%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-4">
-                        <div class="bg-blue-600 h-4 rounded-full" style="width: 68%;"></div>
-                    </div>
-                </div>
-                <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
-                    <p>🌡️ Boquilla: <span class="font-semibold">215°C</span> / 215°C</p>
-                    <p>🌡️ Cama: <span class="font-semibold">60°C</span> / 60°C</p>
-                    <p>⏳ Tiempo Restante: <span class="font-semibold">~ 42 min</span></p>
-                    <p>📦 Filamento Usado: <span class="font-semibold">~ 34.5g</span></p>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-xl font-bold mb-4">Cola de Impresión</h3>
-            <ul class="space-y-3" id="print-queue">
-                <!-- Jobs will be injected by JS -->
-            </ul>
-        </div>
+<section id="dashboard" class="space-y-6 p-4 bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+  <!-- Header con notificaciones en tiempo real -->
+  <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        Dashboard KyberCore
+      </h1>
+      <div class="flex items-center gap-2">
+        <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+        <span class="text-sm text-gray-600">Sistema Online</span>
+      </div>
     </div>
+    <div class="flex flex-wrap gap-2">
+      <button class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-2">
+        <span class="animate-spin">🔄</span> Actualizar
+      </button>
+      <button class="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-2">
+        <span>⚙️</span> Configurar
+      </button>
+    </div>
+  </div>
+
+  <!-- KPIs principales con diseño mejorado -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
+    <!-- KPI Flota -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-blue-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Estado Flota</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="fleet-status">3</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl flex items-center justify-center text-white text-xl">
+          🖨️
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+          <span class="text-green-600 font-medium">Activas</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Cola -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-purple-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Cola</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="queue-size">12</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-500 rounded-xl flex items-center justify-center text-white text-xl">
+          📋
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        Tiempo estimado: <span class="font-bold text-purple-600">6h 30m</span>
+      </div>
+    </div>
+
+    <!-- KPI Completados -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-green-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Completados 24h</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="completion-rate">25</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-500 rounded-xl flex items-center justify-center text-white text-xl">
+          ✓
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        <div class="flex items-center gap-2">
+          <span class="text-green-600 font-medium">+12% vs ayer</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Eficiencia -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-indigo-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Eficiencia IA</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="efficiency">85%</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-xl flex items-center justify-center text-white text-xl">
+          🤖
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></span>
+          <span class="text-indigo-600 font-medium">IA optimizada</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Éxito -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-emerald-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Éxito 24h</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="success-rate">92%</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-green-500 rounded-xl flex items-center justify-center text-white text-xl">
+          ✅
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        Completados: <span class="font-bold text-emerald-600">23</span>
+        <div class="mt-1 text-emerald-600 font-medium">Excelente</div>
+      </div>
+    </div>
+
+    <!-- KPI Proyectos -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-amber-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Proyectos Activos</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="active-projects">3</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center text-white text-xl">
+          📁
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        Piezas en curso: <span class="font-bold text-amber-600">5</span>
+        <div class="mt-1 text-amber-600 font-medium">En progreso</div>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <!-- KPIs principales con animaciones y gradientes -->
+  <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-7 gap-4">
+    <!-- KPI Impresoras Online -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-green-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Impresoras Online</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="printers-online">5/8</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center text-white text-xl">
+          🖨️
+        </div>
+      </div>
+      <div class="mt-4">
+        <div class="flex justify-between text-xs mb-2">
+          <span class="text-gray-500">62% operativa</span>
+          <span class="text-green-600 font-medium">+2 desde ayer</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+          <div class="h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full transition-all duration-1000 ease-out" style="width: 62%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Trabajos Activos -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-blue-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Trabajos Activos</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="active-jobs">3</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center text-white text-xl">
+          ⚡
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        En cola: <span class="font-bold text-blue-600" data-kpi="queue-size">7</span>
+        <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full">+2 nuevos</span>
+      </div>
+    </div>
+
+    <!-- KPI Utilización -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-purple-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Utilización</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="utilization">74%</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-xl">
+          📊
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        Últimas 24h
+        <div class="mt-2 flex items-center gap-1">
+          <div class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+          <span class="text-purple-600 font-medium">Óptima</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Errores -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-red-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Errores Abiertos</div>
+          <div class="mt-2 text-3xl font-bold text-red-600" data-kpi="open-errors">2</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-red-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-xl animate-pulse">
+          ⚠️
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        Críticos: <span class="font-bold text-red-600">1</span>
+        <div class="mt-1 text-xs text-red-500 font-medium">Requiere atención</div>
+      </div>
+    </div>
+
+    <!-- KPI ETA Cola -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-indigo-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">ETA Total Cola</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="queue-eta">08h 15m</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-indigo-400 to-blue-500 rounded-xl flex items-center justify-center text-white text-xl">
+          🤖
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></span>
+          <span class="text-indigo-600 font-medium">IA optimizada</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Éxito -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-emerald-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Éxito 24h</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="success-rate">92%</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-green-500 rounded-xl flex items-center justify-center text-white text-xl">
+          ✅
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        Completados: <span class="font-bold text-emerald-600">23</span>
+        <div class="mt-1 text-emerald-600 font-medium">Excelente</div>
+      </div>
+    </div>
+
+    <!-- KPI Proyectos -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-amber-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Proyectos Activos</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="active-projects">3</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center text-white text-xl">
+          📁
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        Piezas en curso: <span class="font-bold text-amber-600">5</span>
+        <div class="mt-1 text-amber-600 font-medium">En progreso</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido principal: izquierda (proyectos + cola) / derecha (eventos + alertas) -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <!-- Columna izquierda: proyectos en curso + activas + cola + recomendaciones IA -->
+    <div class="xl:col-span-2 space-y-6">
+      <!-- Centro de Gestión de Proyectos -->
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-white">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-2xl font-bold">🚀 Centro de Gestión de Proyectos</h3>
+              <p class="text-indigo-100 mt-1">Vista integral: proyectos, impresoras y cronograma</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="bg-white/20 backdrop-blur-lg rounded-xl px-4 py-2">
+                <div class="text-sm font-medium">Vista Activa</div>
+                <div class="flex items-center gap-2 mt-1">
+                  <button data-view="detail" class="px-3 py-1 bg-white rounded-lg text-indigo-600 text-xs font-medium">📊 Detalle</button>
+                  <button data-view="gantt" class="px-3 py-1 bg-white/20 rounded-lg text-xs border border-white/30">📈 Gantt</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 flex items-center gap-4 text-sm">
+            <div class="bg-white/20 px-3 py-1 rounded-full">
+              Total: <span class="font-bold" data-kpi="active-projects-inline">3</span>
+            </div>
+            <div class="bg-white/20 px-3 py-1 rounded-full">
+              Activos: <span class="font-bold">2</span>
+            </div>
+            <div class="bg-white/20 px-3 py-1 rounded-full">
+              Impresoras trabajando: <span class="font-bold">3</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="p-6 space-y-6">
+          
+          <!-- Vista Gantt Simplificada -->
+          <div id="gantt-view" class="bg-gray-50 rounded-xl p-4 border-2 border-dashed border-gray-200 hidden">
+            <h4 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              📊 Cronograma de Proyectos (Vista Gantt)
+            </h4>
+            <div class="space-y-3">
+              <!-- Timeline Header -->
+              <div class="flex items-center text-xs text-gray-500 font-medium">
+                <div class="w-48">Proyecto</div>
+                <div class="flex-1 grid grid-cols-7 gap-1 text-center">
+                  <div>Lun</div>
+                  <div>Mar</div>
+                  <div>Mié</div>
+                  <div>Jue</div>
+                  <div>Vie</div>
+                  <div>Sáb</div>
+                  <div>Dom</div>
+                </div>
+              </div>
+              
+              <!-- AlphaCAM Gantt -->
+              <div class="flex items-center">
+                <div class="w-48 text-sm font-medium text-indigo-600">AlphaCAM v2.1</div>
+                <div class="flex-1 grid grid-cols-7 gap-1 h-8">
+                  <div class="bg-indigo-500 rounded-lg flex items-center justify-center">
+                    <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  </div>
+                  <div class="bg-indigo-400 rounded-lg"></div>
+                  <div class="bg-indigo-300 rounded-lg"></div>
+                  <div class="bg-gray-200 rounded-lg"></div>
+                  <div class="bg-gray-200 rounded-lg"></div>
+                  <div class="bg-gray-200 rounded-lg"></div>
+                  <div class="bg-gray-200 rounded-lg"></div>
+                </div>
+              </div>
+              
+              <!-- SensorHub Gantt -->
+              <div class="flex items-center">
+                <div class="w-48 text-sm font-medium text-amber-600">SensorHub IoT</div>
+                <div class="flex-1 grid grid-cols-7 gap-1 h-8">
+                  <div class="bg-gray-200 rounded-lg"></div>
+                  <div class="bg-amber-500 rounded-lg flex items-center justify-center">
+                    <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  </div>
+                  <div class="bg-amber-400 rounded-lg"></div>
+                  <div class="bg-amber-300 rounded-lg"></div>
+                  <div class="bg-amber-200 rounded-lg"></div>
+                  <div class="bg-gray-200 rounded-lg"></div>
+                  <div class="bg-gray-200 rounded-lg"></div>
+                </div>
+              </div>
+              
+              <!-- BetaRig Gantt -->
+              <div class="flex items-center">
+                <div class="w-48 text-sm font-medium text-emerald-600">BetaRig Testing</div>
+                <div class="flex-1 grid grid-cols-7 gap-1 h-8">
+                  <div class="bg-gray-200 rounded-lg"></div>
+                  <div class="bg-gray-200 rounded-lg"></div>
+                  <div class="bg-gray-200 rounded-lg"></div>
+                  <div class="bg-emerald-500 rounded-lg flex items-center justify-center">
+                    <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  </div>
+                  <div class="bg-emerald-400 rounded-lg"></div>
+                  <div class="bg-emerald-300 rounded-lg"></div>
+                  <div class="bg-emerald-200 rounded-lg"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mt-4 flex items-center gap-4 text-xs text-gray-500">
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 bg-indigo-500 rounded-full"></div>
+                <span>En progreso</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 bg-indigo-300 rounded-full"></div>
+                <span>Planificado</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 bg-gray-200 rounded-full"></div>
+                <span>Disponible</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vista Detallada de Proyectos -->
+          <div id="detail-view" class="space-y-4">
+            
+            <!-- Proyecto AlphaCAM con impresoras integradas -->
+            <div class="bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-xl p-5 border-l-4 border-indigo-500 hover:shadow-lg transition-all duration-300">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg">
+                    AC
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-bold text-indigo-800">AlphaCAM v2.1</h4>
+                    <p class="text-indigo-600 text-sm">Prototipo mecánico • Prioridad Alta</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="bg-indigo-500 text-white px-3 py-1 rounded-full text-xs font-medium animate-pulse">
+                    🔄 En Progreso
+                  </span>
+                  <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium">
+                    75% Completado
+                  </span>
+                </div>
+              </div>
+              
+              <!-- Impresoras asignadas a este proyecto -->
+              <div class="mb-4">
+                <h5 class="text-sm font-semibold text-indigo-700 mb-2 flex items-center gap-2">
+                  🖨️ Impresoras Activas Asignadas (2)
+                </h5>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div class="bg-white rounded-lg p-3 border border-indigo-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                        <span class="font-medium text-gray-800">Ender 3 Pro #01</span>
+                      </div>
+                      <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Activa</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-600">
+                      <div class="flex justify-between">
+                        <span>Progreso:</span>
+                        <span class="font-medium">67%</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span>Tiempo restante:</span>
+                        <span class="font-medium">2h 15m</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span>Material:</span>
+                        <span class="font-medium">PLA Negro</span>
+                      </div>
+                    </div>
+                    <div class="mt-2 bg-gray-200 rounded-full h-2">
+                      <div class="bg-indigo-500 h-2 rounded-full" style="width: 67%"></div>
+                    </div>
+                  </div>
+                  
+                  <div class="bg-white rounded-lg p-3 border border-indigo-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                        <span class="font-medium text-gray-800">Prusa i3 MK3S #03</span>
+                      </div>
+                      <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Activa</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-600">
+                      <div class="flex justify-between">
+                        <span>Progreso:</span>
+                        <span class="font-medium">42%</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span>Tiempo restante:</span>
+                        <span class="font-medium">4h 32m</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span>Material:</span>
+                        <span class="font-medium">PETG Transparente</span>
+                      </div>
+                    </div>
+                    <div class="mt-2 bg-gray-200 rounded-full h-2">
+                      <div class="bg-indigo-500 h-2 rounded-full" style="width: 42%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Información del proyecto -->
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <span class="text-indigo-600 font-medium">Inicio:</span>
+                  <div class="text-gray-700">15 Ene 2025</div>
+                </div>
+                <div>
+                  <span class="text-indigo-600 font-medium">Entrega:</span>
+                  <div class="text-gray-700">22 Ene 2025</div>
+                </div>
+                <div>
+                  <span class="text-indigo-600 font-medium">Piezas:</span>
+                  <div class="text-gray-700">24 / 32</div>
+                </div>
+                <div>
+                  <span class="text-indigo-600 font-medium">Tiempo total:</span>
+                  <div class="text-gray-700">28h estimadas</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Proyecto SensorHub con impresoras integradas -->
+            <div class="bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl p-5 border-l-4 border-amber-500 hover:shadow-lg transition-all duration-300">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg">
+                    SH
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-bold text-amber-800">SensorHub IoT</h4>
+                    <p class="text-amber-600 text-sm">Sistema de sensores • Prioridad Media</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-medium animate-pulse">
+                    🔄 En Progreso
+                  </span>
+                  <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
+                    45% Completado
+                  </span>
+                </div>
+              </div>
+              
+              <!-- Impresoras asignadas a este proyecto -->
+              <div class="mb-4">
+                <h5 class="text-sm font-semibold text-amber-700 mb-2 flex items-center gap-2">
+                  🖨️ Impresoras Activas Asignadas (1)
+                </h5>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div class="bg-white rounded-lg p-3 border border-amber-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                        <span class="font-medium text-gray-800">Bambu Lab X1 #02</span>
+                      </div>
+                      <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Activa</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-600">
+                      <div class="flex justify-between">
+                        <span>Progreso:</span>
+                        <span class="font-medium">89%</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span>Tiempo restante:</span>
+                        <span class="font-medium">0h 45m</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span>Material:</span>
+                        <span class="font-medium">ABS Blanco</span>
+                      </div>
+                    </div>
+                    <div class="mt-2 bg-gray-200 rounded-full h-2">
+                      <div class="bg-amber-500 h-2 rounded-full" style="width: 89%"></div>
+                    </div>
+                  </div>
+                  
+                  <div class="bg-gray-50 rounded-lg p-3 border border-gray-200 opacity-60">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                        <span class="font-medium text-gray-500">Proxima asignación</span>
+                      </div>
+                      <span class="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full">Pendiente</span>
+                    </div>
+                    <div class="text-xs text-gray-400">
+                      Carcasa principal en cola
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Información del proyecto -->
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <span class="text-amber-600 font-medium">Inicio:</span>
+                  <div class="text-gray-700">18 Ene 2025</div>
+                </div>
+                <div>
+                  <span class="text-amber-600 font-medium">Entrega:</span>
+                  <div class="text-gray-700">25 Ene 2025</div>
+                </div>
+                <div>
+                  <span class="text-amber-600 font-medium">Piezas:</span>
+                  <div class="text-gray-700">9 / 20</div>
+                </div>
+                <div>
+                  <span class="text-amber-600 font-medium">Tiempo total:</span>
+                  <div class="text-gray-700">16h estimadas</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Proyecto BetaRig pausado -->
+            <div class="bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-xl p-5 border-l-4 border-emerald-500 opacity-75 hover:opacity-100 hover:shadow-lg transition-all duration-300">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg">
+                    BR
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-bold text-emerald-800">BetaRig Testing</h4>
+                    <p class="text-emerald-600 text-sm">Banco de pruebas • Prioridad Baja</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="bg-gray-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                    ⏸️ Pausado
+                  </span>
+                  <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">
+                    15% Completado
+                  </span>
+                </div>
+              </div>
+              
+              <!-- Impresoras asignadas a este proyecto -->
+              <div class="mb-4">
+                <h5 class="text-sm font-semibold text-emerald-700 mb-2 flex items-center gap-2">
+                  🖨️ Impresoras Asignadas (0 activas)
+                </h5>
+                <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                  <div class="text-center text-gray-500 text-sm">
+                    <span>⏸️ Proyecto pausado - Sin impresoras activas</span>
+                    <div class="mt-1 text-xs">
+                      Reanudación programada: Jueves 23 Ene
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Información del proyecto -->
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <span class="text-emerald-600 font-medium">Inicio:</span>
+                  <div class="text-gray-700">20 Ene 2025</div>
+                </div>
+                <div>
+                  <span class="text-emerald-600 font-medium">Entrega:</span>
+                  <div class="text-gray-700">30 Ene 2025</div>
+                </div>
+                <div>
+                  <span class="text-emerald-600 font-medium">Piezas:</span>
+                  <div class="text-gray-700">3 / 15</div>
+                </div>
+                <div>
+                  <span class="text-emerald-600 font-medium">Tiempo total:</span>
+                  <div class="text-gray-700">22h estimadas</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cola de impresión inteligente -->
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 text-white">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-2xl font-bold">Cola de Impresión Inteligente</h3>
+              <p class="text-blue-100 mt-1">Optimizada por IA para máxima eficiencia</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="bg-white/20 backdrop-blur-lg rounded-xl px-4 py-2">
+                <div class="text-sm font-medium">Modo Activo</div>
+                <div class="flex items-center gap-2 mt-1">
+                  <button class="px-3 py-1 bg-white/20 rounded-lg text-xs border border-white/30">FIFO</button>
+                  <button class="px-3 py-1 bg-white rounded-lg text-blue-600 text-xs font-medium">🤖 IA</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="p-6">
+          <div class="space-y-4" id="queue-list">
+            <!-- Item de cola 1 -->
+            <div class="group bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-4 border-2 border-indigo-100 hover:border-indigo-300 transition-all duration-300 hover:shadow-lg">
+              <div class="flex items-center justify-between">
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span class="font-bold text-gray-900">Soporte_Camara_v3.gcode</span>
+                    <span class="px-2 py-1 text-[10px] font-semibold bg-indigo-100 text-indigo-800 rounded-full">AlphaCAM</span>
+                    <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">PLA</span>
+                    <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">0.2mm</span>
+                  </div>
+                  <div class="flex items-center gap-4 text-sm text-gray-600">
+                    <div class="flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full"></span>
+                      <span>ETA IA: <span class="font-bold text-indigo-600">1h 12m</span></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span>🎯 IA →</span>
+                      <span class="font-bold text-gray-900">MK3S-01</span>
+                    </div>
+                    <div class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium">Prioridad Alta</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 ml-4">
+                  <button class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 hover:text-gray-800 transition-colors duration-200">⬆</button>
+                  <button class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 hover:text-gray-800 transition-colors duration-200">⬇</button>
+                  <button class="p-2 bg-red-100 hover:bg-red-200 rounded-lg text-red-600 hover:text-red-800 transition-colors duration-200">🗑</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item de cola 2 -->
+            <div class="group bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4 border-2 border-amber-100 hover:border-amber-300 transition-all duration-300 hover:shadow-lg">
+              <div class="flex items-center justify-between">
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <div class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                    <span class="font-bold text-gray-900">Caja_Control_v1.gcode</span>
+                    <span class="px-2 py-1 text-[10px] font-semibold bg-amber-100 text-amber-800 rounded-full">SensorHub</span>
+                    <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">PETG</span>
+                    <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">0.28mm</span>
+                  </div>
+                  <div class="flex items-center gap-4 text-sm text-gray-600">
+                    <div class="flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>
+                      <span>ETA IA: <span class="font-bold text-amber-600">2h 45m</span></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span>🎯 IA →</span>
+                      <span class="font-bold text-gray-900">Ender-02</span>
+                    </div>
+                    <div class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-medium">Prioridad Media</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 ml-4">
+                  <button class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 hover:text-gray-800 transition-colors duration-200">⬆</button>
+                  <button class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 hover:text-gray-800 transition-colors duration-200">⬇</button>
+                  <button class="p-2 bg-red-100 hover:bg-red-200 rounded-lg text-red-600 hover:text-red-800 transition-colors duration-200">🗑</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item de cola 3 (nuevo) -->
+            <div class="group bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl p-4 border-2 border-emerald-100 hover:border-emerald-300 transition-all duration-300 hover:shadow-lg">
+              <div class="flex items-center justify-between">
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                    <span class="font-bold text-gray-900">Base_Estructura_v1.gcode</span>
+                    <span class="px-2 py-1 text-[10px] font-semibold bg-emerald-100 text-emerald-800 rounded-full">BetaRig</span>
+                    <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">ABS</span>
+                    <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">0.3mm</span>
+                  </div>
+                  <div class="flex items-center gap-4 text-sm text-gray-600">
+                    <div class="flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
+                      <span>ETA IA: <span class="font-bold text-emerald-600">4h 30m</span></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span>🎯 IA →</span>
+                      <span class="font-bold text-gray-900">MK4-02</span>
+                    </div>
+                    <div class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full font-medium">Prioridad Baja</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 ml-4">
+                  <button class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 hover:text-gray-800 transition-colors duration-200">⬆</button>
+                  <button class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 hover:text-gray-800 transition-colors duration-200">⬇</button>
+                  <button class="p-2 bg-red-100 hover:bg-red-200 rounded-lg text-red-600 hover:text-red-800 transition-colors duration-200">🗑</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-6 flex justify-between items-center">
+            <div class="text-sm text-gray-600">
+              <span class="font-medium">Total en cola:</span> 3 trabajos | 
+              <span class="font-medium">ETA total:</span> ~8h 27m
+            </div>
+            <button class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center gap-2">
+              <span class="text-lg">🤖</span>
+              <span>Rebalancear con IA</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recomendaciones IA -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-semibold">Sugerencias de IA</h3>
+          <button class="text-sm text-blue-700">Ver todas →</button>
+        </div>
+        <ul class="space-y-3">
+          <li class="p-3 rounded border border-blue-200 bg-blue-50 text-sm">
+            📈 Reasignar “Caja_Control_v1” a MK3S-02 reduce el makespan en ~14%.
+          </li>
+          <li class="p-3 rounded border border-yellow-200 bg-yellow-50 text-sm">
+            🧪 Subir primera capa a 210°C por baja adhesión reciente en Ender-02.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Columna derecha: eventos + alertas -->
+    <div class="space-y-6">
+      <!-- Eventos en tiempo real (con etiqueta de proyecto) -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-semibold">Actividad en Tiempo Real</h3>
+          <span class="text-xs text-gray-500">Stream</span>
+        </div>
+        <div class="space-y-3 text-sm max-h-64 overflow-y-auto" id="events-stream">
+          <div class="flex items-start gap-2"><span>🟢</span><div><span class="font-medium">MK3S-01</span> inició “Soporte_Camara_v3” <span class="ml-1 text-[10px] px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">AlphaCAM</span>.</div></div>
+          <div class="flex items-start gap-2"><span>🟡</span><div><span class="font-medium">Ender-02</span> en pausa por usuario <span class="ml-1 text-[10px] px-2 py-0.5 rounded bg-amber-100 text-amber-800">SensorHub</span>.</div></div>
+          <div class="flex items-start gap-2"><span>🔵</span><div>Rebalanceo sugerido disponible <span class="ml-1 text-[10px] px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">AlphaCAM</span>.</div></div>
+        </div>
+      </div>
+
+      <!-- Alertas (con contexto de proyecto) -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-semibold">Alertas</h3>
+          <div class="flex gap-2 text-xs">
+            <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded">Crítico 1</span>
+            <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded">Advert. 2</span>
+          </div>
+        </div>
+        <ul class="space-y-2 text-sm">
+          <li class="p-3 rounded border border-red-200 bg-red-50 flex items-start justify-between gap-3">
+            <div>🔥 <span class="text-[10px] px-2 py-0.5 rounded bg-amber-100 text-amber-800 mr-1">SensorHub</span> Ender-02: desviación térmica alta en hotend.</div>
+            <div class="flex gap-2"><button class="text-xs px-2 py-1 bg-gray-100 rounded">ACK</button><button class="text-xs px-2 py-1 bg-gray-100 rounded">Silenciar</button></div>
+          </li>
+          <li class="p-3 rounded border border-yellow-200 bg-yellow-50 flex items-start justify-between gap-3">
+            <div>📶 <span class="text-[10px] px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 mr-1">AlphaCAM</span> MK3S-03: latencia WS elevada (350ms).</div>
+            <div class="flex gap-2"><button class="text-xs px-2 py-1 bg-gray-100 rounded">ACK</button><button class="text-xs px-2 py-1 bg-gray-100 rounded">Regla…</button></div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Salud / consumibles / mantenimiento -->
+      <div class="bg-white rounded-lg shadow p-6 space-y-4">
+        <h3 class="text-xl font-semibold">Salud, Consumibles y Mantenimiento</h3>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div class="p-3 rounded border">
+            <div class="text-xs text-gray-500">Salud de Flota</div>
+            <div class="mt-1 font-semibold">Score: 8.6/10</div>
+            <div class="mt-2 h-2 bg-gray-200 rounded"><div class="h-2 bg-green-500 rounded" style="width:86%"></div></div>
+          </div>
+          <div class="p-3 rounded border">
+            <div class="text-xs text-gray-500">Filamentos</div>
+            <div class="mt-1 font-semibold">Rollos bajos: 2</div>
+            <div class="mt-1 text-xs text-gray-500">Consumo estimado cola: 312g</div>
+          </div>
+          <div class="p-3 rounded border">
+            <div class="text-xs text-gray-500">Mantenimiento</div>
+            <div class="mt-1 font-semibold">Próx. en: 17h de uso</div>
+            <div class="mt-1 text-xs text-gray-500">Riesgo: medio</div>
+          </div>
+          <div class="p-3 rounded border">
+            <div class="text-xs text-gray-500">Latencia / Conectividad</div>
+            <div class="mt-1 font-semibold">WS: 110ms</div>
+            <div class="mt-1 text-xs text-gray-500">HTTP OK</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vista de flota panorámica mejorada -->
+  <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+    <div class="bg-gradient-to-r from-gray-700 to-slate-800 p-6 text-white">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-bold">🗺️ Vista Panorámica de Flota</h3>
+          <p class="text-gray-300 text-sm mt-1">Estado en tiempo real de todas las impresoras</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <select class="bg-white/20 backdrop-blur-lg border border-white/30 text-white rounded-lg px-3 py-2 text-sm">
+            <option value="all">Todos los proyectos</option>
+            <option>AlphaCAM</option>
+            <option>SensorHub</option>
+            <option>BetaRig</option>
+          </select>
+          <button class="bg-white/20 backdrop-blur-lg border border-white/30 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-white/30 transition-colors">
+            Abrir Gestión de Flota →
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="p-6">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+        <!-- Impresora 1 -->
+        <div class="group bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl p-4 border-2 border-indigo-100 hover:border-indigo-300 transition-all duration-300 hover:shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <div class="text-sm font-bold text-gray-900">MK3S-01</div>
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+              <span class="px-2 py-0.5 text-[10px] font-semibold bg-indigo-100 text-indigo-800 rounded-full">AlphaCAM</span>
+            </div>
+          </div>
+          <div class="text-xs text-gray-600 mb-2">Imprimiendo</div>
+          <div class="text-lg font-bold text-green-600 mb-2">68%</div>
+          <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div class="h-2 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full transition-all duration-1000" style="width:68%"></div>
+          </div>
+          <div class="text-xs text-gray-500 mt-2">ETA: 42m</div>
+        </div>
+
+        <!-- Impresora 2 -->
+        <div class="group bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4 border-2 border-yellow-100 hover:border-yellow-300 transition-all duration-300 hover:shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <div class="text-sm font-bold text-gray-900">Ender-02</div>
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+              <span class="px-2 py-0.5 text-[10px] font-semibold bg-amber-100 text-amber-800 rounded-full">SensorHub</span>
+            </div>
+          </div>
+          <div class="text-xs text-yellow-700 mb-2">Pausada</div>
+          <div class="text-lg font-bold text-yellow-600 mb-2">10%</div>
+          <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div class="h-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full transition-all duration-1000" style="width:10%"></div>
+          </div>
+          <div class="text-xs text-gray-500 mt-2">Pausado</div>
+        </div>
+
+        <!-- Impresora 3 -->
+        <div class="group bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-4 border-2 border-emerald-100 hover:border-emerald-300 transition-all duration-300 hover:shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <div class="text-sm font-bold text-gray-900">MK4-01</div>
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+              <span class="px-2 py-0.5 text-[10px] font-semibold bg-gray-100 text-gray-800 rounded-full">Disponible</span>
+            </div>
+          </div>
+          <div class="text-xs text-green-700 mb-2">Lista</div>
+          <div class="text-lg font-bold text-green-600 mb-2">0%</div>
+          <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div class="h-2 bg-gradient-to-r from-emerald-400 to-green-500 rounded-full transition-all duration-1000" style="width:0%"></div>
+          </div>
+          <div class="text-xs text-gray-500 mt-2">Esperando</div>
+        </div>
+
+        <!-- Impresora 4 -->
+        <div class="group bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-4 border-2 border-red-100 hover:border-red-300 transition-all duration-300 hover:shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <div class="text-sm font-bold text-gray-900">MK3S-02</div>
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 bg-red-400 rounded-full animate-pulse"></div>
+              <span class="px-2 py-0.5 text-[10px] font-semibold bg-red-100 text-red-800 rounded-full">Error</span>
+            </div>
+          </div>
+          <div class="text-xs text-red-700 mb-2">Offline</div>
+          <div class="text-lg font-bold text-red-600 mb-2">--</div>
+          <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div class="h-2 bg-gradient-to-r from-red-400 to-pink-500 rounded-full transition-all duration-1000" style="width:0%"></div>
+          </div>
+          <div class="text-xs text-red-500 mt-2">Desconectada</div>
+        </div>
+
+        <!-- Impresora 5 -->
+        <div class="group bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-4 border-2 border-purple-100 hover:border-purple-300 transition-all duration-300 hover:shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <div class="text-sm font-bold text-gray-900">MK4-02</div>
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
+              <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 text-emerald-800 rounded-full">BetaRig</span>
+            </div>
+          </div>
+          <div class="text-xs text-blue-700 mb-2">Preparando</div>
+          <div class="text-lg font-bold text-blue-600 mb-2">5%</div>
+          <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div class="h-2 bg-gradient-to-r from-purple-400 to-indigo-500 rounded-full transition-all duration-1000" style="width:5%"></div>
+          </div>
+          <div class="text-xs text-gray-500 mt-2">Calentando</div>
+        </div>
+
+        <!-- Impresora 6 -->
+        <div class="group bg-gradient-to-br from-gray-50 to-slate-50 rounded-xl p-4 border-2 border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <div class="text-sm font-bold text-gray-900">Ender-03</div>
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+              <span class="px-2 py-0.5 text-[10px] font-semibold bg-gray-100 text-gray-800 rounded-full">Inactiva</span>
+            </div>
+          </div>
+          <div class="text-xs text-gray-600 mb-2">Mantenimiento</div>
+          <div class="text-lg font-bold text-gray-600 mb-2">--</div>
+          <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div class="h-2 bg-gray-400 rounded-full transition-all duration-1000" style="width:0%"></div>
+          </div>
+          <div class="text-xs text-gray-500 mt-2">Programado</div>
+        </div>
+      </div>
+      
+      <!-- Stats rápidas de flota -->
+      <div class="mt-6 grid grid-cols-4 gap-4">
+        <div class="text-center p-3 bg-green-50 rounded-xl">
+          <div class="text-2xl font-bold text-green-600">3</div>
+          <div class="text-xs text-green-700 font-medium">Activas</div>
+        </div>
+        <div class="text-center p-3 bg-yellow-50 rounded-xl">
+          <div class="text-2xl font-bold text-yellow-600">1</div>
+          <div class="text-xs text-yellow-700 font-medium">Pausadas</div>
+        </div>
+        <div class="text-center p-3 bg-red-50 rounded-xl">
+          <div class="text-2xl font-bold text-red-600">1</div>
+          <div class="text-xs text-red-700 font-medium">Con Errores</div>
+        </div>
+        <div class="text-center p-3 bg-gray-50 rounded-xl">
+          <div class="text-2xl font-bold text-gray-600">1</div>
+          <div class="text-xs text-gray-700 font-medium">Inactivas</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
+
+<!-- Script específico del dashboard -->
+<script src="/static/js/dashboard.js"></script>
+
+<script>
+// Configuración inicial del dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar datos de ejemplo para proyectos
+    const projectCards = document.querySelectorAll('.border-l-4');
+    projectCards.forEach((card, index) => {
+        const projectNames = ['AlphaCAM', 'SensorHub', 'BetaRig'];
+        if (index < projectNames.length) {
+            card.setAttribute('data-project-card', projectNames[index]);
+        }
+    });
+    
+    console.log('Dashboard inicializado con funcionalidad de proyectos integrada');
+});
+
+// Configuración de WebSocket para actualizaciones en tiempo real (opcional)
+function initWebSocket() {
+    if (typeof WebSocket !== 'undefined') {
+        const ws = new WebSocket(`ws://${window.location.host}/ws/fleet`);
+        
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (window.dashboardManager) {
+                window.dashboardManager.updateKPIsWithData(data);
+            }
+        };
+        
+        ws.onerror = function(error) {
+            console.log('WebSocket error:', error);
+        };
+    }
+}
+
+// Inicializar WebSocket después de un breve delay
+setTimeout(initWebSocket, 2000);
+</script>
