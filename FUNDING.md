@@ -171,9 +171,7 @@ Si no puedes donar monetariamente, ¡también hay otras formas valiosas de contr
 
 ¿Tienes preguntas sobre donaciones o quieres discutir sponsorship corporativo?
 
-- **Email**: donations@kybercore.dev
-- **Discord**: [KyberCore Community](https://discord.gg/kybercore)
-- **Twitter**: [@KyberCore3D](https://twitter.com/kybercore3d)
+- **Email**: elisaul77@gmail.com
 - **PayPal**: [paypal.me/eflorezp](https://paypal.me/eflorezp)
 
 ---
