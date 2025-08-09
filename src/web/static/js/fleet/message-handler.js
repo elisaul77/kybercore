@@ -21,15 +21,42 @@ window.FleetMessageHandler = (function() {
             case 'fleet_data':
                 if (message.printers) {
                     console.log(`📊 Datos de flota recibidos: ${message.printers.length} impresoras`);
+                    
+                    // Actualizar estado de las impresoras
+                    if (window.FleetState) {
+                        window.FleetState.setPrinters(message.printers);
+                    }
+                    
+                    // Renderizar tabla
                     table.populateFleetTable(message.printers);
                     ui.updateFleetStatus(false, message.printers.length);
+                    
+                    // Emitir evento para actualizar módulos dependientes
+                    if (window.FleetEventBus) {
+                        console.log('📡 Emitiendo evento printersUpdated...');
+                        window.FleetEventBus.emit('printersUpdated', message.printers);
+                    }
+                    
                     // syncConnectionStatus() ya se llama desde populateFleetTable
                 }
                 break;
                 
             case 'printer_update':
                 console.log('🔄 Actualización de impresora:', message.printer_id);
+                
+                // Actualizar impresora en el estado
+                if (window.FleetState && message.data) {
+                    window.FleetState.updatePrinter(message.printer_id, message.data);
+                }
+                
+                // Actualizar tabla
                 table.updateSinglePrinter(message.printer_id, message.data);
+                
+                // Emitir evento para módulos dependientes con impresoras actualizadas
+                if (window.FleetEventBus && window.FleetState) {
+                    const updatedPrinters = window.FleetState.getPrinters();
+                    window.FleetEventBus.emit('printersUpdated', updatedPrinters);
+                }
                 break;
                 
             case 'pong':

@@ -52,7 +52,18 @@ window.FleetData = (function() {
                 const printers = await response.json();
                 console.log(`📊 Recibidas ${printers.length} impresoras a las ${updateTime}`);
                 
+                // Actualizar estado de las impresoras
+                if (window.FleetState) {
+                    window.FleetState.setPrinters(printers);
+                }
+                
+                // Renderizar tabla
                 window.FleetTable.renderPrinters(printers);
+                
+                // Emitir evento para actualizar módulos dependientes
+                if (window.FleetEventBus) {
+                    window.FleetEventBus.emit('printersUpdated', printers);
+                }
                 
                 // Verificar si al menos una impresora está conectada
                 const isAnyPrinterConnected = printers.some(printer => printer.status !== 'unreachable');

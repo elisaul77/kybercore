@@ -1,23 +1,63 @@
-# Módulos de Fleet - KyberCore
+# 🚀 Sistema Modular de Gestión de Flota - KyberCore
 
-Esta carpeta contiene los módulos separados para la gestión de flota, organizados por funcionalidad específica.
+Esta carpeta contiene los módulos especializados para la gestión de flota, organizados siguiendo la arquitectura modular de KyberCore con separación estricta de responsabilidades.
 
-## Estructura de Módulos
+## 📁 Arquitectura Modular
 
-### 1. `state.js` - Estado Global y Configuración
-- Maneja el estado global de la flota
-- Controla variables de WebSocket y polling
-- Centraliza la configuración del sistema
+El archivo principal `fleet.js` actúa como **integrador** que carga dinámicamente todos los módulos especializados de esta carpeta.
 
-### 2. `communication.js` - Comunicación WebSocket
-- Gestiona la conexión WebSocket optimizada
-- Maneja reconexión automática con backoff exponencial
-- Controla el polling de emergencia cuando WebSocket falla
+### 🎯 Flujo de Carga de Módulos
 
-### 3. `message-handler.js` - Manejo de Mensajes WebSocket
-- Procesa todos los mensajes entrantes del WebSocket
-- Distribuye las acciones según el tipo de mensaje
-- Mantiene la lógica de respuesta a eventos del servidor
+```javascript
+// El integrador principal carga automáticamente:
+FleetModuleLoader.requiredModules = [
+    'fleet/data.js',         // 💾 Gestión de datos
+    'fleet/ui.js',           // 🎨 Interfaz de usuario  
+    'fleet/communication.js', // 📡 WebSocket y HTTP
+    'fleet/commands.js',     // ⚡ Comandos de impresoras
+    'fleet/forms.js',        // 📝 Gestión de formularios
+    'fleet/table.js'         // 📊 Gestión de tabla
+];
+```
+
+## 📂 Estructura de Módulos Actual
+
+### 1. `data.js` - 💾 Gestión de Datos de Flota
+- Almacén centralizado de datos de impresoras
+- CRUD operations (Create, Read, Update, Delete)
+- Validación y transformación de datos del backend
+- Notificación automática a otros módulos
+
+### 2. `ui.js` - 🎨 Interfaz de Usuario y Renderizado
+- Renderizado optimizado de la tabla de impresoras
+- Actualización de filas individuales sin re-renderizar todo
+- Generación de HTML dinámico con estados visuales
+- Gestión de elementos DOM de estado
+
+### 3. `communication.js` - 📡 Comunicación WebSocket y HTTP
+- Gestión de conexiones WebSocket con reconexión automática
+- Llamadas HTTP a la API REST del backend
+- Manejo de ping/pong para mantener conexión viva
+- Fallback automático a datos de prueba
+- Backoff exponencial para reconexiones
+
+### 4. `commands.js` - ⚡ Comandos de Impresoras
+- Comandos individuales (home, pause, resume, cancel, delete)
+- Comandos masivos (bulk operations) para múltiples impresoras
+- Manejo de errores y respuestas de comandos
+- Actualización automática de estado post-comando
+
+### 5. `forms.js` - 📝 Gestión de Formularios
+- Validación de formularios de agregar impresora
+- Configuración de parámetros de impresora
+- Manejo de eventos de formulario
+- Integración con sistema de datos
+
+### 6. `table.js` - 📊 Gestión Específica de Tabla
+- Ordenamiento de columnas de impresoras
+- Filtrado y búsqueda de datos
+- Selección múltiple para comandos masivos
+- Gestión de checkboxes y selección
 
 ### 4. `ui.js` - Interfaz de Usuario
 - Actualiza elementos visuales de estado
