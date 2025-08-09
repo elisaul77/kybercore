@@ -13,8 +13,8 @@ class RealtimeMonitor:
         self.monitor_task: Optional[asyncio.Task] = None
         self.previous_data: Dict[str, Dict] = {}
         self.last_update: Dict[str, datetime] = {}
-        self.update_interval = 5.0  # Aumentado a 5 segundos para reducir carga
-        self.significant_temp_change = 1.0  # Aumentado a 1°C para reducir ruido
+        self.update_interval = 3.0  # Reducido a 3 segundos para updates más frecuentes
+        self.significant_temp_change = 0.5  # Reducido a 0.5°C para mayor sensibilidad
         self._shutdown_event = asyncio.Event()
         self._max_errors = 5
         self._error_count = 0
@@ -195,6 +195,7 @@ class RealtimeMonitor:
         """Determina si se debe enviar una actualización basada en cambios significativos"""
         # Si es la primera vez que vemos esta impresora, siempre enviar
         if printer_id not in self.previous_data:
+            logger.info(f"Primera actualización para impresora {printer_id}")
             return True
             
         previous = self.previous_data[printer_id]
@@ -215,17 +216,19 @@ class RealtimeMonitor:
                 current_temp = float(current_temp) if current_temp != 'N/A' else 0
                 previous_temp = float(previous_temp) if previous_temp != 'N/A' else 0
                 
-                if abs(current_temp - previous_temp) >= self.significant_temp_change:
-                    logger.debug(f"Cambio significativo de temperatura en {printer_id}.{field}: {previous_temp} -> {current_temp}")
+                temp_diff = abs(current_temp - previous_temp)
+                if temp_diff >= self.significant_temp_change:
+                    logger.info(f"Cambio significativo de temperatura en {printer_id}.{field}: {previous_temp}°C -> {current_temp}°C (diff: {temp_diff:.1f}°C)")
                     return True
             except (ValueError, TypeError):
                 # Si hay error en conversión, enviar actualización por seguridad
+                logger.warning(f"Error convertiendo temperatura en {printer_id}.{field}: {current_temp}, {previous_temp}")
                 return True
                 
-        # Verificar si ha pasado mucho tiempo sin actualización (forzar cada 60 segundos)
+        # Verificar si ha pasado mucho tiempo sin actualización (forzar cada 30 segundos)
         last_update_time = self.last_update.get(printer_id, datetime.min)
-        if current_data and (datetime.now() - last_update_time) > timedelta(seconds=60):
-            logger.debug(f"Forzando actualización periódica para {printer_id}")
+        if current_data and (datetime.now() - last_update_time) > timedelta(seconds=30):
+            logger.info(f"Forzando actualización periódica para {printer_id} (última: {last_update_time})")
             return True
             
         return False

@@ -2,13 +2,19 @@
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-3xl font-bold">Gestión de Flota</h2>
         <div class="flex items-center space-x-4">
-            <div class="text-sm">
+            <!-- Estado de conexión WebSocket -->
+            <div class="flex items-center text-sm px-3 py-2 bg-white rounded-lg border shadow-sm">
+                <span class="mr-2">🌐</span>
                 <span id="connection-status" class="text-gray-600">Iniciando...</span>
-                <span id="connection-indicator" class="ml-2 inline-block w-2 h-2 bg-gray-500 rounded-full"></span>
+                <span id="connection-indicator" class="ml-2 inline-block w-2 h-2 bg-gray-500 rounded-full animate-pulse"></span>
             </div>
-            <div class="text-sm text-gray-600">
-                <span id="last-update">Conectando al servidor...</span>
+            <div class="text-sm text-gray-500 bg-white px-3 py-2 rounded-lg border">
+                <span id="last-update">⏰ Conectando al servidor...</span>
             </div>
+            <!-- Botón de actualización manual -->
+            <button id="force-update-btn" class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                🔄 Actualizar
+            </button>
         </div>
     </div>
 
