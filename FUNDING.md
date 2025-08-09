@@ -199,7 +199,7 @@ Si no puedes donar monetariamente, ¡también hay otras formas valiosas de contr
 - Co-marketing opportunities
 - Desarrollo conjunto de funcionalidades
 
-Contacta a **partnerships@kybercore.dev** para más información.
+Contacta a **elisaul77@gmail.com** para más información.
 
 ---
 
