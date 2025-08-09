@@ -42,6 +42,15 @@ window.initFleetModule = function() {
     
     // Inicializar comandos masivos
     window.FleetBulkCommands.init();
+    
+    // Agregar event listener para el botón de actualización forzada
+    const forceUpdateBtn = document.getElementById('force-update-btn');
+    if (forceUpdateBtn) {
+        forceUpdateBtn.addEventListener('click', () => {
+            console.log('🔄 Actualización forzada solicitada por el usuario');
+            window.FleetCommunication.forceUpdate();
+        });
+    }
 };
 
 // 🚀 MÓDULO DE DATOS DE FLOTA
@@ -92,20 +101,19 @@ window.FleetData = {
     updatePrinter(printerId, updates) {
         const index = this.printers.findIndex(p => p.id === printerId);
         if (index !== -1) {
+            // Fusionar cambios para no perder datos
             this.printers[index] = { ...this.printers[index], ...updates };
-        }
-        // Notificar cambios
-        if (window.FleetUI && window.FleetUI.renderPrinters) {
-            window.FleetUI.renderPrinters(this.printers);
-        }
-        if (window.FleetBulkCommands && window.FleetBulkCommands.refreshPrinterSelection) {
-            window.FleetBulkCommands.refreshPrinterSelection();
+            
+            // Notificar a la UI para que actualice la fila específica
+            if (window.FleetUI && window.FleetUI.updatePrinterRow) {
+                window.FleetUI.updatePrinterRow(this.printers[index]);
+            }
         }
     },
     
     removePrinter(printerId) {
         this.printers = this.printers.filter(p => p.id !== printerId);
-        // Notificar cambios
+        // Notificar a la UI para que re-renderice la tabla completa
         if (window.FleetUI && window.FleetUI.renderPrinters) {
             window.FleetUI.renderPrinters(this.printers);
         }
@@ -116,7 +124,7 @@ window.FleetData = {
     
     setPrinters(newPrinters) {
         this.printers = newPrinters || [];
-        // Notificar al módulo de comandos masivos y renderizar
+        // Notificar a la UI para que re-renderice la tabla completa
         if (window.FleetUI && window.FleetUI.renderPrinters) {
             window.FleetUI.renderPrinters(this.printers);
         }
@@ -144,7 +152,7 @@ window.FleetUI = {
         }
     },
     
-    // NUEVO: render de filas de tabla para las impresoras en el tbody #fleet-printers
+    // Renderiza la tabla completa
     renderPrinters(printers) {
         const tbody = document.getElementById('fleet-printers');
         if (!tbody) return;
@@ -154,57 +162,74 @@ window.FleetUI = {
             return;
         }
         
-        tbody.innerHTML = printers.map(p => {
-            const statusClass = p.status === 'printing' ? 'text-green-600' : 
-                               p.status === 'idle' ? 'text-gray-600' : 
-                               p.status === 'error' ? 'text-red-600' : 'text-gray-600';
+        tbody.innerHTML = printers.map(p => this.getPrinterRowHtml(p)).join('');
+    },
+
+    // Actualiza una única fila de la tabla para evitar re-renderizar todo
+    updatePrinterRow(printer) {
+        const row = document.getElementById(`printer-row-${printer.id}`);
+        if (row) {
+            // Re-renderizar solo la fila que cambió
+            row.innerHTML = this.getPrinterRowHtml(printer, true);
+        } else {
+            // Si la fila no existe, podría ser una nueva impresora, re-renderizar todo
+            this.renderPrinters(window.FleetData.getPrinters());
+        }
+    },
+
+    // Genera el HTML para una fila de impresora
+    getPrinterRowHtml(p, inner = false) {
+        const statusClass = p.status === 'printing' ? 'bg-green-100 text-green-800' : 
+                           p.status === 'paused' ? 'bg-yellow-100 text-yellow-800' :
+                           p.status === 'idle' ? 'bg-gray-100 text-gray-800' : 
+                           p.status === 'ready' ? 'bg-blue-100 text-blue-800' :
+                           p.status === 'error' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800';
+        
+        const progressBar = (p.status === 'printing' || p.status === 'paused') && p.progress > 0 ? 
+            `<div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div class="bg-blue-600 h-2.5 rounded-full" style="width: ${p.progress}%"></div>
+            </div>
+            <span class="text-xs font-medium">${p.progress}%</span>` : 
+            '<span class="text-gray-400">-</span>';
             
-            const progressBar = p.status === 'printing' && p.progress ? 
-                `<div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-blue-600 h-2 rounded-full" style="width: ${p.progress}%"></div>
+        const rowContent = `
+            <td class="px-4 py-2">
+                <input type="checkbox" class="printer-checkbox rounded" value="${p.id}">
+            </td>
+            <td class="px-4 py-2 font-medium">${p.name}</td>
+            <td class="px-4 py-2">${p.model || '-'}</td>
+            <td class="px-4 py-2">${p.ip_address || '-'}</td>
+            <td class="px-4 py-2">
+                <span class="px-2 py-1 rounded-full text-xs font-semibold ${statusClass}">${p.status}</span>
+            </td>
+            <td class="px-4 py-2">
+                <div class="flex flex-col gap-1 items-center">
+                    ${progressBar}
                 </div>
-                <span class="text-xs">${p.progress}%</span>` : 
-                '<span class="text-gray-400">-</span>';
-                
-            return `
-                <tr class="border-b hover:bg-gray-50">
-                    <td class="px-4 py-2">
-                        <input type="checkbox" class="printer-checkbox rounded" value="${p.id}">
-                    </td>
-                    <td class="px-4 py-2 font-medium">${p.name}</td>
-                    <td class="px-4 py-2">${p.model || '-'}</td>
-                    <td class="px-4 py-2">${p.ip_address || '-'}</td>
-                    <td class="px-4 py-2">
-                        <span class="px-2 py-1 rounded text-xs font-medium ${statusClass}">${p.status}</span>
-                    </td>
-                    <td class="px-4 py-2">
-                        <div class="flex flex-col gap-1">
-                            ${progressBar}
-                        </div>
-                    </td>
-                    <td class="px-4 py-2">${p.hotend_temp ?? '-'}</td>
-                    <td class="px-4 py-2">${p.bed_temp ?? '-'}</td>
-                    <td class="px-4 py-2">${p.capabilities || '-'}</td>
-                    <td class="px-4 py-2">${p.location || '-'}</td>
-                    <td class="px-4 py-2">
-                        <div class="flex gap-1">
-                            <button onclick="window.FleetCommands.homePrinter('${p.id}')" 
-                                    class="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700" 
-                                    title="Home">🏠</button>
-                            <button onclick="window.FleetCommands.pausePrinter('${p.id}')" 
-                                    class="px-2 py-1 text-xs bg-yellow-500 text-white rounded hover:bg-yellow-600" 
-                                    title="Pausar">⏸</button>
-                            <button onclick="window.FleetCommands.resumePrinter('${p.id}')" 
-                                    class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700" 
-                                    title="Reanudar">▶</button>
-                            <button onclick="window.FleetCommands.cancelPrinter('${p.id}')" 
-                                    class="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700" 
-                                    title="Cancelar">❌</button>
-                        </div>
-                    </td>
-                </tr>
-            `;
-        }).join('');
+            </td>
+            <td class="px-4 py-2 font-mono text-center">${p.hotend_temp ? p.hotend_temp.toFixed(1) : '-'}</td>
+            <td class="px-4 py-2 font-mono text-center">${p.bed_temp ? p.bed_temp.toFixed(1) : '-'}</td>
+            <td class="px-4 py-2 text-xs">${p.capabilities || '-'}</td>
+            <td class="px-4 py-2">${p.location || '-'}</td>
+            <td class="px-4 py-2">
+                <div class="flex gap-1">
+                    <button onclick="window.FleetCommands.homePrinter('${p.id}')" 
+                            class="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            title="Home">🏠</button>
+                    <button onclick="window.FleetCommands.pausePrinter('${p.id}')" 
+                            class="px-2 py-1 text-xs bg-yellow-500 text-white rounded hover:bg-yellow-600" 
+                            title="Pausar">⏸</button>
+                    <button onclick="window.FleetCommands.resumePrinter('${p.id}')" 
+                            class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700" 
+                            title="Reanudar">▶</button>
+                    <button onclick="window.FleetCommands.cancelPrinter('${p.id}')" 
+                            class="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700" 
+                            title="Cancelar">❌</button>
+                </div>
+            </td>
+        `;
+
+        return inner ? rowContent : `<tr id="printer-row-${p.id}" class="border-b hover:bg-gray-50 transition-colors duration-200">${rowContent}</tr>`;
     }
 };
 
@@ -218,6 +243,13 @@ window.FleetForms = {
 
 // 🚀 MÓDULO DE COMUNICACIÓN
 window.FleetCommunication = {
+    websocket: null,
+    reconnectAttempts: 0,
+    maxReconnectAttempts: 5,
+    reconnectInterval: 3000,
+    pingInterval: null,
+    isConnected: false,
+
     async startOptimizedCommunication() {
         console.log('🚀 Iniciando comunicación optimizada...');
         window.FleetUI.updateStatus('Conectando...', 'loading');
@@ -246,8 +278,8 @@ window.FleetCommunication = {
                 window.FleetData.setPrinters(formattedPrinters);
                 window.FleetUI.updateStatus(`${formattedPrinters.length} impresora(s) conectada(s)`, 'ok');
                 
-                // Actualizar estado de conexión
-                this.updateConnectionStatus('Conectado', 'success');
+                // Iniciar conexión WebSocket para actualizaciones en tiempo real
+                this.connectWebSocket();
                 
             } else {
                 console.error('❌ Error al cargar impresoras:', response.statusText);
@@ -261,6 +293,187 @@ window.FleetCommunication = {
             
             // Como fallback, cargar datos de prueba
             this.loadFallbackData();
+        }
+    },
+
+    connectWebSocket() {
+        try {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/api/ws/fleet`;
+            
+            console.log('🔌 Conectando WebSocket:', wsUrl);
+            this.websocket = new WebSocket(wsUrl);
+            
+            this.websocket.onopen = (event) => {
+                console.log('✅ WebSocket conectado');
+                this.isConnected = true;
+                this.reconnectAttempts = 0;
+                this.updateConnectionStatus('Conectado (Tiempo Real)', 'success');
+                
+                // Iniciar ping periódico
+                this.startPing();
+                
+                // Suscribirse a todas las impresoras para recibir actualizaciones
+                this.websocket.send(JSON.stringify({
+                    type: 'subscribe_all'
+                }));
+                
+                // Solicitar datos iniciales
+                this.websocket.send(JSON.stringify({
+                    type: 'get_initial_data'
+                }));
+            };
+            
+            this.websocket.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    this.handleWebSocketMessage(data);
+                } catch (error) {
+                    console.error('❌ Error parseando mensaje WebSocket:', error);
+                }
+            };
+            
+            this.websocket.onclose = (event) => {
+                console.log('🔌 WebSocket desconectado:', event.code, event.reason);
+                this.isConnected = false;
+                this.stopPing();
+                
+                if (event.code !== 1000) { // No fue un cierre normal
+                    this.updateConnectionStatus('Reconectando...', 'warning');
+                    this.scheduleReconnect();
+                } else {
+                    this.updateConnectionStatus('Desconectado', 'error');
+                }
+            };
+            
+            this.websocket.onerror = (error) => {
+                console.error('❌ Error WebSocket:', error);
+                this.updateConnectionStatus('Error de conexión', 'error');
+            };
+            
+        } catch (error) {
+            console.error('❌ Error creando WebSocket:', error);
+            this.updateConnectionStatus('Error WebSocket', 'error');
+        }
+    },
+
+    handleWebSocketMessage(data) {
+        console.log('📨 Mensaje WebSocket recibido:', data);
+        
+        switch (data.type) {
+            case 'fleet_update':
+                this.handleFleetUpdate(data.payload);
+                break;
+            case 'printer_update':
+                // Corregir el formato del mensaje: el backend envía 'data' no 'payload'
+                const printerData = data.data || data.payload;
+                if (printerData && data.printer_id) {
+                    this.handlePrinterUpdate({
+                        printer_id: data.printer_id,
+                        ...printerData.realtime_data,
+                        status: printerData.status
+                    });
+                }
+                break;
+            case 'initial_data':
+                // Datos iniciales de todas las impresoras
+                if (data.printers) {
+                    console.log('📊 Datos iniciales recibidos via WebSocket:', data.printers);
+                    this.handleFleetUpdate({ printers: data.printers });
+                }
+                break;
+            case 'subscription_all_confirmed':
+                console.log(`✅ Suscripción confirmada para ${data.printer_count} impresoras`);
+                this.updateConnectionStatus(`Suscrito a ${data.printer_count} impresoras`, 'success');
+                break;
+            case 'subscription_confirmed':
+                console.log(`✅ Suscripción confirmada para impresora: ${data.printer_id}`);
+                break;
+            case 'connection_established':
+                console.log('🤝 Conexión WebSocket establecida:', data.client_id);
+                break;
+            case 'ping':
+                // Responder al ping del servidor
+                this.websocket.send(JSON.stringify({ type: 'pong' }));
+                break;
+            case 'pong':
+                // Pong recibido del servidor, conexión está viva
+                console.log('🏓 Pong recibido del servidor');
+                break;
+            case 'error':
+                console.error('❌ Error del servidor WebSocket:', data.message);
+                break;
+            case 'info':
+                console.log('ℹ️ Info del servidor:', data.message);
+                break;
+            default:
+                console.log('📦 Mensaje WebSocket no manejado:', data);
+        }
+    },
+
+    handleFleetUpdate(payload) {
+        // Actualizar todas las impresoras
+        if (payload.printers) {
+            const formattedPrinters = payload.printers.map(p => ({
+                id: p.id,
+                name: p.name,
+                model: p.model,
+                ip_address: p.ip,
+                status: p.status,
+                progress: p.realtime_data?.print_progress || 0,
+                hotend_temp: Math.round(p.realtime_data?.extruder_temp || 0),
+                bed_temp: Math.round(p.realtime_data?.bed_temp || 0),
+                capabilities: Array.isArray(p.capabilities) ? p.capabilities.join(', ') : (p.capabilities || '-'),
+                location: p.location || '-'
+            }));
+            
+            window.FleetData.setPrinters(formattedPrinters);
+            this.updateConnectionStatus(`${formattedPrinters.length} impresora(s) - Datos actualizados`, 'success');
+        }
+    },
+
+    handlePrinterUpdate(payload) {
+        // Actualizar una impresora específica
+        const updates = {
+            status: payload.status,
+            progress: payload.print_progress || 0,
+            hotend_temp: Math.round(payload.extruder_temp || 0),
+            bed_temp: Math.round(payload.bed_temp || 0)
+        };
+        
+        window.FleetData.updatePrinter(payload.printer_id, updates);
+        console.log(`🔄 Impresora ${payload.printer_id} actualizada via WebSocket:`, updates);
+        
+        // Actualizar estado de conexión con información de última actualización
+        this.updateConnectionStatus(`Tiempo Real - Último: ${new Date().toLocaleTimeString()}`, 'success');
+    },
+
+    startPing() {
+        this.pingInterval = setInterval(() => {
+            if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+                this.websocket.send(JSON.stringify({ type: 'ping' }));
+            }
+        }, 30000); // Ping cada 30 segundos
+    },
+
+    stopPing() {
+        if (this.pingInterval) {
+            clearInterval(this.pingInterval);
+            this.pingInterval = null;
+        }
+    },
+
+    scheduleReconnect() {
+        if (this.reconnectAttempts < this.maxReconnectAttempts) {
+            this.reconnectAttempts++;
+            console.log(`🔄 Intentando reconectar (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
+            
+            setTimeout(() => {
+                this.connectWebSocket();
+            }, this.reconnectInterval);
+        } else {
+            console.error('❌ Máximo de intentos de reconexión alcanzado');
+            this.updateConnectionStatus('Sin conexión', 'error');
         }
     },
     
@@ -318,11 +531,29 @@ window.FleetCommunication = {
     
     stopOptimizedCommunication() {
         console.log('🛑 Deteniendo comunicación...');
+        this.stopPing();
+        
+        if (this.websocket) {
+            this.websocket.close(1000, 'Cierre normal');
+            this.websocket = null;
+        }
+        
+        this.isConnected = false;
+        this.reconnectAttempts = 0;
     },
     
     forceUpdate() {
         console.log('🔄 Forzando actualización...');
-        this.startOptimizedCommunication();
+        
+        // Si tenemos WebSocket, solicitar datos actualizados
+        if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+            this.websocket.send(JSON.stringify({
+                type: 'get_initial_data'
+            }));
+        } else {
+            // Fallback: recargar desde HTTP
+            this.startOptimizedCommunication();
+        }
     }
 };
 
