@@ -5,6 +5,7 @@ from src.services.fleet_service import FleetService
 from src.models.printer import Printer
 from src.schemas.printer import PrinterCreate
 from pydantic import BaseModel
+from typing import List, Optional
 
 from src.services.fleet_service import fleet_service
 
@@ -13,6 +14,23 @@ class PrinterCommand(BaseModel):
     command: str  # 'home', 'pause', 'resume', 'cancel', 'restart_klipper', 'restart_firmware', 'restart_klipper_service'
     axis: str = None  # Para comando home: 'X', 'Y', 'Z'
     parameters: dict = None  # Parámetros adicionales
+
+# Schema para comandos masivos
+class BulkCommand(BaseModel):
+    command: str  # Mismo formato que PrinterCommand
+    axis: str = None
+    parameters: dict = None
+    printer_ids: Optional[List[str]] = None  # Si es None, aplica a todas las impresoras
+    filters: Optional[dict] = None  # Filtros para seleccionar impresoras: {'status': ['printing', 'idle'], 'tags': ['production']}
+    confirmation_required: bool = True  # Para comandos destructivos
+    
+# Schema para respuesta de comandos masivos
+class BulkCommandResult(BaseModel):
+    total_printers: int
+    successful: int
+    failed: int
+    results: List[dict]  # Lista de resultados por impresora
+    summary: str
 router = APIRouter()
 templates = Jinja2Templates(directory="src/web/templates")
 
@@ -93,8 +111,8 @@ async def send_printer_command(printer_id: str, command: PrinterCommand):
         # Ejecutar comando según el tipo
         result = None
         if command.command == "home":
-            if not command.axis or command.axis not in ["X", "Y", "Z"]:
-                raise HTTPException(status_code=400, detail="Eje no válido para comando home")
+            if not command.axis or command.axis not in ["X", "Y", "Z", "XYZ"]:
+                raise HTTPException(status_code=400, detail="Eje no válido para comando home. Use X, Y, Z o XYZ")
             result = await fleet_service.home_printer(printer_id, command.axis)
         elif command.command == "pause":
             result = await fleet_service.pause_printer(printer_id)
@@ -122,6 +140,142 @@ async def send_printer_command(printer_id: str, command: PrinterCommand):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error ejecutando comando: {str(e)}")
+
+# 🚀 NUEVO: Endpoint para comandos masivos en la flota
+@router.post("/bulk/command", response_model=BulkCommandResult)
+async def send_bulk_command(bulk_command: BulkCommand):
+    """Envía un comando a múltiples impresoras simultáneamente."""
+    try:
+        # Obtener lista de impresoras objetivo
+        target_printers = await fleet_service.get_target_printers(
+            printer_ids=bulk_command.printer_ids,
+            filters=bulk_command.filters
+        )
+        
+        if not target_printers:
+            raise HTTPException(status_code=400, detail="No se encontraron impresoras que cumplan los criterios")
+        
+        # Validar comando
+        valid_commands = ["home", "pause", "resume", "cancel", "restart_klipper", "restart_firmware", "restart_klipper_service"]
+        if bulk_command.command not in valid_commands:
+            raise HTTPException(status_code=400, detail=f"Comando no válido: {bulk_command.command}")
+        
+        # Ejecutar comando en paralelo en todas las impresoras
+        results = await fleet_service.execute_bulk_command(
+            printers=target_printers,
+            command=bulk_command.command,
+            axis=bulk_command.axis,
+            parameters=bulk_command.parameters or {}
+        )
+        
+        # Analizar resultados
+        successful = sum(1 for r in results if r["success"])
+        failed = len(results) - successful
+        
+        summary = f"Comando {bulk_command.command} ejecutado en {len(target_printers)} impresoras: {successful} exitosos, {failed} fallidos"
+        
+        return BulkCommandResult(
+            total_printers=len(target_printers),
+            successful=successful,
+            failed=failed,
+            results=results,
+            summary=summary
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error ejecutando comando masivo: {str(e)}")
+
+# 🚀 NUEVO: Endpoint para obtener información de selección masiva
+@router.get("/bulk/selection-info")
+async def get_bulk_selection_info():
+    """Obtiene información para ayudar en la selección masiva de impresoras."""
+    try:
+        printers = await fleet_service.list_printers()
+        
+        # Agrupar por estado
+        status_groups = {}
+        for printer in printers:
+            status = printer.status
+            if status not in status_groups:
+                status_groups[status] = []
+            status_groups[status].append({
+                "id": printer.id,
+                "name": printer.name,
+                "ip": printer.ip_address
+            })
+        
+        # Obtener tags únicos (si existen)
+        all_tags = set()
+        for printer in printers:
+            if hasattr(printer, 'tags') and printer.tags:
+                all_tags.update(printer.tags)
+        
+        return {
+            "total_printers": len(printers),
+            "status_groups": status_groups,
+            "available_tags": list(all_tags),
+            "suggested_filters": {
+                "all_printers": {"description": "Todas las impresoras", "count": len(printers)},
+                "idle_only": {"description": "Solo impresoras inactivas", "count": len(status_groups.get("idle", []))},
+                "printing_only": {"description": "Solo impresoras imprimiendo", "count": len(status_groups.get("printing", []))},
+                "error_only": {"description": "Solo impresoras con error", "count": len(status_groups.get("error", []))}
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error obteniendo información de selección: {str(e)}")
+
+# 🚀 NUEVO: Endpoint para validar comando masivo antes de ejecutar
+@router.post("/bulk/validate")
+async def validate_bulk_command(bulk_command: BulkCommand):
+    """Valida un comando masivo sin ejecutarlo, útil para confirmación."""
+    try:
+        # Obtener impresoras objetivo
+        target_printers = await fleet_service.get_target_printers(
+            printer_ids=bulk_command.printer_ids,
+            filters=bulk_command.filters
+        )
+        
+        # Análisis de impacto
+        impact_analysis = {
+            "total_affected": len(target_printers),
+            "printers_by_status": {},
+            "warnings": [],
+            "safe_to_execute": True
+        }
+        
+        # Agrupar por estado
+        for printer in target_printers:
+            status = printer.status
+            if status not in impact_analysis["printers_by_status"]:
+                impact_analysis["printers_by_status"][status] = 0
+            impact_analysis["printers_by_status"][status] += 1
+        
+        # Generar warnings para comandos potencialmente destructivos
+        if bulk_command.command in ["cancel", "restart_klipper", "restart_firmware"]:
+            printing_count = impact_analysis["printers_by_status"].get("printing", 0)
+            if printing_count > 0:
+                impact_analysis["warnings"].append(
+                    f"⚠️ El comando {bulk_command.command} interrumpirá {printing_count} impresión(es) activa(s)"
+                )
+                impact_analysis["safe_to_execute"] = False
+        
+        if bulk_command.command == "restart_firmware" and len(target_printers) > 5:
+            impact_analysis["warnings"].append(
+                "⚠️ Reiniciar firmware en más de 5 impresoras puede causar carga en la red"
+            )
+        
+        return {
+            "valid": True,
+            "command": bulk_command.command,
+            "impact_analysis": impact_analysis,
+            "target_printers": [{"id": p.id, "name": p.name, "status": p.status} for p in target_printers],
+            "estimated_duration": f"{len(target_printers) * 2} segundos"  # Estimación básica
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error validando comando: {str(e)}")
 
 # Endpoint para renderizar el módulo de gestión de flota como HTML
 @router.get("/fleet", response_class=HTMLResponse)
