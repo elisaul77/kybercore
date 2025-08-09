@@ -468,5 +468,153 @@ class FleetService:
         
         return AppData(printers=printers, filaments=filaments)
 
+    # 🚀 NUEVOS MÉTODOS PARA COMANDOS MASIVOS
+
+    async def get_target_printers(self, printer_ids=None, filters=None):
+        """Obtiene la lista de impresoras objetivo basado en IDs específicos o filtros."""
+        try:
+            # Obtener todas las impresoras
+            all_printers = await self.list_printers()
+            
+            # Si se especificaron IDs específicos, usar solo esos
+            if printer_ids:
+                target_printers = [p for p in all_printers if p.id in printer_ids]
+            else:
+                target_printers = all_printers
+            
+            # Aplicar filtros adicionales si existen
+            if filters:
+                if "status" in filters:
+                    target_printers = [p for p in target_printers if p.status == filters["status"]]
+                
+                if "tags" in filters and filters["tags"]:
+                    target_printers = [p for p in target_printers 
+                                     if hasattr(p, 'tags') and p.tags and 
+                                     any(tag in p.tags for tag in filters["tags"])]
+                
+                if "exclude_printing" in filters and filters["exclude_printing"]:
+                    target_printers = [p for p in target_printers if p.status != "printing"]
+            
+            return target_printers
+            
+        except Exception as e:
+            logger.error(f"Error obteniendo impresoras objetivo: {e}")
+            raise
+
+    async def execute_bulk_command(self, printers, command, axis=None, parameters=None):
+        """Ejecuta un comando en múltiples impresoras de forma concurrente."""
+        try:
+            from datetime import datetime
+            
+            # Crear tareas para ejecución en paralelo
+            tasks = []
+            for printer in printers:
+                task = self._execute_single_command(printer, command, axis, parameters)
+                tasks.append(task)
+            
+            # Ejecutar todas las tareas en paralelo con timeout
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            
+            # Procesar resultados y excepciones
+            processed_results = []
+            for i, result in enumerate(results):
+                printer = printers[i]
+                if isinstance(result, Exception):
+                    processed_results.append({
+                        "printer_id": printer.id,
+                        "printer_name": printer.name,
+                        "success": False,
+                        "error": str(result),
+                        "timestamp": datetime.now().isoformat()
+                    })
+                else:
+                    processed_results.append({
+                        "printer_id": printer.id,
+                        "printer_name": printer.name,
+                        "success": True,
+                        "result": result,
+                        "timestamp": datetime.now().isoformat()
+                    })
+            
+            return processed_results
+            
+        except Exception as e:
+            logger.error(f"Error ejecutando comando masivo: {e}")
+            raise
+
+    async def _execute_single_command(self, printer, command, axis=None, parameters=None):
+        """Ejecuta un comando en una sola impresora."""
+        try:
+            printer_id = printer.id
+            
+            # Log de inicio
+            logger.info(f"Ejecutando comando {command} en impresora {printer_id}")
+            
+            # Ejecutar comando según el tipo
+            if command == "home":
+                if not axis:
+                    axis = "XYZ"  # Home all por defecto
+                return await self.home_printer(printer_id, axis)
+                
+            elif command == "pause":
+                return await self.pause_printer(printer_id)
+                
+            elif command == "resume":
+                return await self.resume_printer(printer_id)
+                
+            elif command == "cancel":
+                return await self.cancel_printer(printer_id)
+                
+            elif command == "restart_klipper":
+                return await self.restart_klipper(printer_id)
+                
+            elif command == "restart_firmware":
+                return await self.restart_firmware(printer_id)
+                
+            elif command == "restart_klipper_service":
+                return await self.restart_klipper_service(printer_id)
+                
+            else:
+                raise ValueError(f"Comando no soportado: {command}")
+                
+        except Exception as e:
+            logger.error(f"Error ejecutando comando {command} en impresora {printer.id}: {e}")
+            raise
+
+    async def validate_bulk_command_safety(self, printers, command):
+        """Valida si es seguro ejecutar un comando masivo."""
+        try:
+            analysis = {
+                "safe": True,
+                "warnings": [],
+                "blocking_issues": [],
+                "affected_jobs": 0
+            }
+            
+            # Comandos que pueden interrumpir trabajos
+            disruptive_commands = ["cancel", "restart_klipper", "restart_firmware"]
+            
+            if command in disruptive_commands:
+                printing_printers = [p for p in printers if p.status == "printing"]
+                if printing_printers:
+                    analysis["safe"] = False
+                    analysis["affected_jobs"] = len(printing_printers)
+                    analysis["blocking_issues"].append(
+                        f"El comando {command} interrumpirá {len(printing_printers)} trabajos activos"
+                    )
+            
+            # Validar conectividad (simulado)
+            offline_printers = [p for p in printers if p.status == "offline"]
+            if offline_printers:
+                analysis["warnings"].append(
+                    f"{len(offline_printers)} impresoras están desconectadas y no recibirán el comando"
+                )
+            
+            return analysis
+            
+        except Exception as e:
+            logger.error(f"Error validando seguridad del comando masivo: {e}")
+            raise
+
 # Instancia global del servicio
 fleet_service = FleetService()
