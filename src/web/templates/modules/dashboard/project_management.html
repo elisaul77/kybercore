@@ -32,69 +32,48 @@
           
           <!-- Vista Gantt Simplificada -->
           <div id="gantt-view" class="bg-gray-50 rounded-xl p-4 border-2 border-dashed border-gray-200 hidden">
-            <h4 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              📊 Cronograma de Proyectos (Vista Gantt)
-            </h4>
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                📊 Cronograma de Proyectos (Vista Gantt)
+              </h4>
+              <div class="flex items-center gap-2">
+                <label for="gantt-scale" class="text-xs font-medium text-gray-600">Escala:</label>
+                <select id="gantt-scale" class="text-xs rounded px-2 py-1 border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
+                  <option value="hours" selected>Horas</option>
+                  <option value="days">Días</option>
+                </select>
+              </div>
+            </div>
             <div class="space-y-3">
               <!-- Timeline Header -->
-              <div class="flex items-center text-xs text-gray-500 font-medium">
+              <div class="flex items-center text-xs text-gray-500 font-medium" id="gantt-timeline-header">
                 <div class="w-48">Proyecto</div>
-                <div class="flex-1 grid grid-cols-7 gap-1 text-center">
-                  <div>Lun</div>
-                  <div>Mar</div>
-                  <div>Mié</div>
-                  <div>Jue</div>
-                  <div>Vie</div>
-                  <div>Sáb</div>
-                  <div>Dom</div>
+                <div class="flex-1 grid gap-1 text-center" id="gantt-timeline-labels">
+                  <!-- Las etiquetas de la escala se llenan dinámicamente por JS -->
                 </div>
               </div>
               
               <!-- AlphaCAM Gantt -->
               <div class="flex items-center">
                 <div class="w-48 text-sm font-medium text-indigo-600">AlphaCAM v2.1</div>
-                <div class="flex-1 grid grid-cols-7 gap-1 h-8">
-                  <div class="bg-indigo-500 rounded-lg flex items-center justify-center">
-                    <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                  </div>
-                  <div class="bg-indigo-400 rounded-lg"></div>
-                  <div class="bg-indigo-300 rounded-lg"></div>
-                  <div class="bg-gray-200 rounded-lg"></div>
-                  <div class="bg-gray-200 rounded-lg"></div>
-                  <div class="bg-gray-200 rounded-lg"></div>
-                  <div class="bg-gray-200 rounded-lg"></div>
+                <div class="flex-1 grid gap-1 h-8 gantt-row" data-project="AlphaCAM" style="grid-template-columns: repeat(24, minmax(0, 1fr));">
+                  <!-- Las barras de progreso se llenan dinámicamente por JS -->
                 </div>
               </div>
               
               <!-- SensorHub Gantt -->
               <div class="flex items-center">
                 <div class="w-48 text-sm font-medium text-amber-600">SensorHub IoT</div>
-                <div class="flex-1 grid grid-cols-7 gap-1 h-8">
-                  <div class="bg-gray-200 rounded-lg"></div>
-                  <div class="bg-amber-500 rounded-lg flex items-center justify-center">
-                    <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                  </div>
-                  <div class="bg-amber-400 rounded-lg"></div>
-                  <div class="bg-amber-300 rounded-lg"></div>
-                  <div class="bg-amber-200 rounded-lg"></div>
-                  <div class="bg-gray-200 rounded-lg"></div>
-                  <div class="bg-gray-200 rounded-lg"></div>
+                <div class="flex-1 grid gap-1 h-8 gantt-row" data-project="SensorHub" style="grid-template-columns: repeat(24, minmax(0, 1fr));">
+                  <!-- Las barras de progreso se llenan dinámicamente por JS -->
                 </div>
               </div>
               
               <!-- BetaRig Gantt -->
               <div class="flex items-center">
                 <div class="w-48 text-sm font-medium text-emerald-600">BetaRig Testing</div>
-                <div class="flex-1 grid grid-cols-7 gap-1 h-8">
-                  <div class="bg-gray-200 rounded-lg"></div>
-                  <div class="bg-gray-200 rounded-lg"></div>
-                  <div class="bg-gray-200 rounded-lg"></div>
-                  <div class="bg-emerald-500 rounded-lg flex items-center justify-center">
-                    <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                  </div>
-                  <div class="bg-emerald-400 rounded-lg"></div>
-                  <div class="bg-emerald-300 rounded-lg"></div>
-                  <div class="bg-emerald-200 rounded-lg"></div>
+                <div class="flex-1 grid gap-1 h-8 gantt-row" data-project="BetaRig" style="grid-template-columns: repeat(24, minmax(0, 1fr));">
+                  <!-- Las barras de progreso se llenan dinámicamente por JS -->
                 </div>
               </div>
             </div>
