@@ -1,0 +1,171 @@
+<!-- Modales del módulo de consumibles -->
+
+<!-- Modal para agregar nuevo filamento -->
+<div id="add-filament-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+    <div class="p-6">
+      <!-- Header del modal -->
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold text-gray-800">➕ Agregar Filamento</h2>
+        <button id="close-add-modal" class="text-gray-500 hover:text-gray-700 text-xl">×</button>
+      </div>
+
+      <!-- Formulario -->
+      <form id="add-filament-form" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+            <input type="text" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-green-500 focus:border-green-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Color</label>
+            <input type="text" name="color" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-green-500 focus:border-green-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+            <select name="type" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-green-500 focus:border-green-500">
+              <option value="">Seleccionar...</option>
+              <option value="PLA">PLA</option>
+              <option value="ABS">ABS</option>
+              <option value="PETG">PETG</option>
+              <option value="TPU">TPU</option>
+              <option value="WOOD">WOOD</option>
+              <option value="METAL">METAL</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Marca</label>
+            <select name="brand" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-green-500 focus:border-green-500">
+              <option value="">Seleccionar...</option>
+              <option value="Prusament">Prusament</option>
+              <option value="Hatchbox">Hatchbox</option>
+              <option value="Overture">Overture</option>
+              <option value="SUNLU">SUNLU</option>
+              <option value="eSUN">eSUN</option>
+              <option value="Polymaker">Polymaker</option>
+              <option value="Genérico">Genérico</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Peso (kg)</label>
+            <input type="number" name="weight" step="0.1" min="0" value="1.0" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-green-500 focus:border-green-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Diámetro (mm)</label>
+            <select name="diameter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-green-500 focus:border-green-500">
+              <option value="1.75">1.75</option>
+              <option value="3.0">3.0</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Costo ($/kg)</label>
+            <input type="number" name="cost" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-green-500 focus:border-green-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Temp. Nozzle (°C)</label>
+            <input type="number" name="temp_nozzle" min="0" max="300" value="200" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-green-500 focus:border-green-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Temp. Cama (°C)</label>
+            <input type="number" name="temp_bed" min="0" max="150" value="60" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-green-500 focus:border-green-500">
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="flex gap-3 pt-4">
+          <button type="button" id="cancel-add-filament" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+            Cancelar
+          </button>
+          <button type="submit" class="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+            Agregar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para consumir filamento -->
+<div id="consume-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full mx-4">
+    <div class="p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-bold text-gray-800">Usar Filamento</h2>
+        <button id="close-consume-modal" class="text-gray-500 hover:text-gray-700 text-xl">×</button>
+      </div>
+
+      <div class="consume-filament-info mb-4 p-3 bg-gray-50 rounded-lg">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="consume-color w-4 h-4 rounded-full border"></div>
+          <span class="consume-name font-medium"></span>
+        </div>
+        <div class="text-sm text-gray-600">
+          <div>Disponible: <span class="consume-available"></span></div>
+        </div>
+      </div>
+
+      <form id="consume-form" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Cantidad a usar (kg)</label>
+          <input type="number" name="amount" step="0.01" min="0.01" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-orange-500 focus:border-orange-500">
+        </div>
+
+        <div class="flex gap-3">
+          <button type="button" id="cancel-consume" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+            Cancelar
+          </button>
+          <button type="submit" class="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+            Usar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para reabastecer filamento -->
+<div id="restock-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full mx-4">
+    <div class="p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-bold text-gray-800">📦 Reabastecer</h2>
+        <button id="close-restock-modal" class="text-gray-500 hover:text-gray-700 text-xl">×</button>
+      </div>
+
+      <div class="restock-filament-info mb-4 p-3 bg-gray-50 rounded-lg">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="restock-color w-4 h-4 rounded-full border"></div>
+          <span class="restock-name font-medium"></span>
+        </div>
+        <div class="text-sm text-gray-600">
+          <div>Actual: <span class="restock-current"></span></div>
+        </div>
+      </div>
+
+      <form id="restock-form" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Cantidad a agregar (kg)</label>
+          <input type="number" name="amount" step="0.1" min="0.1" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-green-500 focus:border-green-500">
+        </div>
+
+        <div class="flex gap-3">
+          <button type="button" id="cancel-restock" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+            Cancelar
+          </button>
+          <button type="submit" class="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+            Agregar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

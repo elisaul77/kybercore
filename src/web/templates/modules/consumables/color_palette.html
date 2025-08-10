@@ -1,0 +1,36 @@
+<!-- Paleta de Colores Disponibles -->
+<div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+  <div class="flex items-center gap-2 mb-4">
+    <span class="text-lg">🎨</span>
+    <h3 class="font-bold text-gray-800">Colores Disponibles</h3>
+  </div>
+
+  <div id="color-palette" class="grid grid-cols-6 gap-2">
+    <!-- Los colores se cargarán dinámicamente -->
+  </div>
+
+  <!-- Template para color -->
+  <template id="color-template">
+    <div class="color-item group relative">
+      <div class="color-swatch w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer hover:scale-110 transition-transform duration-200" 
+           style="background-color: #000000;"></div>
+      <div class="color-tooltip absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+        <span class="color-name">Color</span>
+        <br>
+        <span class="color-count">0 bobinas</span>
+      </div>
+    </div>
+  </template>
+
+  <!-- Resumen de colores -->
+  <div class="mt-4 pt-3 border-t border-gray-200">
+    <div class="flex justify-between text-sm text-gray-600">
+      <span>Total de colores:</span>
+      <span id="total-colors">0</span>
+    </div>
+    <div class="flex justify-between text-sm text-gray-600 mt-1">
+      <span>Más usado:</span>
+      <span id="most-used-color">-</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,56 @@
+<!-- Estadísticas Rápidas -->
+<div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+  <div class="flex items-center gap-2 mb-4">
+    <span class="text-lg">📊</span>
+    <h3 class="font-bold text-gray-800">Stats Rápidas</h3>
+  </div>
+
+  <div class="space-y-4">
+    <!-- Valor total del inventario -->
+    <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-3">
+      <div class="flex justify-between items-center">
+        <span class="text-sm text-green-700">Valor Total</span>
+        <span class="text-lg font-bold text-green-800" id="total-value">$0</span>
+      </div>
+    </div>
+
+    <!-- Peso total disponible -->
+    <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-3">
+      <div class="flex justify-between items-center">
+        <span class="text-sm text-blue-700">Peso Total</span>
+        <span class="text-lg font-bold text-blue-800" id="total-weight">0 kg</span>
+      </div>
+    </div>
+
+    <!-- Tiempo de impresión estimado -->
+    <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-3">
+      <div class="flex justify-between items-center">
+        <span class="text-sm text-purple-700">Tiempo Est.</span>
+        <span class="text-lg font-bold text-purple-800" id="estimated-time">0h</span>
+      </div>
+    </div>
+
+    <!-- Filamento más crítico -->
+    <div class="bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-3">
+      <div class="text-center">
+        <span class="text-sm text-orange-700 block">Más Crítico</span>
+        <span class="text-sm font-bold text-orange-800" id="most-critical">-</span>
+      </div>
+    </div>
+
+    <!-- Tipo más común -->
+    <div class="bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-lg p-3">
+      <div class="text-center">
+        <span class="text-sm text-indigo-700 block">Tipo Popular</span>
+        <span class="text-sm font-bold text-indigo-800" id="popular-type">-</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botón de actualización -->
+  <div class="mt-4 pt-3 border-t border-gray-200">
+    <button id="refresh-stats-btn" class="w-full px-3 py-2 text-xs bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors">
+      🔄 Actualizar Stats
+    </button>
+  </div>
+</div>
