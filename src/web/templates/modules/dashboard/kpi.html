@@ -1,53 +1,41 @@
-<!-- KPIs principales con diseño mejorado -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
-  <!-- KPI Flota -->
-  <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-blue-200 transform hover:-translate-y-1">
-    <div class="flex items-center justify-between">
-      <div>
-        <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Estado Flota</div>
-        <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="fleet-status">3</div>
-      </div>
-      <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl flex items-center justify-center text-white text-xl">
-        🖨️
-      </div>
-    </div>
-    <div class="mt-4 text-xs text-gray-600">
-      <div class="flex items-center gap-2">
-        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-        <span class="text-green-600 font-medium">Activas</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- KPI Cola -->
-  <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-purple-200 transform hover:-translate-y-1">
-    <div class="flex items-center justify-between">
-      <div>
-        <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Cola</div>
-        <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="queue-size">12</div>
-      </div>
-      <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-500 rounded-xl flex items-center justify-center text-white text-xl">
-        📋
-      </div>
-    </div>
-    <div class="mt-4 text-xs text-gray-600">
-      Tiempo estimado: <span class="font-bold text-purple-600">6h 30m</span>
-    </div>
-  </div>
-
-  <!-- KPI Completados -->
+<!-- KPIs principales con animaciones y gradientes -->
+<div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-7 gap-4">
+  <!-- KPI Impresoras Online -->
   <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-green-200 transform hover:-translate-y-1">
     <div class="flex items-center justify-between">
       <div>
-        <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Completados</div>
-        <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="completion-rate">25</div>
+        <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Impresoras Online</div>
+        <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="printers-online">5/8</div>
       </div>
-      <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-500 rounded-xl flex items-center justify-center text-white text-xl">
-        ✅
+      <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center text-white text-xl">
+        🖨️
+      </div>
+    </div>
+    <div class="mt-4">
+      <div class="flex justify-between text-xs mb-2">
+        <span class="text-gray-500">62% operativa</span>
+        <span class="text-green-600 font-medium">+2 desde ayer</span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+        <div class="h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full transition-all duration-1000 ease-out" style="width: 62%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Trabajos Activos -->
+  <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-blue-200 transform hover:-translate-y-1">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Trabajos Activos</div>
+        <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="active-jobs">3</div>
+      </div>
+      <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center text-white text-xl">
+        ⚡
       </div>
     </div>
     <div class="mt-4 text-xs text-gray-600">
-      <span class="text-green-600 font-medium">+12% vs ayer</span>
+      En cola: <span class="font-bold text-blue-600" data-kpi="queue-size">7</span>
+      <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full">+2 nuevos</span>
     </div>
   </div>
 
@@ -59,7 +47,7 @@
         <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="utilization">74%</div>
       </div>
       <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-xl">
-        📊
+        �
       </div>
     </div>
     <div class="mt-4 text-xs text-gray-600">
@@ -70,4 +58,75 @@
       </div>
     </div>
   </div>
+
+  <!-- KPI Errores -->
+  <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-red-200 transform hover:-translate-y-1">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Errores Abiertos</div>
+        <div class="mt-2 text-3xl font-bold text-red-600" data-kpi="open-errors">2</div>
+      </div>
+      <div class="w-12 h-12 bg-gradient-to-br from-red-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-xl animate-pulse">
+        ⚠️
+      </div>
+    </div>
+    <div class="mt-4 text-xs text-gray-600">
+      Críticos: <span class="font-bold text-red-600">1</span>
+      <div class="mt-1 text-xs text-red-500 font-medium">Requiere atención</div>
+    </div>
+  </div>
+
+  <!-- KPI ETA Cola -->
+  <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-indigo-200 transform hover:-translate-y-1">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">ETA Total Cola</div>
+        <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="queue-eta">08h 15m</div>
+      </div>
+      <div class="w-12 h-12 bg-gradient-to-br from-indigo-400 to-blue-500 rounded-xl flex items-center justify-center text-white text-xl">
+        🤖
+      </div>
+    </div>
+    <div class="mt-4 text-xs text-gray-600">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></span>
+        <span class="text-indigo-600 font-medium">IA optimizada</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Éxito -->
+  <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-emerald-200 transform hover:-translate-y-1">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Éxito 24h</div>
+        <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="success-rate">92%</div>
+      </div>
+      <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-green-500 rounded-xl flex items-center justify-center text-white text-xl">
+        ✅
+      </div>
+    </div>
+    <div class="mt-4 text-xs text-gray-600">
+      Completados: <span class="font-bold text-emerald-600">23</span>
+      <div class="mt-1 text-emerald-600 font-medium">Excelente</div>
+    </div>
+  </div>
+
+  <!-- KPI Proyectos -->
+  <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-amber-200 transform hover:-translate-y-1">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Proyectos Activos</div>
+        <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="active-projects">3</div>
+      </div>
+      <div class="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center text-white text-xl">
+        📁
+      </div>
+    </div>
+    <div class="mt-4 text-xs text-gray-600">
+      Piezas en curso: <span class="font-bold text-amber-600">5</span>
+      <div class="mt-1 text-amber-600 font-medium">En progreso</div>
+    </div>
+  </div>
 </div>
+
