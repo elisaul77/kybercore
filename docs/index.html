@@ -80,6 +80,9 @@
                 <a href="#fleet" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
                     <span class="mr-3">🏭</span> Gestión de Flota
                 </a>
+                <a href="#consumables" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3">🧵</span> Consumibles
+                </a>
                 <a href="#settings" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
                     <span class="mr-3">⚙️</span> Ajustes
                 </a>
@@ -91,36 +94,401 @@
             <div class="main-content">
                 
                 <!-- Dashboard Section -->
-                <section id="dashboard">
-                    <h2 class="text-3xl font-bold mb-6">Panel de Control</h2>
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-xl font-bold mb-4">Impresora Activa: Prusa MK4</h3>
-                            <div id="active-print-status">
-                                <p class="text-gray-600">Estado: <span class="font-semibold text-green-600">Imprimiendo</span></p>
-                                <p class="text-gray-600 mt-2">Trabajo: <span class="font-semibold">Soporte_Camara_v3.gcode</span></p>
-                                <div class="mt-4">
-                                    <div class="flex justify-between mb-1">
-                                        <span class="text-sm font-medium text-gray-700">Progreso</span>
-                                        <span class="text-sm font-medium text-gray-700">68%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-4">
-                                        <div class="bg-blue-600 h-4 rounded-full" style="width: 68%;"></div>
-                                    </div>
+                <section id="dashboard" class="space-y-6 p-4 bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+                    <!-- Header con notificaciones en tiempo real -->
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                Dashboard KyberCore
+                            </h1>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                                <span class="text-sm text-gray-600">Sistema Online</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-2">
+                                <span class="animate-spin">🔄</span> Actualizar
+                            </button>
+                            <button class="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-2">
+                                <span>⚙️</span> Configurar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- KPIs principales con animaciones y gradientes -->
+                    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-7 gap-4">
+                        <!-- KPI Impresoras Online -->
+                        <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-green-200 transform hover:-translate-y-1">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Impresoras Online</div>
+                                    <div class="mt-2 text-3xl font-bold text-gray-900">5/8</div>
                                 </div>
-                                <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
-                                    <p>🌡️ Boquilla: <span class="font-semibold">215°C</span> / 215°C</p>
-                                    <p>🌡️ Cama: <span class="font-semibold">60°C</span> / 60°C</p>
-                                    <p>⏳ Tiempo Restante: <span class="font-semibold">~ 42 min</span></p>
-                                    <p>📦 Filamento Usado: <span class="font-semibold">~ 34.5g</span></p>
+                                <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center text-white text-xl">
+                                    🖨️
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <div class="flex justify-between text-xs mb-2">
+                                    <span class="text-gray-500">62% operativa</span>
+                                    <span class="text-green-600 font-medium">+2 desde ayer</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                                    <div class="h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full transition-all duration-1000 ease-out" style="width: 62%"></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-xl font-bold mb-4">Cola de Impresión</h3>
-                            <ul class="space-y-3" id="print-queue">
-                                <!-- Jobs will be injected by JS -->
-                            </ul>
+
+                        <!-- KPI Trabajos Activos -->
+                        <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-blue-200 transform hover:-translate-y-1">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Trabajos Activos</div>
+                                    <div class="mt-2 text-3xl font-bold text-gray-900">3</div>
+                                </div>
+                                <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center text-white text-xl">
+                                    ⚡
+                                </div>
+                            </div>
+                            <div class="mt-4 text-xs text-gray-600">
+                                En cola: <span class="font-bold text-blue-600">7</span>
+                                <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full">+2 nuevos</span>
+                            </div>
+                        </div>
+
+                        <!-- KPI Utilización -->
+                        <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-purple-200 transform hover:-translate-y-1">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Utilización</div>
+                                    <div class="mt-2 text-3xl font-bold text-gray-900">74%</div>
+                                </div>
+                                <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-xl">
+                                    📊
+                                </div>
+                            </div>
+                            <div class="mt-4 text-xs text-gray-600">
+                                Últimas 24h
+                                <div class="mt-2 flex items-center gap-1">
+                                    <div class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                                    <span class="text-purple-600 font-medium">Óptima</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- KPI Errores -->
+                        <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-red-200 transform hover:-translate-y-1">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Errores Abiertos</div>
+                                    <div class="mt-2 text-3xl font-bold text-red-600">2</div>
+                                </div>
+                                <div class="w-12 h-12 bg-gradient-to-br from-red-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-xl animate-pulse">
+                                    ⚠️
+                                </div>
+                            </div>
+                            <div class="mt-4 text-xs text-gray-600">
+                                Críticos: <span class="font-bold text-red-600">1</span>
+                                <div class="mt-1 text-xs text-red-500 font-medium">Requiere atención</div>
+                            </div>
+                        </div>
+
+                        <!-- KPI ETA Cola -->
+                        <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-indigo-200 transform hover:-translate-y-1">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">ETA Cola</div>
+                                    <div class="mt-2 text-3xl font-bold text-gray-900">6.2h</div>
+                                </div>
+                                <div class="w-12 h-12 bg-gradient-to-br from-indigo-400 to-blue-500 rounded-xl flex items-center justify-center text-white text-xl">
+                                    ⏱️
+                                </div>
+                            </div>
+                            <div class="mt-4 text-xs text-gray-600">
+                                Promedio hoy: <span class="font-bold text-indigo-600">5.8h</span>
+                            </div>
+                        </div>
+
+                        <!-- KPI Filamentos en Stock -->
+                        <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-green-200 transform hover:-translate-y-1">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Filamentos</div>
+                                    <div class="mt-2 text-3xl font-bold text-gray-900">6</div>
+                                </div>
+                                <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center text-white text-xl">
+                                    🧵
+                                </div>
+                            </div>
+                            <div class="mt-4 text-xs text-gray-600">
+                                Stock bajo: <span class="font-bold text-orange-600">2</span>
+                                <div class="mt-1 text-xs text-green-600 font-medium">€127.45 total</div>
+                            </div>
+                        </div>
+
+                        <!-- KPI Tiempo IA -->
+                        <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-cyan-200 transform hover:-translate-y-1">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Tiempo IA</div>
+                                    <div class="mt-2 text-3xl font-bold text-gray-900">18m</div>
+                                </div>
+                                <div class="w-12 h-12 bg-gradient-to-br from-cyan-400 to-teal-500 rounded-xl flex items-center justify-center text-white text-xl">
+                                    🤖
+                                </div>
+                            </div>
+                            <div class="mt-4 text-xs text-gray-600">
+                                Ahorrado esta semana
+                                <div class="mt-1 text-xs text-cyan-600 font-medium">vs manual</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido principal: proyectos y cola -->
+                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                        <!-- Columna izquierda: proyectos y cola -->
+                        <div class="xl:col-span-2 space-y-6">
+                            <!-- Gestión de Proyectos -->
+                            <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                                <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-white">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="text-2xl font-bold">🚀 Centro de Gestión de Proyectos</h3>
+                                            <p class="text-indigo-100 mt-1">Organiza y programa tus impresiones inteligentemente</p>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <button class="bg-white/20 backdrop-blur-lg rounded-lg px-3 py-2 text-sm hover:bg-white/30 transition-colors">
+                                                + Nuevo Proyecto
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-6">
+                                    <div class="space-y-4">
+                                        <!-- Proyecto 1 -->
+                                        <div class="border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg hover:shadow-lg transition-all duration-200">
+                                            <div class="flex justify-between items-start mb-2">
+                                                <h4 class="font-bold text-blue-900">AlphaCAM - Prototipo</h4>
+                                                <span class="px-2 py-1 bg-blue-200 text-blue-800 rounded-full text-xs font-medium">En progreso</span>
+                                            </div>
+                                            <div class="text-sm text-blue-700 mb-3">
+                                                <p>📋 Piezas: 12/15 completadas</p>
+                                                <p>🖨️ Impresora asignada: Prusa MK4</p>
+                                                <p>⏱️ ETA: 2h 15m restantes</p>
+                                            </div>
+                                            <div class="w-full bg-blue-200 rounded-full h-2">
+                                                <div class="bg-blue-500 h-2 rounded-full" style="width: 80%"></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Proyecto 2 -->
+                                        <div class="border-l-4 border-green-500 bg-green-50 p-4 rounded-r-lg hover:shadow-lg transition-all duration-200">
+                                            <div class="flex justify-between items-start mb-2">
+                                                <h4 class="font-bold text-green-900">SensorHub - Carcasa</h4>
+                                                <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs font-medium">Listo para imprimir</span>
+                                            </div>
+                                            <div class="text-sm text-green-700 mb-3">
+                                                <p>📋 Piezas: 8 en cola</p>
+                                                <p>🖨️ Impresora recomendada: Voron 2.4</p>
+                                                <p>⏱️ Tiempo estimado: 4h 30m</p>
+                                            </div>
+                                            <button class="px-4 py-2 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600 transition-colors">
+                                                Iniciar Impresión
+                                            </button>
+                                        </div>
+
+                                        <!-- Proyecto 3 -->
+                                        <div class="border-l-4 border-yellow-500 bg-yellow-50 p-4 rounded-r-lg hover:shadow-lg transition-all duration-200">
+                                            <div class="flex justify-between items-start mb-2">
+                                                <h4 class="font-bold text-yellow-900">BetaRig - Soporte</h4>
+                                                <span class="px-2 py-1 bg-yellow-200 text-yellow-800 rounded-full text-xs font-medium">Esperando material</span>
+                                            </div>
+                                            <div class="text-sm text-yellow-700 mb-3">
+                                                <p>📋 Piezas: 6 preparadas</p>
+                                                <p>🧵 Requiere: PETG Transparente</p>
+                                                <p>⚠️ Stock insuficiente</p>
+                                            </div>
+                                            <button class="px-4 py-2 bg-yellow-500 text-white rounded-lg text-sm hover:bg-yellow-600 transition-colors">
+                                                Gestionar Stock
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cola de Impresión -->
+                            <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                                <div class="bg-gradient-to-r from-blue-500 to-cyan-600 p-6 text-white">
+                                    <h3 class="text-2xl font-bold">📋 Cola de Impresión Inteligente</h3>
+                                    <p class="text-blue-100 mt-1">Optimizada por IA para máxima eficiencia</p>
+                                </div>
+                                
+                                <div class="p-6">
+                                    <ul class="space-y-3" id="print-queue">
+                                        <li class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                                                <div>
+                                                    <span class="font-medium text-gray-900">Soporte_Camara_v3.gcode</span>
+                                                    <div class="text-sm text-gray-600">Prusa MK4 • PLA Negro</div>
+                                                </div>
+                                            </div>
+                                            <span class="text-sm font-medium text-blue-600">42 min restantes</span>
+                                        </li>
+                                        <li class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                                                <div>
+                                                    <span class="font-medium text-gray-900">Carcasa_Principal.gcode</span>
+                                                    <div class="text-sm text-gray-600">Voron 2.4 • ABS Blanco</div>
+                                                </div>
+                                            </div>
+                                            <span class="text-sm font-medium text-gray-600">~2h 30m</span>
+                                        </li>
+                                        <li class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                                                <div>
+                                                    <span class="font-medium text-gray-900">Engranaje_Motor.gcode</span>
+                                                    <div class="text-sm text-gray-600">Bambu X1C • PETG Natural</div>
+                                                </div>
+                                            </div>
+                                            <span class="text-sm font-medium text-gray-600">~1h 45m</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Columna derecha: eventos y alertas -->
+                        <div class="space-y-6">
+                            <!-- Alertas y Notificaciones -->
+                            <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                                <div class="bg-gradient-to-r from-orange-500 to-red-600 p-4 text-white">
+                                    <h3 class="text-lg font-bold">🚨 Alertas del Sistema</h3>
+                                </div>
+                                
+                                <div class="p-4 space-y-3">
+                                    <div class="p-3 bg-red-50 border border-red-200 rounded-lg">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                                            <span class="font-medium text-red-800">Error Crítico</span>
+                                        </div>
+                                        <p class="text-sm text-red-700">Ender 3 Pro: Temp. cama fuera de rango</p>
+                                        <span class="text-xs text-red-600">Hace 5 min</span>
+                                    </div>
+                                    
+                                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                            <span class="font-medium text-yellow-800">Stock Bajo</span>
+                                        </div>
+                                        <p class="text-sm text-yellow-700">PETG Transparente: < 200g restante</p>
+                                        <span class="text-xs text-yellow-600">Hace 1h</span>
+                                    </div>
+                                    
+                                    <div class="p-3 bg-green-50 border border-green-200 rounded-lg">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                            <span class="font-medium text-green-800">Trabajo Completado</span>
+                                        </div>
+                                        <p class="text-sm text-green-700">Bisagra_Optimizada.gcode terminado</p>
+                                        <span class="text-xs text-green-600">Hace 2h</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Actividad Reciente -->
+                            <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                                <div class="bg-gradient-to-r from-purple-500 to-indigo-600 p-4 text-white">
+                                    <h3 class="text-lg font-bold">📈 Actividad Reciente</h3>
+                                </div>
+                                
+                                <div class="p-4 space-y-3 text-sm">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                            <span class="text-blue-600 text-xs">✅</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Trabajo completado</p>
+                                            <p class="text-gray-600">Bisagra_Optimizada.gcode</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                            <span class="text-green-600 text-xs">▶️</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Impresión iniciada</p>
+                                            <p class="text-gray-600">Soporte_Camara_v3.gcode</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                            <span class="text-purple-600 text-xs">🤖</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Perfil IA optimizado</p>
+                                            <p class="text-gray-600">Para PETG en Voron 2.4</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vista de Flota Panorámica -->
+                    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                        <div class="bg-gradient-to-r from-gray-700 to-gray-900 p-6 text-white">
+                            <h3 class="text-2xl font-bold">🏭 Vista Panorámica de la Flota</h3>
+                            <p class="text-gray-300 mt-1">Estado en tiempo real de todas las impresoras</p>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="fleet-printers">
+                                <!-- Los datos de impresoras se cargarán dinámicamente -->
+                                <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h4 class="font-bold text-green-900">Prusa MK4</h4>
+                                        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                                    </div>
+                                    <p class="text-sm text-green-700 mb-2">🏃‍♂️ Imprimiendo</p>
+                                    <p class="text-xs text-green-600">68% completado</p>
+                                    <p class="text-xs text-green-600">⏱️ 42 min restantes</p>
+                                </div>
+                                
+                                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h4 class="font-bold text-blue-900">Voron 2.4</h4>
+                                        <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                                    </div>
+                                    <p class="text-sm text-blue-700 mb-2">🏃‍♂️ Imprimiendo</p>
+                                    <p class="text-xs text-blue-600">23% completado</p>
+                                    <p class="text-xs text-blue-600">⏱️ 3h 12m restantes</p>
+                                </div>
+                                
+                                <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h4 class="font-bold text-gray-900">Bambu X1C</h4>
+                                        <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                                    </div>
+                                    <p class="text-sm text-gray-700 mb-2">💤 Inactiva</p>
+                                    <p class="text-xs text-gray-600">Lista para trabajar</p>
+                                </div>
+                                
+                                <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h4 class="font-bold text-red-900">Ender 3 Pro</h4>
+                                        <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                                    </div>
+                                    <p class="text-sm text-red-700 mb-2">❌ Error</p>
+                                    <p class="text-xs text-red-600">Temp. cama fuera de rango</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -308,6 +676,305 @@
                     </div>
                 </section>
 
+                <!-- Consumibles Section -->
+                <section id="consumibles" class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                            🧵 Gestión de Consumibles
+                        </h2>
+                        <div class="flex gap-2">
+                            <button class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
+                                + Agregar Filamento
+                            </button>
+                            <button class="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
+                                📊 Reportes
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas Rápidas -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Total Rollos</p>
+                                    <p class="text-2xl font-bold text-gray-900">12</p>
+                                </div>
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    🧵
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Valor Total</p>
+                                    <p class="text-2xl font-bold text-gray-900">€347</p>
+                                </div>
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                    💰
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Stock Bajo</p>
+                                    <p class="text-2xl font-bold text-orange-600">3</p>
+                                </div>
+                                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                    ⚠️
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Colores</p>
+                                    <p class="text-2xl font-bold text-gray-900">8</p>
+                                </div>
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    🎨
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inventario de Filamentos -->
+                    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-white">
+                            <h3 class="text-2xl font-bold">📦 Inventario de Filamentos</h3>
+                            <p class="text-indigo-100 mt-1">Control inteligente de stock y consumo</p>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <!-- Filamento 1 -->
+                                <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-4 border border-blue-200">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="w-8 h-8 bg-blue-500 rounded-full border-2 border-white shadow-lg"></div>
+                                        <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs font-medium">En stock</span>
+                                    </div>
+                                    <h4 class="font-bold text-gray-900 mb-1">PLA Azul</h4>
+                                    <p class="text-sm text-gray-600 mb-2">Prusa Research</p>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between text-sm">
+                                            <span>Peso restante:</span>
+                                            <span class="font-medium">847g</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-blue-500 h-2 rounded-full" style="width: 85%"></div>
+                                        </div>
+                                        <div class="flex justify-between text-xs text-gray-500">
+                                            <span>85% restante</span>
+                                            <span>€23.50</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Filamento 2 -->
+                                <div class="bg-gradient-to-br from-red-50 to-pink-100 rounded-xl p-4 border border-red-200">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="w-8 h-8 bg-red-500 rounded-full border-2 border-white shadow-lg"></div>
+                                        <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs font-medium">En stock</span>
+                                    </div>
+                                    <h4 class="font-bold text-gray-900 mb-1">PLA Rojo</h4>
+                                    <p class="text-sm text-gray-600 mb-2">eSUN</p>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between text-sm">
+                                            <span>Peso restante:</span>
+                                            <span class="font-medium">623g</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-red-500 h-2 rounded-full" style="width: 62%"></div>
+                                        </div>
+                                        <div class="flex justify-between text-xs text-gray-500">
+                                            <span>62% restante</span>
+                                            <span>€19.99</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Filamento 3 - Stock bajo -->
+                                <div class="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-xl p-4 border border-orange-200">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="w-8 h-8 bg-gray-300 rounded-full border-2 border-white shadow-lg"></div>
+                                        <span class="px-2 py-1 bg-orange-200 text-orange-800 rounded-full text-xs font-medium animate-pulse">Stock bajo</span>
+                                    </div>
+                                    <h4 class="font-bold text-gray-900 mb-1">PETG Transparente</h4>
+                                    <p class="text-sm text-gray-600 mb-2">Prusament</p>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between text-sm">
+                                            <span>Peso restante:</span>
+                                            <span class="font-medium text-orange-600">156g</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-orange-500 h-2 rounded-full" style="width: 16%"></div>
+                                        </div>
+                                        <div class="flex justify-between text-xs text-gray-500">
+                                            <span>16% restante</span>
+                                            <span>€31.50</span>
+                                        </div>
+                                    </div>
+                                    <button class="mt-3 w-full px-3 py-2 bg-orange-500 text-white rounded-lg text-sm hover:bg-orange-600 transition-colors">
+                                        🛒 Reordenar
+                                    </button>
+                                </div>
+
+                                <!-- Filamento 4 -->
+                                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="w-8 h-8 bg-black rounded-full border-2 border-white shadow-lg"></div>
+                                        <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs font-medium">En stock</span>
+                                    </div>
+                                    <h4 class="font-bold text-gray-900 mb-1">PLA Negro</h4>
+                                    <p class="text-sm text-gray-600 mb-2">Hatchbox</p>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between text-sm">
+                                            <span>Peso restante:</span>
+                                            <span class="font-medium">934g</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-black h-2 rounded-full" style="width: 93%"></div>
+                                        </div>
+                                        <div class="flex justify-between text-xs text-gray-500">
+                                            <span>93% restante</span>
+                                            <span>€21.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Filamento 5 -->
+                                <div class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-4 border border-green-200">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="w-8 h-8 bg-green-500 rounded-full border-2 border-white shadow-lg"></div>
+                                        <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs font-medium">En stock</span>
+                                    </div>
+                                    <h4 class="font-bold text-gray-900 mb-1">PETG Verde</h4>
+                                    <p class="text-sm text-gray-600 mb-2">Overture</p>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between text-sm">
+                                            <span>Peso restante:</span>
+                                            <span class="font-medium">712g</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 71%"></div>
+                                        </div>
+                                        <div class="flex justify-between text-xs text-gray-500">
+                                            <span>71% restante</span>
+                                            <span>€27.99</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Filamento 6 - Agotado -->
+                                <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-4 border border-red-200 opacity-60">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="w-8 h-8 bg-white border-2 border-red-300 rounded-full"></div>
+                                        <span class="px-2 py-1 bg-red-200 text-red-800 rounded-full text-xs font-medium">Agotado</span>
+                                    </div>
+                                    <h4 class="font-bold text-gray-900 mb-1">ABS Blanco</h4>
+                                    <p class="text-sm text-gray-600 mb-2">Polymaker</p>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between text-sm">
+                                            <span>Peso restante:</span>
+                                            <span class="font-medium text-red-600">0g</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-red-500 h-2 rounded-full" style="width: 0%"></div>
+                                        </div>
+                                        <div class="flex justify-between text-xs text-gray-500">
+                                            <span>0% restante</span>
+                                            <span>€29.50</span>
+                                        </div>
+                                    </div>
+                                    <button class="mt-3 w-full px-3 py-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors">
+                                        🛒 Reponer Stock
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alertas de Stock -->
+                    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                        <div class="bg-gradient-to-r from-orange-500 to-red-600 p-4 text-white">
+                            <h3 class="text-lg font-bold">🚨 Alertas de Stock</h3>
+                        </div>
+                        
+                        <div class="p-4 space-y-3">
+                            <div class="p-3 bg-red-50 border border-red-200 rounded-lg">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                                    <span class="font-medium text-red-800">Stock Agotado</span>
+                                </div>
+                                <p class="text-sm text-red-700">ABS Blanco - Polymaker</p>
+                                <div class="mt-2 flex gap-2">
+                                    <button class="px-3 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700">Reponer</button>
+                                    <button class="px-3 py-1 bg-gray-200 text-gray-700 rounded text-xs hover:bg-gray-300">Ignorar</button>
+                                </div>
+                            </div>
+                            
+                            <div class="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                    <span class="font-medium text-orange-800">Stock Crítico</span>
+                                </div>
+                                <p class="text-sm text-orange-700">PETG Transparente - Prusament (156g restante)</p>
+                                <div class="mt-2 flex gap-2">
+                                    <button class="px-3 py-1 bg-orange-600 text-white rounded text-xs hover:bg-orange-700">Reordenar</button>
+                                    <button class="px-3 py-1 bg-gray-200 text-gray-700 rounded text-xs hover:bg-gray-300">Recordar más tarde</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paleta de Colores -->
+                    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                        <div class="bg-gradient-to-r from-purple-500 to-pink-600 p-4 text-white">
+                            <h3 class="text-lg font-bold">🎨 Paleta de Colores Disponibles</h3>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="flex flex-wrap gap-4">
+                                <div class="group flex flex-col items-center">
+                                    <div class="w-16 h-16 bg-blue-500 rounded-full border-4 border-white shadow-lg cursor-pointer transform hover:scale-110 transition-transform"></div>
+                                    <span class="text-xs mt-2 font-medium">Azul</span>
+                                    <span class="text-xs text-gray-500">847g</span>
+                                </div>
+                                <div class="group flex flex-col items-center">
+                                    <div class="w-16 h-16 bg-red-500 rounded-full border-4 border-white shadow-lg cursor-pointer transform hover:scale-110 transition-transform"></div>
+                                    <span class="text-xs mt-2 font-medium">Rojo</span>
+                                    <span class="text-xs text-gray-500">623g</span>
+                                </div>
+                                <div class="group flex flex-col items-center">
+                                    <div class="w-16 h-16 bg-black rounded-full border-4 border-white shadow-lg cursor-pointer transform hover:scale-110 transition-transform"></div>
+                                    <span class="text-xs mt-2 font-medium">Negro</span>
+                                    <span class="text-xs text-gray-500">934g</span>
+                                </div>
+                                <div class="group flex flex-col items-center">
+                                    <div class="w-16 h-16 bg-green-500 rounded-full border-4 border-white shadow-lg cursor-pointer transform hover:scale-110 transition-transform"></div>
+                                    <span class="text-xs mt-2 font-medium">Verde</span>
+                                    <span class="text-xs text-gray-500">712g</span>
+                                </div>
+                                <div class="group flex flex-col items-center">
+                                    <div class="w-16 h-16 bg-gray-300 rounded-full border-4 border-white shadow-lg cursor-pointer transform hover:scale-110 transition-transform opacity-60"></div>
+                                    <span class="text-xs mt-2 font-medium">Transparente</span>
+                                    <span class="text-xs text-orange-500">156g ⚠️</span>
+                                </div>
+                                <div class="group flex flex-col items-center">
+                                    <div class="w-16 h-16 bg-gray-200 rounded-full border-4 border-red-300 shadow-lg cursor-pointer transform hover:scale-110 transition-transform opacity-40"></div>
+                                    <span class="text-xs mt-2 font-medium">Blanco</span>
+                                    <span class="text-xs text-red-500">0g 🚫</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- Settings Section -->
                 <section id="settings">
                     <h2 class="text-3xl font-bold mb-6">Ajustes y Comunidad</h2>
@@ -320,6 +987,116 @@
                                 <input type="checkbox" value="" id="community-toggle" class="sr-only peer" checked>
                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                             </label>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sugerencias de IA -->
+                <section class="bg-gradient-to-br from-cyan-50 to-blue-100 rounded-2xl shadow-xl border border-cyan-200 overflow-hidden mt-6">
+                    <div class="bg-gradient-to-r from-cyan-600 to-blue-700 p-6 text-white">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-white/20 backdrop-blur-lg rounded-xl flex items-center justify-center text-2xl">
+                                🤖
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold">Sistema de IA KyberCore</h3>
+                                <p class="text-cyan-100 mt-1">Recomendaciones inteligentes en tiempo real</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 space-y-4">
+                        <!-- Optimización de Cola -->
+                        <div class="bg-white rounded-xl shadow-lg border border-cyan-100 p-5">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-lg flex items-center justify-center text-white">
+                                    ⚡
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900">Optimización de Cola Detectada</h4>
+                                    <p class="text-sm text-gray-600">Puedo mejorar la eficiencia en un 23%</p>
+                                </div>
+                            </div>
+                            <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                                <p class="text-sm text-blue-800">
+                                    🔄 <strong>Reordenamiento sugerido:</strong> Mover "Engranaje_Motor.gcode" 
+                                    antes que "Carcasa_Principal.gcode" para optimizar cambios de material.
+                                </p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                                    ✅ Aplicar Sugerencia
+                                </button>
+                                <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300 transition-colors">
+                                    Ver Detalles
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Mantenimiento Predictivo -->
+                        <div class="bg-white rounded-xl shadow-lg border border-orange-100 p-5">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center text-white">
+                                    🔧
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900">Mantenimiento Predictivo</h4>
+                                    <p class="text-sm text-gray-600">Análisis de patrones de desgaste</p>
+                                </div>
+                            </div>
+                            <div class="bg-orange-50 p-4 rounded-lg mb-4">
+                                <p class="text-sm text-orange-800">
+                                    ⚠️ <strong>Alerta temprana:</strong> La boquilla de la Prusa MK4 muestra 
+                                    señales de desgaste. Recomiendo reemplazo en ~150 horas de uso.
+                                </p>
+                            </div>
+                            <button class="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700 transition-colors">
+                                📅 Programar Mantenimiento
+                            </button>
+                        </div>
+
+                        <!-- Perfil de Material -->
+                        <div class="bg-white rounded-xl shadow-lg border border-green-100 p-5">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-lg flex items-center justify-center text-white">
+                                    🎯
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900">Perfil de Material Optimizado</h4>
+                                    <p class="text-sm text-gray-600">Basado en análisis de impresiones previas</p>
+                                </div>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg mb-4">
+                                <p class="text-sm text-green-800">
+                                    🎯 <strong>Nuevo perfil disponible:</strong> PLA Negro optimizado para la 
+                                    Voron 2.4 (+15% velocidad, -8% fallos de adhesión)
+                                </p>
+                            </div>
+                            <button class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors">
+                                📥 Descargar Perfil
+                            </button>
+                        </div>
+
+                        <!-- Análisis de Costos -->
+                        <div class="bg-white rounded-xl shadow-lg border border-purple-100 p-5">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-500 rounded-lg flex items-center justify-center text-white">
+                                    💰
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900">Análisis de Costos IA</h4>
+                                    <p class="text-sm text-gray-600">Optimización financiera inteligente</p>
+                                </div>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg mb-4">
+                                <p class="text-sm text-purple-800">
+                                    💡 <strong>Ahorro detectado:</strong> Cambiando a PETG reciclado para 
+                                    prototipos, puedes ahorrar €23.50 en el próximo lote.
+                                </p>
+                            </div>
+                            <button class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 transition-colors">
+                                📊 Ver Análisis Completo
+                            </button>
                         </div>
                     </div>
                 </section>
