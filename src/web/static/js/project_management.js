@@ -30,7 +30,7 @@ function renderGanttTimeline(scale) {
   if (scale === 'hours') {
     for (let h = 0; h < 24; h++) {
       const div = document.createElement('div');
-      div.textContent = h + ':00';
+      div.textContent = h; // Solo la hora, sin minutos
       div.className = 'px-1';
       labelsContainer.appendChild(div);
     }
