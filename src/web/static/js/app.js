@@ -162,6 +162,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     initFleetModule();
                 }
             }
+            
+            // Initialize dashboard module (project management functionality)
+            if (moduleId === 'dashboard') {
+                if (typeof initProjectManagement === 'function') {
+                    console.log('Inicializando módulo de gestión de proyectos...');
+                    setTimeout(initProjectManagement, 100); // Pequeño delay para asegurar que el DOM esté listo
+                }
+            }
             // Add other module initializations here as needed
             // if (moduleId === 'recommender') { initRecommenderModule(); }
 

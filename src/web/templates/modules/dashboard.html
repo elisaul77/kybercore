@@ -51,7 +51,8 @@
 </section>
 
 <!-- Script específico del dashboard -->
-<script src="/static/js/dashboard.js"></script>
+<script src="{{ url_for('static', path='js/dashboard.js') }}"></script>
+<script src="{{ url_for('static', path='js/project_management.js') }}"></script>
 
 <script>
 // Configuración inicial del dashboard
