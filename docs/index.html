@@ -1160,9 +1160,42 @@ document.addEventListener('DOMContentLoaded', () => {
             appData = await response.json();
         } catch (error) {
             console.error("Failed to fetch data from backend:", error);
-            // Handle error display in the UI
-            document.body.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert"><strong class="font-bold">Error de Conexión!</strong><span class="block sm:inline"> No se pudo conectar a la API de KyberCore. Asegúrate de que el backend esté corriendo en ${API_URL}.</span></div>`;
-            return;
+            // Use mock data for the prototype
+            appData = {
+                printers: [
+                    { id: 'prusamk4', name: 'Prusa MK4' },
+                    { id: 'voron24', name: 'Voron 2.4' },
+                    { id: 'bambu-x1c', name: 'Bambu X1 Carbon' },
+                    { id: 'ender3pro', name: 'Ender 3 Pro' }
+                ],
+                filaments: [
+                    { id: 'pla-blue', name: 'PLA Azul - Prusa Research' },
+                    { id: 'pla-red', name: 'PLA Rojo - eSUN' },
+                    { id: 'petg-clear', name: 'PETG Transparente - Prusament' },
+                    { id: 'pla-black', name: 'PLA Negro - Hatchbox' },
+                    { id: 'petg-green', name: 'PETG Verde - Overture' },
+                    { id: 'abs-white', name: 'ABS Blanco - Polymaker' }
+                ],
+                print_queue: [
+                    { name: 'Soporte_Camara_v3.gcode', eta: '42 min' },
+                    { name: 'Carcasa_Principal.gcode', eta: '2h 30m' },
+                    { name: 'Engranaje_Motor.gcode', eta: '1h 45m' }
+                ],
+                fleet: [
+                    { name: 'Prusa MK4', status: 'Imprimiendo', job: 'Soporte_Camara_v3.gcode', progress: 68, color: 'green' },
+                    { name: 'Voron 2.4', status: 'Imprimiendo', job: 'Carcasa_Principal.gcode', progress: 23, color: 'green' },
+                    { name: 'Bambu X1C', status: 'Inactiva', job: 'Ninguno', progress: 0, color: 'gray' },
+                    { name: 'Ender 3 Pro', status: 'Error', job: 'Ninguno', progress: 0, color: 'yellow' }
+                ],
+                consumables: [
+                    { id: 1, name: 'PLA Azul', brand: 'Prusa Research', weight: 847, maxWeight: 1000, price: 23.50, color: '#3B82F6', status: 'en-stock' },
+                    { id: 2, name: 'PLA Rojo', brand: 'eSUN', weight: 623, maxWeight: 1000, price: 19.99, color: '#EF4444', status: 'en-stock' },
+                    { id: 3, name: 'PETG Transparente', brand: 'Prusament', weight: 156, maxWeight: 1000, price: 31.50, color: '#D1D5DB', status: 'stock-bajo' },
+                    { id: 4, name: 'PLA Negro', brand: 'Hatchbox', weight: 934, maxWeight: 1000, price: 21.00, color: '#000000', status: 'en-stock' },
+                    { id: 5, name: 'PETG Verde', brand: 'Overture', weight: 712, maxWeight: 1000, price: 27.99, color: '#10B981', status: 'en-stock' },
+                    { id: 6, name: 'ABS Blanco', brand: 'Polymaker', weight: 0, maxWeight: 1000, price: 29.50, color: '#FFFFFF', status: 'agotado' }
+                ]
+            };
         }
 
         // Navigation
@@ -1194,6 +1227,9 @@ document.addEventListener('DOMContentLoaded', () => {
         analysisTabs.forEach(tab => tab.addEventListener('click', switchAnalysisTab));
         analyzeLogBtn.addEventListener('click', simulateLogAnalysis);
         analyzePhotoBtn.addEventListener('click', simulatePhotoAnalysis);
+
+        // Consumibles interactions
+        setupConsumablesInteractions();
 
         // New Job AI Listeners
         uploadStlBtn.addEventListener('click', () => goToStep('step2'));
@@ -1463,6 +1499,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         }, 2000);
+    }
+
+    // --- CONSUMIBLES INTERACTIONS ---
+    function setupConsumablesInteractions() {
+        // Add event listeners to reorder buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.textContent.includes('Reordenar') || e.target.textContent.includes('Reponer Stock')) {
+                e.preventDefault();
+                const filamentName = e.target.closest('.rounded-xl').querySelector('h4').textContent;
+                
+                // Show a mock confirmation
+                if (confirm(`¿Deseas reordenar ${filamentName}?`)) {
+                    // Simulate API call
+                    e.target.textContent = '✅ Pedido Realizado';
+                    e.target.disabled = true;
+                    e.target.classList.add('opacity-50');
+                    
+                    setTimeout(() => {
+                        e.target.textContent = e.target.textContent.includes('Reordenar') ? '🛒 Reordenar' : '🛒 Reponer Stock';
+                        e.target.disabled = false;
+                        e.target.classList.remove('opacity-50');
+                    }, 3000);
+                }
+            }
+            
+            if (e.target.textContent.includes('Agregar Filamento')) {
+                e.preventDefault();
+                alert('🧵 Funcionalidad de agregar filamento en desarrollo.\n\nEsta función permitirá:\n• Agregar nuevos rollos de filamento\n• Escanear códigos QR/NFC\n• Configurar alertas de stock\n• Integración con proveedores');
+            }
+            
+            if (e.target.textContent.includes('Reportes')) {
+                e.preventDefault();
+                alert('📊 Módulo de reportes en desarrollo.\n\nInformes disponibles:\n• Consumo por proyecto\n• Análisis de costos\n• Predicción de restock\n• Tendencias de uso');
+            }
+            
+            if (e.target.textContent.includes('Reponer') && e.target.classList.contains('text-xs')) {
+                e.preventDefault();
+                alert('🛒 Reposición automática configurada.\n\nSe enviará una notificación cuando sea momento de reordenar este material.');
+            }
+            
+            if (e.target.textContent.includes('Ignorar')) {
+                e.preventDefault();
+                e.target.closest('.rounded-lg').style.display = 'none';
+            }
+        });
     }
 
     // --- START THE APP ---
