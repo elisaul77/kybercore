@@ -80,6 +80,9 @@
                 <a href="#fleet" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
                     <span class="mr-3">🏭</span> Gestión de Flota
                 </a>
+                <a href="#galeria" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3">🗃️</span> Galería STL
+                </a>
                 <a href="#consumibles" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
                     <span class="mr-3">🧵</span> Consumibles
                 </a>
@@ -673,6 +676,565 @@
                     <h2 class="text-3xl font-bold mb-6">Gestión de Flota</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="fleet-printers">
                         <!-- Fleet printers will be injected by JS -->
+                    </div>
+                </section>
+
+                <!-- Galería STL Section -->
+                <section id="galeria" class="space-y-6">
+                    <!-- Header con filtros y búsqueda -->
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                        <div>
+                            <h2 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                                🗃️ Galería STL Local
+                            </h2>
+                            <p class="text-gray-600 mt-2">Gestiona tus modelos 3D con análisis IA y recomendaciones inteligentes</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
+                                📁 Importar STL
+                            </button>
+                            <button class="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
+                                🔄 Analizar Todo
+                            </button>
+                            <button class="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
+                                📊 Estadísticas
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filtros y búsqueda -->
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Buscar modelos</label>
+                                <input type="text" placeholder="Nombre o descripción..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
+                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option>Todas las categorías</option>
+                                    <option>Mecánica</option>
+                                    <option>Decorativo</option>
+                                    <option>Funcional</option>
+                                    <option>Miniatura</option>
+                                    <option>Herramientas</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Material recomendado</label>
+                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option>Todos los materiales</option>
+                                    <option>PLA</option>
+                                    <option>PETG</option>
+                                    <option>ABS</option>
+                                    <option>TPU</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option>Todos</option>
+                                    <option>Analizados</option>
+                                    <option>Pendientes</option>
+                                    <option>Favoritos</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas rápidas de la galería -->
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Total STL</p>
+                                    <p class="text-2xl font-bold text-gray-900">24</p>
+                                </div>
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    📦
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Analizados</p>
+                                    <p class="text-2xl font-bold text-green-600">21</p>
+                                </div>
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                    🤖
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Impresos</p>
+                                    <p class="text-2xl font-bold text-blue-600">18</p>
+                                </div>
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    ✅
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Fallos</p>
+                                    <p class="text-2xl font-bold text-red-600">3</p>
+                                </div>
+                                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                    ❌
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Tasa Éxito</p>
+                                    <p class="text-2xl font-bold text-purple-600">85%</p>
+                                </div>
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    📈
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grid de modelos STL -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="stl-gallery">
+                        <!-- Modelo 1: Engranaje mecánico -->
+                        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                            <div class="relative">
+                                <img src="https://placehold.co/300x200/6366f1/ffffff?text=Engranaje+3D" alt="Engranaje mecánico" class="w-full h-48 object-cover">
+                                <div class="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                    ✅ Analizado
+                                </div>
+                                <div class="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                                    PLA Recomendado
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg text-gray-900 mb-2">Engranaje_Precision_v2.stl</h3>
+                                <p class="text-sm text-gray-600 mb-4">Engranaje de precisión para aplicaciones mecánicas</p>
+                                
+                                <!-- Recomendaciones IA -->
+                                <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3 mb-4">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-purple-600">🤖</span>
+                                        <span class="text-sm font-medium text-purple-900">Análisis IA</span>
+                                    </div>
+                                    <div class="space-y-1 text-xs text-gray-700">
+                                        <div class="flex justify-between">
+                                            <span>🖨️ Impresora:</span>
+                                            <span class="font-medium text-purple-700">Prusa MK4</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>🧵 Material:</span>
+                                            <span class="font-medium text-purple-700">PLA Negro</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>⏱️ Tiempo:</span>
+                                            <span class="font-medium text-purple-700">2h 15m</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>📏 Filamento:</span>
+                                            <span class="font-medium text-purple-700">18.5g</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>💰 Costo:</span>
+                                            <span class="font-medium text-purple-700">€0.42</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Historial de impresiones -->
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm font-medium text-gray-700">Historial</span>
+                                        <span class="text-xs text-gray-500">3 impresiones</span>
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <div class="w-8 h-2 bg-green-400 rounded-full" title="Exitosa - 15/07"></div>
+                                        <div class="w-8 h-2 bg-green-400 rounded-full" title="Exitosa - 22/07"></div>
+                                        <div class="w-8 h-2 bg-green-400 rounded-full" title="Exitosa - 28/07"></div>
+                                    </div>
+                                    <div class="text-xs text-green-600 mt-1">100% éxito</div>
+                                </div>
+
+                                <!-- Botones de acción -->
+                                <div class="flex gap-2">
+                                    <button class="flex-1 bg-gradient-to-r from-purple-500 to-purple-600 text-white px-3 py-2 rounded-lg text-sm hover:from-purple-600 hover:to-purple-700 transition-colors">
+                                        🚀 Imprimir
+                                    </button>
+                                    <button class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                                        👁️
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modelo 2: Soporte de cámara -->
+                        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                            <div class="relative">
+                                <img src="https://placehold.co/300x200/10b981/ffffff?text=Soporte+Camera" alt="Soporte de cámara" class="w-full h-48 object-cover">
+                                <div class="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                    ✅ Analizado
+                                </div>
+                                <div class="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                                    PETG Recomendado
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg text-gray-900 mb-2">Soporte_Camara_v3.stl</h3>
+                                <p class="text-sm text-gray-600 mb-4">Soporte ajustable para cámara web</p>
+                                
+                                <!-- Recomendaciones IA -->
+                                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-3 mb-4">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-blue-600">🤖</span>
+                                        <span class="text-sm font-medium text-blue-900">Análisis IA</span>
+                                    </div>
+                                    <div class="space-y-1 text-xs text-gray-700">
+                                        <div class="flex justify-between">
+                                            <span>🖨️ Impresora:</span>
+                                            <span class="font-medium text-blue-700">Voron 2.4</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>🧵 Material:</span>
+                                            <span class="font-medium text-blue-700">PETG Verde</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>⏱️ Tiempo:</span>
+                                            <span class="font-medium text-blue-700">42m</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>📏 Filamento:</span>
+                                            <span class="font-medium text-blue-700">12.3g</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>💰 Costo:</span>
+                                            <span class="font-medium text-blue-700">€0.34</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Historial de impresiones -->
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm font-medium text-gray-700">Historial</span>
+                                        <span class="text-xs text-gray-500">2 impresiones</span>
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <div class="w-8 h-2 bg-green-400 rounded-full" title="Exitosa - 20/07"></div>
+                                        <div class="w-8 h-2 bg-blue-400 rounded-full animate-pulse" title="En progreso - Ahora"></div>
+                                    </div>
+                                    <div class="text-xs text-blue-600 mt-1">Imprimiendo ahora</div>
+                                </div>
+
+                                <!-- Botones de acción -->
+                                <div class="flex gap-2">
+                                    <button class="flex-1 bg-gray-300 text-gray-500 px-3 py-2 rounded-lg text-sm cursor-not-allowed">
+                                        ⏳ En Cola
+                                    </button>
+                                    <button class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                                        👁️
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modelo 3: Organizador de escritorio -->
+                        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                            <div class="relative">
+                                <img src="https://placehold.co/300x200/f59e0b/ffffff?text=Organizador" alt="Organizador" class="w-full h-48 object-cover">
+                                <div class="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                    ✅ Analizado
+                                </div>
+                                <div class="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                                    PLA Recomendado
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg text-gray-900 mb-2">Organizador_Modular.stl</h3>
+                                <p class="text-sm text-gray-600 mb-4">Sistema modular para organizar escritorio</p>
+                                
+                                <!-- Recomendaciones IA -->
+                                <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg p-3 mb-4">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-yellow-600">🤖</span>
+                                        <span class="text-sm font-medium text-yellow-900">Análisis IA</span>
+                                    </div>
+                                    <div class="space-y-1 text-xs text-gray-700">
+                                        <div class="flex justify-between">
+                                            <span>🖨️ Impresora:</span>
+                                            <span class="font-medium text-yellow-700">Bambu X1C</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>🧵 Material:</span>
+                                            <span class="font-medium text-yellow-700">PLA Azul</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>⏱️ Tiempo:</span>
+                                            <span class="font-medium text-yellow-700">3h 45m</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>📏 Filamento:</span>
+                                            <span class="font-medium text-yellow-700">45.2g</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>💰 Costo:</span>
+                                            <span class="font-medium text-yellow-700">€1.06</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Historial de impresiones -->
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm font-medium text-gray-700">Historial</span>
+                                        <span class="text-xs text-gray-500">4 impresiones</span>
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <div class="w-6 h-2 bg-green-400 rounded-full" title="Exitosa - 10/07"></div>
+                                        <div class="w-6 h-2 bg-red-400 rounded-full" title="Fallo - 12/07"></div>
+                                        <div class="w-6 h-2 bg-green-400 rounded-full" title="Exitosa - 18/07"></div>
+                                        <div class="w-6 h-2 bg-green-400 rounded-full" title="Exitosa - 25/07"></div>
+                                    </div>
+                                    <div class="text-xs text-yellow-600 mt-1">75% éxito</div>
+                                </div>
+
+                                <!-- Botones de acción -->
+                                <div class="flex gap-2">
+                                    <button class="flex-1 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white px-3 py-2 rounded-lg text-sm hover:from-yellow-600 hover:to-yellow-700 transition-colors">
+                                        🚀 Imprimir
+                                    </button>
+                                    <button class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                                        👁️
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modelo 4: Miniatura con problemas -->
+                        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-red-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                            <div class="relative">
+                                <img src="https://placehold.co/300x200/ef4444/ffffff?text=Miniatura+Dragon" alt="Miniatura" class="w-full h-48 object-cover">
+                                <div class="absolute top-3 right-3 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                    ⚠️ Problemas
+                                </div>
+                                <div class="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                                    PLA Recomendado
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg text-gray-900 mb-2">Dragon_Miniature.stl</h3>
+                                <p class="text-sm text-gray-600 mb-4">Miniatura detallada de dragón</p>
+                                
+                                <!-- Recomendaciones IA con alertas -->
+                                <div class="bg-gradient-to-r from-red-50 to-pink-50 rounded-lg p-3 mb-4">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-red-600">🤖</span>
+                                        <span class="text-sm font-medium text-red-900">Análisis IA - Atención</span>
+                                    </div>
+                                    <div class="space-y-1 text-xs text-gray-700">
+                                        <div class="flex justify-between">
+                                            <span>🖨️ Impresora:</span>
+                                            <span class="font-medium text-red-700">Prusa MK4</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>🧵 Material:</span>
+                                            <span class="font-medium text-red-700">PLA Negro</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>⏱️ Tiempo:</span>
+                                            <span class="font-medium text-red-700">6h 20m</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>📏 Filamento:</span>
+                                            <span class="font-medium text-red-700">32.1g</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>💰 Costo:</span>
+                                            <span class="font-medium text-red-700">€0.67</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 p-2 bg-red-100 rounded text-xs text-red-800">
+                                        ⚠️ Alta probabilidad de fallos en detalles finos. Considera usar soportes.
+                                    </div>
+                                </div>
+
+                                <!-- Historial de impresiones con fallos -->
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm font-medium text-gray-700">Historial</span>
+                                        <span class="text-xs text-gray-500">5 impresiones</span>
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <div class="w-5 h-2 bg-red-400 rounded-full" title="Fallo - 05/07"></div>
+                                        <div class="w-5 h-2 bg-red-400 rounded-full" title="Fallo - 08/07"></div>
+                                        <div class="w-5 h-2 bg-green-400 rounded-full" title="Exitosa - 14/07"></div>
+                                        <div class="w-5 h-2 bg-red-400 rounded-full" title="Fallo - 19/07"></div>
+                                        <div class="w-5 h-2 bg-green-400 rounded-full" title="Exitosa - 26/07"></div>
+                                    </div>
+                                    <div class="text-xs text-red-600 mt-1">40% éxito - Requiere optimización</div>
+                                </div>
+
+                                <!-- Botones de acción -->
+                                <div class="flex gap-2">
+                                    <button class="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-2 rounded-lg text-sm hover:from-red-600 hover:to-red-700 transition-colors">
+                                        ⚡ Optimizar
+                                    </button>
+                                    <button class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                                        👁️
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modelo 5: Herramienta sin analizar -->
+                        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                            <div class="relative">
+                                <img src="https://placehold.co/300x200/64748b/ffffff?text=Llave+Inglesa" alt="Herramienta" class="w-full h-48 object-cover">
+                                <div class="absolute top-3 right-3 bg-gray-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                    ⏳ Pendiente
+                                </div>
+                                <div class="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                                    Sin analizar
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg text-gray-900 mb-2">Llave_Ajustable_10mm.stl</h3>
+                                <p class="text-sm text-gray-600 mb-4">Llave inglesa ajustable para pernos de 10mm</p>
+                                
+                                <!-- Estado sin analizar -->
+                                <div class="bg-gradient-to-r from-gray-50 to-slate-50 rounded-lg p-3 mb-4">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-gray-600">⏳</span>
+                                        <span class="text-sm font-medium text-gray-700">Pendiente de análisis</span>
+                                    </div>
+                                    <div class="text-xs text-gray-600 text-center py-2">
+                                        <p>Haz clic en "Analizar IA" para obtener recomendaciones</p>
+                                        <p>de impresora, material, tiempo y costo</p>
+                                    </div>
+                                </div>
+
+                                <!-- Historial vacío -->
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm font-medium text-gray-700">Historial</span>
+                                        <span class="text-xs text-gray-500">0 impresiones</span>
+                                    </div>
+                                    <div class="text-xs text-gray-500 text-center py-2">
+                                        Sin historial de impresiones
+                                    </div>
+                                </div>
+
+                                <!-- Botones de acción -->
+                                <div class="flex gap-2">
+                                    <button class="flex-1 bg-gradient-to-r from-gray-400 to-gray-500 text-white px-3 py-2 rounded-lg text-sm hover:from-gray-500 hover:to-gray-600 transition-colors">
+                                        🤖 Analizar IA
+                                    </button>
+                                    <button class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                                        👁️
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modelo 6: Decorativo -->
+                        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                            <div class="relative">
+                                <img src="https://placehold.co/300x200/8b5cf6/ffffff?text=Florero+Spiral" alt="Florero" class="w-full h-48 object-cover">
+                                <div class="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                    ✅ Analizado
+                                </div>
+                                <div class="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                                    PLA Recomendado
+                                </div>
+                                <div class="absolute bottom-3 right-3 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                    ⭐ Favorito
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg text-gray-900 mb-2">Florero_Spiral_Art.stl</h3>
+                                <p class="text-sm text-gray-600 mb-4">Florero decorativo con diseño en espiral</p>
+                                
+                                <!-- Recomendaciones IA -->
+                                <div class="bg-gradient-to-r from-purple-50 to-violet-50 rounded-lg p-3 mb-4">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-purple-600">🤖</span>
+                                        <span class="text-sm font-medium text-purple-900">Análisis IA</span>
+                                    </div>
+                                    <div class="space-y-1 text-xs text-gray-700">
+                                        <div class="flex justify-between">
+                                            <span>🖨️ Impresora:</span>
+                                            <span class="font-medium text-purple-700">Bambu X1C</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>🧵 Material:</span>
+                                            <span class="font-medium text-purple-700">PLA Azul</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>⏱️ Tiempo:</span>
+                                            <span class="font-medium text-purple-700">5h 10m</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>📏 Filamento:</span>
+                                            <span class="font-medium text-purple-700">68.9g</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>💰 Costo:</span>
+                                            <span class="font-medium text-purple-700">€1.62</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Historial de impresiones exitosas -->
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm font-medium text-gray-700">Historial</span>
+                                        <span class="text-xs text-gray-500">2 impresiones</span>
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <div class="w-12 h-2 bg-green-400 rounded-full" title="Exitosa - 16/07"></div>
+                                        <div class="w-12 h-2 bg-green-400 rounded-full" title="Exitosa - 23/07"></div>
+                                    </div>
+                                    <div class="text-xs text-green-600 mt-1">100% éxito - Modelo confiable</div>
+                                </div>
+
+                                <!-- Botones de acción -->
+                                <div class="flex gap-2">
+                                    <button class="flex-1 bg-gradient-to-r from-purple-500 to-purple-600 text-white px-3 py-2 rounded-lg text-sm hover:from-purple-600 hover:to-purple-700 transition-colors">
+                                        🚀 Imprimir
+                                    </button>
+                                    <button class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                                        👁️
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal de vista previa (se abre con JavaScript) -->
+                    <div id="stl-preview-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                            <div class="p-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="text-2xl font-bold text-gray-900">Vista Previa del Modelo</h2>
+                                    <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                                        <span class="text-2xl">×</span>
+                                    </button>
+                                </div>
+                                <div id="modal-content">
+                                    <!-- Contenido dinámico del modal -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
