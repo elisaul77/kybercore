@@ -130,3 +130,109 @@
   </div>
 </div>
 
+<!-- KPIs de Consumibles - Información de inventario de materiales -->
+<div class="mt-6">
+  <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+    🧵 Inventario de Consumibles
+    <span class="text-sm font-normal text-gray-500">Estado actual de filamentos y materiales</span>
+  </h2>
+  
+  <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4">
+    <!-- KPI Total Filamentos -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-green-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Total Filamentos</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="total-filaments">6</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center text-white text-xl">
+          🧵
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        En inventario
+      </div>
+    </div>
+
+    <!-- KPI Colores Disponibles -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-purple-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Colores</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="colors-available">5</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-xl">
+          🎨
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        En stock
+      </div>
+    </div>
+
+    <!-- KPI Tipos Disponibles -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-blue-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Tipos Material</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="types-available">4</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center text-white text-xl">
+          🔬
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        PLA, ABS, PETG, TPU
+      </div>
+    </div>
+
+    <!-- KPI Stock Bajo -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-red-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Stock Bajo</div>
+          <div class="mt-2 text-3xl font-bold text-red-600" data-kpi="low-stock-items">2</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-red-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-xl animate-pulse">
+          ⚠️
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        <span class="text-red-600 font-medium">Requieren atención</span>
+      </div>
+    </div>
+
+    <!-- KPI Peso Total -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-emerald-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Peso Total</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="total-weight">4.2kg</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-green-500 rounded-xl flex items-center justify-center text-white text-xl">
+          ⚖️
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        Material disponible
+      </div>
+    </div>
+
+    <!-- KPI Valor Inventario -->
+    <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-yellow-200 transform hover:-translate-y-1">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">Valor Total</div>
+          <div class="mt-2 text-3xl font-bold text-gray-900" data-kpi="inventory-value">€127</div>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center text-white text-xl">
+          💰
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-gray-600">
+        Inventario actual
+      </div>
+    </div>
+  </div>
+</div>
+

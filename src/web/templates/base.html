@@ -51,6 +51,10 @@
                     <span class="mr-3 text-xl">🏭</span> 
                     <span class="sidebar-text">Gestión de Flota</span>
                 </a>
+                <a href="#consumables" data-module="consumables" data-tooltip="Gestión de Consumibles" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3 text-xl">🧵</span> 
+                    <span class="sidebar-text">Consumibles</span>
+                </a>
                 <a href="#settings" data-module="settings" data-tooltip="Ajustes" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
                     <span class="mr-3 text-xl">⚙️</span> 
                     <span class="sidebar-text">Ajustes</span>
@@ -85,6 +89,7 @@
 <!-- Integrador principal que coordina todos los módulos -->
 <script src="{{ url_for('static', path='/js/fleet.js') }}"></script>
 <script src="{{ url_for('static', path='/js/project_management.js') }}"></script>
+<script src="{{ url_for('static', path='/js/consumables.js') }}"></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

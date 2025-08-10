@@ -170,6 +170,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     setTimeout(initProjectManagement, 100); // Pequeño delay para asegurar que el DOM esté listo
                 }
             }
+            
+            // Initialize consumables module
+            if (moduleId === 'consumables') {
+                if (typeof initConsumablesModule === 'function') {
+                    console.log('Inicializando módulo de consumibles...');
+                    setTimeout(initConsumablesModule, 100);
+                }
+            }
             // Add other module initializations here as needed
             // if (moduleId === 'recommender') { initRecommenderModule(); }
 
