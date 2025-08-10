@@ -1,0 +1,117 @@
+<!-- Cola de impresión inteligente -->
+<div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+  <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 text-white">
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-2xl font-bold">Cola de Impresión Inteligente</h3>
+        <p class="text-blue-100 mt-1">Optimizada por IA para máxima eficiencia</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="bg-white/20 backdrop-blur-lg rounded-xl px-4 py-2">
+          <div class="text-sm font-medium">Modo Activo</div>
+          <div class="flex items-center gap-2 mt-1">
+            <button class="px-3 py-1 bg-white/20 rounded-lg text-xs border border-white/30">FIFO</button>
+            <button class="px-3 py-1 bg-white rounded-lg text-blue-600 text-xs font-medium">🤖 IA</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="p-6">
+    <div class="space-y-4" id="queue-list">
+      <!-- Item de cola 1 -->
+      <div class="group bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-4 border-2 border-indigo-100 hover:border-indigo-300 transition-all duration-300 hover:shadow-lg">
+        <div class="flex items-center justify-between">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span class="font-bold text-gray-900">Soporte_Camara_v3.gcode</span>
+              <span class="px-2 py-1 text-[10px] font-semibold bg-indigo-100 text-indigo-800 rounded-full">AlphaCAM</span>
+              <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">PLA</span>
+              <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">0.2mm</span>
+            </div>
+            <div class="flex items-center gap-4 text-sm text-gray-600">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full"></span>
+                <span>ETA IA: <span class="font-bold text-indigo-600">1h 12m</span></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span>🎯 IA →</span>
+                <span class="font-bold text-gray-900">MK3S-01</span>
+              </div>
+              <div class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium">Prioridad Alta</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 ml-4">
+            <button class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 hover:text-gray-800 transition-colors duration-200">⬆</button>
+            <button class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 hover:text-gray-800 transition-colors duration-200">⬇</button>
+            <button class="p-2 bg-red-100 hover:bg-red-200 rounded-lg text-red-600 hover:text-red-800 transition-colors duration-200">🗑</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item de cola 2 -->
+      <div class="group bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4 border-2 border-amber-100 hover:border-amber-300 transition-all duration-300 hover:shadow-lg">
+        <div class="flex items-center justify-between">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+              <span class="font-bold text-gray-900">Caja_Control_v1.gcode</span>
+              <span class="px-2 py-1 text-[10px] font-semibold bg-amber-100 text-amber-800 rounded-full">SensorHub</span>
+              <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">PETG</span>
+              <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">0.28mm</span>
+            </div>
+            <div class="flex items-center gap-4 text-sm text-gray-600">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>
+                <span>ETA IA: <span class="font-bold text-amber-600">2h 45m</span></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span>🎯 IA →</span>
+                <span class="font-bold text-gray-900">Ender-02</span>
+              </div>
+              <div class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-medium">Prioridad Media</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 ml-4">
+            <button class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 hover:text-gray-800 transition-colors duration-200">⬆</button>
+            <button class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 hover:text-gray-800 transition-colors duration-200">⬇</button>
+            <button class="p-2 bg-red-100 hover:bg-red-200 rounded-lg text-red-600 hover:text-red-800 transition-colors duration-200">🗑</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item de cola 3 (nuevo) -->
+      <div class="group bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl p-4 border-2 border-emerald-100 hover:border-emerald-300 transition-all duration-300 hover:shadow-lg">
+        <div class="flex items-center justify-between">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+              <span class="font-bold text-gray-900">Base_Estructura_v1.gcode</span>
+              <span class="px-2 py-1 text-[10px] font-semibold bg-emerald-100 text-emerald-800 rounded-full">BetaRig</span>
+              <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">ABS</span>
+              <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">0.3mm</span>
+            </div>
+            <div class="flex items-center gap-4 text-sm text-gray-600">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
+                <span>ETA IA: <span class="font-bold text-emerald-600">4h 30m</span></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span>🎯 IA →</span>
+                <span class="font-bold text-gray-900">MK4-02</span>
+              </div>
+              <div class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full font-medium">Prioridad Baja</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 ml-4">
+            <button class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 hover:text-gray-800 transition-colors duration-200">⬆</button>
+            <button class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 hover:text-gray-800 transition-colors duration-200">⬇</button>
+            <button class="p-2 bg-red-100 hover:bg-red-200 rounded-lg text-red-600 hover:text-red-800 transition-colors duration-200">🗑</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
