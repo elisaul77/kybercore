@@ -11,7 +11,7 @@ window.initFleetModule = async function() {
     
     // Verificar que los módulos especializados estén cargados
     const requiredModules = [
-        'FleetState', 'FleetUI', 'FleetData', 'FleetTable', 
+        'FleetState', 'FleetUI', 'FleetData', 'FleetTable', 'FleetCards',
         'FleetCommands', 'FleetForms', 'FleetMessageHandler', 'FleetCommunication', 'FleetBulkCommands'
     ];
     
@@ -67,7 +67,13 @@ window.initFleetModule = async function() {
             window.FleetForms.initAddPrinterForm();
         }
         
-        // 2. Inicializar comandos masivos (después de un breve delay para permitir carga de datos)
+        // 2. Inicializar sistema de tarjetas
+        if (window.FleetCards && window.FleetCards.init) {
+            console.log('🎴 Inicializando sistema de tarjetas...');
+            window.FleetCards.init();
+        }
+        
+        // 3. Inicializar comandos masivos (después de un breve delay para permitir carga de datos)
         setTimeout(() => {
             if (window.FleetBulkCommands && window.FleetBulkCommands.init) {
                 console.log('🎛️ Inicializando comandos masivos...');
@@ -75,7 +81,7 @@ window.initFleetModule = async function() {
             }
         }, 100);
         
-        // 3. Configurar listeners para sincronización entre módulos
+        // 4. Configurar listeners para sincronización entre módulos
         if (window.FleetEventBus) {
             // Cuando se actualicen los datos de impresoras, actualizar selección masiva
             window.FleetEventBus.on('printersUpdated', () => {
@@ -85,7 +91,7 @@ window.initFleetModule = async function() {
             });
         }
         
-        // 4. Activar sistema de comunicación después de un breve delay
+        // 5. Activar sistema de comunicación después de un breve delay
         setTimeout(() => {
             console.log('🔗 Iniciando sistema de comunicación...');
             if (window.FleetCommunication && window.FleetCommunication.startOptimizedCommunication) {
@@ -97,7 +103,7 @@ window.initFleetModule = async function() {
             }
         }, 500);
         
-        // 5. Configurar botón de actualización forzada
+        // 6. Configurar botón de actualización forzada
         const forceUpdateBtn = document.getElementById('force-update-btn');
         if (forceUpdateBtn) {
             forceUpdateBtn.addEventListener('click', () => {
@@ -109,6 +115,14 @@ window.initFleetModule = async function() {
                 }
             });
         }
+        
+        // 7. Test automático de tarjetas después de 2 segundos
+        setTimeout(() => {
+            console.log('🧪 Ejecutando test automático de tarjetas...');
+            if (window.debugFleetCards) {
+                window.debugFleetCards();
+            }
+        }, 2000);
         
         console.log('✅ Sistema modular de flota inicializado correctamente');
         return true;
