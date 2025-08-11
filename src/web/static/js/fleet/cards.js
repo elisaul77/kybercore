@@ -83,6 +83,8 @@ window.FleetCards = {
 
     // 🎯 Configurar listeners para eventos de tarjetas
     setupCardEventListeners() {
+        console.log('🎯 Configurando listeners de eventos para tarjetas...');
+        
         // Event delegation para botones de tarjetas
         document.addEventListener('click', (e) => {
             const button = e.target.closest('[data-action]');
@@ -90,52 +92,74 @@ window.FleetCards = {
 
             const action = button.dataset.action;
             const printerId = button.dataset.printerId;
+            
+            console.log('🎯 Evento de click capturado:', { action, printerId, button });
 
             switch (action) {
                 case 'view-details':
+                    console.log('👁️ Acción: Ver detalles');
                     this.showPrinterDetails(printerId);
                     break;
                 case 'pause':
+                    console.log('⏸️ Acción: Pausar');
                     this.sendPrinterCommand(printerId, 'pause');
                     break;
                 case 'resume':
+                    console.log('▶️ Acción: Reanudar');
                     this.sendPrinterCommand(printerId, 'resume');
                     break;
                 case 'cancel':
+                    console.log('❌ Acción: Cancelar');
                     this.sendPrinterCommand(printerId, 'cancel');
                     break;
                 case 'home':
+                    console.log('🏠 Acción: Home');
                     this.sendPrinterCommand(printerId, 'home', { axis: 'XYZ' });
                     break;
                 case 'restart-klipper':
+                    console.log('🔄 Acción: Restart Klipper');
                     this.sendPrinterCommand(printerId, 'restart_klipper');
                     break;
                 case 'restart-firmware':
+                    console.log('⚡ Acción: Restart Firmware');
                     this.sendPrinterCommand(printerId, 'restart_firmware');
                     break;
                 case 'delete':
+                    console.log('🗑️ Acción: Eliminar');
                     this.deletePrinter(printerId);
                     break;
+                default:
+                    console.log('❓ Acción desconocida:', action);
             }
         });
 
         // Listener para cerrar modal de detalles
         const closeModal = document.getElementById('close-printer-modal');
         if (closeModal) {
+            console.log('✅ Listener de cierre de modal configurado');
             closeModal.addEventListener('click', () => {
+                console.log('❌ Cerrando modal de detalles');
                 this.hidePrinterDetails();
             });
+        } else {
+            console.warn('⚠️ No se encontró el botón de cerrar modal');
         }
 
         // Cerrar modal al hacer clic fuera
         const modal = document.getElementById('printer-details-modal');
         if (modal) {
+            console.log('✅ Listener de click fuera del modal configurado');
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {
+                    console.log('❌ Cerrando modal (click fuera)');
                     this.hidePrinterDetails();
                 }
             });
+        } else {
+            console.warn('⚠️ No se encontró el modal de detalles');
         }
+        
+        console.log('✅ Listeners de eventos configurados');
     },
 
     // 🎨 Renderizar todas las tarjetas de impresoras
@@ -298,7 +322,8 @@ window.FleetCards = {
                         <div class="grid grid-cols-3 gap-2">
                             <!-- Fila 1: Acciones principales -->
                             <button class="action-button flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-2 rounded-lg text-xs hover:from-blue-600 hover:to-blue-700 transition-colors font-medium"
-                                    data-action="view-details" data-printer-id="${printer.id}">
+                                    data-action="view-details" data-printer-id="${printer.id}"
+                                    onclick="console.log('🔍 Click directo en botón Ver:', '${printer.id}');">
                                 👁️ Ver
                             </button>
                             ${printer.status === 'printing' ? `
@@ -474,83 +499,306 @@ window.FleetCards = {
 
     // 👁️ Mostrar detalles completos de impresora
     showPrinterDetails(printerId) {
+        console.log('👁️ Mostrando detalles para impresora:', printerId);
+        
+        let printer = null;
+        
+        // Buscar la impresora en múltiples fuentes de datos
         if (window.FleetState && window.FleetState.printers) {
-            const printer = window.FleetState.printers.find(p => p.id === printerId);
-            if (printer) {
-                const modal = document.getElementById('printer-details-modal');
-                const title = document.getElementById('modal-printer-title');
-                const content = document.getElementById('modal-printer-content');
-                
-                if (modal && title && content) {
-                    title.textContent = `${printer.name} - Detalles Completos`;
-                    content.innerHTML = this.renderPrinterDetailContent(printer);
-                    modal.classList.remove('hidden');
-                }
+            printer = window.FleetState.printers.find(p => p.id === printerId);
+            console.log('🔍 Buscando en FleetState.printers:', !!printer);
+        }
+        
+        if (!printer && window.FleetData && window.FleetData.printers) {
+            printer = window.FleetData.printers.find(p => p.id === printerId);
+            console.log('🔍 Buscando en FleetData.printers:', !!printer);
+        }
+        
+        if (!printer && window.fleetPrinters) {
+            printer = window.fleetPrinters.find(p => p.id === printerId);
+            console.log('🔍 Buscando en fleetPrinters global:', !!printer);
+        }
+        
+        // Última opción: buscar en el contenedor de tarjetas usando el DOM
+        if (!printer) {
+            console.log('🔍 Intentando obtener datos del DOM...');
+            const cardElement = document.querySelector(`[data-printer-id="${printerId}"]`);
+            if (cardElement) {
+                console.log('📋 Elemento de tarjeta encontrado en DOM');
+                // Hacer petición directa a la API para obtener los datos
+                this.fetchPrinterDataAndShowModal(printerId);
+                return;
             }
+        }
+        
+        console.log('🔍 Impresora encontrada:', printer);
+        
+        if (printer) {
+            const modal = document.getElementById('printer-details-modal');
+            const title = document.getElementById('modal-printer-title');
+            const content = document.getElementById('modal-printer-content');
+            
+            console.log('📋 Elementos del modal:', { modal: !!modal, title: !!title, content: !!content });
+            
+            if (modal && title && content) {
+                title.textContent = `${printer.name} - Detalles Completos`;
+                content.innerHTML = this.renderPrinterDetailContent(printer);
+                modal.classList.remove('hidden');
+                console.log('✅ Modal abierto correctamente');
+            } else {
+                console.error('❌ No se encontraron elementos del modal');
+            }
+        } else {
+            console.error('❌ No se encontró la impresora con ID:', printerId);
+            console.log('🔍 Fuentes de datos disponibles:', {
+                FleetState: window.FleetState,
+                FleetData: window.FleetData,
+                fleetPrinters: window.fleetPrinters
+            });
+            
+            // Última opción: hacer petición a la API
+            this.fetchPrinterDataAndShowModal(printerId);
+        }
+    },
+
+    // 🌐 Obtener datos de impresora directamente de la API
+    async fetchPrinterDataAndShowModal(printerId) {
+        console.log('🌐 Obteniendo datos de impresora desde API:', printerId);
+        
+        try {
+            const response = await fetch(`/api/fleet/printers/${printerId}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const printer = await response.json();
+            console.log('✅ Datos de impresora obtenidos desde API:', printer);
+            
+            const modal = document.getElementById('printer-details-modal');
+            const title = document.getElementById('modal-printer-title');
+            const content = document.getElementById('modal-printer-content');
+            
+            if (modal && title && content) {
+                title.textContent = `${printer.name} - Detalles Completos`;
+                content.innerHTML = this.renderPrinterDetailContent(printer);
+                modal.classList.remove('hidden');
+                console.log('✅ Modal abierto correctamente con datos de API');
+            }
+            
+        } catch (error) {
+            console.error('❌ Error obteniendo datos de impresora:', error);
+            this.showToast(`Error obteniendo detalles de la impresora: ${error.message}`, 'error');
         }
     },
 
     // 📋 Renderizar contenido detallado de impresora
     renderPrinterDetailContent(printer) {
         const realtimeData = printer.realtime_data || {};
+        const statusInfo = this.getStatusInfo(printer.status);
         
         return `
             <div class="space-y-6">
                 <!-- Información básica -->
-                <div class="bg-gray-50 rounded-xl p-4">
-                    <h4 class="font-semibold text-gray-800 mb-3">Información Básica</h4>
+                <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="text-3xl">🖨️</div>
+                        <div>
+                            <h4 class="text-xl font-bold text-blue-900">${printer.name}</h4>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusInfo.bgClass} ${statusInfo.textClass}">
+                                    ${statusInfo.icon} ${statusInfo.label}
+                                </span>
+                                <span class="text-sm text-blue-700">${printer.model || 'Modelo no especificado'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="grid grid-cols-2 gap-4 text-sm">
-                        <div><span class="font-medium">Modelo:</span> ${printer.model || 'N/A'}</div>
-                        <div><span class="font-medium">IP:</span> ${printer.ip_address}</div>
-                        <div><span class="font-medium">Estado:</span> ${printer.status}</div>
-                        <div><span class="font-medium">Ubicación:</span> ${printer.location || 'No especificada'}</div>
-                        <div><span class="font-medium">Capacidades:</span> ${printer.capabilities || 'No especificadas'}</div>
-                        <div><span class="font-medium">ID:</span> ${printer.id}</div>
+                        <div class="space-y-2">
+                            <div><span class="font-semibold text-blue-800">ID:</span> <code class="bg-blue-200 px-2 py-1 rounded text-xs">${printer.id}</code></div>
+                            <div><span class="font-semibold text-blue-800">IP:</span> <code class="bg-blue-200 px-2 py-1 rounded text-xs">${printer.ip_address || printer.ip}</code></div>
+                            <div><span class="font-semibold text-blue-800">Ubicación:</span> ${printer.location || 'No especificada'}</div>
+                        </div>
+                        <div class="space-y-2">
+                            <div><span class="font-semibold text-blue-800">Capacidades:</span></div>
+                            <div class="flex flex-wrap gap-1">
+                                ${Array.isArray(printer.capabilities) ? printer.capabilities.map(cap => 
+                                    `<span class="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">${cap}</span>`
+                                ).join('') : `<span class="text-gray-500 text-xs">No especificadas</span>`}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Datos en tiempo real -->
-                <div class="bg-blue-50 rounded-xl p-4">
-                    <h4 class="font-semibold text-blue-800 mb-3">Datos en Tiempo Real</h4>
-                    <div class="grid grid-cols-2 gap-4 text-sm">
-                        <div><span class="font-medium">Progreso:</span> ${realtimeData.progress || 0}%</div>
-                        <div><span class="font-medium">Hotend:</span> ${realtimeData.hotend_temp || 0}°C</div>
-                        <div><span class="font-medium">Cama:</span> ${realtimeData.bed_temp || 0}°C</div>
-                        <div><span class="font-medium">Archivo:</span> ${realtimeData.current_file || 'Ninguno'}</div>
-                        <div><span class="font-medium">Tiempo estimado:</span> ${realtimeData.estimated_time || 'N/A'}</div>
-                        <div><span class="font-medium">Última actualización:</span> ${new Date().toLocaleTimeString()}</div>
+                <!-- Estado del Sistema Klipper -->
+                ${realtimeData.state ? `
+                <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="text-2xl">⚙️</div>
+                        <h4 class="text-lg font-bold text-green-900">Sistema Klipper</h4>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div class="space-y-2">
+                            <div><span class="font-semibold text-green-800">Estado:</span> <span class="text-green-700">${realtimeData.state}</span></div>
+                            <div><span class="font-semibold text-green-800">Mensaje:</span> <span class="text-green-700">${realtimeData.state_message || 'N/A'}</span></div>
+                            <div><span class="font-semibold text-green-800">Hostname:</span> <span class="text-green-700">${realtimeData.hostname || 'N/A'}</span></div>
+                            <div><span class="font-semibold text-green-800">Versión:</span> <span class="text-green-700">${realtimeData.software_version || 'N/A'}</span></div>
+                        </div>
+                        <div class="space-y-2">
+                            <div><span class="font-semibold text-green-800">PID:</span> <span class="text-green-700">${realtimeData.process_id || 'N/A'}</span></div>
+                            <div><span class="font-semibold text-green-800">CPU:</span> <span class="text-green-700">${realtimeData.cpu_info || 'N/A'}</span></div>
+                            <div><span class="font-semibold text-green-800">Usuario:</span> <span class="text-green-700">${realtimeData.user_id || 'N/A'}</span></div>
+                            <div><span class="font-semibold text-green-800">Grupo:</span> <span class="text-green-700">${realtimeData.group_id || 'N/A'}</span></div>
+                        </div>
+                    </div>
+                    
+                    ${realtimeData.klipper_path || realtimeData.python_path ? `
+                    <div class="mt-4 pt-4 border-t border-green-200">
+                        <h5 class="font-semibold text-green-800 mb-2">Rutas del Sistema:</h5>
+                        <div class="space-y-1 text-xs">
+                            ${realtimeData.klipper_path ? `<div><span class="font-medium">Klipper:</span> <code class="bg-green-200 px-2 py-1 rounded">${realtimeData.klipper_path}</code></div>` : ''}
+                            ${realtimeData.python_path ? `<div><span class="font-medium">Python:</span> <code class="bg-green-200 px-2 py-1 rounded">${realtimeData.python_path}</code></div>` : ''}
+                            ${realtimeData.config_file ? `<div><span class="font-medium">Config:</span> <code class="bg-green-200 px-2 py-1 rounded">${realtimeData.config_file}</code></div>` : ''}
+                            ${realtimeData.log_file ? `<div><span class="font-medium">Log:</span> <code class="bg-green-200 px-2 py-1 rounded">${realtimeData.log_file}</code></div>` : ''}
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+                ` : ''}
+
+                <!-- Temperaturas -->
+                <div class="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-6 border border-orange-200">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="text-2xl">🌡️</div>
+                        <h4 class="text-lg font-bold text-orange-900">Temperaturas</h4>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Extrusor -->
+                        <div class="bg-white rounded-lg p-4 border border-orange-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-semibold text-orange-800">🔥 Hotend/Extrusor</span>
+                                <span class="text-2xl font-bold ${this.getTempClass(realtimeData.extruder_temp || 0)} text-orange-700">
+                                    ${realtimeData.extruder_temp || 0}°C
+                                </span>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                <div>Objetivo: <span class="font-medium">${realtimeData.extruder_target || 0}°C</span></div>
+                                ${realtimeData.extruder_power !== undefined ? `<div>Potencia: <span class="font-medium">${(realtimeData.extruder_power * 100).toFixed(1)}%</span></div>` : ''}
+                                ${realtimeData.can_extrude !== undefined ? `<div>Puede extruir: <span class="font-medium ${realtimeData.can_extrude ? 'text-green-600' : 'text-red-600'}">${realtimeData.can_extrude ? 'Sí' : 'No'}</span></div>` : ''}
+                            </div>
+                        </div>
+                        
+                        <!-- Cama caliente -->
+                        <div class="bg-white rounded-lg p-4 border border-orange-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-semibold text-orange-800">🛏️ Cama Caliente</span>
+                                <span class="text-2xl font-bold ${this.getTempClass(realtimeData.bed_temp || 0)} text-orange-700">
+                                    ${realtimeData.bed_temp || 0}°C
+                                </span>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                <div>Objetivo: <span class="font-medium">${realtimeData.bed_target || 0}°C</span></div>
+                                ${realtimeData.bed_power !== undefined ? `<div>Potencia: <span class="font-medium">${(realtimeData.bed_power * 100).toFixed(1)}%</span></div>` : ''}
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Estado de Impresión -->
+                ${realtimeData.print_state ? `
+                <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="text-2xl">📄</div>
+                        <h4 class="text-lg font-bold text-purple-900">Estado de Impresión</h4>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div class="space-y-2">
+                            <div><span class="font-semibold text-purple-800">Estado:</span> 
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${this.getStatusInfo(realtimeData.print_state).bgClass} ${this.getStatusInfo(realtimeData.print_state).textClass}">
+                                    ${this.getStatusInfo(realtimeData.print_state).icon} ${realtimeData.print_state}
+                                </span>
+                            </div>
+                            <div><span class="font-semibold text-purple-800">Archivo:</span> <span class="text-purple-700 font-mono text-xs">${realtimeData.print_filename || 'Ninguno'}</span></div>
+                            <div><span class="font-semibold text-purple-800">Progreso:</span> 
+                                <div class="mt-1">
+                                    <div class="w-full bg-purple-200 rounded-full h-2">
+                                        <div class="h-2 bg-purple-500 rounded-full transition-all duration-300" style="width: ${(realtimeData.print_progress || 0) * 100}%"></div>
+                                    </div>
+                                    <span class="text-xs text-purple-600 mt-1">${((realtimeData.print_progress || 0) * 100).toFixed(1)}%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            ${realtimeData.total_duration !== undefined ? `<div><span class="font-semibold text-purple-800">Duración Total:</span> <span class="text-purple-700">${Math.floor(realtimeData.total_duration / 60)}m ${Math.floor(realtimeData.total_duration % 60)}s</span></div>` : ''}
+                            ${realtimeData.print_duration !== undefined ? `<div><span class="font-semibold text-purple-800">Duración Impresión:</span> <span class="text-purple-700">${Math.floor(realtimeData.print_duration / 60)}m ${Math.floor(realtimeData.print_duration % 60)}s</span></div>` : ''}
+                            ${realtimeData.filament_used !== undefined ? `<div><span class="font-semibold text-purple-800">Filamento Usado:</span> <span class="text-purple-700">${realtimeData.filament_used.toFixed(2)}mm</span></div>` : ''}
+                            ${realtimeData.file_position !== undefined && realtimeData.file_size !== undefined ? `<div><span class="font-semibold text-purple-800">Posición:</span> <span class="text-purple-700">${(realtimeData.file_position / 1024 / 1024).toFixed(2)}MB / ${(realtimeData.file_size / 1024 / 1024).toFixed(2)}MB</span></div>` : ''}
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- Información Técnica Adicional -->
+                ${realtimeData.pressure_advance !== undefined || realtimeData.smooth_time !== undefined ? `
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="text-2xl">🔧</div>
+                        <h4 class="text-lg font-bold text-gray-900">Configuración Técnica</h4>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                        ${realtimeData.pressure_advance !== undefined ? `<div><span class="font-semibold text-gray-800">Pressure Advance:</span> <span class="text-gray-700">${realtimeData.pressure_advance}</span></div>` : ''}
+                        ${realtimeData.smooth_time !== undefined ? `<div><span class="font-semibold text-gray-800">Smooth Time:</span> <span class="text-gray-700">${realtimeData.smooth_time}s</span></div>` : ''}
+                        ${realtimeData.motion_queue !== undefined ? `<div><span class="font-semibold text-gray-800">Motion Queue:</span> <span class="text-gray-700">${realtimeData.motion_queue || 'N/A'}</span></div>` : ''}
+                    </div>
+                </div>
+                ` : ''}
 
                 <!-- Comandos de control -->
-                <div class="bg-purple-50 rounded-xl p-4">
-                    <h4 class="font-semibold text-purple-800 mb-3">Comandos de Control</h4>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button class="px-3 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600" 
+                <div class="bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-xl p-6 border border-indigo-200">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="text-2xl">🎮</div>
+                        <h4 class="text-lg font-bold text-indigo-900">Comandos de Control</h4>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <button class="flex items-center justify-center gap-2 px-4 py-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-medium" 
                                 data-action="pause" data-printer-id="${printer.id}">
                             ⏸️ Pausar
                         </button>
-                        <button class="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                        <button class="flex items-center justify-center gap-2 px-4 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium"
                                 data-action="resume" data-printer-id="${printer.id}">
                             ▶️ Reanudar
                         </button>
-                        <button class="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                        <button class="flex items-center justify-center gap-2 px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
                                 data-action="cancel" data-printer-id="${printer.id}">
                             ❌ Cancelar
                         </button>
-                        <button class="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        <button class="flex items-center justify-center gap-2 px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
                                 data-action="home" data-printer-id="${printer.id}">
                             🏠 Home XYZ
                         </button>
-                        <button class="px-3 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
+                        <button class="flex items-center justify-center gap-2 px-4 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors font-medium"
                                 data-action="restart-klipper" data-printer-id="${printer.id}">
                             🔄 Host Restart
                         </button>
-                        <button class="px-3 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+                        <button class="flex items-center justify-center gap-2 px-4 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium"
                                 data-action="restart-firmware" data-printer-id="${printer.id}">
                             ⚡ Firmware Restart
                         </button>
                     </div>
+                </div>
+
+                <!-- Información de Debug (solo si hay datos adicionales) -->
+                <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                    <details class="cursor-pointer">
+                        <summary class="font-semibold text-gray-800 mb-2">🔍 Datos Raw de la API (Debug)</summary>
+                        <pre class="text-xs bg-gray-100 p-3 rounded overflow-x-auto border"><code>${JSON.stringify(printer, null, 2)}</code></pre>
+                    </details>
                 </div>
             </div>
         `;
@@ -725,6 +973,46 @@ window.FleetCards = {
         `;
         
         console.log('✅ Test renderizado');
+    },
+
+    // 🧪 Función de prueba específica para el modal
+    testModal() {
+        console.log('🧪 Probando modal...');
+        
+        // Crear datos de prueba
+        const testPrinter = {
+            id: "test-printer",
+            name: "Impresora de Prueba",
+            model: "Test Model",
+            ip_address: "192.168.1.100",
+            status: "ready",
+            location: "Laboratorio de pruebas",
+            capabilities: ["print", "pause", "resume"],
+            realtime_data: {
+                state: "ready",
+                state_message: "Printer is ready for testing",
+                hostname: "test-pi",
+                software_version: "v0.12.0-test",
+                extruder_temp: 25.5,
+                extruder_target: 0,
+                bed_temp: 23.2,
+                bed_target: 0,
+                print_state: "standby",
+                print_filename: "",
+                print_progress: 0
+            }
+        };
+        
+        // Simular que hay datos disponibles
+        if (!window.FleetState) {
+            window.FleetState = {};
+        }
+        window.FleetState.printers = [testPrinter];
+        
+        // Mostrar el modal
+        this.showPrinterDetails("test-printer");
+        
+        console.log('✅ Test de modal ejecutado');
     }
 };
 
@@ -739,13 +1027,20 @@ window.debugFleetCards = function() {
         cardsView: document.getElementById('cards-view'),
         tableView: document.getElementById('table-view'),
         cardsBtn: document.getElementById('cards-view-btn'),
-        tableBtn: document.getElementById('table-view-btn')
+        tableBtn: document.getElementById('table-view-btn'),
+        modal: document.getElementById('printer-details-modal'),
+        modalTitle: document.getElementById('modal-printer-title'),
+        modalContent: document.getElementById('modal-printer-content'),
+        closeModal: document.getElementById('close-printer-modal')
     };
     
     console.log('- Elementos DOM:', elements);
     
     if (window.FleetState && window.FleetState.printers) {
         console.log('- Impresoras en estado:', window.FleetState.printers.length);
+        window.FleetState.printers.forEach((printer, i) => {
+            console.log(`  ${i + 1}. ${printer.name} (${printer.id}) - ${printer.status}`);
+        });
     } else {
         console.log('- No hay impresoras en estado');
     }
@@ -753,5 +1048,11 @@ window.debugFleetCards = function() {
     if (elements.cardsView) {
         console.log('- Contenido actual de cards-view:', elements.cardsView.innerHTML.length, 'caracteres');
         console.log('- Clases de cards-view:', elements.cardsView.className);
+    }
+    
+    // Test modal
+    console.log('🧪 Ejecutando test de modal...');
+    if (window.FleetCards && window.FleetCards.testModal) {
+        window.FleetCards.testModal();
     }
 };
