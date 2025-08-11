@@ -60,6 +60,15 @@ window.FleetData = (function() {
                 // Renderizar tabla
                 window.FleetTable.renderPrinters(printers);
                 
+                // 🎴 NUEVO: Renderizar tarjetas
+                console.log('🎴 Intentando renderizar tarjetas...');
+                if (window.FleetCards) {
+                    console.log('🎴 FleetCards disponible, llamando a renderCards');
+                    window.FleetCards.renderCards(printers);
+                } else {
+                    console.error('❌ FleetCards no está disponible');
+                }
+                
                 // Emitir evento para actualizar módulos dependientes
                 if (window.FleetEventBus) {
                     window.FleetEventBus.emit('printersUpdated', printers);
