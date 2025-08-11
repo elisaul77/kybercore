@@ -1,5 +1,7 @@
 # KyberCore
 
+![KyberCore Banner](docs/kybercore_banner.jpg)
+
 🚀 [Ver Demo Interactiva (GitHub Pages)](https://elisaul77.github.io/kybercore/)  
 🎥 [Ver Video Demo en YouTube](https://www.youtube.com/watch?v=r3Lz_apk1oo)  
 
