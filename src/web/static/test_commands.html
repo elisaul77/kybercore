@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Comandos KyberCore</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        button { margin: 5px; padding: 10px 15px; cursor: pointer; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Test de Comandos KyberCore</h1>
+    
+    <div class="test-section">
+        <h3>1. Test de API Endpoint</h3>
+        <button onclick="testApiHealth()">Test API Health</button>
+        <button onclick="testGetPrinters()">Get Printers</button>
+        <div id="api-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. Test de Comandos de Impresora</h3>
+        <p>Selecciona una impresora:</p>
+        <select id="printerSelect">
+            <option value="">Seleccionar impresora...</option>
+        </select>
+        <br><br>
+        <button onclick="testCommand('home', 'XYZ')">Home XYZ</button>
+        <button onclick="testCommand('pause')">Pause</button>
+        <button onclick="testCommand('resume')">Resume</button>
+        <button onclick="testCommand('cancel')">Cancel</button>
+        <div id="command-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>3. Logs en Tiempo Real</h3>
+        <button onclick="clearLogs()">Limpiar Logs</button>
+        <div id="logs" style="height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; background: #f9f9f9;"></div>
+    </div>
+
+    <script>
+        let selectedPrinterId = null;
+        
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+            
+            if (type === 'error') {
+                logEntry.style.color = 'red';
+            } else if (type === 'success') {
+                logEntry.style.color = 'green';
+            }
+            
+            logs.appendChild(logEntry);
+            logs.scrollTop = logs.scrollHeight;
+        }
+        
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+        }
+        
+        function showResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.className = `result ${isError ? 'error' : 'success'}`;
+            element.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+        
+        async function testApiHealth() {
+            log('🔍 Testing API health...');
+            try {
+                const response = await fetch('/api/fleet/data');
+                const data = await response.json();
+                log(`✅ API Health OK - ${data.printers.length} printers found`, 'success');
+                showResult('api-result', data);
+                
+                // Poblar selector de impresoras
+                const select = document.getElementById('printerSelect');
+                select.innerHTML = '<option value="">Seleccionar impresora...</option>';
+                data.printers.forEach(printer => {
+                    const option = document.createElement('option');
+                    option.value = printer.id;
+                    option.textContent = `${printer.name} (${printer.status})`;
+                    select.appendChild(option);
+                });
+                
+                select.onchange = function() {
+                    selectedPrinterId = this.value;
+                    log(`📌 Impresora seleccionada: ${this.options[this.selectedIndex].text}`);
+                };
+                
+            } catch (error) {
+                log(`❌ API Health Error: ${error.message}`, 'error');
+                showResult('api-result', { error: error.message }, true);
+            }
+        }
+        
+        async function testGetPrinters() {
+            log('📋 Getting printers list...');
+            try {
+                const response = await fetch('/api/fleet/printers');
+                const data = await response.json();
+                log(`✅ Got ${data.length} printers`, 'success');
+                showResult('api-result', data);
+            } catch (error) {
+                log(`❌ Get Printers Error: ${error.message}`, 'error');
+                showResult('api-result', { error: error.message }, true);
+            }
+        }
+        
+        async function testCommand(command, axis = null) {
+            if (!selectedPrinterId) {
+                log('⚠️ No hay impresora seleccionada', 'error');
+                return;
+            }
+            
+            const commandData = { command };
+            if (axis) {
+                commandData.axis = axis;
+            }
+            
+            log(`🚀 Sending command ${command} to printer ${selectedPrinterId}...`);
+            
+            try {
+                const response = await fetch(`/api/fleet/printers/${selectedPrinterId}/command`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(commandData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log(`✅ Command ${command} executed successfully`, 'success');
+                    showResult('command-result', data);
+                } else {
+                    log(`❌ Command ${command} failed: ${data.detail}`, 'error');
+                    showResult('command-result', data, true);
+                }
+                
+            } catch (error) {
+                log(`❌ Command ${command} error: ${error.message}`, 'error');
+                showResult('command-result', { error: error.message }, true);
+            }
+        }
+        
+        // Auto-load on page load
+        window.onload = function() {
+            log('🔄 Page loaded, testing API...');
+            testApiHealth();
+        };
+    </script>
+</body>
+</html>

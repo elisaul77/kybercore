@@ -354,11 +354,18 @@ window.FleetCards = {
         }
     },
 
-    // 📊 Obtener información de estado para styling
+        // 📊 Obtener información de estado de la impresora
     getStatusInfo(status) {
         const statusMap = {
+            'ready': { 
+                label: 'Conectado', 
+                icon: '✅', 
+                bgClass: 'bg-green-500', 
+                textClass: 'text-white',
+                gradient: 'from-green-400 to-green-600'
+            },
             'online': { 
-                label: 'En Línea', 
+                label: 'Conectado', 
                 icon: '✅', 
                 bgClass: 'bg-green-500', 
                 textClass: 'text-white',
@@ -385,6 +392,20 @@ window.FleetCards = {
                 textClass: 'text-white',
                 gradient: 'from-red-400 to-red-600'
             },
+            'shutdown': { 
+                label: 'Apagado', 
+                icon: '🔴', 
+                bgClass: 'bg-red-600', 
+                textClass: 'text-white',
+                gradient: 'from-red-500 to-red-700'
+            },
+            'startup': { 
+                label: 'Iniciando', 
+                icon: '🔄', 
+                bgClass: 'bg-orange-500', 
+                textClass: 'text-white',
+                gradient: 'from-orange-400 to-orange-600'
+            },
             'offline': { 
                 label: 'Desconectado', 
                 icon: '❌', 
@@ -392,12 +413,33 @@ window.FleetCards = {
                 textClass: 'text-white',
                 gradient: 'from-gray-400 to-gray-600'
             },
+            'unreachable': { 
+                label: 'No Alcanzable', 
+                icon: '📡', 
+                bgClass: 'bg-red-400', 
+                textClass: 'text-white',
+                gradient: 'from-red-300 to-red-500'
+            },
+            'timeout': { 
+                label: 'Sin Respuesta', 
+                icon: '⏱️', 
+                bgClass: 'bg-orange-400', 
+                textClass: 'text-white',
+                gradient: 'from-orange-300 to-orange-500'
+            },
             'idle': { 
                 label: 'Inactivo', 
                 icon: '⏸', 
                 bgClass: 'bg-gray-400', 
                 textClass: 'text-white',
                 gradient: 'from-gray-300 to-gray-500'
+            },
+            'standby': { 
+                label: 'En Espera', 
+                icon: '💤', 
+                bgClass: 'bg-blue-400', 
+                textClass: 'text-white',
+                gradient: 'from-blue-300 to-blue-500'
             }
         };
         return statusMap[status] || statusMap['offline'];
@@ -414,12 +456,18 @@ window.FleetCards = {
     getAIRecommendation(printer) {
         const status = printer.status;
         const recommendations = {
+            'ready': '✅ Impresora lista para trabajos',
             'online': '✅ Impresora lista para trabajos',
             'printing': '📈 Rendimiento óptimo detectado',
             'paused': '⚠️ Verificar motivo de pausa',
             'error': '🔧 Diagnóstico de falla requerido',
+            'shutdown': '🔴 Impresora apagada - Encender Klipper',
+            'startup': '🔄 Esperando inicialización completa',
             'offline': '🔌 Verificar conexión de red',
-            'idle': '💡 Disponible para nuevo trabajo'
+            'unreachable': '📡 Verificar IP y puerto en configuración',
+            'timeout': '⏱️ Conexión lenta - Verificar red',
+            'idle': '💡 Disponible para nuevo trabajo',
+            'standby': '💤 Lista para activarse'
         };
         return recommendations[status] || '🤖 Analizando estado...';
     },
