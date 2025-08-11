@@ -1,7 +1,7 @@
 # KyberCore
 
 🚀 [Ver Demo Interactiva (GitHub Pages)](https://elisaul77.github.io/kybercore/)  
-
+🎥 [Ver Video Demo en YouTube](https://www.youtube.com/watch?v=r3Lz_apk1oo)  
 
 [![CI/CD Pipeline](https://github.com/elisaul77/kybercore/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/elisaul77/kybercore/actions/workflows/ci-cd.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
