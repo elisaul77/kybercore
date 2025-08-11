@@ -116,13 +116,15 @@ window.initFleetModule = async function() {
             });
         }
         
-        // 7. Test automático de tarjetas después de 2 segundos
-        setTimeout(() => {
-            console.log('🧪 Ejecutando test automático de tarjetas...');
-            if (window.debugFleetCards) {
-                window.debugFleetCards();
-            }
-        }, 2000);
+        // 7. Test automático de tarjetas después de 2 segundos (DESHABILITADO)
+        // setTimeout(() => {
+        //     console.log('🧪 Ejecutando test automático de tarjetas...');
+        //     if (window.debugFleetCards) {
+        //         window.debugFleetCards();
+        //     }
+        // }, 2000);
+        
+        console.log('💡 Para debug manual, ejecuta: debugFleetCards() en la consola');
         
         console.log('✅ Sistema modular de flota inicializado correctamente');
         return true;

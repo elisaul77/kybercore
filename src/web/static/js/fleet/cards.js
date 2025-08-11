@@ -1050,9 +1050,5 @@ window.debugFleetCards = function() {
         console.log('- Clases de cards-view:', elements.cardsView.className);
     }
     
-    // Test modal
-    console.log('🧪 Ejecutando test de modal...');
-    if (window.FleetCards && window.FleetCards.testModal) {
-        window.FleetCards.testModal();
-    }
+    console.log('💡 Para probar el modal manualmente, ejecuta: window.FleetCards.testModal()');
 };
