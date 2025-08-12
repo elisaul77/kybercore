@@ -123,6 +123,11 @@ class FleetService:
 
                         extruder_temp = extruder_data.get('temperature', 'N/A')
                         extruder_target = extruder_data.get('target', 'N/A')
+                        #advance
+                        pressure_advance = extruder_data.get('pressure_advance', 'N/A')
+                        smooth_time = extruder_data.get('smooth_time', 'N/A')
+                        motion_queue = extruder_data.get('motion_queue', 'N/A')
+
                         bed_temp = heater_bed_data.get('temperature', 'N/A')
                         bed_target = heater_bed_data.get('target', 'N/A')
 
@@ -130,7 +135,10 @@ class FleetService:
                             'extruder_temp': extruder_temp,
                             'extruder_target': extruder_target,
                             'bed_temp': bed_temp,
-                            'bed_target': bed_target
+                            'bed_target': bed_target,
+                            'pressure_advance': pressure_advance,
+                            'smooth_time': smooth_time,
+                            'motion_queue': motion_queue
                         })
 
                         logger.debug(f"Temperatura del hotend: {extruder_temp}/{extruder_target}, Temperatura de la cama: {bed_temp}/{bed_target}")
@@ -152,7 +160,7 @@ class FleetService:
                     if print_stats and 'result' in print_stats and 'status' in print_stats['result']:
                         virtual_sdcard_data = print_stats['result']['status'].get('virtual_sdcard', {})
                         print_stats_data = print_stats['result']['status'].get('print_stats', {})
-                        
+                                                
                         # Calcular progreso basado en virtual_sdcard
                         progress = virtual_sdcard_data.get('progress', 0.0) * 100
                         
