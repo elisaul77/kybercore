@@ -590,6 +590,11 @@ window.FleetCards = {
                 content.innerHTML = this.renderPrinterDetailContent(printer);
                 modal.classList.remove('hidden');
                 console.log('✅ Modal abierto correctamente');
+                
+                // Cargar archivos G-code automáticamente después de abrir el modal
+                setTimeout(() => {
+                    this.loadPrinterGcodeFiles(printerId);
+                }, 100);
             } else {
                 console.error('❌ No se encontraron elementos del modal');
             }
@@ -629,6 +634,11 @@ window.FleetCards = {
                 content.innerHTML = this.renderPrinterDetailContent(printer);
                 modal.classList.remove('hidden');
                 console.log('✅ Modal abierto correctamente con datos de API');
+                
+                // Cargar archivos G-code automáticamente después de abrir el modal
+                setTimeout(() => {
+                    this.loadPrinterGcodeFiles(printerId);
+                }, 100);
             }
             
         } catch (error) {
@@ -835,6 +845,31 @@ window.FleetCards = {
                                 data-action="restart-firmware" data-printer-id="${printer.id}">
                             ⚡ Firmware Restart
                         </button>
+                    </div>
+                </div>
+
+                <!-- Gestión de Archivos G-code -->
+                <div class="bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="text-2xl">📁</div>
+                        <h4 class="text-lg font-bold text-emerald-900">Archivos G-code</h4>
+                        <button class="ml-auto px-3 py-1 bg-emerald-600 text-white rounded-lg text-sm hover:bg-emerald-700 transition-colors"
+                                onclick="window.FleetCards.showFileUploadDialog('${printer.id}')">
+                            📤 Subir Archivo
+                        </button>
+                    </div>
+                    
+                    <!-- Lista de archivos -->
+                    <div id="gcode-files-${printer.id}" class="mb-4">
+                        <div class="flex items-center justify-center py-4 text-gray-500">
+                            <div class="animate-spin w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full mr-2"></div>
+                            Cargando archivos...
+                        </div>
+                    </div>
+                    
+                    <!-- Información de almacenamiento -->
+                    <div class="text-xs text-emerald-700 bg-emerald-50 rounded p-2">
+                        💡 Los archivos G-code se almacenan directamente en la impresora y pueden iniciarse inmediatamente.
                     </div>
                 </div>
 
@@ -1060,6 +1095,330 @@ window.FleetCards = {
         this.showPrinterDetails("test-printer");
         
         console.log('✅ Test de modal ejecutado');
+    },
+
+    // === GESTIÓN DE ARCHIVOS G-CODE ===
+
+    async loadPrinterGcodeFiles(printerId) {
+        // Carga y muestra los archivos G-code de una impresora específica
+        console.log('📁 Cargando archivos G-code para impresora:', printerId);
+        
+        try {
+            const response = await fetch(`/api/fleet/printers/${printerId}/files`);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log('📁 Respuesta de archivos G-code:', data);
+            
+            // Manejar diferentes estructuras de respuesta
+            let files = [];
+            if (data.files && data.files.result && Array.isArray(data.files.result)) {
+                files = data.files.result;
+            } else if (data.files && Array.isArray(data.files)) {
+                files = data.files;
+            } else if (data.result && Array.isArray(data.result)) {
+                files = data.result;
+            } else if (Array.isArray(data)) {
+                files = data;
+            } else {
+                console.warn('⚠️ Estructura de respuesta no reconocida:', data);
+                files = [];
+            }
+            
+            console.log('📁 Archivos procesados:', files.length, 'archivos encontrados');
+            console.log('📁 Primeros 3 archivos:', files.slice(0, 3));
+            this.renderGcodeFilesList(printerId, files);
+            
+        } catch (error) {
+            console.error('❌ Error cargando archivos G-code:', error);
+            this.renderGcodeFilesError(printerId, error.message);
+        }
+    },
+
+    renderGcodeFilesList(printerId, files) {
+        // Renderiza la lista de archivos G-code en el modal
+        const container = document.getElementById(`gcode-files-${printerId}`);
+        if (!container) return;
+        
+        // Validar que files sea un array
+        if (!Array.isArray(files)) {
+            console.warn('⚠️ files no es un array:', files);
+            files = [];
+        }
+        
+        console.log('📁 Renderizando lista de archivos:', files.length, 'archivos');
+        console.log('📁 Muestra de archivos:', files.slice(0, 2));
+        
+        if (files.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-4 text-gray-500">
+                    📭 No hay archivos G-code disponibles
+                </div>
+            `;
+            return;
+        }
+        
+        const filesHTML = files.map(file => {
+            // Manejar diferentes estructuras de archivo
+            const fileName = file.path || file.filename || file.name || 'archivo.gcode';
+            const fileSize = file.size || file.filesize || 0;
+            const fileModified = file.modified || file.mod_time || Date.now() / 1000;
+            
+            const sizeFormatted = this.formatFileSize(fileSize);
+            const dateFormatted = new Date(fileModified * 1000).toLocaleString();
+            
+            return `
+                <div class="bg-white rounded-lg p-3 border border-emerald-200 mb-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="font-medium text-emerald-900 truncate">${fileName}</div>
+                            <div class="text-xs text-gray-600">
+                                📏 ${sizeFormatted} • 📅 ${dateFormatted}
+                            </div>
+                        </div>
+                        <div class="flex gap-1 ml-2">
+                            <button class="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600 transition-colors"
+                                    onclick="window.FleetCards.startGcodePrint('${printerId}', '${fileName}')"
+                                    title="Iniciar impresión">
+                                ▶️
+                            </button>
+                            <button class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors"
+                                    onclick="window.FleetCards.showGcodeMetadata('${printerId}', '${fileName}')"
+                                    title="Ver detalles">
+                                ℹ️
+                            </button>
+                            <button class="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
+                                    onclick="window.FleetCards.deleteGcodeFile('${printerId}', '${fileName}')"
+                                    title="Eliminar archivo">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        container.innerHTML = `
+            <div class="max-h-64 overflow-y-auto">
+                ${filesHTML}
+            </div>
+            <div class="text-xs text-emerald-600 mt-2">
+                📊 Total: ${files.length} archivo${files.length !== 1 ? 's' : ''}
+            </div>
+        `;
+        
+        console.log(`✅ Lista de archivos renderizada: ${files.length} archivos`);
+    },
+
+    renderGcodeFilesError(printerId, errorMessage) {
+        // Renderiza un mensaje de error para la carga de archivos
+        const container = document.getElementById(`gcode-files-${printerId}`);
+        if (!container) return;
+        
+        container.innerHTML = `
+            <div class="text-center py-4 text-red-500">
+                ❌ Error cargando archivos: ${errorMessage}
+                <br>
+                <button class="mt-2 px-3 py-1 bg-red-100 text-red-700 rounded text-xs hover:bg-red-200 transition-colors"
+                        onclick="window.FleetCards.loadPrinterGcodeFiles('${printerId}')">
+                    🔄 Reintentar
+                </button>
+            </div>
+        `;
+    },
+
+    showFileUploadDialog(printerId) {
+        // Muestra el diálogo para subir archivos G-code
+        console.log('📤 Mostrando diálogo de subida para:', printerId);
+        
+        // Crear elemento de input file
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = '.gcode,.g,.gco';
+        fileInput.multiple = false;
+        
+        fileInput.onchange = async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Preguntar si quiere iniciar impresión automáticamente
+            const startPrint = confirm(`¿Deseas iniciar la impresión de "${file.name}" automáticamente después de subirlo?`);
+            
+            await this.uploadGcodeFile(printerId, file, startPrint);
+        };
+        
+        fileInput.click();
+    },
+
+    async uploadGcodeFile(printerId, file, startPrint = false) {
+        // Sube un archivo G-code a la impresora
+        console.log('📤 Subiendo archivo:', file.name, 'a impresora:', printerId);
+        
+        try {
+            // Mostrar progreso
+            this.showToast(`Subiendo ${file.name}...`, 'info');
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('start_print', startPrint);
+            
+            const response = await fetch(`/api/fleet/printers/${printerId}/files/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || `HTTP ${response.status}`);
+            }
+            
+            const result = await response.json();
+            console.log('✅ Archivo subido exitosamente:', result);
+            
+            if (startPrint) {
+                this.showToast(`Archivo subido e impresión iniciada: ${file.name}`, 'success');
+            } else {
+                this.showToast(`Archivo subido exitosamente: ${file.name}`, 'success');
+            }
+            
+            // Recargar lista de archivos
+            this.loadPrinterGcodeFiles(printerId);
+            
+        } catch (error) {
+            console.error('❌ Error subiendo archivo:', error);
+            this.showToast(`Error subiendo archivo: ${error.message}`, 'error');
+        }
+    },
+
+    async startGcodePrint(printerId, filename) {
+        // Inicia la impresión de un archivo G-code específico
+        if (!confirm(`¿Estás seguro de que deseas iniciar la impresión de "${filename}"?`)) {
+            return;
+        }
+        
+        console.log('▶️ Iniciando impresión:', filename, 'en impresora:', printerId);
+        
+        try {
+            const response = await fetch(`/api/fleet/printers/${printerId}/files/${encodeURIComponent(filename)}/print`, {
+                method: 'POST'
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || `HTTP ${response.status}`);
+            }
+            
+            const result = await response.json();
+            console.log('✅ Impresión iniciada:', result);
+            
+            if (result.success) {
+                this.showToast(`Impresión iniciada: ${filename}`, 'success');
+            } else {
+                throw new Error(result.error || 'Error desconocido');
+            }
+            
+        } catch (error) {
+            console.error('❌ Error iniciando impresión:', error);
+            this.showToast(`Error iniciando impresión: ${error.message}`, 'error');
+        }
+    },
+
+    async deleteGcodeFile(printerId, filename) {
+        // Elimina un archivo G-code de la impresora
+        if (!confirm(`¿Estás seguro de que deseas eliminar "${filename}"? Esta acción no se puede deshacer.`)) {
+            return;
+        }
+        
+        console.log('🗑️ Eliminando archivo:', filename, 'de impresora:', printerId);
+        
+        try {
+            const response = await fetch(`/api/fleet/printers/${printerId}/files/${encodeURIComponent(filename)}`, {
+                method: 'DELETE'
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || `HTTP ${response.status}`);
+            }
+            
+            const result = await response.json();
+            console.log('✅ Archivo eliminado:', result);
+            
+            this.showToast(`Archivo eliminado: ${filename}`, 'success');
+            
+            // Recargar lista de archivos
+            this.loadPrinterGcodeFiles(printerId);
+            
+        } catch (error) {
+            console.error('❌ Error eliminando archivo:', error);
+            this.showToast(`Error eliminando archivo: ${error.message}`, 'error');
+        }
+    },
+
+    async showGcodeMetadata(printerId, filename) {
+        // Muestra los metadatos de un archivo G-code en un modal
+        console.log('ℹ️ Mostrando metadatos de:', filename);
+        
+        try {
+            const response = await fetch(`/api/fleet/printers/${printerId}/files/${encodeURIComponent(filename)}/metadata`);
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || `HTTP ${response.status}`);
+            }
+            
+            const data = await response.json();
+            const metadata = data.metadata;
+            
+            // Crear modal de metadatos
+            const metadataHTML = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="this.remove()">
+                    <div class="bg-white rounded-xl max-w-2xl max-h-96 overflow-y-auto p-6 m-4" onclick="event.stopPropagation()">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-gray-900">📄 Metadatos: ${filename}</h3>
+                            <button class="text-gray-500 hover:text-gray-700" onclick="this.closest('.fixed').remove()">✕</button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            ${metadata.slicer ? `<div><span class="font-semibold">Slicer:</span> ${metadata.slicer}</div>` : ''}
+                            ${metadata.estimated_time ? `<div><span class="font-semibold">Tiempo estimado:</span> ${Math.floor(metadata.estimated_time / 3600)}h ${Math.floor((metadata.estimated_time % 3600) / 60)}m</div>` : ''}
+                            ${metadata.filament_total ? `<div><span class="font-semibold">Filamento:</span> ${metadata.filament_total.toFixed(2)}mm</div>` : ''}
+                            ${metadata.layer_height ? `<div><span class="font-semibold">Altura de capa:</span> ${metadata.layer_height}mm</div>` : ''}
+                            ${metadata.first_layer_extr_temp ? `<div><span class="font-semibold">Temp. extrusor:</span> ${metadata.first_layer_extr_temp}°C</div>` : ''}
+                            ${metadata.first_layer_bed_temp ? `<div><span class="font-semibold">Temp. cama:</span> ${metadata.first_layer_bed_temp}°C</div>` : ''}
+                        </div>
+                        
+                        <div class="mt-4 flex gap-2">
+                            <button class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                                    onclick="window.FleetCards.startGcodePrint('${printerId}', '${filename}'); this.closest('.fixed').remove();">
+                                ▶️ Iniciar Impresión
+                            </button>
+                            <button class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+                                    onclick="this.closest('.fixed').remove()">
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', metadataHTML);
+            
+        } catch (error) {
+            console.error('❌ Error obteniendo metadatos:', error);
+            this.showToast(`Error obteniendo metadatos: ${error.message}`, 'error');
+        }
+    },
+
+    formatFileSize(bytes) {
+        // Formatea el tamaño de archivo en formato legible
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 };
 

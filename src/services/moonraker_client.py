@@ -119,6 +119,122 @@ class MoonrakerClient:
         except Exception as e:
             logger.error(f"Error en la conexión WebSocket: {e}")
 
+    # === GESTIÓN DE ARCHIVOS G-CODE ===
+    
+    async def list_gcode_files(self):
+        """Lista todos los archivos G-code disponibles en la impresora."""
+        try:
+            async with self._session.get(f"{self.base_url}/server/files/list?root=gcodes") as response:
+                response.raise_for_status()
+                files_data = await response.json()
+                logger.info(f"Archivos G-code obtenidos: {len(files_data)} archivos")
+                return files_data
+        except aiohttp.ClientError as e:
+            logger.error(f"Error al listar archivos G-code: {e}")
+            return []
+
+    async def get_gcode_metadata(self, filename):
+        """Obtiene metadatos de un archivo G-code específico."""
+        try:
+            async with self._session.get(f"{self.base_url}/server/files/metadata?filename={filename}") as response:
+                response.raise_for_status()
+                metadata = await response.json()
+                logger.info(f"Metadatos obtenidos para {filename}")
+                return metadata
+        except aiohttp.ClientError as e:
+            logger.error(f"Error al obtener metadatos de {filename}: {e}")
+            return None
+
+    async def upload_gcode_file(self, file_data, filename, start_print=False):
+        """Sube un archivo G-code a la impresora."""
+        try:
+            data = aiohttp.FormData()
+            data.add_field('file', file_data, filename=filename, content_type='application/octet-stream')
+            data.add_field('root', 'gcodes')
+            if start_print:
+                data.add_field('print', 'true')
+
+            async with self._session.post(f"{self.base_url}/server/files/upload", data=data) as response:
+                response.raise_for_status()
+                result = await response.json()
+                logger.info(f"Archivo {filename} subido exitosamente")
+                return result
+        except aiohttp.ClientError as e:
+            logger.error(f"Error al subir archivo {filename}: {e}")
+            return None
+
+    async def start_print(self, filename):
+        """Inicia la impresión de un archivo G-code."""
+        try:
+            async with self._session.post(f"{self.base_url}/printer/print/start?filename={filename}") as response:
+                response.raise_for_status()
+                result = await response.text()
+                logger.info(f"Impresión iniciada: {filename}")
+                return {"success": True, "message": result}
+        except aiohttp.ClientError as e:
+            logger.error(f"Error al iniciar impresión de {filename}: {e}")
+            return {"success": False, "error": str(e)}
+
+    async def delete_gcode_file(self, filename):
+        """Elimina un archivo G-code de la impresora."""
+        try:
+            async with self._session.delete(f"{self.base_url}/server/files/gcodes/{filename}") as response:
+                response.raise_for_status()
+                result = await response.json()
+                logger.info(f"Archivo {filename} eliminado exitosamente")
+                return result
+        except aiohttp.ClientError as e:
+            logger.error(f"Error al eliminar archivo {filename}: {e}")
+            return None
+
+    async def get_thumbnails(self, filename):
+        """Obtiene información de thumbnails para un archivo G-code."""
+        try:
+            async with self._session.get(f"{self.base_url}/server/files/thumbnails?filename={filename}") as response:
+                response.raise_for_status()
+                thumbnails = await response.json()
+                logger.info(f"Thumbnails obtenidos para {filename}: {len(thumbnails)} thumbnails")
+                return thumbnails
+        except aiohttp.ClientError as e:
+            logger.error(f"Error al obtener thumbnails de {filename}: {e}")
+            return []
+
+    async def pause_print(self):
+        """Pausa la impresión actual."""
+        try:
+            async with self._session.post(f"{self.base_url}/printer/print/pause") as response:
+                response.raise_for_status()
+                result = await response.text()
+                logger.info("Impresión pausada")
+                return {"success": True, "message": result}
+        except aiohttp.ClientError as e:
+            logger.error(f"Error al pausar impresión: {e}")
+            return {"success": False, "error": str(e)}
+
+    async def resume_print(self):
+        """Reanuda la impresión pausada."""
+        try:
+            async with self._session.post(f"{self.base_url}/printer/print/resume") as response:
+                response.raise_for_status()
+                result = await response.text()
+                logger.info("Impresión reanudada")
+                return {"success": True, "message": result}
+        except aiohttp.ClientError as e:
+            logger.error(f"Error al reanudar impresión: {e}")
+            return {"success": False, "error": str(e)}
+
+    async def cancel_print(self):
+        """Cancela la impresión actual."""
+        try:
+            async with self._session.post(f"{self.base_url}/printer/print/cancel") as response:
+                response.raise_for_status()
+                result = await response.text()
+                logger.info("Impresión cancelada")
+                return {"success": True, "message": result}
+        except aiohttp.ClientError as e:
+            logger.error(f"Error al cancelar impresión: {e}")
+            return {"success": False, "error": str(e)}
+
 # Ejemplo de uso (para pruebas)
 async def example_callback(data):
     logger.info(f"Datos recibidos: {json.dumps(data, indent=2)}")

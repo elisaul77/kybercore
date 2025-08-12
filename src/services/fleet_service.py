@@ -612,5 +612,121 @@ class FleetService:
             logger.error(f"Error validando seguridad del comando masivo: {e}")
             raise
 
+    # === GESTIÓN DE ARCHIVOS G-CODE ===
+
+    async def list_printer_gcode_files(self, printer_id: str):
+        """Lista archivos G-code disponibles en una impresora específica."""
+        printer = self.printers.get(printer_id)
+        if not printer:
+            raise ValueError(f"Impresora con ID {printer_id} no encontrada")
+        
+        try:
+            ip, port = self._parse_ip_port(printer.ip)
+            session = await self._get_session()
+            client = MoonrakerClient(ip, port, session)
+            
+            files = await client.list_gcode_files()
+            logger.info(f"Archivos G-code listados para {printer.name}: {len(files)} archivos")
+            return files
+            
+        except Exception as e:
+            logger.error(f"Error listando archivos G-code para {printer.name}: {e}")
+            raise
+
+    async def get_printer_gcode_metadata(self, printer_id: str, filename: str):
+        """Obtiene metadatos de un archivo G-code específico."""
+        printer = self.printers.get(printer_id)
+        if not printer:
+            raise ValueError(f"Impresora con ID {printer_id} no encontrada")
+        
+        try:
+            ip, port = self._parse_ip_port(printer.ip)
+            session = await self._get_session()
+            client = MoonrakerClient(ip, port, session)
+            
+            metadata = await client.get_gcode_metadata(filename)
+            logger.info(f"Metadatos obtenidos para {filename} en {printer.name}")
+            return metadata
+            
+        except Exception as e:
+            logger.error(f"Error obteniendo metadatos de {filename} en {printer.name}: {e}")
+            raise
+
+    async def upload_gcode_to_printer(self, printer_id: str, file_data, filename: str, start_print: bool = False):
+        """Sube un archivo G-code a una impresora específica."""
+        printer = self.printers.get(printer_id)
+        if not printer:
+            raise ValueError(f"Impresora con ID {printer_id} no encontrada")
+        
+        try:
+            ip, port = self._parse_ip_port(printer.ip)
+            session = await self._get_session()
+            client = MoonrakerClient(ip, port, session)
+            
+            result = await client.upload_gcode_file(file_data, filename, start_print)
+            logger.info(f"Archivo {filename} subido a {printer.name} (inicio automático: {start_print})")
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error subiendo {filename} a {printer.name}: {e}")
+            raise
+
+    async def start_printer_print(self, printer_id: str, filename: str):
+        """Inicia la impresión de un archivo G-code en una impresora específica."""
+        printer = self.printers.get(printer_id)
+        if not printer:
+            raise ValueError(f"Impresora con ID {printer_id} no encontrada")
+        
+        try:
+            ip, port = self._parse_ip_port(printer.ip)
+            session = await self._get_session()
+            client = MoonrakerClient(ip, port, session)
+            
+            result = await client.start_print(filename)
+            logger.info(f"Impresión de {filename} iniciada en {printer.name}")
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error iniciando impresión de {filename} en {printer.name}: {e}")
+            raise
+
+    async def delete_printer_gcode_file(self, printer_id: str, filename: str):
+        """Elimina un archivo G-code de una impresora específica."""
+        printer = self.printers.get(printer_id)
+        if not printer:
+            raise ValueError(f"Impresora con ID {printer_id} no encontrada")
+        
+        try:
+            ip, port = self._parse_ip_port(printer.ip)
+            session = await self._get_session()
+            client = MoonrakerClient(ip, port, session)
+            
+            result = await client.delete_gcode_file(filename)
+            logger.info(f"Archivo {filename} eliminado de {printer.name}")
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error eliminando {filename} de {printer.name}: {e}")
+            raise
+
+    async def get_printer_gcode_thumbnails(self, printer_id: str, filename: str):
+        """Obtiene thumbnails de un archivo G-code específico."""
+        printer = self.printers.get(printer_id)
+        if not printer:
+            raise ValueError(f"Impresora con ID {printer_id} no encontrada")
+        
+        try:
+            ip, port = self._parse_ip_port(printer.ip)
+            session = await self._get_session()
+            client = MoonrakerClient(ip, port, session)
+            
+            thumbnails = await client.get_thumbnails(filename)
+            logger.info(f"Thumbnails obtenidos para {filename} en {printer.name}")
+            return thumbnails
+            
+        except Exception as e:
+            logger.error(f"Error obteniendo thumbnails de {filename} en {printer.name}: {e}")
+            raise
+
 # Instancia global del servicio
 fleet_service = FleetService()

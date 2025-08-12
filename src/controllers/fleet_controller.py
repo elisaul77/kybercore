@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, File, UploadFile, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from src.services.fleet_service import FleetService
@@ -274,6 +274,124 @@ async def validate_bulk_command(bulk_command: BulkCommand):
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error validando comando: {str(e)}")
+
+# === ENDPOINTS PARA GESTIÓN DE ARCHIVOS G-CODE ===
+
+@router.get("/printers/{printer_id}/files")
+async def list_printer_gcode_files(printer_id: str):
+    """Lista archivos G-code disponibles en una impresora específica."""
+    try:
+        files = await fleet_service.list_printer_gcode_files(printer_id)
+        return {
+            "printer_id": printer_id,
+            "files": files,
+            "total_files": len(files)
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error listando archivos: {str(e)}")
+
+@router.get("/printers/{printer_id}/files/{filename}/metadata")
+async def get_gcode_metadata(printer_id: str, filename: str):
+    """Obtiene metadatos de un archivo G-code específico."""
+    try:
+        metadata = await fleet_service.get_printer_gcode_metadata(printer_id, filename)
+        if not metadata:
+            raise HTTPException(status_code=404, detail="Metadatos no encontrados")
+        return {
+            "printer_id": printer_id,
+            "filename": filename,
+            "metadata": metadata
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error obteniendo metadatos: {str(e)}")
+
+@router.post("/printers/{printer_id}/files/upload")
+async def upload_gcode_file(
+    printer_id: str, 
+    file: UploadFile = File(...),
+    start_print: bool = Form(False)
+):
+    """Sube un archivo G-code a una impresora específica."""
+    try:
+        # Validar que sea un archivo G-code
+        if not file.filename.lower().endswith(('.gcode', '.g', '.gco')):
+            raise HTTPException(status_code=400, detail="El archivo debe ser un G-code (.gcode, .g, .gco)")
+        
+        # Leer el contenido del archivo
+        file_content = await file.read()
+        
+        result = await fleet_service.upload_gcode_to_printer(printer_id, file_content, file.filename, start_print)
+        if not result:
+            raise HTTPException(status_code=500, detail="Error subiendo archivo")
+        
+        return {
+            "success": True,
+            "printer_id": printer_id,
+            "filename": file.filename,
+            "size": len(file_content),
+            "start_print": start_print,
+            "result": result
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error subiendo archivo: {str(e)}")
+
+@router.post("/printers/{printer_id}/files/{filename}/print")
+async def start_print_job(printer_id: str, filename: str):
+    """Inicia la impresión de un archivo G-code específico."""
+    try:
+        result = await fleet_service.start_printer_print(printer_id, filename)
+        return {
+            "success": result.get("success", False),
+            "printer_id": printer_id,
+            "filename": filename,
+            "message": result.get("message", ""),
+            "error": result.get("error")
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error iniciando impresión: {str(e)}")
+
+@router.delete("/printers/{printer_id}/files/{filename}")
+async def delete_gcode_file(printer_id: str, filename: str):
+    """Elimina un archivo G-code de una impresora específica."""
+    try:
+        result = await fleet_service.delete_printer_gcode_file(printer_id, filename)
+        if not result:
+            raise HTTPException(status_code=500, detail="Error eliminando archivo")
+        
+        return {
+            "success": True,
+            "printer_id": printer_id,
+            "filename": filename,
+            "result": result
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error eliminando archivo: {str(e)}")
+
+@router.get("/printers/{printer_id}/files/{filename}/thumbnails")
+async def get_gcode_thumbnails(printer_id: str, filename: str):
+    """Obtiene thumbnails de un archivo G-code específico."""
+    try:
+        thumbnails = await fleet_service.get_printer_gcode_thumbnails(printer_id, filename)
+        return {
+            "printer_id": printer_id,
+            "filename": filename,
+            "thumbnails": thumbnails,
+            "total_thumbnails": len(thumbnails)
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error obteniendo thumbnails: {str(e)}")
 
 # Endpoint para renderizar el módulo de gestión de flota como HTML
 @router.get("/fleet", response_class=HTMLResponse)
