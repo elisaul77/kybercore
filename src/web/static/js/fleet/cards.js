@@ -1345,31 +1345,54 @@ window.FleetCards = {
                 dateFormatted = fileDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
             }
             
+            // Escapar caracteres especiales para uso seguro
+            const safeFileName = this.escapeHtml(fileName);
+            const safePrinterId = this.escapeHtml(printerId);
+            const escapedFileName = this.escapeJavaScript(fileName);
+            const escapedPrinterId = this.escapeJavaScript(printerId);
+            const safeId = this.createSafeId(`${printerId}-${fileName}`);
+            
             return `
                 <div class="bg-white rounded-lg p-3 border border-emerald-200 mb-2">
-                    <div class="flex items-center justify-between">
-                        <div class="flex-1">
-                            <div class="font-medium text-emerald-900 truncate">${fileName}</div>
+                    <div class="flex items-start gap-3">
+                        <!-- Thumbnail placeholder -->
+                        <div class="flex-shrink-0 w-16 h-16 bg-gray-100 rounded border border-gray-200 flex items-center justify-center cursor-pointer"
+                             id="thumbnail-${safeId}"
+                             onclick="window.FleetCards.loadAndShowThumbnail('${escapedPrinterId}', '${escapedFileName}', this)"
+                             title="Click para cargar vista previa">
+                            <span class="text-gray-400 text-xs">🖼️</span>
+                        </div>
+                        
+                        <!-- File info -->
+                        <div class="flex-1 min-w-0">
+                            <div class="font-medium text-emerald-900 truncate">${safeFileName}</div>
                             <div class="text-xs text-gray-600">
                                 📏 ${sizeFormatted} • 📅 ${dateFormatted}
                             </div>
-                        </div>
-                        <div class="flex gap-1 ml-2">
-                            <button class="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600 transition-colors"
-                                    onclick="window.FleetCards.startGcodePrint('${printerId}', '${fileName}')"
-                                    title="Iniciar impresión">
-                                ▶️
-                            </button>
-                            <button class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors"
-                                    onclick="window.FleetCards.showGcodeMetadata('${printerId}', '${fileName}')"
-                                    title="Ver detalles">
-                                ℹ️
-                            </button>
-                            <button class="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
-                                    onclick="window.FleetCards.deleteGcodeFile('${printerId}', '${fileName}')"
-                                    title="Eliminar archivo">
-                                🗑️
-                            </button>
+                            
+                            <!-- Action buttons -->
+                            <div class="flex gap-1 mt-2">
+                                <button class="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600 transition-colors"
+                                        onclick="window.FleetCards.startGcodePrint('${escapedPrinterId}', '${escapedFileName}')"
+                                        title="Iniciar impresión">
+                                    ▶️ Imprimir
+                                </button>
+                                <button class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors"
+                                        onclick="window.FleetCards.showGcodeMetadata('${escapedPrinterId}', '${escapedFileName}')"
+                                        title="Ver detalles">
+                                    ℹ️ Detalles
+                                </button>
+                                <button class="px-2 py-1 bg-purple-500 text-white rounded text-xs hover:bg-purple-600 transition-colors"
+                                        onclick="window.FleetCards.showGcodeThumbnails('${escapedPrinterId}', '${escapedFileName}')"
+                                        title="Ver vista previa">
+                                    🖼️ Vista Previa
+                                </button>
+                                <button class="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
+                                        onclick="window.FleetCards.deleteGcodeFile('${escapedPrinterId}', '${escapedFileName}')"
+                                        title="Eliminar archivo">
+                                    🗑️
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1588,6 +1611,28 @@ window.FleetCards = {
         }
     },
 
+    escapeHtml(text) {
+        // Escapa caracteres especiales para uso seguro en HTML
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    },
+
+    escapeJavaScript(text) {
+        // Escapa caracteres especiales para uso seguro en JavaScript strings
+        return text.replace(/\\/g, '\\\\')
+                  .replace(/'/g, "\\'")
+                  .replace(/"/g, '\\"')
+                  .replace(/\n/g, '\\n')
+                  .replace(/\r/g, '\\r')
+                  .replace(/\t/g, '\\t');
+    },
+
+    createSafeId(text) {
+        // Crea un ID seguro para uso en atributos HTML
+        return btoa(encodeURIComponent(text)).replace(/[^a-zA-Z0-9]/g, '');
+    },
+
     formatFileSize(bytes) {
         // Formatea el tamaño de archivo en formato legible
         if (bytes === 0) return '0 B';
@@ -1595,6 +1640,134 @@ window.FleetCards = {
         const sizes = ['B', 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    },
+
+    // === GESTIÓN DE THUMBNAILS ===
+
+    async loadAndShowThumbnail(printerId, filename, thumbnailElement) {
+        // Carga y muestra un thumbnail pequeño en el elemento especificado
+        console.log('🖼️ Cargando thumbnail para:', filename);
+        
+        // Mostrar indicador de carga
+        thumbnailElement.innerHTML = '<div class="animate-spin w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full"></div>';
+        
+        try {
+            const response = await fetch(`/api/fleet/printers/${printerId}/files/${encodeURIComponent(filename)}/thumbnails`);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log('🖼️ Thumbnails recibidos:', data);
+            
+            if (data.thumbnails && data.thumbnails.length > 0) {
+                // Usar el primer thumbnail disponible (generalmente el más pequeño)
+                const thumbnail = data.thumbnails[0];
+                const imgSrc = `data:image/png;base64,${thumbnail.data}`;
+                
+                thumbnailElement.innerHTML = `
+                    <img src="${imgSrc}" 
+                         class="w-full h-full object-cover rounded" 
+                         alt="Vista previa"
+                         title="${thumbnail.width}x${thumbnail.height}">
+                `;
+                
+                console.log('✅ Thumbnail cargado:', `${thumbnail.width}x${thumbnail.height}`);
+            } else {
+                thumbnailElement.innerHTML = '<span class="text-gray-400 text-xs">❌</span>';
+                thumbnailElement.title = 'Sin vista previa disponible';
+            }
+            
+        } catch (error) {
+            console.error('❌ Error cargando thumbnail:', error);
+            thumbnailElement.innerHTML = '<span class="text-red-400 text-xs">❌</span>';
+            thumbnailElement.title = `Error: ${error.message}`;
+        }
+    },
+
+    async showGcodeThumbnails(printerId, filename) {
+        // Muestra todos los thumbnails disponibles en un modal
+        console.log('🖼️ Mostrando thumbnails completos para:', filename);
+        
+        try {
+            const response = await fetch(`/api/fleet/printers/${printerId}/files/${encodeURIComponent(filename)}/thumbnails`);
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || `HTTP ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('🖼️ Thumbnails recibidos completos:', data);
+            
+            if (!data.thumbnails || data.thumbnails.length === 0) {
+                this.showToast('No hay vistas previas disponibles para este archivo', 'info');
+                return;
+            }
+            
+            // Verificar la estructura de los thumbnails
+            console.log('📋 Analizando thumbnails:');
+            data.thumbnails.forEach((thumb, i) => {
+                console.log(`  ${i + 1}. ${thumb.width}x${thumb.height}, size: ${thumb.size}, data length: ${thumb.data ? thumb.data.length : 'undefined'}`);
+                console.log(`     data preview: ${thumb.data ? thumb.data.substring(0, 50) + '...' : 'NO DATA'}`);
+            });
+            
+            // Crear modal de thumbnails
+            const thumbnailsHTML = data.thumbnails.map((thumbnail, index) => {
+                const dataUrl = `data:image/png;base64,${thumbnail.data}`;
+                console.log(`🖼️ Creando imagen ${index + 1}: ${dataUrl.substring(0, 100)}...`);
+                
+                return `
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                        <div class="text-center mb-2 font-medium">Vista previa ${index + 1}</div>
+                        <div class="mb-2 flex justify-center">
+                            <img src="${dataUrl}" 
+                                 class="max-w-full max-h-48 object-contain rounded border" 
+                                 alt="Vista previa ${index + 1}"
+                                 onerror="console.error('Error cargando imagen ${index + 1}'); this.style.display='none'; this.nextElementSibling.style.display='block';"
+                                 onload="console.log('✅ Imagen ${index + 1} cargada correctamente');">
+                            <div style="display:none" class="text-red-500 text-center p-4">❌ Error cargando imagen</div>
+                        </div>
+                        <div class="text-xs text-gray-600 text-center">
+                            ${thumbnail.width}×${thumbnail.height} • ${this.formatFileSize(thumbnail.size || 0)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            const modalHTML = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="this.remove()">
+                    <div class="bg-white rounded-xl max-w-4xl max-h-96 overflow-y-auto p-6 m-4" onclick="event.stopPropagation()">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-gray-900">🖼️ Vistas Previas: ${this.escapeHtml(filename)}</h3>
+                            <button class="text-gray-500 hover:text-gray-700" onclick="this.closest('.fixed').remove()">✕</button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            ${thumbnailsHTML}
+                        </div>
+                        
+                        <div class="mt-4 flex gap-2 justify-center">
+                            <button class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                                    onclick="window.FleetCards.startGcodePrint('${this.escapeJavaScript(printerId)}', '${this.escapeJavaScript(filename)}'); this.closest('.fixed').remove();">
+                                ▶️ Iniciar Impresión
+                            </button>
+                            <button class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+                                    onclick="this.closest('.fixed').remove()">
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            console.log(`✅ Modal de thumbnails mostrado: ${data.thumbnails.length} imágenes`);
+            
+        } catch (error) {
+            console.error('❌ Error obteniendo thumbnails:', error);
+            this.showToast(`Error obteniendo vistas previas: ${error.message}`, 'error');
+        }
     }
 };
 
