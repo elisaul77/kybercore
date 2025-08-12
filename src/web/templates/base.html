@@ -80,7 +80,19 @@
 <script src="{{ url_for('static', path='/js/fleet/ui.js') }}"></script>
 <script src="{{ url_for('static', path='/js/fleet/data.js') }}"></script>
 <script src="{{ url_for('static', path='/js/fleet/table.js') }}"></script>
+
+<!-- 🎴 MÓDULOS DE TARJETAS DE IMPRESORAS (Sistema Modular Refactorizado) -->
+<!-- ORDEN CRÍTICO: Los módulos deben cargarse ANTES del integrador cards.js -->
+<script src="{{ url_for('static', path='/js/fleet/cards_printer/core.js') }}"></script>
+<script src="{{ url_for('static', path='/js/fleet/cards_printer/utils.js') }}"></script>
+<script src="{{ url_for('static', path='/js/fleet/cards_printer/renderer.js') }}"></script>
+<script src="{{ url_for('static', path='/js/fleet/cards_printer/gcode_files.js') }}"></script>
+<script src="{{ url_for('static', path='/js/fleet/cards_printer/thumbnails.js') }}"></script>
+<script src="{{ url_for('static', path='/js/fleet/cards_printer/commands.js') }}"></script>
+
+<!-- 🎯 INTEGRADOR PRINCIPAL DE TARJETAS (Debe ir después de los módulos) -->
 <script src="{{ url_for('static', path='/js/fleet/cards.js') }}"></script>
+
 <script src="{{ url_for('static', path='/js/fleet/commands.js') }}"></script>
 <script src="{{ url_for('static', path='/js/fleet/forms.js') }}"></script>
 <script src="{{ url_for('static', path='/js/fleet/message-handler.js') }}"></script>
