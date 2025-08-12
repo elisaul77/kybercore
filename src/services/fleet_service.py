@@ -159,11 +159,17 @@ class FleetService:
                         # Información adicional de estadísticas de impresión
                         state = print_stats_data.get('state', 'unknown')
                         filename = print_stats_data.get('filename', '')
-                        
+                        total_duration = print_stats_data.get('total_duration', 0)
+                        print_duration = print_stats_data.get('print_duration', 0)
+                        filament_used = print_stats_data.get('filament_used', 0)
+
                         printer.realtime_data.update({
                             'print_progress': round(progress, 1),
                             'print_state': state,
-                            'print_filename': filename
+                            'print_filename': filename,
+                            'print_total_duration': total_duration,
+                            'print_duration': print_duration,
+                            'filament_used': filament_used                        
                         })
                         
                         logger.debug(f"Progreso de impresión para {printer.name}: {progress:.1f}% - Estado: {state}")
@@ -172,7 +178,10 @@ class FleetService:
                         printer.realtime_data.update({
                             'print_progress': 0,
                             'print_state': 'unknown',
-                            'print_filename': ''
+                            'print_filename': '',
+                            'print_total_duration': 0,
+                            'print_duration': 0,
+                            'filament_used': 0
                         })
                         
                 except asyncio.TimeoutError:
@@ -180,14 +189,20 @@ class FleetService:
                     printer.realtime_data.update({
                         'print_progress': 0,
                         'print_state': 'unknown',
-                        'print_filename': ''
+                        'print_filename': '',
+                        'print_total_duration': 0,
+                        'print_duration': 0,
+                        'filament_used': 0
                     })
                 except Exception as e:
                     logger.warning(f"Error obteniendo progreso de impresión para {printer.name}: {e}")
                     printer.realtime_data.update({
                         'print_progress': 0,
                         'print_state': 'unknown',
-                        'print_filename': ''
+                        'print_filename': '',
+                        'print_total_duration': 0,
+                        'print_duration': 0,
+                        'filament_used': 0
                     })
                     
             else:
