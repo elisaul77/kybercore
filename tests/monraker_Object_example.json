@@ -1,0 +1,473 @@
+{
+    "config": {
+        "mcu": {
+            "serial": "/dev/serial/by-id/usb"
+        },
+        "exclude_object": {},
+        "printer": {
+            "kinematics": "cartesian",
+            "max_velocity": "300",
+            "max_accel": "1500",
+            "max_z_velocity": "15",
+            "max_z_accel": "200"
+        },
+        "stepper_x": {
+            "microsteps": "16",
+            "step_pin": "PC0",
+            "dir_pin": "!PL0",
+            "enable_pin": "!PA7",
+            "rotation_distance": "32",
+            "endstop_pin": "!PK2",
+            "position_endstop": "0",
+            "position_min": "0",
+            "position_max": "250",
+            "homing_speed": "50",
+            "homing_retract_dist": "0"
+        },
+        "stepper_y": {
+            "microsteps": "16",
+            "step_pin": "PC1",
+            "dir_pin": "PL1",
+            "enable_pin": "!PA6",
+            "rotation_distance": "32",
+            "endstop_pin": "!PK7",
+            "position_endstop": "-4",
+            "position_max": "210",
+            "position_min": "-4",
+            "homing_speed": "50",
+            "homing_retract_dist": "0"
+        },
+        "stepper_z": {
+            "microsteps": "16",
+            "step_pin": "PC2",
+            "dir_pin": "!PL2",
+            "enable_pin": "!PA5",
+            "rotation_distance": "8",
+            "endstop_pin": "probe:z_virtual_endstop",
+            "position_max": "220",
+            "position_min": "-2",
+            "homing_speed": "13.333"
+        },
+        "extruder": {
+            "microsteps": "8",
+            "step_pin": "PC3",
+            "dir_pin": "PL6",
+            "enable_pin": "!PA4",
+            "rotation_distance": "6.53061216",
+            "full_steps_per_rotation": "400",
+            "nozzle_diameter": "0.4",
+            "filament_diameter": "1.750",
+            "max_extrude_cross_section": "50.0",
+            "max_extrude_only_distance": "500.0",
+            "max_extrude_only_velocity": "120.0",
+            "max_extrude_only_accel": "1250.0",
+            "heater_pin": "PE5",
+            "sensor_type": "ATC Semitec 104GT-2",
+            "sensor_pin": "PF0",
+            "control": "pid",
+            "pid_kp": "16.13",
+            "pid_ki": "1.1625",
+            "pid_kd": "56.23",
+            "min_temp": "0",
+            "max_temp": "305"
+        },
+        "heater_bed": {
+            "heater_pin": "PG5",
+            "sensor_type": "EPCOS 100K B57560G104F",
+            "sensor_pin": "PF2",
+            "control": "pid",
+            "pid_kp": "126.13",
+            "pid_ki": "4.3",
+            "pid_kd": "924.76",
+            "min_temp": "0",
+            "max_temp": "125"
+        },
+        "verify_heater heater_bed": {
+            "max_error": "240",
+            "check_gain_time": "120"
+        },
+        "heater_fan nozzle_cooling_fan": {
+            "pin": "PH5",
+            "heater": "extruder",
+            "heater_temp": "50.0"
+        },
+        "fan": {
+            "pin": "PH3"
+        },
+        "display": {
+            "lcd_type": "hd44780",
+            "rs_pin": "PD5",
+            "e_pin": "PF7",
+            "d4_pin": "PF5",
+            "d5_pin": "PG4",
+            "d6_pin": "PH7",
+            "d7_pin": "PG3",
+            "encoder_pins": "^PJ1,^PJ2",
+            "click_pin": "^!PH6"
+        },
+        "pause_resume": {},
+        "virtual_sdcard": {
+            "path": "~/printer_data/gcodes"
+        },
+        "respond": {
+            "default_type": "command"
+        },
+        "probe": {
+            "pin": "PB4",
+            "x_offset": "23",
+            "y_offset": "5",
+            "z_offset": "0.8",
+            "speed": "12.0"
+        },
+        "bed_mesh": {
+            "speed": "140",
+            "horizontal_move_z": "2",
+            "mesh_min": "24, 6",
+            "mesh_max": "238, 210",
+            "probe_count": "7",
+            "mesh_pps": "2",
+            "fade_start": "1",
+            "fade_end": "10",
+            "fade_target": "0",
+            "move_check_distance": "15",
+            "algorithm": "bicubic",
+            "bicubic_tension": ".2",
+            "zero_reference_position": "154.0, 113.0",
+            "faulty_region_1_min": "116.75, 41.81",
+            "faulty_region_1_max": "133.25, 78.81",
+            "faulty_region_2_min": "156.5, 99.31",
+            "faulty_region_2_max": "193.5, 115.81",
+            "faulty_region_3_min": "116.75, 136.21",
+            "faulty_region_3_max": "133.25, 173.31"
+        },
+        "homing_override": {
+            "gcode": "\nG1 Z3 F600\nG28 X0 Y0\nG1 X131 Y108 F5000\nG28 Z0",
+            "axes": "Z",
+            "set_position_x": "0",
+            "set_position_y": "0",
+            "set_position_z": "0"
+        },
+        "output_pin BEEPER_pin": {
+            "pin": "PH2",
+            "pwm": "True",
+            "value": "0",
+            "shutdown_value": "0",
+            "cycle_time": "0.001",
+            "scale": "1000"
+        },
+        "force_move": {
+            "enable_force_move": "True"
+        },
+        "idle_timeout": {
+            "gcode": "\nM104 S0\nM84"
+        },
+        "gcode_macro PAUSE": {
+            "rename_existing": "BASE_PAUSE",
+            "gcode": "\n{% if not printer.pause_resume.is_paused %}\nM600\n{% endif %}"
+        },
+        "gcode_macro M600": {
+            "variable_extr_temp": "0",
+            "gcode": "\n{% set X = params.X|default(100) %}\n{% set Y = params.Y|default(100) %}\n{% set Z = params.Z|default(100) %}\nBASE_PAUSE\nSET_GCODE_VARIABLE MACRO=M600 VARIABLE=extr_temp VALUE={printer.extruder.target}\nG91\n{% if printer.extruder.temperature|float > 180 %}\nG1 E-.8 F2700\n{% endif %}\nG1 Z{Z}\nG90\nG1 X{X} Y{Y} F3000"
+        },
+        "gcode_macro RESUME": {
+            "rename_existing": "BASE_RESUME",
+            "gcode": "\n{% if printer.pause_resume.is_paused %}\n{% if printer[\"gcode_macro M600\"].extr_temp %}\nM109 S{printer[\"gcode_macro M600\"].extr_temp}\n{% endif %}\nBASE_RESUME\n{% endif %}"
+        }
+    },
+    "warnings": [],
+    "save_config_pending": false,
+    "save_config_pending_items": {},
+    "settings": {
+        "mcu": {
+            "serial": "/dev/serial/by-id/usb",
+            "baud": 250000,
+            "max_stepper_error": 0.000025
+        },
+        "heater_bed": {
+            "sensor_type": "EPCOS 100K B57560G104F",
+            "pullup_resistor": 4700,
+            "inline_resistor": 0,
+            "sensor_pin": "PF2",
+            "min_temp": 0,
+            "max_temp": 125,
+            "min_extrude_temp": 170,
+            "max_power": 1,
+            "smooth_time": 1,
+            "control": "pid",
+            "pid_kp": 126.13,
+            "pid_ki": 4.3,
+            "pid_kd": 924.76,
+            "heater_pin": "PG5",
+            "pwm_cycle_time": 0.1
+        },
+        "verify_heater heater_bed": {
+            "hysteresis": 5,
+            "max_error": 240,
+            "heating_gain": 2,
+            "check_gain_time": 120
+        },
+        "heater_fan nozzle_cooling_fan": {
+            "heater": [
+                "extruder"
+            ],
+            "heater_temp": 50,
+            "max_power": 1,
+            "kick_start_time": 0.1,
+            "off_below": 0,
+            "cycle_time": 0.01,
+            "hardware_pwm": false,
+            "shutdown_speed": 1,
+            "pin": "PH5",
+            "fan_speed": 1
+        },
+        "fan": {
+            "max_power": 1,
+            "kick_start_time": 0.1,
+            "off_below": 0,
+            "cycle_time": 0.01,
+            "hardware_pwm": false,
+            "shutdown_speed": 0,
+            "pin": "PH3"
+        },
+        "display": {
+            "lcd_type": "hd44780",
+            "rs_pin": "PD5",
+            "e_pin": "PF7",
+            "d4_pin": "PF5",
+            "d5_pin": "PG4",
+            "d6_pin": "PH7",
+            "d7_pin": "PG3",
+            "hd44780_protocol_init": true,
+            "line_length": 20,
+            "menu_root": "__main",
+            "menu_timeout": 0,
+            "menu_reverse_navigation": false,
+            "encoder_pins": "^PJ1,^PJ2",
+            "encoder_steps_per_detent": 4,
+            "encoder_fast_rate": 0.03,
+            "click_pin": "^!PH6",
+            "display_group": "_default_20x4"
+        },
+        "pause_resume": {
+            "recover_velocity": 50
+        },
+        "virtual_sdcard": {
+            "path": "~/printer_data/gcodes",
+            "on_error_gcode": "\n{% if 'heaters' in printer %}\n   TURN_OFF_HEATERS\n{% endif %}\n"
+        },
+        "respond": {
+            "default_type": "command",
+            "default_prefix": "//"
+        },
+        "probe": {
+            "z_offset": 0.8,
+            "deactivate_on_each_sample": true,
+            "activate_gcode": "",
+            "deactivate_gcode": "",
+            "pin": "PB4",
+            "x_offset": 23,
+            "y_offset": 5,
+            "speed": 12,
+            "lift_speed": 12,
+            "samples": 1,
+            "sample_retract_dist": 2,
+            "samples_result": "average",
+            "samples_tolerance": 0.1,
+            "samples_tolerance_retries": 0
+        },
+        "bed_mesh": {
+            "adaptive_margin": 0,
+            "probe_count": [
+                7
+            ],
+            "mesh_min": [
+                24,
+                6
+            ],
+            "mesh_max": [
+                238,
+                210
+            ],
+            "mesh_pps": [
+                2
+            ],
+            "algorithm": "bicubic",
+            "bicubic_tension": 0.2,
+            "scan_overshoot": 0,
+            "zero_reference_position": [
+                154,
+                113
+            ],
+            "horizontal_move_z": 2,
+            "speed": 140,
+            "faulty_region_1_min": [
+                116.75,
+                41.81
+            ],
+            "faulty_region_1_max": [
+                133.25,
+                78.81
+            ],
+            "faulty_region_2_min": [
+                156.5,
+                99.31
+            ],
+            "faulty_region_2_max": [
+                193.5,
+                115.81
+            ],
+            "faulty_region_3_min": [
+                116.75,
+                136.21
+            ],
+            "faulty_region_3_max": [
+                133.25,
+                173.31
+            ],
+            "fade_start": 1,
+            "fade_end": 10,
+            "fade_target": 0,
+            "split_delta_z": 0.025,
+            "move_check_distance": 15
+        },
+        "homing_override": {
+            "set_position_x": 0,
+            "set_position_y": 0,
+            "set_position_z": 0,
+            "axes": "Z",
+            "gcode": "\nG1 Z3 F600\nG28 X0 Y0\nG1 X131 Y108 F5000\nG28 Z0"
+        },
+        "output_pin beeper_pin": {
+            "pwm": true,
+            "pin": "PH2",
+            "cycle_time": 0.001,
+            "hardware_pwm": false,
+            "scale": 1000,
+            "value": 0,
+            "shutdown_value": 0
+        },
+        "force_move": {
+            "enable_force_move": true
+        },
+        "idle_timeout": {
+            "timeout": 600,
+            "gcode": "\nM104 S0\nM84"
+        },
+        "gcode_macro pause": {
+            "gcode": "\n{% if not printer.pause_resume.is_paused %}\nM600\n{% endif %}",
+            "rename_existing": "BASE_PAUSE",
+            "description": "G-Code macro"
+        },
+        "gcode_macro m600": {
+            "gcode": "\n{% set X = params.X|default(100) %}\n{% set Y = params.Y|default(100) %}\n{% set Z = params.Z|default(100) %}\nBASE_PAUSE\nSET_GCODE_VARIABLE MACRO=M600 VARIABLE=extr_temp VALUE={printer.extruder.target}\nG91\n{% if printer.extruder.temperature|float > 180 %}\nG1 E-.8 F2700\n{% endif %}\nG1 Z{Z}\nG90\nG1 X{X} Y{Y} F3000",
+            "description": "G-Code macro",
+            "variable_extr_temp": "0"
+        },
+        "gcode_macro resume": {
+            "gcode": "\n{% if printer.pause_resume.is_paused %}\n{% if printer[\"gcode_macro M600\"].extr_temp %}\nM109 S{printer[\"gcode_macro M600\"].extr_temp}\n{% endif %}\nBASE_RESUME\n{% endif %}",
+            "rename_existing": "BASE_RESUME",
+            "description": "G-Code macro"
+        },
+        "printer": {
+            "max_velocity": 300,
+            "max_accel": 1500,
+            "minimum_cruise_ratio": 0.5,
+            "square_corner_velocity": 5,
+            "kinematics": "cartesian",
+            "max_z_velocity": 15,
+            "max_z_accel": 200
+        },
+        "stepper_x": {
+            "step_pin": "PC0",
+            "dir_pin": "!PL0",
+            "rotation_distance": 32,
+            "microsteps": 16,
+            "full_steps_per_rotation": 200,
+            "gear_ratio": [],
+            "enable_pin": "!PA7",
+            "endstop_pin": "!PK2",
+            "position_endstop": 0,
+            "position_min": 0,
+            "position_max": 250,
+            "homing_speed": 50,
+            "second_homing_speed": 25,
+            "homing_retract_speed": 50,
+            "homing_retract_dist": 0,
+            "homing_positive_dir": false
+        },
+        "stepper_y": {
+            "step_pin": "PC1",
+            "dir_pin": "PL1",
+            "rotation_distance": 32,
+            "microsteps": 16,
+            "full_steps_per_rotation": 200,
+            "gear_ratio": [],
+            "enable_pin": "!PA6",
+            "endstop_pin": "!PK7",
+            "position_endstop": -4,
+            "position_min": -4,
+            "position_max": 210,
+            "homing_speed": 50,
+            "second_homing_speed": 25,
+            "homing_retract_speed": 50,
+            "homing_retract_dist": 0,
+            "homing_positive_dir": false
+        },
+        "stepper_z": {
+            "step_pin": "PC2",
+            "dir_pin": "!PL2",
+            "rotation_distance": 8,
+            "microsteps": 16,
+            "full_steps_per_rotation": 200,
+            "gear_ratio": [],
+            "enable_pin": "!PA5",
+            "endstop_pin": "probe:z_virtual_endstop",
+            "position_min": -2,
+            "position_max": 220,
+            "homing_speed": 13.333,
+            "second_homing_speed": 6.6665,
+            "homing_retract_speed": 13.333,
+            "homing_retract_dist": 5,
+            "homing_positive_dir": false
+        },
+        "extruder": {
+            "sensor_type": "ATC Semitec 104GT-2",
+            "pullup_resistor": 4700,
+            "inline_resistor": 0,
+            "sensor_pin": "PF0",
+            "min_temp": 0,
+            "max_temp": 305,
+            "min_extrude_temp": 170,
+            "max_power": 1,
+            "smooth_time": 1,
+            "control": "pid",
+            "pid_kp": 16.13,
+            "pid_ki": 1.1625,
+            "pid_kd": 56.23,
+            "heater_pin": "PE5",
+            "pwm_cycle_time": 0.1,
+            "nozzle_diameter": 0.4,
+            "filament_diameter": 1.75,
+            "max_extrude_cross_section": 50,
+            "max_extrude_only_velocity": 120,
+            "max_extrude_only_accel": 1250,
+            "max_extrude_only_distance": 500,
+            "instantaneous_corner_velocity": 1,
+            "step_pin": "PC3",
+            "pressure_advance": 0,
+            "pressure_advance_smooth_time": 0.04,
+            "dir_pin": "PL6",
+            "rotation_distance": 6.53061216,
+            "microsteps": 8,
+            "full_steps_per_rotation": 400,
+            "gear_ratio": [],
+            "enable_pin": "!PA4"
+        },
+        "verify_heater extruder": {
+            "hysteresis": 5,
+            "max_error": 120,
+            "heating_gain": 2,
+            "check_gain_time": 20
+        }
+    }
+}
