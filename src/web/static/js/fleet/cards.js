@@ -465,7 +465,35 @@ window.FleetCards = {
                 bgClass: 'bg-blue-400', 
                 textClass: 'text-white',
                 gradient: 'from-blue-300 to-blue-500'
-            }
+            },
+            'maintenance': {
+                label: 'Mantenimiento',
+                icon: '🛠️',
+                bgClass: 'bg-indigo-500',
+                textClass: 'text-white',
+                gradient: 'from-indigo-400 to-indigo-600'
+            },
+            'updating': {
+                label: 'Actualizando',
+                icon: '⬆️',
+                bgClass: 'bg-teal-500',
+                textClass: 'text-white',
+                gradient: 'from-teal-400 to-teal-600'
+            },
+            'disconnected': {
+                label: 'Desconectado',
+                icon: '🔌',
+                bgClass: 'bg-gray-500',
+                textClass: 'text-white',
+                gradient: 'from-gray-400 to-gray-600'
+            },
+            'complete': {
+                label: 'Completado',
+                icon: '✅',
+                bgClass: 'bg-green-600',
+                textClass: 'text-white',
+                gradient: 'from-green-500 to-green-700'
+            },
         };
         return statusMap[status] || statusMap['offline'];
     },
@@ -726,9 +754,9 @@ window.FleetCards = {
                             <div><span class="font-semibold text-purple-800">Progreso:</span> 
                                 <div class="mt-1">
                                     <div class="w-full bg-purple-200 rounded-full h-2">
-                                        <div class="h-2 bg-purple-500 rounded-full transition-all duration-300" style="width: ${(realtimeData.print_progress || 0) * 100}%"></div>
+                                        <div class="h-2 bg-purple-500 rounded-full transition-all duration-300" style="width: ${(realtimeData.print_progress || 0) }%"></div>
                                     </div>
-                                    <span class="text-xs text-purple-600 mt-1">${((realtimeData.print_progress || 0) * 100).toFixed(1)}%</span>
+                                    <span class="text-xs text-purple-600 mt-1">${((realtimeData.print_progress || 0) ).toFixed(1)}%</span>
                                 </div>
                             </div>
                         </div>
