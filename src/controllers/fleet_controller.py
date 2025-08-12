@@ -381,7 +381,8 @@ async def delete_gcode_file(printer_id: str, filename: str):
 async def get_gcode_thumbnails(printer_id: str, filename: str):
     """Obtiene thumbnails de un archivo G-code específico."""
     try:
-        thumbnails = await fleet_service.get_printer_gcode_thumbnails(printer_id, filename)
+        result = await fleet_service.get_printer_gcode_thumbnails(printer_id, filename)
+        thumbnails = result.get("thumbnails", [])
         return {
             "printer_id": printer_id,
             "filename": filename,

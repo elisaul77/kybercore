@@ -710,7 +710,7 @@ class FleetService:
             raise
 
     async def get_printer_gcode_thumbnails(self, printer_id: str, filename: str):
-        """Obtiene thumbnails de un archivo G-code específico."""
+        """Obtiene thumbnails de un archivo G-code específico, incluyendo los embebidos en comentarios."""
         printer = self.printers.get(printer_id)
         if not printer:
             raise ValueError(f"Impresora con ID {printer_id} no encontrada")
@@ -720,9 +720,40 @@ class FleetService:
             session = await self._get_session()
             client = MoonrakerClient(ip, port, session)
             
-            thumbnails = await client.get_thumbnails(filename)
-            logger.info(f"Thumbnails obtenidos para {filename} en {printer.name}")
-            return thumbnails
+            # Intentar obtener thumbnails usando el nuevo método que lee del G-code
+            thumbnails = await client.get_gcode_thumbnail_data(filename)
+            
+            # Debug logging para verificar estructura de datos
+            logger.info(f"🔍 Thumbnails desde get_gcode_thumbnail_data para {filename}:")
+            for i, thumb in enumerate(thumbnails):
+                logger.info(f"  Thumbnail {i+1}: {thumb.keys() if isinstance(thumb, dict) else type(thumb)}")
+                if isinstance(thumb, dict):
+                    logger.info(f"    - width: {thumb.get('width')}")
+                    logger.info(f"    - height: {thumb.get('height')}")
+                    logger.info(f"    - size: {thumb.get('size')}")
+                    logger.info(f"    - data present: {'data' in thumb}")
+                    if 'data' in thumb:
+                        data_length = len(thumb['data']) if thumb['data'] else 0
+                        logger.info(f"    - data length: {data_length}")
+                        if thumb['data']:
+                            logger.info(f"    - data preview: {thumb['data'][:50]}...")
+            
+            # Si no hay thumbnails, intentar con el método tradicional
+            if not thumbnails:
+                logger.info(f"🔄 Probando método tradicional para {filename}")
+                thumbnails = await client.get_thumbnails(filename)
+                
+                # Debug logging para método tradicional
+                logger.info(f"🔍 Thumbnails desde get_thumbnails para {filename}:")
+                for i, thumb in enumerate(thumbnails):
+                    logger.info(f"  Thumbnail {i+1}: {thumb.keys() if isinstance(thumb, dict) else type(thumb)}")
+            
+            logger.info(f"✅ Thumbnails finales para {filename} en {printer.name}: {len(thumbnails)} encontrados")
+            return {
+                "filename": filename,
+                "printer_id": printer_id,
+                "thumbnails": thumbnails
+            }
             
         except Exception as e:
             logger.error(f"Error obteniendo thumbnails de {filename} en {printer.name}: {e}")

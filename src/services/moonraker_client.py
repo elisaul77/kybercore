@@ -3,6 +3,8 @@ import websockets
 import json
 import asyncio
 import logging
+import base64
+import re
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
@@ -198,6 +200,151 @@ class MoonrakerClient:
         except aiohttp.ClientError as e:
             logger.error(f"Error al obtener thumbnails de {filename}: {e}")
             return []
+
+    async def get_gcode_thumbnail_data(self, filename):
+        """Obtiene los datos de thumbnail embebidos en un archivo G-code."""
+        try:
+            # Primero intentar obtener metadatos que pueden incluir thumbnails
+            metadata = await self.get_gcode_metadata(filename)
+            if metadata and 'result' in metadata:
+                thumbnails_metadata = metadata['result'].get('thumbnails', [])
+                if thumbnails_metadata:
+                    logger.info(f"📋 Metadatos de thumbnails encontrados para {filename}: {len(thumbnails_metadata)}")
+                    
+                    # Obtener los datos reales de cada thumbnail
+                    thumbnails_with_data = []
+                    for thumb_meta in thumbnails_metadata:
+                        # Obtener datos del thumbnail usando el relative_path
+                        relative_path = thumb_meta.get('relative_path')
+                        if relative_path:
+                            try:
+                                # Solicitar el thumbnail específico desde Moonraker
+                                async with self._session.get(f"{self.base_url}/server/files/gcodes/{relative_path}") as response:
+                                    if response.status == 200:
+                                        thumbnail_data = await response.read()
+                                        # Convertir a base64
+                                        import base64
+                                        data_b64 = base64.b64encode(thumbnail_data).decode('utf-8')
+                                        
+                                        # Combinar metadatos con datos
+                                        thumbnail_complete = thumb_meta.copy()
+                                        thumbnail_complete['data'] = data_b64
+                                        thumbnails_with_data.append(thumbnail_complete)
+                                        
+                                        logger.info(f"✅ Thumbnail obtenido: {thumb_meta.get('width')}x{thumb_meta.get('height')}, data length: {len(data_b64)}")
+                                    else:
+                                        logger.warning(f"⚠️ No se pudo obtener thumbnail: {relative_path} (status: {response.status})")
+                                        # Incluir sin datos
+                                        thumbnails_with_data.append(thumb_meta.copy())
+                            except Exception as e:
+                                logger.error(f"❌ Error obteniendo thumbnail {relative_path}: {e}")
+                                # Incluir sin datos
+                                thumbnails_with_data.append(thumb_meta.copy())
+                    
+                    return thumbnails_with_data
+            
+            # Si no hay thumbnails en metadatos, intentar leer el archivo directamente
+            logger.info(f"🔄 Probando extracción directa del G-code para {filename}")
+            async with self._session.get(f"{self.base_url}/server/files/gcodes/{filename}") as response:
+                if response.status == 200:
+                    content = await response.text()
+                    thumbnails = self._extract_thumbnails_from_gcode(content)
+                    if thumbnails:
+                        logger.info(f"✅ Thumbnails extraídos del G-code {filename}: {len(thumbnails)}")
+                        return thumbnails
+                        
+            logger.info(f"ℹ️ No se encontraron thumbnails para {filename}")
+            return []
+        except Exception as e:
+            logger.error(f"❌ Error al obtener thumbnails de G-code {filename}: {e}")
+            return []
+
+    def _extract_thumbnails_from_gcode(self, gcode_content):
+        """Extrae thumbnails de los comentarios THUMBNAIL_BLOCK_START/END en el G-code."""
+        import base64
+        import re
+        
+        thumbnails = []
+        
+        logger.info(f"🔍 Iniciando extracción de thumbnails desde G-code content (tamaño: {len(gcode_content)} chars)")
+        
+        # Buscar bloques de thumbnail en el contenido
+        thumbnail_pattern = r'; thumbnail begin (\d+)x(\d+) (\d+)\n(.*?)\n; thumbnail end'
+        matches = re.finditer(thumbnail_pattern, gcode_content, re.DOTALL)
+        
+        for match in matches:
+            width = int(match.group(1))
+            height = int(match.group(2))
+            size = int(match.group(3))
+            data_lines = match.group(4)
+            
+            logger.info(f"📐 Encontrado thumbnail format 1: {width}x{height}, size: {size}")
+            
+            # Limpiar y concatenar las líneas de datos
+            data_clean = ""
+            for line in data_lines.split('\n'):
+                if line.startswith('; '):
+                    data_clean += line[2:]  # Remover '; ' del inicio
+            
+            logger.info(f"📋 Data clean length: {len(data_clean)}, first 50 chars: {data_clean[:50]}...")
+            
+            try:
+                # Decodificar base64
+                thumbnail_data = base64.b64decode(data_clean)
+                
+                thumbnails.append({
+                    'width': width,
+                    'height': height,
+                    'size': size,
+                    'data': data_clean,  # Mantener en base64 para el frontend
+                    'relative_path': f"thumbnail_{width}x{height}.png"
+                })
+                
+                logger.info(f"✅ Thumbnail extraído: {width}x{height}, {size} bytes, data length: {len(data_clean)}")
+                
+            except Exception as e:
+                logger.error(f"❌ Error decodificando thumbnail {width}x{height}: {e}")
+                continue
+        
+        # También buscar el formato alternativo THUMBNAIL_BLOCK_START/END
+        alt_pattern = r'; THUMBNAIL_BLOCK_START\n(.*?)\n; THUMBNAIL_BLOCK_END'
+        alt_matches = re.finditer(alt_pattern, gcode_content, re.DOTALL)
+        
+        for i, match in enumerate(alt_matches):
+            data_lines = match.group(1)
+            
+            logger.info(f"📐 Encontrado thumbnail format 2: block {i}")
+            
+            # Limpiar y concatenar las líneas de datos
+            data_clean = ""
+            for line in data_lines.split('\n'):
+                if line.startswith('; '):
+                    data_clean += line[2:]  # Remover '; ' del inicio
+            
+            try:
+                # Intentar decodificar para verificar que es válido
+                thumbnail_data = base64.b64decode(data_clean)
+                
+                # Estimar dimensiones (esto es aproximado)
+                estimated_size = len(thumbnail_data)
+                estimated_width = int((estimated_size / 3) ** 0.5)  # Aproximación para RGB
+                estimated_height = estimated_width
+                
+                thumbnails.append({
+                    'width': estimated_width,
+                    'height': estimated_height,
+                    'size': estimated_size,
+                    'data': data_clean,  # Mantener en base64 para el frontend
+                    'relative_path': f"thumbnail_block_{i}.png"
+                })
+                
+                logger.info(f"Thumbnail block extraído: ~{estimated_width}x{estimated_height}, {estimated_size} bytes")
+                
+            except Exception as e:
+                logger.error(f"Error decodificando thumbnail block {i}: {e}")
+                continue
+        
+        return thumbnails
 
     async def pause_print(self):
         """Pausa la impresión actual."""
