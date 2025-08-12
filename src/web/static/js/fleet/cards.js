@@ -948,14 +948,17 @@ window.FleetCards = {
         
         // Actualizar progreso de impresión (si el elemento existe)
         const progressElement = document.querySelector('[data-modal-progress]');
-        if (progressElement && realtimeData.progress !== undefined) {
-            const progress = realtimeData.progress || 0;
+        if (progressElement && realtimeData.print_progress !== undefined) {
+            const progress = realtimeData.print_progress || 0;
+            console.log(`📊 Actualizando progreso de impresión: ${progress}%`);
             progressElement.innerHTML = `
                 <div class="w-full bg-gray-200 rounded-full h-2">
                     <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: ${progress}%"></div>
                 </div>
                 <span class="text-sm font-medium text-gray-700">${progress.toFixed(1)}%</span>
             `;
+        } else {
+            console.log('❌ Elemento [data-modal-progress] no encontrado o sin datos de progreso');
         }
         
         // Actualizar archivo actual (si el elemento existe)
@@ -975,7 +978,7 @@ window.FleetCards = {
         // Actualizar la sección de información de impresión actual si existe
         const printInfoSection = document.querySelector('[data-modal-print-info]');
         if (printInfoSection && (realtimeData.print_state === 'printing' || realtimeData.print_state === 'paused')) {
-            const progress = realtimeData.progress || 0;
+            const progress = realtimeData.print_progress || 0;
             const filename = realtimeData.print_filename || 'Archivo desconocido';
             const estimatedTime = realtimeData.estimated_time;
             
