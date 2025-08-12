@@ -2,6 +2,8 @@
 // Manejo de la vista de tarjetas para gestión visual de la flota
 
 window.FleetCards = {
+    // Guardar el printerId actualmente mostrado en el modal
+    currentModalPrinterId: null,
     // 🔧 Inicialización del sistema de tarjetas
     init() {
         console.log('🎴 Inicializando sistema de tarjetas de flota...');
@@ -27,6 +29,19 @@ window.FleetCards = {
             window.FleetEventBus.on('printersUpdated', (printers) => {
                 console.log('🎴 Evento printersUpdated recibido con', printers.length, 'impresoras');
                 this.renderCards(printers);
+
+                // Si el modal está abierto, actualizar su contenido si corresponde
+                if (this.currentModalPrinterId) {
+                    const printer = printers.find(p => p.id === this.currentModalPrinterId);
+                    const modal = document.getElementById('printer-details-modal');
+                    const title = document.getElementById('modal-printer-title');
+                    const content = document.getElementById('modal-printer-content');
+                    if (printer && modal && title && content && !modal.classList.contains('hidden')) {
+                        title.textContent = `${printer.name} - Detalles Completos`;
+                        content.innerHTML = this.renderPrinterDetailContent(printer);
+                        console.log('🔄 Modal de detalles actualizado automáticamente');
+                    }
+                }
             });
         }
         
@@ -527,6 +542,8 @@ window.FleetCards = {
 
     // 👁️ Mostrar detalles completos de impresora
     showPrinterDetails(printerId) {
+        // Guardar el printerId mostrado en el modal
+        this.currentModalPrinterId = printerId;
         console.log('👁️ Mostrando detalles para impresora:', printerId);
         
         let printer = null;
@@ -838,6 +855,8 @@ window.FleetCards = {
         if (modal) {
             modal.classList.add('hidden');
         }
+        // Limpiar el printerId mostrado
+        this.currentModalPrinterId = null;
     },
 
     // 🎯 Enviar comando a impresora individual
