@@ -1232,7 +1232,6 @@ window.FleetCards = {
     },
 
     // === GESTIÓN DE ARCHIVOS G-CODE ===
-
     async loadPrinterGcodeFiles(printerId) {
         // Carga y muestra los archivos G-code de una impresora específica
         console.log('📁 Cargando archivos G-code para impresora:', printerId);
@@ -1282,8 +1281,31 @@ window.FleetCards = {
             files = [];
         }
         
+        // Ordenar los archivos por fecha de modificación en orden descendente (más recientes primero)
+        files.sort((a, b) => {
+            // Obtener timestamps de modificación, manejando diferentes formatos
+            let dateA = a.modified || a.mod_time || a.mtime || a.date || 0;
+            let dateB = b.modified || b.mod_time || b.mtime || b.date || 0;
+            
+            // Si son strings de fecha, convertir a timestamp
+            if (typeof dateA === 'string') {
+                dateA = new Date(dateA).getTime() / 1000; // Convertir a timestamp Unix
+            }
+            if (typeof dateB === 'string') {
+                dateB = new Date(dateB).getTime() / 1000; // Convertir a timestamp Unix
+            }
+            
+            // Orden descendente (más reciente primero)
+            return dateB - dateA;
+        });
+        
         console.log('📁 Renderizando lista de archivos:', files.length, 'archivos');
-        console.log('📁 Muestra de archivos:', files.slice(0, 2));
+        console.log('📁 Archivos ordenados por fecha (más recientes primero):');
+        files.slice(0, 5).forEach((file, index) => {
+            const date = file.modified || file.mod_time || file.mtime || file.date || 0;
+            const dateFormatted = new Date(typeof date === 'string' ? date : date * 1000).toLocaleString();
+            console.log(`  ${index + 1}. ${file.filename || file.path || file.name} - ${dateFormatted}`);
+        });
         
         if (files.length === 0) {
             container.innerHTML = `
@@ -1298,10 +1320,30 @@ window.FleetCards = {
             // Manejar diferentes estructuras de archivo
             const fileName = file.path || file.filename || file.name || 'archivo.gcode';
             const fileSize = file.size || file.filesize || 0;
-            const fileModified = file.modified || file.mod_time || Date.now() / 1000;
+            const fileModified = file.modified || file.mod_time || file.mtime || file.date || Date.now() / 1000;
             
             const sizeFormatted = this.formatFileSize(fileSize);
-            const dateFormatted = new Date(fileModified * 1000).toLocaleString();
+            
+            // Formatear fecha de forma más legible
+            const fileDate = new Date(typeof fileModified === 'string' ? fileModified : fileModified * 1000);
+            const now = new Date();
+            const diffMs = now - fileDate;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            
+            let dateFormatted;
+            if (diffDays === 0) {
+                // Hoy - mostrar solo hora
+                dateFormatted = `Hoy ${fileDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
+            } else if (diffDays === 1) {
+                // Ayer
+                dateFormatted = `Ayer ${fileDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
+            } else if (diffDays < 7) {
+                // Esta semana - mostrar día de la semana
+                dateFormatted = fileDate.toLocaleDateString('es-ES', { weekday: 'short', hour: '2-digit', minute: '2-digit' });
+            } else {
+                // Más de una semana - mostrar fecha completa
+                dateFormatted = fileDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+            }
             
             return `
                 <div class="bg-white rounded-lg p-3 border border-emerald-200 mb-2">
