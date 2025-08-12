@@ -38,8 +38,35 @@ window.FleetCards = {
                     const content = document.getElementById('modal-printer-content');
                     if (printer && modal && title && content && !modal.classList.contains('hidden')) {
                         title.textContent = `${printer.name} - Detalles Completos`;
-                        content.innerHTML = this.renderPrinterDetailContent(printer);
-                        console.log('🔄 Modal de detalles actualizado automáticamente');
+                        
+                        console.log('🔄 Intentando actualizar modal selectivamente para:', printer.id);
+                        
+                        // Verificar si los elementos con data-modal-* existen
+                        const statusElement = content.querySelector('[data-modal-status]');
+                        const extruderTempElement = content.querySelector('[data-modal-extruder-temp]');
+                        const bedTempElement = content.querySelector('[data-modal-bed-temp]');
+                        const printInfoElement = content.querySelector('[data-modal-print-info]');
+                        
+                        console.log('📋 Elementos modal encontrados:', {
+                            status: !!statusElement,
+                            extruderTemp: !!extruderTempElement,
+                            bedTemp: !!bedTempElement,
+                            printInfo: !!printInfoElement
+                        });
+                        
+                        if (statusElement || extruderTempElement || bedTempElement || printInfoElement) {
+                            // En lugar de reemplazar todo el contenido, actualizar solo partes específicas
+                            this.updateModalContentSelectively(printer);
+                            console.log('✅ Modal de detalles actualizado selectivamente vía WebSocket');
+                        } else {
+                            console.log('⚠️ No se encontraron elementos data-modal-*, regenerando contenido completo');
+                            content.innerHTML = this.renderPrinterDetailContent(printer);
+                            
+                            // Recargar archivos G-code después de regenerar el modal
+                            setTimeout(() => {
+                                this.loadPrinterGcodeFiles(this.currentModalPrinterId);
+                            }, 100);
+                        }
                     }
                 }
             });
@@ -661,7 +688,7 @@ window.FleetCards = {
                         <div>
                             <h4 class="text-xl font-bold text-blue-900">${printer.name}</h4>
                             <div class="flex items-center gap-2 mt-1">
-                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusInfo.bgClass} ${statusInfo.textClass}">
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusInfo.bgClass} ${statusInfo.textClass}" data-modal-status>
                                     ${statusInfo.icon} ${statusInfo.label}
                                 </span>
                                 <span class="text-sm text-blue-700">${printer.model || 'Modelo no especificado'}</span>
@@ -735,36 +762,29 @@ window.FleetCards = {
                         <div class="bg-white rounded-lg p-4 border border-orange-200">
                             <div class="flex items-center justify-between mb-2">
                                 <span class="font-semibold text-orange-800">🔥 Hotend/Extrusor</span>
-                                <span class="text-2xl font-bold ${this.getTempClass(realtimeData.extruder_temp || 0)} text-orange-700">
-                                    ${realtimeData.extruder_temp || 0}°C
+                                <span class="text-2xl font-bold ${this.getTempClass(realtimeData.extruder_temp || 0)} text-orange-700" data-modal-extruder-temp>
+                                    ${realtimeData.extruder_temp || 0}°C → ${realtimeData.extruder_target || 0}°C
                                 </span>
                             </div>
-                            <div class="text-sm text-gray-600">
-                                <div>Objetivo: <span class="font-medium">${realtimeData.extruder_target || 0}°C</span></div>
-                                ${realtimeData.extruder_power !== undefined ? `<div>Potencia: <span class="font-medium">${(realtimeData.extruder_power * 100).toFixed(1)}%</span></div>` : ''}
-                                ${realtimeData.can_extrude !== undefined ? `<div>Puede extruir: <span class="font-medium ${realtimeData.can_extrude ? 'text-green-600' : 'text-red-600'}">${realtimeData.can_extrude ? 'Sí' : 'No'}</span></div>` : ''}
-                            </div>
+                            
                         </div>
                         
                         <!-- Cama caliente -->
                         <div class="bg-white rounded-lg p-4 border border-orange-200">
                             <div class="flex items-center justify-between mb-2">
                                 <span class="font-semibold text-orange-800">🛏️ Cama Caliente</span>
-                                <span class="text-2xl font-bold ${this.getTempClass(realtimeData.bed_temp || 0)} text-orange-700">
-                                    ${realtimeData.bed_temp || 0}°C
+                                <span class="text-2xl font-bold ${this.getTempClass(realtimeData.bed_temp || 0)} text-orange-700" data-modal-bed-temp>
+                                    ${realtimeData.bed_temp || 0}°C → ${realtimeData.bed_target || 0}°C
                                 </span>
                             </div>
-                            <div class="text-sm text-gray-600">
-                                <div>Objetivo: <span class="font-medium">${realtimeData.bed_target || 0}°C</span></div>
-                                ${realtimeData.bed_power !== undefined ? `<div>Potencia: <span class="font-medium">${(realtimeData.bed_power * 100).toFixed(1)}%</span></div>` : ''}
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
 
                 <!-- Estado de Impresión -->
                 ${realtimeData.print_state ? `
-                <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
+                <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200" data-modal-print-info>
                     <div class="flex items-center gap-3 mb-4">
                         <div class="text-2xl">📄</div>
                         <h4 class="text-lg font-bold text-purple-900">Estado de Impresión</h4>
@@ -884,7 +904,121 @@ window.FleetCards = {
         `;
     },
 
-    // 👁️ Ocultar modal de detalles
+    // � Actualizar contenido del modal selectivamente sin afectar la lista de archivos G-code
+    updateModalContentSelectively(printer) {
+        const realtimeData = printer.realtime_data || {};
+        const statusInfo = this.getStatusInfo(printer.status);
+        
+        console.log('🔧 Actualizando modal selectivamente para:', printer.id);
+        console.log('📊 Datos de tiempo real:', realtimeData);
+        
+        // Actualizar estado general (si el elemento existe)
+        const statusElement = document.querySelector('[data-modal-status]');
+        if (statusElement) {
+            console.log('✅ Actualizando estado:', statusInfo.label);
+            statusElement.innerHTML = `
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r ${statusInfo.gradient} ${statusInfo.textClass}">
+                    ${statusInfo.icon} ${statusInfo.label}
+                </span>
+            `;
+        } else {
+            console.log('❌ Elemento [data-modal-status] no encontrado');
+        }
+        
+        // Actualizar temperaturas (si los elementos existen)
+        const extruderTempElement = document.querySelector('[data-modal-extruder-temp]');
+        if (extruderTempElement && (realtimeData.extruder_temp !== undefined || realtimeData.hotend_temp !== undefined)) {
+            const temp = realtimeData.extruder_temp || realtimeData.hotend_temp || 0;
+            const target = realtimeData.extruder_target || 0;
+            console.log(`🌡️ Actualizando temperatura extrusor: ${temp}°C → ${target}°C`);
+            extruderTempElement.textContent = `${temp.toFixed(1)}°C → ${target}°C`;
+        } else {
+            console.log('❌ Elemento [data-modal-extruder-temp] no encontrado o sin datos de temperatura');
+        }
+        
+        const bedTempElement = document.querySelector('[data-modal-bed-temp]');
+        if (bedTempElement && realtimeData.bed_temp !== undefined) {
+            const temp = realtimeData.bed_temp || 0;
+            const target = realtimeData.bed_target || 0;
+            console.log(`🛏️ Actualizando temperatura cama: ${temp}°C → ${target}°C`);
+            bedTempElement.textContent = `${temp.toFixed(1)}°C → ${target}°C`;
+        } else {
+            console.log('❌ Elemento [data-modal-bed-temp] no encontrado o sin datos de temperatura');
+        }
+        
+        // Actualizar progreso de impresión (si el elemento existe)
+        const progressElement = document.querySelector('[data-modal-progress]');
+        if (progressElement && realtimeData.progress !== undefined) {
+            const progress = realtimeData.progress || 0;
+            progressElement.innerHTML = `
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: ${progress}%"></div>
+                </div>
+                <span class="text-sm font-medium text-gray-700">${progress.toFixed(1)}%</span>
+            `;
+        }
+        
+        // Actualizar archivo actual (si el elemento existe)
+        const currentFileElement = document.querySelector('[data-modal-current-file]');
+        if (currentFileElement && realtimeData.print_filename) {
+            currentFileElement.textContent = realtimeData.print_filename;
+        }
+        
+        // Actualizar tiempo estimado (si el elemento existe)
+        const estimatedTimeElement = document.querySelector('[data-modal-estimated-time]');
+        if (estimatedTimeElement && realtimeData.estimated_time !== undefined) {
+            const hours = Math.floor(realtimeData.estimated_time / 3600);
+            const minutes = Math.floor((realtimeData.estimated_time % 3600) / 60);
+            estimatedTimeElement.textContent = `${hours}h ${minutes}m`;
+        }
+        
+        // Actualizar la sección de información de impresión actual si existe
+        const printInfoSection = document.querySelector('[data-modal-print-info]');
+        if (printInfoSection && (realtimeData.print_state === 'printing' || realtimeData.print_state === 'paused')) {
+            const progress = realtimeData.progress || 0;
+            const filename = realtimeData.print_filename || 'Archivo desconocido';
+            const estimatedTime = realtimeData.estimated_time;
+            
+            let timeDisplay = '';
+            if (estimatedTime !== undefined) {
+                const hours = Math.floor(estimatedTime / 3600);
+                const minutes = Math.floor((estimatedTime % 3600) / 60);
+                timeDisplay = `<div><span class="font-semibold text-purple-800">Tiempo Estimado:</span> <span class="text-purple-700">${hours}h ${minutes}m</span></div>`;
+            }
+            
+            printInfoSection.innerHTML = `
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="text-2xl">🖨️</div>
+                    <h4 class="text-lg font-bold text-purple-900">Impresión Actual</h4>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-purple-800">Progreso</span>
+                            <span class="text-sm font-bold text-purple-900">${progress.toFixed(1)}%</span>
+                        </div>
+                        <div class="w-full bg-purple-200 rounded-full h-3">
+                            <div class="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-500" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <div><span class="font-semibold text-purple-800">Archivo:</span> <span class="text-purple-700">${filename}</span></div>
+                        ${timeDisplay}
+                        ${realtimeData.total_duration !== undefined ? `<div><span class="font-semibold text-purple-800">Duración Total:</span> <span class="text-purple-700">${Math.floor(realtimeData.total_duration / 60)}m ${Math.floor(realtimeData.total_duration % 60)}s</span></div>` : ''}
+                        ${realtimeData.print_duration !== undefined ? `<div><span class="font-semibold text-purple-800">Duración Impresión:</span> <span class="text-purple-700">${Math.floor(realtimeData.print_duration / 60)}m ${Math.floor(realtimeData.print_duration % 60)}s</span></div>` : ''}
+                        ${realtimeData.filament_used !== undefined ? `<div><span class="font-semibold text-purple-800">Filamento Usado:</span> <span class="text-purple-700">${realtimeData.filament_used.toFixed(2)}mm</span></div>` : ''}
+                        ${realtimeData.file_position !== undefined && realtimeData.file_size !== undefined ? `<div><span class="font-semibold text-purple-800">Posición:</span> <span class="text-purple-700">${(realtimeData.file_position / 1024 / 1024).toFixed(2)}MB / ${(realtimeData.file_size / 1024 / 1024).toFixed(2)}MB</span></div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        console.log('✅ Modal actualizado selectivamente sin afectar lista de archivos');
+    },
+
+    // �👁️ Ocultar modal de detalles
     hidePrinterDetails() {
         const modal = document.getElementById('printer-details-modal');
         if (modal) {
