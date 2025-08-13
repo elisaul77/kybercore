@@ -239,7 +239,7 @@ window.FleetCards.Commands = {
             }
 
             const requestBody = {
-                action: options.action || commandType,
+                command: options.action || commandType,
                 ...Object.fromEntries(
                     Object.entries(options).filter(([key]) => 
                         !['action', 'successMessage', 'errorMessage'].includes(key)

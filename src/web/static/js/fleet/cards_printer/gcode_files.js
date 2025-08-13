@@ -23,18 +23,53 @@ window.FleetCards.GcodeFiles = {
         `;
 
         try {
-            const response = await fetch(`/api/fleet/printers/${printerId}/gcode-files`);
+            const response = await fetch(`/api/fleet/printers/${printerId}/files`);
             
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
             const data = await response.json();
-            console.log('📄 Archivos G-code obtenidos:', data);
+            console.log('📄 Respuesta de archivos G-code:', data);
+
+            // Manejar diferentes estructuras de respuesta (como en la versión backup)
+            let files = [];
+            if (data.files && data.files.result && Array.isArray(data.files.result)) {
+                files = data.files.result;
+            } else if (data.files && Array.isArray(data.files)) {
+                files = data.files;
+            } else if (data.result && Array.isArray(data.result)) {
+                files = data.result;
+            } else if (Array.isArray(data)) {
+                files = data;
+            } else {
+                console.warn('⚠️ Estructura de respuesta no reconocida:', data);
+                files = [];
+            }
+
+            console.log('📁 Archivos procesados:', files.length, 'archivos encontrados');
+            console.log('📁 Primeros 3 archivos:', files.slice(0, 3));
+
+            // Ordenar los archivos por fecha de modificación en orden descendente (más recientes primero)
+            files.sort((a, b) => {
+                // Obtener timestamps de modificación, manejando diferentes formatos
+                let dateA = a.modified || a.mod_time || a.mtime || a.date || 0;
+                let dateB = b.modified || b.mod_time || b.mtime || b.date || 0;
+                
+                // Si son strings de fecha, convertir a timestamp
+                if (typeof dateA === 'string') {
+                    dateA = new Date(dateA).getTime() / 1000; // Convertir a timestamp Unix
+                }
+                if (typeof dateB === 'string') {
+                    dateB = new Date(dateB).getTime() / 1000; // Convertir a timestamp Unix
+                }
+                
+                return dateB - dateA; // Orden descendente (más recientes primero)
+            });
 
             // Renderizar lista de archivos
-            if (data.files && data.files.length > 0) {
-                container.innerHTML = this.renderGcodeFilesList(data.files, printerId);
+            if (files && files.length > 0) {
+                container.innerHTML = this.renderGcodeFilesList(files, printerId);
             } else {
                 container.innerHTML = `
                     <div class="text-center py-6 text-gray-500">
@@ -65,15 +100,49 @@ window.FleetCards.GcodeFiles = {
     renderGcodeFilesList(files, printerId) {
         console.log('📋 Renderizando', files.length, 'archivos para impresora:', printerId);
         
-        return `
+        const html = `
             <div class="space-y-2 max-h-64 overflow-y-auto">
                 ${files.map(file => this.renderGcodeFileItem(file, printerId)).join('')}
             </div>
         `;
+        
+        // Cargar thumbnails de forma asíncrona después del renderizado
+        setTimeout(() => {
+            files.forEach(file => {
+                const filename = this.getFileName(file);
+                const thumbnailElement = document.getElementById(`thumbnail-${window.FleetCards.Utils.createSafeId(printerId)}-${window.FleetCards.Utils.createSafeId(filename)}`);
+                if (thumbnailElement && window.FleetCards.Thumbnails.loadAndShowThumbnail) {
+                    window.FleetCards.Thumbnails.loadAndShowThumbnail(printerId, filename, thumbnailElement);
+                }
+            });
+            
+            // Configurar event listeners para los botones de thumbnail
+            document.querySelectorAll('.thumbnail-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const printerId = this.getAttribute('data-printer-id');
+                    const filename = this.getAttribute('data-filename');
+                    console.log('🖼️ Botón thumbnail clickeado:', { printerId, filename });
+                    if (printerId && filename && window.FleetCards.Thumbnails.showFullThumbnail) {
+                        window.FleetCards.Thumbnails.showFullThumbnail(printerId, filename);
+                    }
+                });
+            });
+        }, 100);
+        
+        return html;
+    },
+
+    // 📄 Obtener el nombre del archivo de manera robusta
+    getFileName(file) {
+        // Manejar diferentes propiedades de nombre de archivo
+        const filename = file.name || file.filename || file.path || file.file_name || 'archivo_sin_nombre.gcode';
+        console.log('📝 Nombre de archivo obtenido:', filename, 'del objeto:', file);
+        return filename;
     },
 
     // 📄 Renderizar un elemento de archivo individual
     renderGcodeFileItem(file, printerId) {
+        const filename = this.getFileName(file);
         const fileSize = window.FleetCards.Utils.formatFileSize(file.size || 0);
         const modifiedDate = file.modified ? new Date(file.modified * 1000).toLocaleString() : 'Fecha desconocida';
         const printTime = file.estimated_time ? window.FleetCards.Utils.formatDuration(file.estimated_time) : 'Tiempo desconocido';
@@ -83,29 +152,24 @@ window.FleetCards.GcodeFiles = {
                 <div class="flex items-center gap-3">
                     <!-- Thumbnail si está disponible -->
                     <div class="flex-shrink-0">
-                        ${file.thumbnail_path ? `
-                        <button class="group relative" onclick="window.FleetCards.Thumbnails.showFullThumbnail('${printerId}', '${file.name}', '${file.thumbnail_path}')">
-                            <img src="/api/fleet/printers/${printerId}/files/thumbnail/${encodeURIComponent(file.name)}" 
-                                 alt="Vista previa de ${window.FleetCards.Utils.escapeHtml(file.name)}"
-                                 class="w-12 h-12 object-cover rounded-lg border border-gray-200 group-hover:border-emerald-300 transition-colors"
-                                 onerror="this.parentElement.innerHTML='<div class=\\'w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400\\'>📄</div>';">
+                        <button class="group relative w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 border border-gray-200 hover:border-emerald-300 transition-colors thumbnail-btn"
+                                id="thumbnail-${window.FleetCards.Utils.createSafeId(printerId)}-${window.FleetCards.Utils.createSafeId(filename)}"
+                                data-printer-id="${printerId}"
+                                data-filename="${filename}"
+                                title="Ver vista previa completa">
+                            📄
                             <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-opacity flex items-center justify-center">
                                 <span class="text-white opacity-0 group-hover:opacity-100 text-xs">🔍</span>
                             </div>
                         </button>
-                        ` : `
-                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-                            📄
-                        </div>
-                        `}
                     </div>
                     
                     <!-- Información del archivo -->
                     <div class="flex-grow min-w-0">
                         <div class="flex items-start justify-between">
                             <div class="flex-grow min-w-0">
-                                <h6 class="font-medium text-gray-900 truncate" title="${window.FleetCards.Utils.escapeHtml(file.name)}">
-                                    📄 ${window.FleetCards.Utils.escapeHtml(file.name)}
+                                <h6 class="font-medium text-gray-900 truncate" title="${window.FleetCards.Utils.escapeHtml(filename)}">
+                                    📄 ${window.FleetCards.Utils.escapeHtml(filename)}
                                 </h6>
                                 <div class="flex items-center gap-4 mt-1 text-xs text-gray-500">
                                     <span title="Tamaño del archivo">📦 ${fileSize}</span>
@@ -119,17 +183,17 @@ window.FleetCards.GcodeFiles = {
                             <!-- Botones de acción -->
                             <div class="flex items-center gap-1 ml-2">
                                 <button class="px-3 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600 transition-colors"
-                                        onclick="window.FleetCards.GcodeFiles.startPrint('${printerId}', '${file.name}')"
+                                        onclick="window.FleetCards.GcodeFiles.startPrint('${printerId}', '${filename}')"
                                         title="Iniciar impresión">
                                     ▶️ Imprimir
                                 </button>
                                 <button class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors"
-                                        onclick="window.FleetCards.GcodeFiles.downloadFile('${printerId}', '${file.name}')"
+                                        onclick="window.FleetCards.GcodeFiles.downloadFile('${printerId}', '${filename}')"
                                         title="Descargar archivo">
                                     💾
                                 </button>
                                 <button class="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
-                                        onclick="window.FleetCards.GcodeFiles.deleteFile('${printerId}', '${file.name}')"
+                                        onclick="window.FleetCards.GcodeFiles.deleteFile('${printerId}', '${filename}')"
                                         title="Eliminar archivo">
                                     🗑️
                                 </button>
@@ -174,14 +238,8 @@ window.FleetCards.GcodeFiles = {
                 window.FleetCards.Core.showToast('Iniciando impresión...', 'info');
             }
 
-            const response = await fetch(`/api/fleet/printers/${printerId}/print/start`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    filename: filename
-                })
+            const response = await fetch(`/api/fleet/printers/${printerId}/files/${encodeURIComponent(filename)}/print`, {
+                method: 'POST'
             });
 
             if (!response.ok) {

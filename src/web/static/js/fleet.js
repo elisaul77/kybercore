@@ -41,6 +41,130 @@ window.initFleetModule = async function() {
         window.cancelPrinter = window.FleetCommands.cancelPrinter;
     }
     
+    // 🎴 Exponer funciones del sistema de tarjetas globalmente
+    if (window.FleetCards) {
+        // Funciones principales para botones de tarjetas
+        window.showPrinterDetails = function(printerId) {
+            console.log('🔍 Mostrando detalles de impresora:', printerId);
+            if (window.FleetCards.showPrinterDetails) {
+                return window.FleetCards.showPrinterDetails(printerId);
+            } else {
+                console.error('❌ FleetCards.showPrinterDetails no disponible');
+            }
+        };
+        
+        window.hidePrinterDetails = function() {
+            console.log('❌ Ocultando detalles de impresora');
+            if (window.FleetCards.hidePrinterDetails) {
+                return window.FleetCards.hidePrinterDetails();
+            } else {
+                console.error('❌ FleetCards.hidePrinterDetails no disponible');
+            }
+        };
+        
+        // Funciones de comandos para tarjetas
+        window.pausePrint = function(printerId) {
+            console.log('⏸️ Pausando impresión:', printerId);
+            if (window.FleetCards.sendPrinterCommand) {
+                return window.FleetCards.sendPrinterCommand(printerId, 'pause');
+            } else {
+                console.error('❌ FleetCards.sendPrinterCommand no disponible');
+            }
+        };
+        
+        window.resumePrint = function(printerId) {
+            console.log('▶️ Reanudando impresión:', printerId);
+            if (window.FleetCards.sendPrinterCommand) {
+                return window.FleetCards.sendPrinterCommand(printerId, 'resume');
+            } else {
+                console.error('❌ FleetCards.sendPrinterCommand no disponible');
+            }
+        };
+        
+        window.cancelPrint = function(printerId) {
+            console.log('❌ Cancelando impresión:', printerId);
+            if (window.FleetCards.sendPrinterCommand) {
+                return window.FleetCards.sendPrinterCommand(printerId, 'cancel');
+            } else {
+                console.error('❌ FleetCards.sendPrinterCommand no disponible');
+            }
+        };
+        
+        window.homeAxes = function(printerId, axis = 'xyz') {
+            console.log('🏠 Home de ejes:', printerId, axis);
+            if (window.FleetCards.sendPrinterCommand) {
+                return window.FleetCards.sendPrinterCommand(printerId, 'home', { axis });
+            } else {
+                console.error('❌ FleetCards.sendPrinterCommand no disponible');
+            }
+        };
+        
+        window.restartKlipper = function(printerId) {
+            console.log('🔄 Reiniciando Klipper:', printerId);
+            if (window.FleetCards.sendPrinterCommand) {
+                return window.FleetCards.sendPrinterCommand(printerId, 'restart_klipper');
+            } else {
+                console.error('❌ FleetCards.sendPrinterCommand no disponible');
+            }
+        };
+        
+        window.restartFirmware = function(printerId) {
+            console.log('⚡ Reiniciando firmware:', printerId);
+            if (window.FleetCards.sendPrinterCommand) {
+                return window.FleetCards.sendPrinterCommand(printerId, 'restart_firmware');
+            } else {
+                console.error('❌ FleetCards.sendPrinterCommand no disponible');
+            }
+        };
+        
+        // Funciones de archivos G-code
+        window.startGcodePrint = function(printerId, filename) {
+            console.log('🖨️ Iniciando impresión:', printerId, filename);
+            if (window.FleetCards.startGcodePrint) {
+                return window.FleetCards.startGcodePrint(printerId, filename);
+            } else {
+                console.error('❌ FleetCards.startGcodePrint no disponible');
+            }
+        };
+        
+        window.deleteGcodeFile = function(printerId, filename) {
+            console.log('🗑️ Eliminando archivo:', printerId, filename);
+            if (window.FleetCards.deleteGcodeFile) {
+                return window.FleetCards.deleteGcodeFile(printerId, filename);
+            } else {
+                console.error('❌ FleetCards.deleteGcodeFile no disponible');
+            }
+        };
+        
+        window.showFileUploadDialog = function(printerId) {
+            console.log('📁 Mostrando diálogo de subida:', printerId);
+            if (window.FleetCards.showFileUploadDialog) {
+                return window.FleetCards.showFileUploadDialog(printerId);
+            } else {
+                console.error('❌ FleetCards.showFileUploadDialog no disponible');
+            }
+        };
+        
+        window.showGcodeThumbnails = function(printerId, filename) {
+            console.log('🖼️ Mostrando thumbnails:', printerId, filename);
+            if (window.FleetCards.showGcodeThumbnails) {
+                return window.FleetCards.showGcodeThumbnails(printerId, filename);
+            } else {
+                console.error('❌ FleetCards.showGcodeThumbnails no disponible');
+            }
+        };
+        
+        // Función para eliminar impresora desde tarjetas
+        window.deleteFleetPrinter = function(printerId) {
+            console.log('🗑️ Eliminando impresora desde tarjeta:', printerId);
+            if (window.FleetCards.deletePrinter) {
+                return window.FleetCards.deletePrinter(printerId);
+            } else {
+                console.error('❌ FleetCards.deletePrinter no disponible');
+            }
+        };
+    }
+    
     // Verificar disponibilidad de elementos DOM críticos
     const tbody = document.getElementById('fleet-printers');
     console.log('🔍 tbody disponible:', !!tbody);
@@ -70,7 +194,82 @@ window.initFleetModule = async function() {
         // 2. Inicializar sistema de tarjetas
         if (window.FleetCards && window.FleetCards.init) {
             console.log('🎴 Inicializando sistema de tarjetas...');
-            window.FleetCards.init();
+            const cardsInitResult = window.FleetCards.init();
+            
+            // Después de inicializar las tarjetas, asegurar que las funciones globales estén disponibles
+            if (cardsInitResult) {
+                console.log('🔗 Exponiendo funciones globales de tarjetas...');
+                
+                // Re-exponer funciones globales después de la inicialización exitosa
+                window.showPrinterDetails = function(printerId) {
+                    console.log('🔍 Mostrando detalles de impresora:', printerId);
+                    return window.FleetCards.showPrinterDetails(printerId);
+                };
+                
+                window.hidePrinterDetails = function() {
+                    console.log('❌ Ocultando detalles de impresora');
+                    return window.FleetCards.hidePrinterDetails();
+                };
+                
+                window.pausePrint = function(printerId) {
+                    console.log('⏸️ Pausando impresión:', printerId);
+                    return window.FleetCards.sendPrinterCommand(printerId, 'pause');
+                };
+                
+                window.resumePrint = function(printerId) {
+                    console.log('▶️ Reanudando impresión:', printerId);
+                    return window.FleetCards.sendPrinterCommand(printerId, 'resume');
+                };
+                
+                window.cancelPrint = function(printerId) {
+                    console.log('❌ Cancelando impresión:', printerId);
+                    return window.FleetCards.sendPrinterCommand(printerId, 'cancel');
+                };
+                
+                window.homeAxes = function(printerId, axis = 'xyz') {
+                    console.log('🏠 Home de ejes:', printerId, axis);
+                    return window.FleetCards.sendPrinterCommand(printerId, 'home', { axis });
+                };
+                
+                window.restartKlipper = function(printerId) {
+                    console.log('🔄 Reiniciando Klipper:', printerId);
+                    return window.FleetCards.sendPrinterCommand(printerId, 'restart_klipper');
+                };
+                
+                window.restartFirmware = function(printerId) {
+                    console.log('⚡ Reiniciando firmware:', printerId);
+                    return window.FleetCards.sendPrinterCommand(printerId, 'restart_firmware');
+                };
+                
+                window.startGcodePrint = function(printerId, filename) {
+                    console.log('🖨️ Iniciando impresión:', printerId, filename);
+                    return window.FleetCards.startGcodePrint(printerId, filename);
+                };
+                
+                window.deleteGcodeFile = function(printerId, filename) {
+                    console.log('🗑️ Eliminando archivo:', printerId, filename);
+                    return window.FleetCards.deleteGcodeFile(printerId, filename);
+                };
+                
+                window.showFileUploadDialog = function(printerId) {
+                    console.log('📁 Mostrando diálogo de subida:', printerId);
+                    return window.FleetCards.showFileUploadDialog(printerId);
+                };
+                
+                window.showGcodeThumbnails = function(printerId, filename) {
+                    console.log('🖼️ Mostrando thumbnails:', printerId, filename);
+                    return window.FleetCards.showGcodeThumbnails(printerId, filename);
+                };
+                
+                window.deleteFleetPrinter = function(printerId) {
+                    console.log('🗑️ Eliminando impresora desde tarjeta:', printerId);
+                    return window.FleetCards.deletePrinter(printerId);
+                };
+                
+                console.log('✅ Funciones globales de tarjetas expuestas correctamente');
+            } else {
+                console.error('❌ Error al inicializar sistema de tarjetas');
+            }
         }
         
         // 3. Inicializar comandos masivos (después de un breve delay para permitir carga de datos)
