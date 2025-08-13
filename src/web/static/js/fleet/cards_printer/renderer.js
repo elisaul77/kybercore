@@ -411,11 +411,11 @@ window.FleetCards.Renderer = {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div class="space-y-2">
                             <div><span class="font-semibold text-purple-800">Estado:</span> 
-                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${window.FleetCards.Utils.getStatusInfo(realtimeData.print_state).bgClass} ${window.FleetCards.Utils.getStatusInfo(realtimeData.print_state).textClass}">
-                                    ${window.FleetCards.Utils.getStatusInfo(realtimeData.print_state).icon} ${realtimeData.print_state}
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${window.FleetCards.Utils.getStatusInfo(realtimeData.print_state).bgClass} ${window.FleetCards.Utils.getStatusInfo(realtimeData.print_state).textClass}" data-modal-print-state>
+                                    ${window.FleetCards.Utils.getStatusInfo(realtimeData.print_state).icon} ${window.FleetCards.Utils.getStatusInfo(realtimeData.print_state).label}
                                 </span>
                             </div>
-                            <div><span class="font-semibold text-purple-800">Archivo:</span> <span class="text-purple-700 font-mono text-xs">${realtimeData.print_filename || 'Ninguno'}</span></div>
+                            <div><span class="font-semibold text-purple-800">Archivo:</span> <span class="text-purple-700 font-mono text-xs" data-modal-print-filename>${realtimeData.print_filename || 'Ninguno'}</span></div>
                             <div><span class="font-semibold text-purple-800">Progreso:</span> 
                                 <div class="mt-1">
                                     <div class="w-full bg-purple-200 rounded-full h-2">
@@ -426,9 +426,9 @@ window.FleetCards.Renderer = {
                             </div>
                         </div>
                         <div class="space-y-2">
-                            ${realtimeData.print_total_duration !== undefined ? `<div><span class="font-semibold text-purple-800">Duración Total:</span> <span class="text-purple-700">${window.FleetCards.Utils.formatDuration(realtimeData.print_total_duration)}</span></div>` : ''}
-                            ${realtimeData.print_duration !== undefined ? `<div><span class="font-semibold text-purple-800">Duración Impresión:</span> <span class="text-purple-700">${window.FleetCards.Utils.formatDuration(realtimeData.print_duration)}</span></div>` : ''}
-                            ${realtimeData.filament_used !== undefined ? `<div><span class="font-semibold text-purple-800">Filamento Usado:</span> <span class="text-purple-700">${realtimeData.filament_used.toFixed(2)}mm</span></div>` : ''}
+                            ${realtimeData.print_total_duration !== undefined ? `<div><span class="font-semibold text-purple-800">Duración Total:</span> <span class="text-purple-700" data-modal-total-duration>${window.FleetCards.Utils.formatDuration(realtimeData.print_total_duration)}</span></div>` : ''}
+                            ${realtimeData.print_duration !== undefined ? `<div><span class="font-semibold text-purple-800">Duración Impresión:</span> <span class="text-purple-700" data-modal-print-duration>${window.FleetCards.Utils.formatDuration(realtimeData.print_duration)}</span></div>` : ''}
+                            ${realtimeData.filament_used !== undefined ? `<div><span class="font-semibold text-purple-800">Filamento Usado:</span> <span class="text-purple-700" data-modal-filament-used>${(realtimeData.filament_used / 1000).toFixed(2)}mm</span></div>` : ''}
                         </div>
                     </div>
                 </div>
@@ -582,11 +582,54 @@ window.FleetCards.Renderer = {
                 progressTextElement.textContent = `${progress.toFixed(1)}%`;
                 console.log('✅ Texto de progreso actualizado a:', progress.toFixed(1) + '%');
             }
+            
+            // Actualizar información del archivo actual y duraciones
+            this.updatePrintJobInfo(realtimeData);
         } else {
             console.log('ℹ️ Impresora no está imprimiendo, omitiendo actualización de progreso');
         }
         
         console.log('✅ Modal actualizado selectivamente sin afectar lista de archivos');
+    },
+
+    // 🔄 Actualizar información específica del trabajo de impresión
+    updatePrintJobInfo(realtimeData) {
+        // Actualizar estado de impresión
+        const printStateElement = document.querySelector('[data-modal-print-state]');
+        if (printStateElement && realtimeData.print_state) {
+            const stateInfo = window.FleetCards.Utils.getStatusInfo(realtimeData.print_state);
+            printStateElement.innerHTML = `${stateInfo.icon} ${stateInfo.label}`;
+            printStateElement.className = `inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${stateInfo.bgClass} ${stateInfo.textClass}`;
+            console.log('✅ Estado de impresión actualizado a:', realtimeData.print_state, '->', stateInfo.label);
+        }
+        
+        // Actualizar archivo actual
+        const printFilenameElement = document.querySelector('[data-modal-print-filename]');
+        if (printFilenameElement && realtimeData.print_filename) {
+            printFilenameElement.textContent = realtimeData.print_filename;
+            console.log('✅ Archivo actualizado a:', realtimeData.print_filename);
+        }
+        
+        // Actualizar duración total
+        const totalDurationElement = document.querySelector('[data-modal-total-duration]');
+        if (totalDurationElement && realtimeData.print_total_duration !== undefined) {
+            totalDurationElement.textContent = window.FleetCards.Utils.formatDuration(realtimeData.print_total_duration);
+            console.log('✅ Duración total actualizada a:', window.FleetCards.Utils.formatDuration(realtimeData.print_total_duration));
+        }
+        
+        // Actualizar duración de impresión
+        const printDurationElement = document.querySelector('[data-modal-print-duration]');
+        if (printDurationElement && realtimeData.print_duration !== undefined) {
+            printDurationElement.textContent = window.FleetCards.Utils.formatDuration(realtimeData.print_duration);
+            console.log('✅ Duración de impresión actualizada a:', window.FleetCards.Utils.formatDuration(realtimeData.print_duration));
+        }
+        
+        // Actualizar filamento usado
+        const filamentElement = document.querySelector('[data-modal-filament-used]');
+        if (filamentElement && realtimeData.filament_used !== undefined) {
+            filamentElement.textContent = `${(realtimeData.filament_used / 1000).toFixed(2)}mm`;
+            console.log('✅ Filamento usado actualizado a:', `${(realtimeData.filament_used / 1000).toFixed(2)}mm`);
+        }
     },
 
     // 👁️ Ocultar modal de detalles
