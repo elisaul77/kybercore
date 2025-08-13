@@ -159,7 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Initialize module-specific JavaScript
             if (moduleId === 'fleet') {
                 if (typeof initFleetModule === 'function') {
-                    initFleetModule();
+                    console.log('Inicializando módulo de flota...');
+                    setTimeout(initFleetModule, 100); // Pequeño delay para asegurar que el DOM esté listo
                 }
             }
             

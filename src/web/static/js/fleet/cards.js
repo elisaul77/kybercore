@@ -330,3 +330,31 @@ window.debugFleetCards = function() {
 
 console.log('🎴 Sistema de tarjetas modular cargado');
 console.log('💡 Ejecuta window.debugFleetCards() para información de debug');
+
+// 🔍 Diagnóstico automático después de cargar
+setTimeout(() => {
+    console.log('🩺 DIAGNÓSTICO AUTOMÁTICO DEL SISTEMA DE TARJETAS:');
+    console.log('- window.FleetCards:', !!window.FleetCards);
+    
+    if (window.FleetCards) {
+        const modules = ['Core', 'Utils', 'Renderer', 'GcodeFiles', 'Thumbnails', 'Commands'];
+        modules.forEach(module => {
+            console.log(`- ${module}:`, !!window.FleetCards[module]);
+        });
+    }
+    
+    // Verificar funciones globales
+    const globalFunctions = ['showPrinterDetails', 'pausePrint', 'resumePrint', 'cancelPrint'];
+    globalFunctions.forEach(func => {
+        console.log(`- ${func}:`, !!window[func]);
+    });
+    
+    // Verificar elementos DOM
+    const elements = ['cards-view', 'table-view', 'printer-details-modal'];
+    elements.forEach(id => {
+        const element = document.getElementById(id);
+        console.log(`- #${id}:`, !!element);
+    });
+    
+    console.log('📝 Para test completo ejecuta: window.debugFleetCards()');
+}, 2000);

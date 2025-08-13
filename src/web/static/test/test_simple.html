@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Simple - Sistema de Tarjetas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">🧪 Test Simple del Sistema de Tarjetas</h1>
+        
+        <!-- Elementos necesarios para el sistema -->
+        <div id="cards-view" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <p class="col-span-full text-center text-gray-500">Las tarjetas aparecerán aquí...</p>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-semibold mb-4">Controles de Test</h2>
+            <div class="space-x-2">
+                <button onclick="testShowDetails()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    Test showPrinterDetails('test-1')
+                </button>
+                <button onclick="testPausePrint()" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+                    Test pausePrint('test-1')
+                </button>
+                <button onclick="runDebug()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                    Run debugFleetCards()
+                </button>
+                <button onclick="initCards()" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">
+                    Init FleetCards
+                </button>
+            </div>
+        </div>
+        
+        <div class="bg-black text-green-400 p-4 rounded font-mono text-sm h-64 overflow-y-auto">
+            <div id="console-output">Abre la consola del navegador (F12) para ver todos los logs</div>
+        </div>
+    </div>
+
+    <!-- Modal de detalles de impresora -->
+    <div id="printer-details-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white rounded-2xl p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="modal-printer-title" class="text-2xl font-bold">Detalles de Impresora</h2>
+                <button id="close-printer-modal" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <div id="modal-printer-content">
+                Contenido del modal aparecerá aquí...
+            </div>
+        </div>
+    </div>
+
+    <!-- Cargar módulos en orden -->
+    <script src="/static/js/fleet/cards_printer/core.js"></script>
+    <script src="/static/js/fleet/cards_printer/utils.js"></script>
+    <script src="/static/js/fleet/cards_printer/renderer.js"></script>
+    <script src="/static/js/fleet/cards_printer/gcode_files.js"></script>
+    <script src="/static/js/fleet/cards_printer/thumbnails.js"></script>
+    <script src="/static/js/fleet/cards_printer/commands.js"></script>
+    <script src="/static/js/fleet/cards.js"></script>
+
+    <script>
+        // Funciones de test
+        function testShowDetails() {
+            console.log('🧪 Testing showPrinterDetails...');
+            if (window.showPrinterDetails) {
+                window.showPrinterDetails('test-printer-1');
+            } else {
+                console.error('❌ showPrinterDetails no disponible');
+                alert('showPrinterDetails no disponible');
+            }
+        }
+        
+        function testPausePrint() {
+            console.log('🧪 Testing pausePrint...');
+            if (window.pausePrint) {
+                window.pausePrint('test-printer-1');
+            } else {
+                console.error('❌ pausePrint no disponible');
+                alert('pausePrint no disponible');
+            }
+        }
+        
+        function runDebug() {
+            console.log('🧪 Running debugFleetCards...');
+            if (window.debugFleetCards) {
+                window.debugFleetCards();
+            } else {
+                console.error('❌ debugFleetCards no disponible');
+                alert('debugFleetCards no disponible');
+            }
+        }
+        
+        function initCards() {
+            console.log('🧪 Initializing FleetCards...');
+            if (window.FleetCards && window.FleetCards.init) {
+                const result = window.FleetCards.init();
+                console.log('Init result:', result);
+                alert('Init result: ' + result);
+            } else {
+                console.error('❌ FleetCards.init no disponible');
+                alert('FleetCards.init no disponible');
+            }
+        }
+        
+        // Inicialización automática después de cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOM loaded, esperando 1 segundo antes de inicializar...');
+            
+            setTimeout(() => {
+                console.log('🎯 Intentando inicializar FleetCards...');
+                if (window.FleetCards && window.FleetCards.init) {
+                    const result = window.FleetCards.init();
+                    console.log('✅ FleetCards inicializado:', result);
+                    
+                    // Exponer funciones globales después de la inicialización
+                    if (result && window.FleetCards) {
+                        window.showPrinterDetails = function(printerId) {
+                            console.log('🔍 Llamando showPrinterDetails:', printerId);
+                            return window.FleetCards.showPrinterDetails(printerId);
+                        };
+                        
+                        window.pausePrint = function(printerId) {
+                            console.log('⏸️ Llamando pausePrint:', printerId);
+                            return window.FleetCards.sendPrinterCommand(printerId, 'pause');
+                        };
+                        
+                        console.log('✅ Funciones globales expuestas');
+                    }
+                } else {
+                    console.error('❌ FleetCards.init no disponible');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

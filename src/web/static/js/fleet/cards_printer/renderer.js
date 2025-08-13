@@ -221,6 +221,20 @@ window.FleetCards.Renderer = {
 
     // 🌐 Obtener datos de impresora directamente de la API
     async fetchPrinterDataAndShowModal(printerId) {
+        // Prevenir bucles infinitos - verificar si ya se está cargando esta impresora
+        if (this._loadingPrinters && this._loadingPrinters.has(printerId)) {
+            console.log('⚠️ Ya se está cargando datos para la impresora:', printerId);
+            return;
+        }
+        
+        // Inicializar conjunto de impresoras en carga si no existe
+        if (!this._loadingPrinters) {
+            this._loadingPrinters = new Set();
+        }
+        
+        // Marcar como en proceso de carga
+        this._loadingPrinters.add(printerId);
+        
         console.log('🌐 Obteniendo datos de impresora desde API:', printerId);
         
         try {
@@ -243,14 +257,38 @@ window.FleetCards.Renderer = {
                 }
             }
             
-            // Mostrar modal con datos actualizados
-            this.showPrinterDetails(printerId);
+            // Mostrar modal directamente con datos actualizados
+            const modal = document.getElementById('printer-details-modal');
+            const modalTitle = document.getElementById('modal-printer-title');
+            const modalContent = document.getElementById('modal-printer-content');
+            
+            if (modal && modalTitle && modalContent && printer) {
+                modalTitle.textContent = `Detalles de ${printer.name}`;
+                modalContent.innerHTML = this.renderPrinterDetailContent(printer);
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                
+                // Cargar archivos G-code después de mostrar el modal
+                if (window.FleetCards.GcodeFiles) {
+                    window.FleetCards.GcodeFiles.loadPrinterGcodeFiles(printerId);
+                }
+                
+                console.log('✅ Modal de detalles mostrado con datos de API');
+            } else {
+                console.error('❌ No se pudieron mostrar los datos obtenidos de la API');
+                if (window.FleetCards.Core) {
+                    window.FleetCards.Core.showToast('Error: No se pudo mostrar el modal', 'error');
+                }
+            }
             
         } catch (error) {
             console.error('❌ Error obteniendo datos de impresora:', error);
             if (window.FleetCards.Core) {
                 window.FleetCards.Core.showToast(`Error: No se pudieron obtener los datos de la impresora: ${error.message}`, 'error');
             }
+        } finally {
+            // Limpiar el estado de carga
+            this._loadingPrinters.delete(printerId);
         }
     },
 
@@ -494,48 +532,58 @@ window.FleetCards.Renderer = {
         console.log('📊 Datos de tiempo real:', realtimeData);
         console.log('📈 Progreso calculado:', progress + '%');
         
-        // Actualizar estado general (si el elemento existe)
+        // Verificar si los elementos básicos del modal existen
         const statusElement = document.querySelector('[data-modal-status]');
+        const extruderTempElement = document.querySelector('[data-modal-extruder-temp]');
+        const bedTempElement = document.querySelector('[data-modal-bed-temp]');
+        
+        // Si no existen elementos básicos, significa que el modal necesita ser regenerado completamente
+        if (!statusElement || !extruderTempElement || !bedTempElement) {
+            console.log('⚠️ Elementos básicos del modal no encontrados, regenerando modal completo...');
+            this.fetchPrinterDataAndShowModal(printer.id);
+            return;
+        }
+        
+        // Actualizar estado general
         if (statusElement) {
             statusElement.innerHTML = `${statusInfo.icon} ${statusInfo.label}`;
             statusElement.className = `inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusInfo.bgClass} ${statusInfo.textClass}`;
-        } else {
-            console.log('⚠️ Elemento de estado no encontrado');
         }
         
-        // Actualizar temperaturas (si los elementos existen)
-        const extruderTempElement = document.querySelector('[data-modal-extruder-temp]');
+        // Actualizar temperaturas
         if (extruderTempElement) {
             extruderTempElement.innerHTML = `${temperatures.extruder.current}°C → ${temperatures.extruder.target}°C`;
             extruderTempElement.className = `text-2xl font-bold ${window.FleetCards.Utils.getTempClass(temperatures.extruder.current)} text-orange-700`;
-        } else {
-            console.log('⚠️ Elemento de temperatura del extrusor no encontrado');
         }
         
-        const bedTempElement = document.querySelector('[data-modal-bed-temp]');
         if (bedTempElement) {
             bedTempElement.innerHTML = `${temperatures.bed.current}°C → ${temperatures.bed.target}°C`;
             bedTempElement.className = `text-2xl font-bold ${window.FleetCards.Utils.getTempClass(temperatures.bed.current)} text-orange-700`;
-        } else {
-            console.log('⚠️ Elemento de temperatura de la cama no encontrado');
         }
         
-        // Actualizar progreso de impresión (si los elementos existen)
-        const progressBarElement = document.querySelector('[data-modal-progress-bar]');
-        const progressTextElement = document.querySelector('[data-modal-progress-text]');
-        
-        if (progressBarElement) {
-            progressBarElement.style.width = `${progress}%`;
-            console.log('✅ Barra de progreso actualizada a:', progress + '%');
+        // Actualizar progreso de impresión (solo si la impresora está imprimiendo)
+        if (realtimeData.print_state && (realtimeData.print_state === 'printing' || realtimeData.print_state === 'paused')) {
+            const progressBarElement = document.querySelector('[data-modal-progress-bar]');
+            const progressTextElement = document.querySelector('[data-modal-progress-text]');
+            
+            // Si la impresora está imprimiendo pero no hay elementos de progreso, regenerar modal
+            if (!progressBarElement || !progressTextElement) {
+                console.log('⚠️ Impresora está imprimiendo pero faltan elementos de progreso, regenerando modal...');
+                this.fetchPrinterDataAndShowModal(printer.id);
+                return;
+            }
+            
+            if (progressBarElement) {
+                progressBarElement.style.width = `${progress}%`;
+                console.log('✅ Barra de progreso actualizada a:', progress + '%');
+            }
+            
+            if (progressTextElement) {
+                progressTextElement.textContent = `${progress.toFixed(1)}%`;
+                console.log('✅ Texto de progreso actualizado a:', progress.toFixed(1) + '%');
+            }
         } else {
-            console.log('⚠️ Elemento de barra de progreso no encontrado');
-        }
-        
-        if (progressTextElement) {
-            progressTextElement.textContent = `${progress.toFixed(1)}%`;
-            console.log('✅ Texto de progreso actualizado a:', progress.toFixed(1) + '%');
-        } else {
-            console.log('⚠️ Elemento de texto de progreso no encontrado');
+            console.log('ℹ️ Impresora no está imprimiendo, omitiendo actualización de progreso');
         }
         
         console.log('✅ Modal actualizado selectivamente sin afectar lista de archivos');

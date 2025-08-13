@@ -53,6 +53,9 @@ window.FleetCards.Core = {
                 window.FleetCards.Renderer.renderCards(printers);
             }
         }
+        
+        console.log('✅ Sistema de tarjetas inicializado correctamente');
+        return true;
     },
 
     // 🔄 Configurar alternancia entre vista de tarjetas y tabla
@@ -106,9 +109,9 @@ window.FleetCards.Core = {
             if (!button) return;
 
             const action = button.dataset.action;
-            const printerId = button.dataset.printerId;
+            const printerId = button.dataset.printerId; // data-printer-id → printerId
             
-            console.log('🎯 Evento de click capturado:', { action, printerId, button });
+            console.log('🎯 Evento de click capturado:', { action, printerId, button, dataset: button.dataset });
 
             switch (action) {
                 case 'show-details':
@@ -117,18 +120,43 @@ window.FleetCards.Core = {
                     }
                     break;
                 case 'pause':
+                    if (window.FleetCards.Commands && window.FleetCards.Commands.pausePrint) {
+                        window.FleetCards.Commands.pausePrint(printerId);
+                    }
+                    break;
                 case 'resume':
+                    if (window.FleetCards.Commands && window.FleetCards.Commands.resumePrint) {
+                        window.FleetCards.Commands.resumePrint(printerId);
+                    }
+                    break;
                 case 'cancel':
+                    if (window.FleetCards.Commands && window.FleetCards.Commands.cancelPrint) {
+                        window.FleetCards.Commands.cancelPrint(printerId);
+                    }
+                    break;
                 case 'home':
+                    if (window.FleetCards.Commands && window.FleetCards.Commands.homeAxes) {
+                        window.FleetCards.Commands.homeAxes(printerId, 'xyz');
+                    }
+                    break;
                 case 'restart-klipper':
+                    if (window.FleetCards.Commands && window.FleetCards.Commands.restartKlipper) {
+                        window.FleetCards.Commands.restartKlipper(printerId);
+                    }
+                    break;
                 case 'restart-firmware':
-                    if (window.FleetCards.Commands) {
-                        window.FleetCards.Commands.sendPrinterCommand(printerId, action);
+                    if (window.FleetCards.Commands && window.FleetCards.Commands.restartFirmware) {
+                        window.FleetCards.Commands.restartFirmware(printerId);
                     }
                     break;
                 case 'delete':
-                    if (window.FleetCards.Commands) {
-                        window.FleetCards.Commands.deletePrinter(printerId);
+                    // Usar el método deletePrinter del integrador principal
+                    if (window.FleetCards && window.FleetCards.deletePrinter) {
+                        window.FleetCards.deletePrinter(printerId);
+                    } else if (window.deleteFleetPrinter) {
+                        window.deleteFleetPrinter(printerId);
+                    } else {
+                        console.error('❌ Método deletePrinter no disponible');
                     }
                     break;
                 default:
@@ -254,6 +282,47 @@ window.FleetCards.Core = {
         }
         
         console.log('✅ Test de modal ejecutado');
+    },
+
+    // 🔄 Cargar datos de la flota desde el sistema principal
+    async loadFleetData() {
+        console.log('🔄 Cargando datos de la flota...');
+        
+        try {
+            // Intentar usar el sistema principal de datos
+            if (window.FleetData && window.FleetData.loadRealData) {
+                return await window.FleetData.loadRealData();
+            }
+            
+            // Fallback: cargar directamente desde la API
+            const response = await fetch('/api/fleet/printers');
+            if (!response.ok) {
+                throw new Error('Error al cargar datos de impresoras: ' + response.status);
+            }
+            
+            const data = await response.json();
+            const printers = data.printers || [];
+            
+            // Actualizar estado global si existe
+            if (window.FleetState) {
+                window.FleetState.printers = printers;
+            }
+            
+            // Renderizar tarjetas si hay datos
+            if (printers.length > 0 && window.FleetCards.Renderer) {
+                window.FleetCards.Renderer.renderCards(printers);
+            }
+            
+            console.log('✅ Datos de flota cargados:', printers.length, 'impresoras');
+            return true;
+            
+        } catch (error) {
+            console.error('❌ Error cargando datos de la flota:', error);
+            if (this.showToast) {
+                this.showToast('❌ Error cargando datos de impresoras', 'error');
+            }
+            return false;
+        }
     }
 };
 
