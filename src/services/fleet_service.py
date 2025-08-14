@@ -759,5 +759,27 @@ class FleetService:
             logger.error(f"Error obteniendo thumbnails de {filename} en {printer.name}: {e}")
             raise
 
+    async def download_printer_gcode_file(self, printer_id: str, filename: str):
+        """Descarga un archivo G-code de una impresora específica."""
+        printer = self.printers.get(printer_id)
+        if not printer:
+            raise ValueError(f"Impresora {printer_id} no encontrada")
+        
+        try:
+            ip, port = self._parse_ip_port(printer.ip)
+            session = await self._get_session()
+            client = MoonrakerClient(ip, port, session)
+            
+            file_content = await client.download_gcode_file(filename)
+            if file_content is None:
+                raise ValueError(f"No se pudo descargar el archivo {filename}")
+            
+            logger.info(f"✅ Archivo {filename} descargado desde {printer.name}")
+            return file_content
+            
+        except Exception as e:
+            logger.error(f"Error descargando archivo {filename} desde {printer.name}: {e}")
+            raise
+
 # Instancia global del servicio
 fleet_service = FleetService()

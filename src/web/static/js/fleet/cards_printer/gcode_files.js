@@ -236,7 +236,8 @@ window.FleetCards.GcodeFiles = {
         console.log('💾 Descargando archivo:', filename, 'de impresora:', printerId);
         
         try {
-            const url = `/api/fleet/printers/${printerId}/files/download/${encodeURIComponent(filename)}`;
+            // Usar el mismo patrón que otros endpoints: /files/{filename}
+            const url = `/api/fleet/printers/${printerId}/files/${encodeURIComponent(filename)}`;
             
             // Crear elemento de descarga temporal
             const link = document.createElement('a');
