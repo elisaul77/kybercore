@@ -129,8 +129,14 @@ class MoonrakerClient:
             async with self._session.get(f"{self.base_url}/server/files/list?root=gcodes") as response:
                 response.raise_for_status()
                 files_data = await response.json()
-                logger.info(f"Archivos G-code obtenidos: {len(files_data)} archivos")
-                return files_data
+                
+                if 'result' in files_data:
+                    files = files_data['result']
+                else:
+                    files = files_data
+                    
+                logger.info(f"Archivos G-code obtenidos: {len(files)} archivos")
+                return files
         except aiohttp.ClientError as e:
             logger.error(f"Error al listar archivos G-code: {e}")
             return []

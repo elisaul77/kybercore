@@ -627,7 +627,35 @@ class FleetService:
             
             files = await client.list_gcode_files()
             logger.info(f"Archivos G-code listados para {printer.name}: {len(files)} archivos")
-            return files
+            
+            # Enriquecer con metadatos
+            enriched_files = []
+            for f in files:
+                try:
+                    filename = f.get('path')  # La clave correcta es 'path', no 'filename'
+                    if not filename:
+                        continue
+                        
+                    metadata = await client.get_gcode_metadata(filename)
+                    estimated_time = None
+                    
+                    if metadata and 'result' in metadata:
+                        estimated_time = metadata['result'].get('estimated_time')
+                    
+                    enriched_files.append({
+                        **f,
+                        'filename': filename,  # Añadir 'filename' para compatibilidad
+                        'estimated_time': estimated_time
+                    })
+                except Exception as e:
+                    logger.warning(f"Error obteniendo metadatos para archivo: {e}")
+                    enriched_files.append({
+                        **f,
+                        'filename': f.get('path', 'unknown'),
+                        'estimated_time': None
+                    })
+            
+            return enriched_files
             
         except Exception as e:
             logger.error(f"Error listando archivos G-code para {printer.name}: {e}")

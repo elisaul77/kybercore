@@ -35,10 +35,17 @@ window.FleetCards.GcodeFiles = {
             const data = await res.json();
 
             let files = [];
-            if (data.files?.result && Array.isArray(data.files.result)) files = data.files.result;
-            else if (Array.isArray(data.files)) files = data.files;
-            else if (Array.isArray(data.result)) files = data.result;
-            else if (Array.isArray(data)) files = data;
+            if (data.files && Array.isArray(data.files)) {
+                files = data.files.map(file => ({
+                    ...file,
+                    estimated_time: file.estimated_time || 'Tiempo desconocido'
+                }));
+            } else if (Array.isArray(data.result)) {
+                files = data.result.map(file => ({
+                    ...file,
+                    estimated_time: file.estimated_time || 'Tiempo desconocido'
+                }));
+            }
 
             this.allFiles = files;
             this.totalFiles = files.length;
