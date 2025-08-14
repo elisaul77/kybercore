@@ -4,17 +4,24 @@
 window.FleetCards = window.FleetCards || {};
 
 window.FleetCards.GcodeFiles = {
+    // Estado de paginación y filtros
+    pageSize: 10,
+    currentPage: 1,
+    totalFiles: 0,
+    allFiles: [],
+    filteredFiles: [],
+    currentPrinterId: null,
+    sortOrder: 'date_desc', // name_asc, name_desc, date_asc, date_desc
+    searchTerm: '',
+
     // 📁 Cargar archivos G-code de una impresora
     async loadPrinterGcodeFiles(printerId) {
-        console.log('📁 Cargando archivos G-code para impresora:', printerId);
-        
-        const container = document.getElementById(`gcode-files-${printerId}`);
-        if (!container) {
-            console.warn('⚠️ No se encontró contenedor de archivos para:', printerId);
-            return;
-        }
+        this.currentPrinterId = printerId;
+        this.currentPage = 1;
 
-        // Mostrar loading
+        const container = document.getElementById(`gcode-files-${printerId}`);
+        if (!container) return;
+
         container.innerHTML = `
             <div class="flex items-center justify-center py-4 text-gray-500">
                 <div class="animate-spin w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full mr-2"></div>
@@ -23,76 +30,31 @@ window.FleetCards.GcodeFiles = {
         `;
 
         try {
-            const response = await fetch(`/api/fleet/printers/${printerId}/files`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
+            const res = await fetch(`/api/fleet/printers/${printerId}/files`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            const data = await res.json();
 
-            const data = await response.json();
-            console.log('📄 Respuesta de archivos G-code:', data);
-
-            // Manejar diferentes estructuras de respuesta (como en la versión backup)
             let files = [];
-            if (data.files && data.files.result && Array.isArray(data.files.result)) {
-                files = data.files.result;
-            } else if (data.files && Array.isArray(data.files)) {
-                files = data.files;
-            } else if (data.result && Array.isArray(data.result)) {
-                files = data.result;
-            } else if (Array.isArray(data)) {
-                files = data;
-            } else {
-                console.warn('⚠️ Estructura de respuesta no reconocida:', data);
-                files = [];
-            }
+            if (data.files?.result && Array.isArray(data.files.result)) files = data.files.result;
+            else if (Array.isArray(data.files)) files = data.files;
+            else if (Array.isArray(data.result)) files = data.result;
+            else if (Array.isArray(data)) files = data;
 
-            console.log('📁 Archivos procesados:', files.length, 'archivos encontrados');
-            console.log('📁 Primeros 3 archivos:', files.slice(0, 3));
+            this.allFiles = files;
+            this.totalFiles = files.length;
 
-            // Ordenar los archivos por fecha de modificación en orden descendente (más recientes primero)
-            files.sort((a, b) => {
-                // Obtener timestamps de modificación, manejando diferentes formatos
-                let dateA = a.modified || a.mod_time || a.mtime || a.date || 0;
-                let dateB = b.modified || b.mod_time || b.mtime || b.date || 0;
-                
-                // Si son strings de fecha, convertir a timestamp
-                if (typeof dateA === 'string') {
-                    dateA = new Date(dateA).getTime() / 1000; // Convertir a timestamp Unix
-                }
-                if (typeof dateB === 'string') {
-                    dateB = new Date(dateB).getTime() / 1000; // Convertir a timestamp Unix
-                }
-                
-                return dateB - dateA; // Orden descendente (más recientes primero)
-            });
-
-            // Renderizar lista de archivos
-            if (files && files.length > 0) {
-                container.innerHTML = this.renderGcodeFilesList(files, printerId);
-            } else {
-                container.innerHTML = `
-                    <div class="text-center py-6 text-gray-500">
-                        <div class="text-4xl mb-2">📭</div>
-                        <p class="text-sm">No hay archivos G-code</p>
-                        <p class="text-xs text-gray-400 mt-1">Sube tu primer archivo para comenzar</p>
-                    </div>
-                `;
-            }
-
-        } catch (error) {
-            console.error('❌ Error cargando archivos G-code:', error);
+            this.applyFiltersAndSort();
+            this.renderPaginatedList();
+        } catch (e) {
             container.innerHTML = `
                 <div class="text-center py-4 text-red-500">
                     <div class="text-2xl mb-2">⚠️</div>
                     <p class="text-sm">Error cargando archivos</p>
-                    <p class="text-xs">${error.message}</p>
-                    <button class="mt-2 px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs"
-                            onclick="window.FleetCards.GcodeFiles.loadPrinterGcodeFiles('${printerId}')">
+                    <p class="text-xs">${e.message}</p>
+                    <button class="mt-2 px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs" onclick="window.FleetCards.GcodeFiles.loadPrinterGcodeFiles('${printerId}')">
                         🔄 Reintentar
                     </button>
-                </div>
-            `;
+                </div>`;
         }
     },
 
@@ -529,6 +491,183 @@ window.FleetCards.GcodeFiles = {
             modal.classList.remove('flex');
             console.log('✅ Modal de subida ocultado');
         }
+    },
+
+    // Funciones de filtros y ordenamiento
+    applyFiltersAndSort() {
+      const term = (this.searchTerm || '').toLowerCase();
+      this.filteredFiles = (this.allFiles || []).filter(f => {
+        const name = this.getFileName ? this.getFileName(f) : (f.name || f.filename || '');
+        return name.toLowerCase().includes(term);
+      });
+
+      const getName = f => (this.getFileName ? this.getFileName(f) : (f.name || f.filename || ''));
+      const getDate = f => f.modified || f.mod_time || f.mtime || f.last_modified || 0;
+
+      this.filteredFiles.sort((a, b) => {
+        switch (this.sortOrder) {
+          case 'name_asc':
+            return getName(a).localeCompare(getName(b));
+          case 'name_desc':
+            return getName(b).localeCompare(getName(a));
+          case 'date_asc':
+            return getDate(a) - getDate(b);
+          case 'date_desc':
+          default:
+            return getDate(b) - getDate(a);
+        }
+      });
+    },
+
+    renderPaginatedList() {
+      const printerId = this.currentPrinterId;
+      const container = document.getElementById(`gcode-files-${printerId}`);
+      if (!container) return;
+
+      // Guardar el estado del foco antes del re-render
+      const searchInput = document.getElementById(`gcode-search-${printerId}`);
+      const shouldRestoreFocus = searchInput && document.activeElement === searchInput;
+      const cursorPosition = shouldRestoreFocus ? searchInput.selectionStart : 0;
+
+      const total = this.filteredFiles.length;
+      const pages = Math.max(1, Math.ceil(total / this.pageSize));
+      this.currentPage = Math.min(this.currentPage, pages);
+      const start = (this.currentPage - 1) * this.pageSize;
+      const pageFiles = this.filteredFiles.slice(start, start + this.pageSize);
+
+      const controls = `
+        <div class="bg-gray-50 rounded-lg p-3 mb-3 border border-gray-200 flex flex-col gap-2 md:flex-row md:items-center">
+          <div class="flex-1">
+            <input id="gcode-search-${printerId}" placeholder="Buscar por nombre..." value="${this.searchTerm}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+          </div>
+          <div>
+            <select id="gcode-sort-${printerId}" class="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+              <option value="date_desc" ${this.sortOrder==='date_desc'?'selected':''}>📅 Más reciente</option>
+              <option value="date_asc" ${this.sortOrder==='date_asc'?'selected':''}>📅 Más antiguo</option>
+              <option value="name_asc" ${this.sortOrder==='name_asc'?'selected':''}>📝 Nombre A-Z</option>
+              <option value="name_desc" ${this.sortOrder==='name_desc'?'selected':''}>📝 Nombre Z-A</option>
+            </select>
+          </div>
+          <div class="text-sm text-gray-600">${total} archivos</div>
+        </div>`;
+
+      const list = `
+        <div id="gcode-files-list-${printerId}" class="space-y-2 max-h-96 overflow-y-auto">
+          ${pageFiles.length ? pageFiles.map(f => this.renderGcodeFileItem(f, printerId)).join('') : '<div class="text-center py-6 text-gray-500">📭 Sin resultados</div>'}
+        </div>`;
+
+      const pagination = this.renderPaginationControls ? this.renderPaginationControls(pages) : '';
+
+      container.innerHTML = controls + list + pagination;
+      this.setupFileListEventHandlers();
+
+      // Restaurar el foco y posición del cursor
+      if (shouldRestoreFocus) {
+        setTimeout(() => {
+          const newSearchInput = document.getElementById(`gcode-search-${printerId}`);
+          if (newSearchInput) {
+            newSearchInput.focus();
+            newSearchInput.setSelectionRange(cursorPosition, cursorPosition);
+          }
+        }, 0);
+      }
+
+      // Cargar thumbnails solo de la página actual
+      setTimeout(() => {
+        pageFiles.forEach(file => {
+          const name = this.getFileName ? this.getFileName(file) : (file.name || file.filename || '');
+          const el = document.getElementById(`thumbnail-${window.FleetCards.Utils.createSafeId(printerId)}-${window.FleetCards.Utils.createSafeId(name)}`);
+          if (el && window.FleetCards.Thumbnails?.loadAndShowThumbnail) {
+            window.FleetCards.Thumbnails.loadAndShowThumbnail(printerId, name, el);
+          }
+        });
+      }, 50);
+    },
+
+    renderPaginationControls(totalPages) {
+      if (totalPages <= 1) return '';
+      
+      const p = this.currentPage;
+      const maxVisible = 7; // Máximo de páginas visibles
+      const btn = (n, label = n, disabled = false) => {
+        const classes = disabled 
+          ? 'px-2 py-1 border rounded bg-gray-100 text-gray-400 cursor-not-allowed'
+          : n === p 
+            ? 'px-2 py-1 border rounded bg-emerald-500 text-white'
+            : 'px-2 py-1 border rounded bg-white hover:bg-gray-50';
+        return `<button data-page="${n}" class="${classes}" ${disabled ? 'disabled' : ''}>${label}</button>`;
+      };
+      
+      let pages = [];
+      
+      if (totalPages <= maxVisible) {
+        // Mostrar todas las páginas si son pocas
+        pages = Array.from({length: totalPages}, (_, i) => btn(i + 1));
+      } else {
+        // Lógica de paginación inteligente
+        const start = Math.max(1, Math.min(p - Math.floor(maxVisible / 2), totalPages - maxVisible + 1));
+        const end = Math.min(totalPages, start + maxVisible - 1);
+        
+        // Primera página si no está en el rango
+        if (start > 1) {
+          pages.push(btn(1));
+          if (start > 2) pages.push('<span class="px-2 py-1">...</span>');
+        }
+        
+        // Páginas del rango actual
+        for (let i = start; i <= end; i++) {
+          pages.push(btn(i));
+        }
+        
+        // Última página si no está en el rango
+        if (end < totalPages) {
+          if (end < totalPages - 1) pages.push('<span class="px-2 py-1">...</span>');
+          pages.push(btn(totalPages));
+        }
+      }
+      
+      const prevBtn = btn(Math.max(1, p - 1), '◀', p === 1);
+      const nextBtn = btn(Math.min(totalPages, p + 1), '▶', p === totalPages);
+      
+      return `<div class="mt-3 flex items-center gap-1 justify-center">${prevBtn} ${pages.join(' ')} ${nextBtn}</div>`;
+    },
+
+    setupFileListEventHandlers() {
+      const pid = this.currentPrinterId;
+      const search = document.getElementById(`gcode-search-${pid}`);
+      const sort = document.getElementById(`gcode-sort-${pid}`);
+      const container = document.getElementById(`gcode-files-${pid}`);
+
+      if (search) {
+        search.addEventListener('input', (e) => {
+          this.searchTerm = e.target.value;
+          this.currentPage = 1;
+          this.applyFiltersAndSort();
+          this.renderPaginatedList();
+        });
+      }
+
+      if (sort) {
+        sort.addEventListener('change', (e) => {
+          this.sortOrder = e.target.value;
+          this.currentPage = 1;
+          this.applyFiltersAndSort();
+          this.renderPaginatedList();
+        });
+      }
+
+      if (container) {
+        container.addEventListener('click', (e) => {
+          const btn = e.target.closest('button[data-page]');
+          if (btn) {
+            const page = parseInt(btn.getAttribute('data-page'), 10);
+            if (!Number.isNaN(page)) {
+              this.currentPage = page;
+              this.renderPaginatedList();
+            }
+          }
+        });
+      }
     },
 
     // 🧪 Función de prueba
