@@ -394,6 +394,27 @@ async def get_gcode_thumbnails(printer_id: str, filename: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error obteniendo thumbnails: {str(e)}")
 
+@router.get("/printers/{printer_id}/files/{filename}")
+async def download_gcode_file(printer_id: str, filename: str):
+    """Descarga un archivo G-code de una impresora específica."""
+    try:
+        from fastapi.responses import Response
+        
+        file_content = await fleet_service.download_printer_gcode_file(printer_id, filename)
+        
+        return Response(
+            content=file_content,
+            media_type="application/octet-stream",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}",
+                "Content-Type": "application/octet-stream"
+            }
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error descargando archivo: {str(e)}")
+
 # Endpoint para renderizar el módulo de gestión de flota como HTML
 @router.get("/fleet", response_class=HTMLResponse)
 def fleet_view(request: Request):

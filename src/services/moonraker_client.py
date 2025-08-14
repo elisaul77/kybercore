@@ -382,6 +382,21 @@ class MoonrakerClient:
             logger.error(f"Error al cancelar impresión: {e}")
             return {"success": False, "error": str(e)}
 
+    async def download_gcode_file(self, filename: str):
+        """Descarga el contenido de un archivo G-code."""
+        try:
+            async with self._session.get(f"{self.base_url}/server/files/gcodes/{filename}") as response:
+                if response.status == 200:
+                    content = await response.read()
+                    logger.info(f"✅ Archivo {filename} descargado correctamente ({len(content)} bytes)")
+                    return content
+                else:
+                    logger.error(f"❌ Error descargando archivo {filename}: HTTP {response.status}")
+                    return None
+        except Exception as e:
+            logger.error(f"❌ Error descargando archivo {filename}: {e}")
+            return None
+
 # Ejemplo de uso (para pruebas)
 async def example_callback(data):
     logger.info(f"Datos recibidos: {json.dumps(data, indent=2)}")
