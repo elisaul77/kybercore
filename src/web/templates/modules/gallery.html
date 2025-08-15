@@ -9,13 +9,13 @@
             <p class="text-gray-600 mt-2">Organiza y gestiona tus proyectos de impresión 3D con análisis IA integrado</p>
         </div>
         <div class="flex flex-wrap gap-2">
-            <button class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
+            <button onclick="createNewProject()" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
                 📁 Nuevo Proyecto
             </button>
-            <button class="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
+            <button onclick="analyzeAllProjects()" class="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
                 🔄 Analizar Proyectos
             </button>
-            <button class="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
+            <button onclick="showProjectsStatistics()" class="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
                 📊 Estadísticas
             </button>
         </div>
@@ -212,13 +212,21 @@
                     <div class="text-xs text-green-600 mt-1">100% completado - ¡Proyecto terminado!</div>
                 </div>
                 <!-- Botones de acción -->
-                <div class="flex gap-2">
-                    <button class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-2 rounded-lg text-sm hover:from-green-600 hover:to-green-700 transition-colors">
+                <div class="space-y-2">
+                    <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-2 rounded-lg text-sm hover:from-green-600 hover:to-green-700 transition-colors">
                         📂 Ver Proyecto
                     </button>
-                    <button class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
-                        🔄
-                    </button>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="exportProject('Robot Explorador Kit')" class="px-2 py-2 bg-blue-100 text-blue-700 rounded-lg text-xs hover:bg-blue-200 transition-colors">
+                            📤 Exportar
+                        </button>
+                        <button onclick="duplicateProject('Robot Explorador Kit')" class="px-2 py-2 bg-purple-100 text-purple-700 rounded-lg text-xs hover:bg-purple-200 transition-colors">
+                            📋 Duplicar
+                        </button>
+                        <button onclick="deleteProject('Robot Explorador Kit')" class="px-2 py-2 bg-red-100 text-red-700 rounded-lg text-xs hover:bg-red-200 transition-colors">
+                            �️ Eliminar
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -226,19 +234,433 @@
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
             <div class="relative">
                 <img src="https://placehold.co/350x200/10b981/ffffff?text=Organizador+Modular" alt="Organizador Modular" class="w-full h-48 object-cover">
-                <div class="absolute top-3 right-3 bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                <div class="absolute top-3 right-3 bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">
                     ⏳ En Progreso
+                </div>
+                <div class="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                    8 piezas
+                </div>
+                <div class="absolute bottom-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs">
+                    Funcional
+                </div>
+            </div>
+            <div class="p-4">
+                <h3 class="font-bold text-lg text-gray-900 mb-2">Organizador Escritorio Modular</h3>
+                <p class="text-sm text-gray-600 mb-4">Sistema completo de organización para escritorio</p>
+                <!-- Lista de archivos STL del proyecto -->
+                <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-gray-600">📁</span>
+                        <span class="text-sm font-medium text-gray-700">Archivos del proyecto (8)</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-600">
+                        <div class="flex justify-between items-center">
+                            <span>• base_principal.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• compartimento_lapices.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• soporte_telefono.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• bandeja_clips.stl</span>
+                            <span class="text-blue-600 animate-pulse">⏳</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• organizador_cables.stl</span>
+                            <span class="text-gray-400">⏸️</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">+ 3 piezas más...</div>
+                    </div>
+                </div>
+                <!-- Recomendaciones IA del proyecto -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-3 mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-blue-600">🤖</span>
+                        <span class="text-sm font-medium text-blue-900">Análisis IA del Proyecto</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-700">
+                        <div class="flex justify-between">
+                            <span>🖨️ Impresoras sugeridas:</span>
+                            <span class="font-medium text-blue-700">1 tipo</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>🧵 Material principal:</span>
+                            <span class="font-medium text-blue-700">PLA</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>⏱️ Tiempo restante:</span>
+                            <span class="font-medium text-blue-700">6h 20m</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>📏 Filamento restante:</span>
+                            <span class="font-medium text-blue-700">89.1g</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>💰 Costo restante:</span>
+                            <span class="font-medium text-blue-700">€1.95</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Progreso del proyecto -->
+                <div class="mb-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">Progreso del proyecto</span>
+                        <span class="text-xs text-gray-500">3/8 piezas</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="w-3/8 h-2 bg-blue-400 rounded-full"></div>
+                    </div>
+                    <div class="text-xs text-blue-600 mt-1">37% completado - Imprimiendo ahora</div>
+                </div>
+                <!-- Botones de acción -->
+                <div class="space-y-2">
+                    <button class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:from-blue-600 hover:to-blue-700 transition-colors">
+                        📂 Ver Proyecto
+                    </button>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="exportProject('Organizador Escritorio Modular')" class="px-2 py-2 bg-blue-100 text-blue-700 rounded-lg text-xs hover:bg-blue-200 transition-colors">
+                            📤 Exportar
+                        </button>
+                        <button onclick="duplicateProject('Organizador Escritorio Modular')" class="px-2 py-2 bg-purple-100 text-purple-700 rounded-lg text-xs hover:bg-purple-200 transition-colors">
+                            📋 Duplicar
+                        </button>
+                        <button onclick="deleteProject('Organizador Escritorio Modular')" class="px-2 py-2 bg-red-100 text-red-700 rounded-lg text-xs hover:bg-red-200 transition-colors">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proyecto 3: Set de Herramientas de Taller -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+            <div class="relative">
+                <img src="https://placehold.co/350x200/f59e0b/ffffff?text=Set+Herramientas" alt="Set de Herramientas" class="w-full h-48 object-cover">
+                <div class="absolute top-3 right-3 bg-purple-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    📋 Listo
+                </div>
+                <div class="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                    12 piezas
+                </div>
+                <div class="absolute bottom-3 right-3 bg-orange-500 text-white px-2 py-1 rounded-full text-xs">
+                    Herramientas
+                </div>
+            </div>
+            <div class="p-4">
+                <h3 class="font-bold text-lg text-gray-900 mb-2">Set Herramientas de Taller</h3>
+                <p class="text-sm text-gray-600 mb-4">Kit completo de herramientas para taller mecánico</p>
+                <!-- Lista de archivos STL del proyecto -->
+                <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-gray-600">📁</span>
+                        <span class="text-sm font-medium text-gray-700">Archivos del proyecto (12)</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-600">
+                        <div class="flex justify-between items-center">
+                            <span>• llave_ajustable_10mm.stl</span>
+                            <span class="text-purple-600">📋</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• llave_ajustable_15mm.stl</span>
+                            <span class="text-purple-600">📋</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• destornillador_phillips.stl</span>
+                            <span class="text-purple-600">📋</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• destornillador_plano.stl</span>
+                            <span class="text-purple-600">📋</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• soporte_herramientas.stl</span>
+                            <span class="text-purple-600">📋</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">+ 7 herramientas más...</div>
+                    </div>
+                </div>
+                <!-- Recomendaciones IA del proyecto -->
+                <div class="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg p-3 mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-orange-600">🤖</span>
+                        <span class="text-sm font-medium text-orange-900">Análisis IA del Proyecto</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-700">
+                        <div class="flex justify-between">
+                            <span>🖨️ Impresoras sugeridas:</span>
+                            <span class="font-medium text-orange-700">3 tipos</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>🧵 Materiales:</span>
+                            <span class="font-medium text-orange-700">PETG, ABS</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>⏱️ Tiempo estimado:</span>
+                            <span class="font-medium text-orange-700">18h 30m</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>📏 Filamento total:</span>
+                            <span class="font-medium text-orange-700">298.7g</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>💰 Costo estimado:</span>
+                            <span class="font-medium text-orange-700">€7.45</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 p-2 bg-orange-100 rounded text-xs text-orange-800">
+                        💡 Recomendación: Imprimir en lotes por material para optimizar cambios
+                    </div>
+                </div>
+                <!-- Progreso del proyecto -->
+                <div class="mb-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">Progreso del proyecto</span>
+                        <span class="text-xs text-gray-500">0/12 piezas</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="w-0 h-2 bg-purple-400 rounded-full"></div>
+                    </div>
+                    <div class="text-xs text-purple-600 mt-1">Analizado y listo para imprimir</div>
+                </div>
+                <!-- Botones de acción -->
+                <div class="space-y-2">
+                    <button class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-2 rounded-lg text-sm hover:from-orange-600 hover:to-orange-700 transition-colors">
+                        🚀 Iniciar Proyecto
+                    </button>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="exportProject('Set de Herramientas de Taller')" class="px-2 py-2 bg-blue-100 text-blue-700 rounded-lg text-xs hover:bg-blue-200 transition-colors">
+                            📤 Exportar
+                        </button>
+                        <button onclick="duplicateProject('Set de Herramientas de Taller')" class="px-2 py-2 bg-purple-100 text-purple-700 rounded-lg text-xs hover:bg-purple-200 transition-colors">
+                            📋 Duplicar
+                        </button>
+                        <button onclick="deleteProject('Set de Herramientas de Taller')" class="px-2 py-2 bg-red-100 text-red-700 rounded-lg text-xs hover:bg-red-200 transition-colors">
+                            �️ Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proyecto 4: Juego de Ajedrez Customizado -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-yellow-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+            <div class="relative">
+                <img src="https://placehold.co/350x200/8b5cf6/ffffff?text=Ajedrez+Custom" alt="Ajedrez Custom" class="w-full h-48 object-cover">
+                <div class="absolute top-3 right-3 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    ⚠️ Problemas
+                </div>
+                <div class="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                    33 piezas
+                </div>
+                <div class="absolute bottom-3 right-3 bg-purple-500 text-white px-2 py-1 rounded-full text-xs">
+                    Decorativo
+                </div>
+                <div class="absolute bottom-3 left-3 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    ⭐ Favorito
+                </div>
+            </div>
+            <div class="p-4">
+                <h3 class="font-bold text-lg text-gray-900 mb-2">Ajedrez Temático Medieval</h3>
+                <p class="text-sm text-gray-600 mb-4">Set completo de ajedrez con diseño medieval personalizado</p>
+                <!-- Lista de archivos STL del proyecto -->
+                <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-gray-600">📁</span>
+                        <span class="text-sm font-medium text-gray-700">Archivos del proyecto (33)</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-600">
+                        <div class="flex justify-between items-center">
+                            <span>• tablero_base.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• rey_blanco.stl</span>
+                            <span class="text-red-600">❌</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• reina_blanca.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• torres_blancas.stl (x2)</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• alfiles_blancos.stl (x2)</span>
+                            <span class="text-yellow-600">⚠️</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">+ 28 piezas más...</div>
+                    </div>
+                </div>
+                <!-- Recomendaciones IA del proyecto con alertas -->
+                <div class="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg p-3 mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-red-600">🤖</span>
+                        <span class="text-sm font-medium text-red-900">Análisis IA - Atención Requerida</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-700">
+                        <div class="flex justify-between">
+                            <span>🖨️ Impresoras sugeridas:</span>
+                            <span class="font-medium text-red-700">2 tipos</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>🧵 Materiales:</span>
+                            <span class="font-medium text-red-700">PLA multicolor</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>⏱️ Tiempo estimado:</span>
+                            <span class="font-medium text-red-700">45h 15m</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>📏 Filamento total:</span>
+                            <span class="font-medium text-red-700">856.2g</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>💰 Costo estimado:</span>
+                            <span class="font-medium text-red-700">€18.95</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 p-2 bg-red-100 rounded text-xs text-red-800">
+                        ⚠️ 3 piezas requieren optimización. Detalles finos propensos a fallos.
+                    </div>
+                </div>
+                <!-- Progreso del proyecto con problemas -->
+                <div class="mb-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">Progreso del proyecto</span>
+                        <span class="text-xs text-gray-500">8/33 piezas</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="w-1/4 h-2 bg-gradient-to-r from-yellow-400 to-red-400 rounded-full"></div>
+                    </div>
+                    <div class="text-xs text-yellow-600 mt-1">24% completado - Requiere atención</div>
+                </div>
+                <!-- Botones de acción -->
+                <div class="flex gap-2">
+                    <button class="flex-1 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white px-3 py-2 rounded-lg text-sm hover:from-yellow-600 hover:to-yellow-700 transition-colors">
+                        ⚡ Optimizar
+                    </button>
+                    <button class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                        👁️
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proyecto 5: Prototipo Robot Cuadrúpedo -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+            <div class="relative">
+                <img src="https://placehold.co/350x200/64748b/ffffff?text=Robot+Prototipo" alt="Robot Prototipo" class="w-full h-48 object-cover">
+                <div class="absolute top-3 right-3 bg-gray-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    ⏳ En Diseño
+                </div>
+                <div class="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                    24 piezas
+                </div>
+                <div class="absolute bottom-3 right-3 bg-blue-500 text-white px-2 py-1 rounded-full text-xs">
+                    Prototipo
+                </div>
+            </div>
+            <div class="p-4">
+                <h3 class="font-bold text-lg text-gray-900 mb-2">Robot Cuadrúpedo v0.8</h3>
+                <p class="text-sm text-gray-600 mb-4">Prototipo de robot caminante con articulaciones móviles</p>
+                <!-- Lista de archivos STL del proyecto -->
+                <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-gray-600">📁</span>
+                        <span class="text-sm font-medium text-gray-700">Archivos del proyecto (24)</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-600">
+                        <div class="flex justify-between items-center">
+                            <span>• cuerpo_principal.stl</span>
+                            <span class="text-gray-400">📝</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• pata_delantera_izq.stl</span>
+                            <span class="text-gray-400">📝</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• articulacion_hombro.stl (x4)</span>
+                            <span class="text-gray-400">📝</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• articulacion_codo.stl (x4)</span>
+                            <span class="text-gray-400">📝</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• pie_articulado.stl (x4)</span>
+                            <span class="text-gray-400">📝</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">+ 15 componentes más...</div>
+                    </div>
+                </div>
+                <!-- Estado sin analizar -->
+                <div class="bg-gradient-to-r from-gray-50 to-slate-50 rounded-lg p-3 mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-gray-600">⏳</span>
+                        <span class="text-sm font-medium text-gray-700">Proyecto en fase de diseño</span>
+                    </div>
+                    <div class="text-xs text-gray-600 text-center py-2">
+                        <p>Los archivos STL están siendo finalizados</p>
+                        <p>Análisis IA disponible cuando esté completo</p>
+                    </div>
+                </div>
+                <!-- Progreso del proyecto -->
+                <div class="mb-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">Estado de diseño</span>
+                        <span class="text-xs text-gray-500">0/24 piezas</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="w-1/12 h-2 bg-gray-400 rounded-full"></div>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">8% diseñado - En desarrollo</div>
+                </div>
+                <!-- Botones de acción -->
+                <div class="space-y-2">
+                    <button class="w-full bg-gradient-to-r from-gray-400 to-gray-500 text-white px-3 py-2 rounded-lg text-sm hover:from-gray-500 hover:to-gray-600 transition-colors">
+                        📝 Continuar Diseño
+                    </button>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="exportProject('Robot Cuadrúpedo v0.8')" class="px-2 py-2 bg-blue-100 text-blue-700 rounded-lg text-xs hover:bg-blue-200 transition-colors">
+                            📤 Exportar
+                        </button>
+                        <button onclick="duplicateProject('Robot Cuadrúpedo v0.8')" class="px-2 py-2 bg-purple-100 text-purple-700 rounded-lg text-xs hover:bg-purple-200 transition-colors">
+                            📋 Duplicar
+                        </button>
+                        <button onclick="deleteProject('Robot Cuadrúpedo v0.8')" class="px-2 py-2 bg-red-100 text-red-700 rounded-lg text-xs hover:bg-red-200 transition-colors">
+                            �️ Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proyecto 6: Kit de Reparación de Impresora -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+            <div class="relative">
+                <img src="https://placehold.co/350x200/059669/ffffff?text=Kit+Reparacion" alt="Kit Reparación" class="w-full h-48 object-cover">
+                <div class="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    ✅ Completado
                 </div>
                 <div class="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
                     7 piezas
                 </div>
                 <div class="absolute bottom-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs">
-                    Decorativo
+                    Funcional
+                </div>
+                <div class="absolute bottom-3 left-3 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    ⭐ Favorito
                 </div>
             </div>
             <div class="p-4">
-                <h3 class="font-bold text-lg text-gray-900 mb-2">Organizador Modular v1.0</h3>
-                <p class="text-sm text-gray-600 mb-4">Sistema modular para organización de escritorio y herramientas</p>
+                <h3 class="font-bold text-lg text-gray-900 mb-2">Kit Reparación Ender 3</h3>
+                <p class="text-sm text-gray-600 mb-4">Piezas de repuesto y mejoras para impresora Ender 3</p>
                 <!-- Lista de archivos STL del proyecto -->
                 <div class="bg-gray-50 rounded-lg p-3 mb-4">
                     <div class="flex items-center gap-2 mb-2">
@@ -247,61 +669,53 @@
                     </div>
                     <div class="space-y-1 text-xs text-gray-600">
                         <div class="flex justify-between items-center">
-                            <span>• base_modular.stl</span>
+                            <span>• tensor_correa_mejorado.stl</span>
                             <span class="text-green-600">✓</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span>• bandeja_herramientas.stl</span>
+                            <span>• soporte_extrusor.stl</span>
                             <span class="text-green-600">✓</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span>• soporte_lapices.stl</span>
+                            <span>• tapa_electronica.stl</span>
                             <span class="text-green-600">✓</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span>• organizador_cables.stl</span>
+                            <span>• guia_filamento.stl</span>
                             <span class="text-green-600">✓</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span>• bandeja_pequeña.stl</span>
-                            <span class="text-green-600">✓</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span>• soporte_postits.stl</span>
-                            <span class="text-green-600">✓</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span>• tapa_modular.stl</span>
+                            <span>• pie_antivibracion.stl (x4)</span>
                             <span class="text-green-600">✓</span>
                         </div>
                     </div>
                 </div>
                 <!-- Recomendaciones IA del proyecto -->
-                <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3 mb-4">
+                <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 mb-4">
                     <div class="flex items-center gap-2 mb-2">
-                        <span class="text-purple-600">🤖</span>
-                        <span class="text-sm font-medium text-purple-900">Análisis IA del Proyecto</span>
+                        <span class="text-green-600">🤖</span>
+                        <span class="text-sm font-medium text-green-900">Análisis IA del Proyecto</span>
                     </div>
                     <div class="space-y-1 text-xs text-gray-700">
                         <div class="flex justify-between">
-                            <span>🖨️ Impresoras sugeridas:</span>
-                            <span class="font-medium text-purple-700">3 tipos</span>
+                            <span>🖨️ Impresora usada:</span>
+                            <span class="font-medium text-green-700">Prusa MK4</span>
                         </div>
                         <div class="flex justify-between">
-                            <span>🧵 Materiales:</span>
-                            <span class="font-medium text-purple-700">PLA, ABS</span>
+                            <span>🧵 Material usado:</span>
+                            <span class="font-medium text-green-700">PETG Negro</span>
                         </div>
                         <div class="flex justify-between">
                             <span>⏱️ Tiempo total:</span>
-                            <span class="font-medium text-purple-700">12h 10m</span>
+                            <span class="font-medium text-green-700">5h 20m</span>
                         </div>
                         <div class="flex justify-between">
-                            <span>📏 Filamento total:</span>
-                            <span class="font-medium text-purple-700">189.7g</span>
+                            <span>📏 Filamento usado:</span>
+                            <span class="font-medium text-green-700">73.8g</span>
                         </div>
                         <div class="flex justify-between">
-                            <span>💰 Costo estimado:</span>
-                            <span class="font-medium text-purple-700">€4.12</span>
+                            <span>💰 Costo real:</span>
+                            <span class="font-medium text-green-700">€1.89</span>
                         </div>
                     </div>
                 </div>
@@ -309,23 +723,386 @@
                 <div class="mb-4">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm font-medium text-gray-700">Progreso del proyecto</span>
-                        <span class="text-xs text-gray-500">5/7 piezas</span>
+                        <span class="text-xs text-gray-500">7/7 piezas</span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="w-3/4 h-2 bg-orange-400 rounded-full"></div>
+                        <div class="w-full h-2 bg-green-400 rounded-full"></div>
                     </div>
-                    <div class="text-xs text-orange-600 mt-1">71% completado - En progreso</div>
+                    <div class="text-xs text-green-600 mt-1">100% completado - ¡Excelente calidad!</div>
                 </div>
                 <!-- Botones de acción -->
-                <div class="flex gap-2">
-                    <button class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-2 rounded-lg text-sm hover:from-green-600 hover:to-green-700 transition-colors">
+                <div class="space-y-2">
+                    <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-2 rounded-lg text-sm hover:from-green-600 hover:to-green-700 transition-colors">
                         📂 Ver Proyecto
                     </button>
-                    <button class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
-                        🔄
-                    </button>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="exportProject('Kit Reparación Ender 3')" class="px-2 py-2 bg-blue-100 text-blue-700 rounded-lg text-xs hover:bg-blue-200 transition-colors">
+                            📤 Exportar
+                        </button>
+                        <button onclick="duplicateProject('Kit Reparación Ender 3')" class="px-2 py-2 bg-purple-100 text-purple-700 rounded-lg text-xs hover:bg-purple-200 transition-colors">
+                            📋 Duplicar
+                        </button>
+                        <button onclick="deleteProject('Kit Reparación Ender 3')" class="px-2 py-2 bg-red-100 text-red-700 rounded-lg text-xs hover:bg-red-200 transition-colors">
+                            �️ Eliminar
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
+
+    </div>
+
+    <!-- Modal de detalles del proyecto (inicialmente oculto) -->
+    <div id="stl-preview-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg max-w-5xl w-full mx-4 overflow-auto max-h-[90vh] shadow-xl">
+            <div class="p-4 flex items-center justify-between border-b">
+                <h3 id="modal-title" class="text-lg font-semibold">Detalles del Proyecto</h3>
+                <button id="close-modal" class="text-gray-600 hover:text-gray-800 px-2 py-1 rounded">✖</button>
+            </div>
+            <div id="modal-content" class="p-6"></div>
+        </div>
     </div>
 </section>
+
+<script>
+// GALERÍA DE PROYECTOS - JavaScript interactivo (modal y delegación de eventos)
+(function(){
+    // Initialize toast container
+    function initToastSystem() {
+        if (!document.getElementById('toast-container')) {
+            const toastContainer = document.createElement('div');
+            toastContainer.id = 'toast-container';
+            toastContainer.className = 'fixed top-4 right-4 z-50 space-y-2';
+            document.body.appendChild(toastContainer);
+        }
+    }
+    
+    // Toast notification system
+    function showToast(title, message, type = 'info', duration = 3000) {
+        initToastSystem();
+        const toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) return;
+        
+        const toast = document.createElement('div');
+        toast.className = `bg-white border-l-4 p-4 shadow-lg rounded-r max-w-sm transform transition-all duration-300 ease-in-out translate-x-full`;
+        
+        // Color classes based on type
+        const typeClasses = {
+            'success': 'border-green-500',
+            'error': 'border-red-500',
+            'warning': 'border-yellow-500',
+            'info': 'border-blue-500'
+        };
+        
+        toast.classList.add(typeClasses[type] || typeClasses.info);
+        
+        toast.innerHTML = `
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <div class="font-semibold text-gray-800">${title}</div>
+                    <div class="text-gray-600 text-sm mt-1">${message}</div>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        `;
+        
+        toastContainer.appendChild(toast);
+        
+        // Animate in
+        setTimeout(() => {
+            toast.classList.remove('translate-x-full');
+        }, 100);
+        
+        // Auto remove
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (toast.parentElement) {
+                        toast.remove();
+                    }
+                }, 300);
+            }
+        }, duration);
+    }
+    
+    // Simulation functions for header buttons
+    function createNewProject() {
+        showToast('Nuevo Proyecto', 'Abriendo asistente para crear nuevo proyecto...', 'info');
+        setTimeout(() => {
+            showToast('Proyecto Creado', 'Proyecto "MiniBot v2.1" creado exitosamente', 'success');
+        }, 2000);
+    }
+    
+    function analyzeAllProjects() {
+        showToast('Análisis IA', 'Iniciando análisis inteligente de todos los proyectos...', 'info');
+        setTimeout(() => {
+            showToast('Análisis Completo', 'Se han identificado 3 optimizaciones y 2 recomendaciones', 'success');
+        }, 3000);
+    }
+    
+    function showProjectsStatistics() {
+        showToast('Estadísticas', 'Generando reporte estadístico completo...', 'info');
+        setTimeout(() => {
+            showToast('Reporte Generado', 'Estadísticas disponibles: 12 proyectos, 147 impresiones exitosas', 'success');
+        }, 2500);
+    }
+    
+    // Individual project action functions
+    function exportProject(projectName) {
+        showToast('Exportando', `Preparando exportación del proyecto "${projectName}"...`, 'info');
+        setTimeout(() => {
+            showToast('Exportación Completa', `Proyecto "${projectName}" exportado como archivo ZIP`, 'success');
+        }, 2000);
+    }
+    
+    function duplicateProject(projectName) {
+        showToast('Duplicando', `Creando copia del proyecto "${projectName}"...`, 'info');
+        setTimeout(() => {
+            showToast('Proyecto Duplicado', `Copia creada: "${projectName} - Copia"`, 'success');
+        }, 1500);
+    }
+    
+    function deleteProject(projectName) {
+        if (confirm(`¿Estás seguro de que deseas eliminar el proyecto "${projectName}"?`)) {
+            showToast('Eliminando', `Eliminando proyecto "${projectName}"...`, 'warning');
+            setTimeout(() => {
+                showToast('Proyecto Eliminado', `El proyecto "${projectName}" ha sido eliminado`, 'success');
+            }, 1000);
+        }
+    }
+
+    // Helper: muestra la modal con contenido
+    function showProjectDetails(projectName) {
+        const modal = document.getElementById('stl-preview-modal');
+        const modalContent = document.getElementById('modal-content');
+        const modalTitle = document.getElementById('modal-title');
+
+        modalTitle.textContent = projectName;
+
+        modalContent.innerHTML = `
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div class="bg-gray-100 rounded-lg p-4 h-64 flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="text-6xl mb-4">📁</div>
+                            <p class="text-gray-600">${projectName}</p>
+                            <p class="text-sm text-gray-500 mt-2">Vista 3D del proyecto completo</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4 max-h-64 overflow-y-auto">
+                        <h4 class="font-medium text-gray-900 mb-3">📋 Archivos del Proyecto</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between items-center p-2 bg-white rounded border">
+                                <span>engranaje_principal.stl</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500">2.1 MB</span>
+                                    <span class="text-green-600">✓</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-white rounded border">
+                                <span>engranaje_secundario.stl</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500">1.8 MB</span>
+                                    <span class="text-green-600">✓</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-white rounded border">
+                                <span>eje_motor.stl</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500">0.9 MB</span>
+                                    <span class="text-green-600">✓</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-white rounded border">
+                                <span>carcasa_superior.stl</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500">3.2 MB</span>
+                                    <span class="text-green-600">✓</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-white rounded border">
+                                <span>carcasa_inferior.stl</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500">3.1 MB</span>
+                                    <span class="text-green-600">✓</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-xl font-bold text-gray-900">${projectName}</h3>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="font-medium text-gray-900 mb-2">📊 Estadísticas del Proyecto</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Total de archivos:</span>
+                                <span>5 STL</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Tamaño total:</span>
+                                <span>11.1 MB</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Triángulos totales:</span>
+                                <span>67,892</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Volumen total:</span>
+                                <span>45.3 cm³</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Fecha creación:</span>
+                                <span>15 Jul 2025</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <h4 class="font-medium text-blue-900 mb-2">🤖 Planificación IA del Proyecto</h4>
+                        <div class="space-y-2 text-sm text-blue-800">
+                            <p>• <strong>Secuencia optimizada:</strong> Primero las carcasas, luego engranajes</p>
+                            <p>• <strong>Paralelización:</strong> 2 impresoras pueden trabajar simultáneamente</p>
+                            <p>• <strong>Materiales:</strong> PETG para ejes, PLA para carcasas</p>
+                            <p>• <strong>Post-procesado:</strong> Lijado requerido en engranajes</p>
+                            <p>• <strong>Tiempo estimado:</strong> 8h 45m (con 2 impresoras)</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-green-50 rounded-lg p-4">
+                        <h4 class="font-medium text-green-900 mb-2">✅ Estado del Proyecto</h4>
+                        <div class="space-y-1 text-sm text-green-800">
+                            <p>• Todos los archivos STL validados</p>
+                            <p>• Análisis de ensamblaje completado</p>
+                            <p>• Tolerancias verificadas (±0.1mm)</p>
+                            <p>• Listo para impresión inmediata</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="print-project" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors text-sm">
+                            🚀 Imprimir Proyecto
+                        </button>
+                        <button class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-purple-700 transition-colors text-sm">
+                            📋 Planificar Cola
+                        </button>
+                        <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+                            📥 Exportar
+                        </button>
+                        <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+                            📝 Editar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        modal.classList.remove('hidden');
+    }
+
+    // Cerrar modal
+    function closeModal() {
+        const modal = document.getElementById('stl-preview-modal');
+        if (modal) modal.classList.add('hidden');
+    }
+
+    // Delegación de eventos para botones dentro del grid
+    document.addEventListener('click', function(e){
+        console.log('Click detectado en:', e.target);
+        console.log('Tag name:', e.target.tagName);
+        console.log('Classes:', e.target.className);
+        
+        const button = e.target.closest('button');
+        if (!button) {
+            console.log('No es un botón');
+            return;
+        }
+
+        console.log('Botón encontrado:', button);
+        console.log('Texto del botón completo:', button.textContent.trim());
+        console.log('Inner HTML del botón:', button.innerHTML);
+        console.log('Contenedor padre:', button.closest('#projects-gallery'));
+
+        // Procesar todos los clics en botones, no solo los del grid de proyectos
+        const buttonText = button.textContent.trim();
+
+        // Botones de "Ver Proyecto" y similares
+        if (buttonText.includes('Ver Proyecto') || 
+            buttonText.includes('📂 Ver Proyecto') ||
+            buttonText.includes('Continuar Diseño') ||
+            buttonText.includes('📝 Continuar Diseño') ||
+            buttonText.includes('Iniciar Proyecto') ||
+            buttonText.includes('� Iniciar Proyecto') ||
+            buttonText.includes('Optimizar') ||
+            buttonText.includes('⚡ Optimizar')) {
+            
+            console.log('Botón Ver/Iniciar/Continuar Proyecto detectado');
+            e.preventDefault();
+            const card = button.closest('.bg-white');
+            const titleEl = card ? card.querySelector('h3') : null;
+            const title = titleEl ? titleEl.textContent.trim() : 'Proyecto';
+            console.log('Título del proyecto:', title);
+            showProjectDetails(title);
+            return;
+        }
+
+        // Botón de cerrar modal
+        if (button.id === 'close-modal' || buttonText === '✖') {
+            console.log('Botón cerrar modal detectado');
+            e.preventDefault();
+            closeModal();
+            return;
+        }
+
+        console.log('Click no manejado en botón con texto:', buttonText);
+    });
+
+    // Cerrar modal al clicar fuera del contenido
+    document.addEventListener('click', function(e){
+        const modal = document.getElementById('stl-preview-modal');
+        if (!modal) return;
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Handler para el botón imprimible dentro de la modal (simulado)
+    document.addEventListener('click', function(e){
+        if (e.target && e.target.id === 'print-project') {
+            e.preventDefault();
+            closeModal();
+            // Simulación de inicio de impresión
+            console.log('Simular impresión del proyecto');
+            // Aquí se podría llamar a la API para planificar impresión
+        }
+    });
+
+    // Expose functions globally for onclick handlers
+    window.createNewProject = createNewProject;
+    window.analyzeAllProjects = analyzeAllProjects;
+    window.showProjectsStatistics = showProjectsStatistics;
+    window.exportProject = exportProject;
+    window.duplicateProject = duplicateProject;
+    window.deleteProject = deleteProject;
+    window.showProjectDetails = showProjectDetails;
+    window.closeModal = closeModal;
+    
+    // Inicializar cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Galería de proyectos inicializada correctamente');
+        });
+    } else {
+        console.log('Galería de proyectos inicializada correctamente');
+    }
+
+})();
+</script>

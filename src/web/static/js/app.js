@@ -156,6 +156,37 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error(`Failed to load module: ${moduleId}`);
             mainContent.innerHTML = await response.text();
 
+            // Ejecutar scripts incluidos en el HTML cargado (inline o con src).
+            // Al asignar innerHTML los <script> no se ejecutan automáticamente,
+            // por eso los recreamos y los añadimos al DOM para que se ejecuten.
+            try {
+                const scripts = Array.from(mainContent.querySelectorAll('script'));
+                for (const oldScript of scripts) {
+                    const newScript = document.createElement('script');
+                    // copiar attributes (como type, src)
+                    for (const attr of oldScript.attributes) {
+                        newScript.setAttribute(attr.name, attr.value);
+                    }
+                    if (oldScript.src) {
+                        // externo: esperar a que cargue
+                        new Promise((resolve, reject) => {
+                            newScript.onload = resolve;
+                            newScript.onerror = reject;
+                            document.head.appendChild(newScript);
+                        }).catch(err => console.error('Error loading script:', err));
+                    } else {
+                        // inline: copiar el contenido y ejecutar
+                        newScript.text = oldScript.textContent;
+                        document.head.appendChild(newScript);
+                        // remover inmediatamente para limpieza (el script ya se ejecutó)
+                        document.head.removeChild(newScript);
+                    }
+                    // remover el script antiguo del container para evitar duplicados
+                    if (oldScript.parentNode) oldScript.parentNode.removeChild(oldScript);
+                }
+            } catch (err) {
+                console.error('Error al ejecutar scripts del módulo:', err);
+            }
             // Initialize module-specific JavaScript
             if (moduleId === 'fleet') {
                 if (typeof initFleetModule === 'function') {
