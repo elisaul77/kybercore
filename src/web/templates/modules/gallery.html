@@ -1,0 +1,331 @@
+<!-- Galería de Proyectos - Módulo Producción (Demo Visual) -->
+<section id="galeria" class="space-y-6">
+    <!-- Header con filtros y búsqueda -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+            <h2 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                📁 Galería de Proyectos
+            </h2>
+            <p class="text-gray-600 mt-2">Organiza y gestiona tus proyectos de impresión 3D con análisis IA integrado</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <button class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
+                📁 Nuevo Proyecto
+            </button>
+            <button class="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
+                🔄 Analizar Proyectos
+            </button>
+            <button class="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
+                📊 Estadísticas
+            </button>
+        </div>
+    </div>
+
+    <!-- Filtros y búsqueda -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Buscar proyectos</label>
+                <input type="text" placeholder="Nombre o descripción..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de proyecto</label>
+                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    <option>Todos los tipos</option>
+                    <option>Ensamblaje mecánico</option>
+                    <option>Conjunto decorativo</option>
+                    <option>Kit funcional</option>
+                    <option>Set de herramientas</option>
+                    <option>Juego/Miniatura</option>
+                    <option>Prototipo</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Estado del proyecto</label>
+                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    <option>Todos los estados</option>
+                    <option>En diseño</option>
+                    <option>Listo para imprimir</option>
+                    <option>En progreso</option>
+                    <option>Completado</option>
+                    <option>Pausado</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Complejidad</label>
+                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    <option>Todas las complejidades</option>
+                    <option>Básica (1-3 piezas)</option>
+                    <option>Intermedia (4-10 piezas)</option>
+                    <option>Avanzada (11-25 piezas)</option>
+                    <option>Compleja (25+ piezas)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas rápidas de la galería -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Proyectos</p>
+                    <p class="text-2xl font-bold text-gray-900">12</p>
+                </div>
+                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                    📁
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Total STLs</p>
+                    <p class="text-2xl font-bold text-green-600">47</p>
+                </div>
+                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    🗃️
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Completados</p>
+                    <p class="text-2xl font-bold text-blue-600">8</p>
+                </div>
+                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    ✅
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">En Progreso</p>
+                    <p class="text-2xl font-bold text-orange-600">3</p>
+                </div>
+                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                    ⏳
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Tasa Éxito</p>
+                    <p class="text-2xl font-bold text-purple-600">92%</p>
+                </div>
+                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                    📈
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid de proyectos -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="projects-gallery">
+        <!-- Proyecto 1: Sistema de Engranajes -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+            <div class="relative">
+                <img src="https://placehold.co/350x200/6366f1/ffffff?text=Sistema+Engranajes" alt="Sistema de Engranajes" class="w-full h-48 object-cover">
+                <div class="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    ✅ Completado
+                </div>
+                <div class="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                    5 piezas
+                </div>
+                <div class="absolute bottom-3 right-3 bg-purple-500 text-white px-2 py-1 rounded-full text-xs">
+                    Mecánico
+                </div>
+            </div>
+            <div class="p-4">
+                <h3 class="font-bold text-lg text-gray-900 mb-2">Sistema de Engranajes v2.1</h3>
+                <p class="text-sm text-gray-600 mb-4">Conjunto completo de engranajes para transmisión mecánica</p>
+                <!-- Lista de archivos STL del proyecto -->
+                <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-gray-600">📁</span>
+                        <span class="text-sm font-medium text-gray-700">Archivos del proyecto (5)</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-600">
+                        <div class="flex justify-between items-center">
+                            <span>• engranaje_principal.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• engranaje_secundario.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• eje_motor.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• carcasa_superior.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• carcasa_inferior.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Recomendaciones IA del proyecto -->
+                <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3 mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-purple-600">🤖</span>
+                        <span class="text-sm font-medium text-purple-900">Análisis IA del Proyecto</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-700">
+                        <div class="flex justify-between">
+                            <span>🖨️ Impresoras sugeridas:</span>
+                            <span class="font-medium text-purple-700">2 tipos</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>🧵 Materiales:</span>
+                            <span class="font-medium text-purple-700">PLA, PETG</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>⏱️ Tiempo total:</span>
+                            <span class="font-medium text-purple-700">8h 45m</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>📏 Filamento total:</span>
+                            <span class="font-medium text-purple-700">127.3g</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>💰 Costo estimado:</span>
+                            <span class="font-medium text-purple-700">€2.89</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Progreso del proyecto -->
+                <div class="mb-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">Progreso del proyecto</span>
+                        <span class="text-xs text-gray-500">5/5 piezas</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="w-full h-2 bg-green-400 rounded-full"></div>
+                    </div>
+                    <div class="text-xs text-green-600 mt-1">100% completado - ¡Proyecto terminado!</div>
+                </div>
+                <!-- Botones de acción -->
+                <div class="flex gap-2">
+                    <button class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-2 rounded-lg text-sm hover:from-green-600 hover:to-green-700 transition-colors">
+                        📂 Ver Proyecto
+                    </button>
+                    <button class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                        🔄
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Proyecto 2: Organizador de Escritorio Modular -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+            <div class="relative">
+                <img src="https://placehold.co/350x200/10b981/ffffff?text=Organizador+Modular" alt="Organizador Modular" class="w-full h-48 object-cover">
+                <div class="absolute top-3 right-3 bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    ⏳ En Progreso
+                </div>
+                <div class="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                    7 piezas
+                </div>
+                <div class="absolute bottom-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs">
+                    Decorativo
+                </div>
+            </div>
+            <div class="p-4">
+                <h3 class="font-bold text-lg text-gray-900 mb-2">Organizador Modular v1.0</h3>
+                <p class="text-sm text-gray-600 mb-4">Sistema modular para organización de escritorio y herramientas</p>
+                <!-- Lista de archivos STL del proyecto -->
+                <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-gray-600">📁</span>
+                        <span class="text-sm font-medium text-gray-700">Archivos del proyecto (7)</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-600">
+                        <div class="flex justify-between items-center">
+                            <span>• base_modular.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• bandeja_herramientas.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• soporte_lapices.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• organizador_cables.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• bandeja_pequeña.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• soporte_postits.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>• tapa_modular.stl</span>
+                            <span class="text-green-600">✓</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Recomendaciones IA del proyecto -->
+                <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3 mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-purple-600">🤖</span>
+                        <span class="text-sm font-medium text-purple-900">Análisis IA del Proyecto</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-700">
+                        <div class="flex justify-between">
+                            <span>🖨️ Impresoras sugeridas:</span>
+                            <span class="font-medium text-purple-700">3 tipos</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>🧵 Materiales:</span>
+                            <span class="font-medium text-purple-700">PLA, ABS</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>⏱️ Tiempo total:</span>
+                            <span class="font-medium text-purple-700">12h 10m</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>📏 Filamento total:</span>
+                            <span class="font-medium text-purple-700">189.7g</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>💰 Costo estimado:</span>
+                            <span class="font-medium text-purple-700">€4.12</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Progreso del proyecto -->
+                <div class="mb-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">Progreso del proyecto</span>
+                        <span class="text-xs text-gray-500">5/7 piezas</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="w-3/4 h-2 bg-orange-400 rounded-full"></div>
+                    </div>
+                    <div class="text-xs text-orange-600 mt-1">71% completado - En progreso</div>
+                </div>
+                <!-- Botones de acción -->
+                <div class="flex gap-2">
+                    <button class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-2 rounded-lg text-sm hover:from-green-600 hover:to-green-700 transition-colors">
+                        📂 Ver Proyecto
+                    </button>
+                    <button class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                        🔄
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

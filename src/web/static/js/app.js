@@ -179,6 +179,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     setTimeout(initConsumablesModule, 100);
                 }
             }
+            
+            // Initialize gallery module
+            if (moduleId === 'gallery') {
+                console.log('Inicializando módulo de galería de proyectos...');
+                // Aquí se puede agregar lógica específica de la galería en el futuro
+            }
             // Add other module initializations here as needed
             // if (moduleId === 'recommender') { initRecommenderModule(); }
 
