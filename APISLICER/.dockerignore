@@ -1,0 +1,15 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+pip-log.txt
+pip-delete-this-directory.txt
+.git
+README.md
+.gitignore
+uploads/*
+output/*
+!uploads/.gitkeep
+!output/.gitkeep
