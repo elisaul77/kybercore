@@ -109,8 +109,8 @@
         }
     }
 
-    // Sistema de modal para detalles de proyecto
-    function showProjectDetails(projectName) {
+    // Sistema de modal para detalles de proyecto - DATOS REALES
+    async function viewProject(projectId) {
         const modal = document.getElementById('stl-preview-modal');
         const modalContent = document.getElementById('modal-content');
         const modalTitle = document.getElementById('modal-title');
@@ -120,106 +120,332 @@
             return;
         }
 
-        modalTitle.textContent = projectName;
-
+        // Mostrar loading
+        modalTitle.textContent = 'Cargando proyecto...';
         modalContent.innerHTML = `
+            <div class="flex justify-center items-center h-64">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+            </div>
+        `;
+        modal.classList.remove('hidden');
+
+        try {
+            // Cargar datos del proyecto desde la API
+            const response = await fetch(`/api/gallery/projects/${projectId}`);
+            if (!response.ok) {
+                throw new Error('Error al cargar el proyecto');
+            }
+            
+            const project = await response.json();
+            
+            // Actualizar título del modal
+            modalTitle.textContent = project.nombre;
+
+            // Generar contenido del modal con datos reales
+            modalContent.innerHTML = generateProjectModalContent(project);
+
+        } catch (error) {
+            console.error('Error loading project:', error);
+            modalTitle.textContent = 'Error';
+            modalContent.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="text-red-500 text-6xl mb-4">⚠️</div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Error al cargar el proyecto</h3>
+                    <p class="text-gray-600">${error.message}</p>
+                    <button onclick="closeModal()" class="mt-4 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
+                        Cerrar
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    // Generar contenido HTML del modal con datos reales
+    function generateProjectModalContent(project) {
+        const imageUrl = project.imagen || '/static/images/placeholder-project.png';
+        const archivos = project.archivos || [];
+        const analisis = project.analisis_ia || {};
+        const progreso = project.progreso || {};
+        
+        return `
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Columna izquierda: Imagen y archivos -->
                 <div class="space-y-4">
-                    <div class="bg-gray-100 rounded-lg p-4 h-64 flex items-center justify-center">
-                        <div class="text-center">
-                            <div class="text-6xl mb-4">📁</div>
-                            <p class="text-gray-600">${projectName}</p>
-                            <p class="text-sm text-gray-500 mt-2">Vista 3D del proyecto completo</p>
+                    <!-- Imagen principal del proyecto -->
+                    <div class="bg-gray-100 rounded-lg overflow-hidden">
+                        <img src="${imageUrl}" alt="${project.nombre}" 
+                             class="w-full h-64 object-cover" 
+                             onerror="this.src='/static/images/placeholder-project.png'; this.onerror=null;">
+                    </div>
+
+                    <!-- Lista de archivos STL -->
+                    <div class="bg-gray-50 rounded-lg p-4 max-h-64 overflow-y-auto">
+                        <h4 class="font-medium text-gray-900 mb-3">📋 Archivos del Proyecto (${archivos.length})</h4>
+                        <div class="space-y-2 text-sm">
+                            ${archivos.map(archivo => `
+                                <div class="flex justify-between items-center p-2 bg-white rounded border hover:bg-gray-50">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-blue-600">📄</span>
+                                        <span class="font-medium">${archivo.nombre}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs text-gray-500">${archivo.tamaño}</span>
+                                        <span class="text-green-600">✓</span>
+                                        <button onclick="downloadFile('${project.id}', '${archivo.nombre}')" 
+                                                class="text-blue-600 hover:text-blue-800 text-xs">
+                                            ⬇️
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
                         </div>
                     </div>
 
-                    <div class="bg-gray-50 rounded-lg p-4 max-h-64 overflow-y-auto">
-                        <h4 class="font-medium text-gray-900 mb-3">📋 Archivos del Proyecto</h4>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between items-center p-2 bg-white rounded border">
-                                <span>archivo_principal.stl</span>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs text-gray-500">2.1 MB</span>
-                                    <span class="text-green-600">✓</span>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center p-2 bg-white rounded border">
-                                <span>componente_secundario.stl</span>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs text-gray-500">1.8 MB</span>
-                                    <span class="text-green-600">✓</span>
-                                </div>
-                            </div>
+                    <!-- Enlaces externos -->
+                    ${project.url ? `
+                        <div class="bg-blue-50 rounded-lg p-4">
+                            <h4 class="font-medium text-blue-900 mb-2">🔗 Enlaces</h4>
+                            <a href="${project.url}" target="_blank" 
+                               class="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-2">
+                                <span>🌐</span>
+                                Ver en Thingiverse
+                                <span>↗️</span>
+                            </a>
                         </div>
-                    </div>
+                    ` : ''}
                 </div>
 
+                <!-- Columna derecha: Detalles del proyecto -->
                 <div class="space-y-4">
-                    <h3 class="text-xl font-bold text-gray-900">${projectName}</h3>
+                    <!-- Título y descripción -->
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">${project.nombre}</h3>
+                        <p class="text-gray-600 text-sm mb-4">${project.descripcion}</p>
+                        
+                        <!-- Badges -->
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">
+                                ${project.tipo}
+                            </span>
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                ${project.estado}
+                            </span>
+                            ${project.autor ? `
+                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                                    👤 ${project.autor}
+                                </span>
+                            ` : ''}
+                        </div>
+                    </div>
 
-                    <div class="bg-gray-50 rounded-lg p-4">
-                        <h4 class="font-medium text-gray-900 mb-2">📊 Estadísticas del Proyecto</h4>
+                    <!-- Análisis de IA -->
+                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-200">
+                        <h4 class="font-medium text-purple-900 mb-3 flex items-center gap-2">
+                            🤖 Análisis de IA
+                        </h4>
                         <div class="space-y-2 text-sm">
                             <div class="flex justify-between">
-                                <span>Total de archivos:</span>
-                                <span>5 STL</span>
+                                <span class="text-purple-700">Tiempo estimado:</span>
+                                <span class="font-medium">${analisis.tiempo_estimado || 'No calculado'}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span>Tamaño total:</span>
-                                <span>11.1 MB</span>
+                                <span class="text-purple-700">Filamento total:</span>
+                                <span class="font-medium">${analisis.filamento_total || 'No calculado'}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span>Fecha creación:</span>
-                                <span>15 Jul 2025</span>
+                                <span class="text-purple-700">Costo estimado:</span>
+                                <span class="font-medium">${analisis.costo_estimado || 'No calculado'}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-purple-700">Material sugerido:</span>
+                                <span class="font-medium">${analisis.materiales || 'PLA'}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-purple-700">Impresoras compatibles:</span>
+                                <span class="font-medium">${analisis.impresoras_sugeridas || 'Cualquier FDM'}</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-blue-50 rounded-lg p-4">
-                        <h4 class="font-medium text-blue-900 mb-2">🤖 Planificación IA del Proyecto</h4>
-                        <div class="space-y-2 text-sm text-blue-800">
-                            <p>• <strong>Materiales sugeridos:</strong> PLA para prototipos, PETG para piezas funcionales</p>
-                            <p>• <strong>Tiempo estimado:</strong> 8h 45m</p>
-                            <p>• <strong>Optimización:</strong> Listo para impresión</p>
+                    <!-- Progreso del proyecto -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="font-medium text-gray-900 mb-3">📊 Estado del Proyecto</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span>Progreso:</span>
+                                <span class="font-medium">${progreso.porcentaje || 0}%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-purple-600 h-2 rounded-full transition-all duration-300" 
+                                     style="width: ${progreso.porcentaje || 0}%"></div>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                ${progreso.mensaje || 'Proyecto listo para imprimir'}
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Piezas completadas:</span>
+                                <span class="font-medium">${progreso.piezas_completadas || 0} / ${progreso.piezas_totales || archivos.length}</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2">
-                        <button id="print-project" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors text-sm">
-                            🚀 Imprimir Proyecto
+                    <!-- Botones de acción -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="startPrinting(${project.id})" 
+                                class="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-colors">
+                            🖨️ Imprimir
                         </button>
-                        <button class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-purple-700 transition-colors text-sm">
-                            📋 Planificar Cola
+                        <button onclick="toggleFavorite(${project.id})" 
+                                class="px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg hover:from-yellow-600 hover:to-yellow-700 transition-colors">
+                            ${project.favorito ? '❤️' : '🤍'} Favorito
                         </button>
-                        <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm">
-                            📥 Exportar
+                        <button onclick="exportProject(${project.id})" 
+                                class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors">
+                            📤 Exportar
                         </button>
-                        <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm">
-                            📝 Editar
+                        <button onclick="duplicateProject(${project.id})" 
+                                class="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-colors">
+                            📋 Duplicar
                         </button>
+                    </div>
+
+                    <!-- Metadatos adicionales -->
+                    <div class="bg-gray-50 rounded-lg p-4 text-xs text-gray-600">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>Creado: ${project.fecha_creacion || 'No disponible'}</div>
+                            <div>ID: ${project.thingiverse_id || 'Local'}</div>
+                        </div>
+                        ${project.tags ? `
+                            <div class="mt-2">
+                                <span class="font-medium">Tags:</span> ${project.tags.join(', ')}
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
             </div>
         `;
-
-        modal.classList.remove('hidden');
     }
 
+    // Funciones auxiliares para acciones del modal
+    async function downloadFile(projectId, filename) {
+        try {
+            const slug = getProjectSlug(projectId);
+            const response = await fetch(`/api/gallery/projects/${slug}/file/${filename}`);
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                showToast('Descarga iniciada', `Descargando ${filename}`, 'success');
+            }
+        } catch (error) {
+            showToast('Error', 'Error al descargar el archivo', 'error');
+        }
+    }
+
+    function getProjectSlug(projectId) {
+        const slugMap = {
+            1: 'atx-power-supply-6749455',
+            2: 'aquarium-guard-tower-3139513',
+            3: 'flexi-dog-2810483'
+        };
+        return slugMap[projectId] || 'unknown';
+    }
+
+    function startPrinting(projectId) {
+        showToast('Función pendiente', 'La función de impresión se integrará con el módulo de flota', 'info');
+    }
+
+    async function toggleFavorite(projectId) {
+        try {
+            const response = await fetch(`/api/gallery/projects/${projectId}/favorite`, {
+                method: 'POST'
+            });
+            if (response.ok) {
+                const data = await response.json();
+                showToast('Favorito actualizado', data.message, 'success');
+                // Recargar el modal para reflejar el cambio
+                setTimeout(() => viewProject(projectId), 500);
+            }
+        } catch (error) {
+            showToast('Error', 'Error al actualizar favorito', 'error');
+        }
+    }
+
+    function exportProject(projectId) {
+        showToast('Función pendiente', 'La función de exportación estará disponible pronto', 'info');
+    }
+
+    function duplicateProject(projectId) {
+        showToast('Función pendiente', 'La función de duplicación estará disponible pronto', 'info');
+    }
+
+    function deleteProject(projectId) {
+        showToast('Función pendiente', 'La función de eliminación estará disponible pronto', 'info');
+    }
+
+    // Función para cerrar el modal
     function closeModal() {
         const modal = document.getElementById('stl-preview-modal');
-        if (modal) modal.classList.add('hidden');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
     }
+
+    // Función showProjectDetails original (ahora usa datos reales)
+    function showProjectDetails(projectName) {
+        // Buscar proyecto por nombre y llamar a viewProject con el ID
+        const projectMap = {
+            'ATX Power Supply': 1,
+            'Aquarium Guard Tower': 2,
+            'Flexi Dog': 3
+        };
+        const projectId = projectMap[projectName] || 1;
+        viewProject(projectId);
+    }
+
+    // Variable para controlar si los event listeners ya están inicializados
+    let eventListenersInitialized = false;
 
     // Delegación de eventos para botones
     function initEventListeners() {
+        // Evitar agregar múltiples event listeners
+        if (eventListenersInitialized) {
+            console.log('Gallery event listeners ya están inicializados');
+            return;
+        }
+
+        console.log('Inicializando event listeners de gallery...');
+        
         document.addEventListener('click', function(e){
             const button = e.target.closest('button');
             if (!button) return;
 
+            // Solo procesar si el botón está dentro del módulo de galería
+            const gallerySection = button.closest('#galeria');
+            if (!gallerySection) return;
+
+            // Nuevo sistema: usar data-action
+            const action = button.getAttribute('data-action');
+            const projectId = button.getAttribute('data-project-id');
+
+            if (action === 'view-project' && projectId) {
+                e.preventDefault();
+                console.log('Opening project:', projectId);
+                viewProject(parseInt(projectId));
+                return;
+            }
+
             const buttonText = button.textContent.trim();
 
-            // Botones de "Ver Proyecto" y similares
+            // Sistema legacy: buscar por texto del botón
             if (buttonText.includes('Ver Proyecto') || 
+                buttonText.includes('👁️ Ver Proyecto') ||
                 buttonText.includes('📂 Ver Proyecto') ||
                 buttonText.includes('Continuar Diseño') ||
                 buttonText.includes('📝 Continuar Diseño') ||
@@ -259,6 +485,9 @@
                 closeModal();
             }
         });
+
+        eventListenersInitialized = true;
+        console.log('Gallery event listeners inicializados correctamente');
     }
 
     // Exposición de funciones globales
@@ -270,7 +499,9 @@
         window.duplicateProject = duplicateProject;
         window.deleteProject = deleteProject;
         window.showProjectDetails = showProjectDetails;
+        window.viewProject = viewProject;
         window.closeModal = closeModal;
+        window.initGalleryEventListeners = initEventListeners;
     }
 
     // Inicialización del módulo de galería

@@ -8,14 +8,14 @@
             </h2>
             <p class="text-gray-600 mt-2">Organiza y gestiona tus proyectos de impresión 3D con análisis IA integrado</p>
         </div>
-        <div class="flex flex-wrap gap-2">
-            <button onclick="createNewProject()" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
-                📁 Nuevo Proyecto
+        <div class="flex gap-3">
+            <button onclick="createNewProject()" class="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-colors shadow-lg">
+                ➕ Nuevo Proyecto
             </button>
-            <button onclick="analyzeAllProjects()" class="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
-                🔄 Analizar Proyectos
+            <button onclick="analyzeAllProjects()" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-colors shadow-lg">
+                🔍 Analizar Todo
             </button>
-            <button onclick="showProjectsStatistics()" class="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 text-sm font-medium shadow-lg transform hover:scale-105 transition-all duration-200">
+            <button onclick="showProjectsStatistics()" class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-purple-600 hover:to-purple-700 transition-colors shadow-lg">
                 📊 Estadísticas
             </button>
         </div>
@@ -40,13 +40,12 @@
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Estado del proyecto</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
                 <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                     <option>Todos los estados</option>
-                    <option>En diseño</option>
-                    <option>Listo para imprimir</option>
-                    <option>En progreso</option>
                     <option>Completado</option>
+                    <option>En progreso</option>
+                    <option>Listo para imprimir</option>
                     <option>Con problemas</option>
                 </select>
             </div>
@@ -54,7 +53,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Ordenar por</label>
                 <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                     <option>Fecha de creación</option>
-                    <option>Nombre</option>
+                    <option>Nombre (A-Z)</option>
                     <option>Estado</option>
                     <option>Tipo</option>
                 </select>
@@ -62,241 +61,123 @@
         </div>
     </div>
 
-    <!-- Estadísticas rápidas de la galería -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+    <!-- Estadísticas rápidas -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">Total Proyectos</p>
-                    <p class="text-2xl font-bold text-purple-600">{{ estadisticas.total_proyectos }}</p>
+                    <p class="text-blue-100">Total Proyectos</p>
+                    <p class="text-3xl font-bold">{{ estadisticas.total_proyectos }}</p>
                 </div>
-                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                    📁
-                </div>
+                <div class="text-blue-200 text-3xl">📁</div>
             </div>
         </div>
-        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+        <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">Total STLs</p>
-                    <p class="text-2xl font-bold text-green-600">{{ estadisticas.total_stls }}</p>
+                    <p class="text-green-100">Archivos STL</p>
+                    <p class="text-3xl font-bold">{{ estadisticas.total_stls }}</p>
                 </div>
-                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    🗃️
-                </div>
+                <div class="text-green-200 text-3xl">🗂️</div>
             </div>
         </div>
-        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+        <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">Completados</p>
-                    <p class="text-2xl font-bold text-blue-600">{{ estadisticas.completados }}</p>
+                    <p class="text-purple-100">Completados</p>
+                    <p class="text-3xl font-bold">{{ estadisticas.completados }}</p>
                 </div>
-                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    ✅
-                </div>
+                <div class="text-purple-200 text-3xl">✅</div>
             </div>
         </div>
-        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+        <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">En Progreso</p>
-                    <p class="text-2xl font-bold text-orange-600">{{ estadisticas.en_progreso }}</p>
+                    <p class="text-orange-100">En Progreso</p>
+                    <p class="text-3xl font-bold">{{ estadisticas.en_progreso }}</p>
                 </div>
-                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                    ⏳
-                </div>
+                <div class="text-orange-200 text-3xl">⏳</div>
             </div>
         </div>
-        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+        <div class="bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl p-6 text-white">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">Tasa Éxito</p>
-                    <p class="text-2xl font-bold text-purple-600">{{ estadisticas.tasa_exito }}%</p>
+                    <p class="text-pink-100">Tasa Éxito</p>
+                    <p class="text-3xl font-bold">{{ estadisticas.tasa_exito }}%</p>
                 </div>
-                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                    📈
-                </div>
+                <div class="text-pink-200 text-3xl">📈</div>
             </div>
         </div>
     </div>
 
-    <!-- Grid de proyectos dinámicos -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="projects-gallery">
+    <!-- Grid de proyectos -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {% for proyecto in proyectos %}
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-            <div class="relative">
-                <img src="{{ proyecto.imagen }}" alt="{{ proyecto.nombre }}" class="w-full h-48 object-cover">
-                
-                <!-- Badge de estado con lógica condicional -->
-                {% set estado_class = "bg-gray-500" %}
-                {% if proyecto.estado == 'completado' %}
-                    {% set estado_class = "bg-green-500" %}
-                {% elif proyecto.estado == 'en_progreso' %}
-                    {% set estado_class = "bg-blue-500" %}
-                {% elif proyecto.estado == 'listo' %}
-                    {% set estado_class = "bg-purple-500" %}
-                {% elif proyecto.estado == 'problemas' %}
-                    {% set estado_class = "bg-yellow-500" %}
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+            <!-- Imagen del proyecto -->
+            <div class="relative h-48 bg-gray-100">
+                {% if proyecto.imagen %}
+                <img src="{{ proyecto.imagen }}" alt="{{ proyecto.nombre }}" class="w-full h-full object-cover">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center text-gray-400">
+                    <div class="text-center">
+                        <div class="text-4xl mb-2">🏗️</div>
+                        <p class="text-sm">Sin imagen</p>
+                    </div>
+                </div>
                 {% endif %}
                 
-                <div class="absolute top-3 right-3 {{ estado_class }} text-white px-2 py-1 rounded-full text-xs font-medium">
+                <!-- Badge de estado -->
+                {% set estado_colors = {
+                    'completado': 'bg-green-500',
+                    'en_progreso': 'bg-blue-500',
+                    'listo': 'bg-purple-500',
+                    'problemas': 'bg-yellow-500'
+                } %}
+                {% set estado_class = estado_colors.get(proyecto.estado, 'bg-gray-500') %}
+                <div class="absolute top-3 left-3 {{ estado_class }} text-white px-3 py-1 rounded-full text-sm font-medium">
                     {{ proyecto.badges.estado }}
                 </div>
                 
-                <div class="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
-                    {{ proyecto.badges.piezas }}
-                </div>
-                
-                <!-- Badge de categoría con lógica condicional -->
-                {% set categoria_class = "bg-blue-500" %}
-                {% if proyecto.categoria == 'funcional' %}
-                    {% set categoria_class = "bg-green-500" %}
-                {% elif proyecto.categoria == 'decorativo' %}
-                    {% set categoria_class = "bg-purple-500" %}
-                {% elif proyecto.categoria == 'herramientas' %}
-                    {% set categoria_class = "bg-orange-500" %}
-                {% endif %}
-                
-                <div class="absolute bottom-3 right-3 {{ categoria_class }} text-white px-2 py-1 rounded-full text-xs">
-                    {{ proyecto.badges.tipo }}
-                </div>
-                
-                {% if proyecto.favorito %}
-                <div class="absolute bottom-3 left-3 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                    ⭐ Favorito
-                </div>
-                {% endif %}
+                <!-- Botón de favorito -->
+                <button class="absolute top-3 right-3 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition-colors">
+                    ⭐
+                </button>
             </div>
             
-            <div class="p-4">
-                <h3 class="font-bold text-lg text-gray-900 mb-2">{{ proyecto.nombre }}</h3>
-                <p class="text-sm text-gray-600 mb-4">{{ proyecto.descripcion }}</p>
-                
-                <!-- Lista de archivos STL del proyecto -->
-                <div class="bg-gray-50 rounded-lg p-3 mb-4">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="text-gray-600">📁</span>
-                        <span class="text-sm font-medium text-gray-700">Archivos del proyecto ({{ proyecto.archivos|length }})</span>
-                    </div>
-                    <div class="space-y-1 text-xs text-gray-600">
-                        {% for archivo in proyecto.archivos[:3] %}
-                        <div class="flex justify-between items-center">
-                            <span>• {{ archivo.nombre }}</span>
-                            {% if archivo.estado == 'validado' %}
-                                <span class="text-green-600">✓</span>
-                            {% elif archivo.estado == 'error' %}
-                                <span class="text-red-600">❌</span>
-                            {% elif archivo.estado == 'advertencia' %}
-                                <span class="text-yellow-600">⚠️</span>
-                            {% else %}
-                                <span class="text-gray-600">📝</span>
-                            {% endif %}
-                        </div>
-                        {% endfor %}
-                        {% if proyecto.archivos|length > 3 %}
-                        <div class="text-xs text-gray-500 mt-1">+ {{ proyecto.archivos|length - 3 }} archivos más...</div>
-                        {% endif %}
+            <!-- Contenido del proyecto -->
+            <div class="p-6">
+                <div class="flex items-start justify-between mb-3">
+                    <h3 class="font-bold text-lg text-gray-900 leading-tight">{{ proyecto.nombre }}</h3>
+                    <div class="flex flex-col gap-1 text-xs">
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-md">{{ proyecto.badges.tipo }}</span>
+                        <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-md">{{ proyecto.badges.piezas }}</span>
                     </div>
                 </div>
                 
-                <!-- Análisis IA del proyecto -->
-                {% if proyecto.analisis_ia %}
-                    {% set ai_bg_class = "from-gray-50 to-slate-50" %}
-                    {% set ai_text_class = "text-gray-600" %}
-                    {% set ai_header_class = "text-gray-900" %}
-                    {% set ai_content_class = "text-gray-700" %}
-                    
-                    {% if proyecto.estado == 'completado' %}
-                        {% set ai_bg_class = "from-green-50 to-emerald-50" %}
-                        {% set ai_text_class = "text-green-600" %}
-                        {% set ai_header_class = "text-green-900" %}
-                        {% set ai_content_class = "text-green-700" %}
-                    {% elif proyecto.estado == 'en_progreso' %}
-                        {% set ai_bg_class = "from-blue-50 to-cyan-50" %}
-                        {% set ai_text_class = "text-blue-600" %}
-                        {% set ai_header_class = "text-blue-900" %}
-                        {% set ai_content_class = "text-blue-700" %}
-                    {% elif proyecto.estado == 'listo' %}
-                        {% set ai_bg_class = "from-orange-50 to-yellow-50" %}
-                        {% set ai_text_class = "text-orange-600" %}
-                        {% set ai_header_class = "text-orange-900" %}
-                        {% set ai_content_class = "text-orange-700" %}
-                    {% elif proyecto.estado == 'problemas' %}
-                        {% set ai_bg_class = "from-red-50 to-orange-50" %}
-                        {% set ai_text_class = "text-red-600" %}
-                        {% set ai_header_class = "text-red-900" %}
-                        {% set ai_content_class = "text-red-700" %}
-                    {% endif %}
-                    
-                    <div class="bg-gradient-to-r {{ ai_bg_class }} rounded-lg p-3 mb-4">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="{{ ai_text_class }}">🤖</span>
-                            <span class="text-sm font-medium {{ ai_header_class }}">Análisis IA del Proyecto</span>
-                        </div>
-                        <div class="space-y-1 text-xs text-gray-700">
-                            <div class="flex justify-between">
-                                <span>🖨️ Impresoras sugeridas:</span>
-                                <span class="font-medium {{ ai_content_class }}">{{ proyecto.analisis_ia.impresoras_sugeridas }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>🧵 Materiales:</span>
-                                <span class="font-medium {{ ai_content_class }}">{{ proyecto.analisis_ia.materiales }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>⏱️ Tiempo estimado:</span>
-                                <span class="font-medium {{ ai_content_class }}">{{ proyecto.analisis_ia.tiempo_estimado }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>💰 Costo estimado:</span>
-                                <span class="font-medium {{ ai_content_class }}">{{ proyecto.analisis_ia.costo_estimado }}</span>
-                            </div>
-                        </div>
-                        {% if proyecto.estado == 'problemas' %}
-                        <div class="mt-2 p-2 bg-red-100 rounded text-xs text-red-800">
-                            ⚠️ Requiere optimización. Revisar detalles finos.
-                        </div>
-                        {% elif proyecto.estado == 'listo' %}
-                        <div class="mt-2 p-2 bg-orange-100 rounded text-xs text-orange-800">
-                            💡 Recomendación: Imprimir en lotes por material para optimizar cambios
-                        </div>
-                        {% endif %}
-                    </div>
-                {% else %}
-                <div class="bg-gradient-to-r from-gray-50 to-slate-50 rounded-lg p-3 mb-4">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="text-gray-600">⏳</span>
-                        <span class="text-sm font-medium text-gray-700">Proyecto en fase de diseño</span>
-                    </div>
-                    <div class="text-xs text-gray-600 text-center py-2">
-                        <p>Análisis IA disponible cuando esté completo</p>
-                    </div>
-                </div>
-                {% endif %}
+                <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ proyecto.descripcion }}</p>
                 
-                <!-- Progreso del proyecto -->
+                <!-- Progreso -->
+                {% set progress_colors = {
+                    'completado': 'bg-green-500',
+                    'en_progreso': 'bg-blue-500',
+                    'listo': 'bg-purple-500',
+                    'problemas': 'bg-yellow-500'
+                } %}
+                {% set progress_text_colors = {
+                    'completado': 'text-green-700',
+                    'en_progreso': 'text-blue-700',
+                    'listo': 'text-purple-700',
+                    'problemas': 'text-yellow-700'
+                } %}
+                {% set progress_class = progress_colors.get(proyecto.estado, 'bg-gray-500') %}
+                {% set progress_text_class = progress_text_colors.get(proyecto.estado, 'text-gray-700') %}
                 <div class="mb-4">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm font-medium text-gray-700">Progreso del proyecto</span>
-                        <span class="text-xs text-gray-500">{{ proyecto.progreso.piezas_completadas }}/{{ proyecto.progreso.piezas_totales }} piezas</span>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span>Progreso</span>
+                        <span>{{ proyecto.progreso.porcentaje }}%</span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-2">
-                        {% set progress_class = "bg-gray-400" %}
-                        {% set progress_text_class = "text-gray-600" %}
-                        {% if proyecto.estado == 'completado' %}
-                            {% set progress_class = "bg-green-400" %}
-                            {% set progress_text_class = "text-green-600" %}
-                        {% elif proyecto.estado == 'en_progreso' %}
-                            {% set progress_class = "bg-blue-400" %}
-                            {% set progress_text_class = "text-blue-600" %}
-                        {% elif proyecto.estado == 'listo' %}
-                            {% set progress_class = "bg-purple-400" %}
-                            {% set progress_text_class = "text-purple-600" %}
-                        {% elif proyecto.estado == 'problemas' %}
-                            {% set progress_class = "bg-yellow-400" %}
-                            {% set progress_text_class = "text-yellow-600" %}
-                        {% endif %}
-                        
                         <div class="h-2 {{ progress_class }} rounded-full" style="width: {{ proyecto.progreso.porcentaje }}%"></div>
                     </div>
                     <div class="text-xs {{ progress_text_class }} mt-1">{{ proyecto.progreso.mensaje }}</div>
@@ -305,24 +186,24 @@
                 <!-- Botones de acción -->
                 <div class="space-y-2">
                     {% if proyecto.estado == 'completado' %}
-                    <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-2 rounded-lg text-sm hover:from-green-600 hover:to-green-700 transition-colors">
-                        📂 Ver Proyecto
+                    <button data-action="view-project" data-project-id="{{ proyecto.id }}" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-2 rounded-lg text-sm hover:from-green-600 hover:to-green-700 transition-colors">
+                        👁️ Ver Proyecto
                     </button>
                     {% elif proyecto.estado == 'en_progreso' %}
-                    <button class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:from-blue-600 hover:to-blue-700 transition-colors">
-                        📂 Ver Proyecto
+                    <button data-action="view-project" data-project-id="{{ proyecto.id }}" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:from-blue-600 hover:to-blue-700 transition-colors">
+                        👁️ Ver Proyecto
                     </button>
                     {% elif proyecto.estado == 'listo' %}
-                    <button class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-2 rounded-lg text-sm hover:from-orange-600 hover:to-orange-700 transition-colors">
-                        🚀 Iniciar Proyecto
+                    <button data-action="view-project" data-project-id="{{ proyecto.id }}" class="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white px-3 py-2 rounded-lg text-sm hover:from-purple-600 hover:to-purple-700 transition-colors">
+                        👁️ Ver Proyecto
                     </button>
                     {% elif proyecto.estado == 'problemas' %}
-                    <button class="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-white px-3 py-2 rounded-lg text-sm hover:from-yellow-600 hover:to-yellow-700 transition-colors">
-                        ⚡ Optimizar
+                    <button data-action="view-project" data-project-id="{{ proyecto.id }}" class="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-white px-3 py-2 rounded-lg text-sm hover:from-yellow-600 hover:to-yellow-700 transition-colors">
+                        👁️ Ver Proyecto
                     </button>
                     {% else %}
-                    <button class="w-full bg-gradient-to-r from-gray-400 to-gray-500 text-white px-3 py-2 rounded-lg text-sm hover:from-gray-500 hover:to-gray-600 transition-colors">
-                        📝 Continuar Diseño
+                    <button data-action="view-project" data-project-id="{{ proyecto.id }}" class="w-full bg-gradient-to-r from-gray-400 to-gray-500 text-white px-3 py-2 rounded-lg text-sm hover:from-gray-500 hover:to-gray-600 transition-colors">
+                        👁️ Ver Proyecto
                     </button>
                     {% endif %}
                     
@@ -338,22 +219,44 @@
                         </button>
                     </div>
                 </div>
+                
+                <!-- Información adicional -->
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <div class="flex items-center justify-between text-xs text-gray-500">
+                        <span>Por: {{ proyecto.autor }}</span>
+                        <span>{{ proyecto.archivos|length }} archivos</span>
+                    </div>
+                </div>
             </div>
         </div>
         {% endfor %}
     </div>
 
-    <!-- Modal de detalles del proyecto -->
-    <div id="stl-preview-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg max-w-5xl w-full mx-4 overflow-auto max-h-[90vh] shadow-xl">
-            <div class="p-4 flex items-center justify-between border-b">
-                <h3 id="modal-title" class="text-lg font-semibold">Detalles del Proyecto</h3>
-                <button id="close-modal" class="text-gray-600 hover:text-gray-800 px-2 py-1 rounded">✖</button>
+    <!-- Modal para vista detallada del proyecto -->
+    <div id="stl-preview-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="min-h-screen px-4 text-center">
+            <!-- Centrar verticalmente -->
+            <span class="inline-block h-screen align-middle" aria-hidden="true">&#8203;</span>
+            
+            <!-- Panel del modal -->
+            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full">
+                <!-- Header del modal -->
+                <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <h3 id="modal-title" class="text-xl font-bold text-white">Vista Detallada del Proyecto</h3>
+                        <button id="close-modal" class="text-white hover:text-gray-200 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Contenido del modal -->
+                <div id="modal-content" class="p-6">
+                    <!-- El contenido se carga dinámicamente -->
+                </div>
             </div>
-            <div id="modal-content" class="p-6"></div>
         </div>
     </div>
 </section>
-
-<!-- JavaScript externo -->
-<script src="/static/js/gallery.js"></script>

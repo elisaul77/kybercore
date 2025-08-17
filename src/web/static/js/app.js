@@ -214,7 +214,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // Initialize gallery module
             if (moduleId === 'gallery') {
                 console.log('Inicializando módulo de galería de proyectos...');
-                // Aquí se puede agregar lógica específica de la galería en el futuro
+                // Inicializar el módulo de galería
+                if (typeof window.initGalleryModule === 'function') {
+                    window.initGalleryModule();
+                }
+                // Re-inicializar event listeners para el contenido dinámico
+                if (typeof window.initGalleryEventListeners === 'function') {
+                    window.initGalleryEventListeners();
+                    console.log('Event listeners de galería inicializados');
+                } else {
+                    console.warn('initGalleryEventListeners no está disponible');
+                }
             }
             // Add other module initializations here as needed
             // if (moduleId === 'recommender') { initRecommenderModule(); }
