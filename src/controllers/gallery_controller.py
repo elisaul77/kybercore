@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Request, HTTPException
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 import json
 import os
+from pathlib import Path
 
 router = APIRouter()
 templates = Jinja2Templates(directory="src/web/templates")
@@ -26,6 +27,17 @@ def load_projects_data():
             "proyectos": []
         }
 
+def save_projects_data(data):
+    """Guardar datos de proyectos en el archivo JSON"""
+    json_path = os.path.join(os.path.dirname(__file__), "..", "..", "base_datos", "proyectos.json")
+    try:
+        with open(json_path, 'w', encoding='utf-8') as file:
+            json.dump(data, file, indent=2, ensure_ascii=False)
+        return True
+    except Exception as e:
+        print(f"Error guardando proyectos: {e}")
+        return False
+
 @router.get("/gallery", response_class=HTMLResponse)
 async def get_gallery_module(request: Request):
     """Endpoint para servir el módulo de galería de proyectos"""
@@ -35,3 +47,88 @@ async def get_gallery_module(request: Request):
         "estadisticas": data["estadisticas"],
         "proyectos": data["proyectos"]
     })
+
+@router.get("/projects")
+async def get_projects():
+    """API endpoint para obtener todos los proyectos"""
+    data = load_projects_data()
+    return {
+        "projects": data["proyectos"],
+        "statistics": data["estadisticas"]
+    }
+
+@router.get("/projects/{project_id}")
+async def get_project(project_id: int):
+    """API endpoint para obtener un proyecto específico"""
+    data = load_projects_data()
+    project = next((p for p in data["proyectos"] if p["id"] == project_id), None)
+    if not project:
+        raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+    return project
+
+@router.get("/projects/{project_slug}/image/{filename}")
+async def get_project_image(project_slug: str, filename: str):
+    """Sirve imágenes de proyectos"""
+    # Mapear slug a carpeta
+    slug_to_folder = {
+        "atx-power-supply-6749455": "ATX Power supply - 6749455",
+        "aquarium-guard-tower-3139513": "Aquarium Guard Tower - 3139513", 
+        "flexi-dog-2810483": "Flexi Dog - 2810483"
+    }
+    
+    folder_name = slug_to_folder.get(project_slug)
+    if not folder_name:
+        raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+    
+    # Construir ruta a la imagen
+    image_path = os.path.join("src", "proyect", folder_name, "images", filename)
+    
+    if not os.path.exists(image_path):
+        raise HTTPException(status_code=404, detail="Imagen no encontrada")
+    
+    return FileResponse(image_path)
+
+@router.get("/projects/{project_slug}/file/{filename}")
+async def get_project_file(project_slug: str, filename: str):
+    """Sirve archivos STL de proyectos"""
+    # Mapear slug a carpeta
+    slug_to_folder = {
+        "atx-power-supply-6749455": "ATX Power supply - 6749455",
+        "aquarium-guard-tower-3139513": "Aquarium Guard Tower - 3139513",
+        "flexi-dog-2810483": "Flexi Dog - 2810483"
+    }
+    
+    folder_name = slug_to_folder.get(project_slug)
+    if not folder_name:
+        raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+    
+    # Construir ruta al archivo
+    file_path = os.path.join("src", "proyect", folder_name, "files", filename)
+    
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Archivo no encontrado")
+    
+    return FileResponse(file_path, filename=filename)
+
+@router.post("/projects/{project_id}/favorite")
+async def toggle_favorite(project_id: int):
+    """Cambiar estado de favorito de un proyecto"""
+    data = load_projects_data()
+    project = next((p for p in data["proyectos"] if p["id"] == project_id), None)
+    if not project:
+        raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+    
+    # Cambiar estado de favorito
+    project["favorito"] = not project.get("favorito", False)
+    
+    # Guardar cambios
+    if save_projects_data(data):
+        return {"message": "Estado de favorito actualizado", "favorito": project["favorito"]}
+    else:
+        raise HTTPException(status_code=500, detail="Error al guardar cambios")
+
+@router.get("/projects/stats")
+async def get_projects_stats():
+    """Obtener estadísticas de proyectos"""
+    data = load_projects_data()
+    return data["estadisticas"]

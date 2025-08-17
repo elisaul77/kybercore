@@ -1,27 +1,92 @@
-// --- Configuración de proyectos de ejemplo ---
-const ganttProjects = [
+// --- Configuración de proyectos reales ---
+let ganttProjects = [
   {
-    name: 'AlphaCAM',
+    name: 'ATX Power Supply',
     color: 'indigo',
-    durationHours: 12, // duración total en horas
+    durationHours: 18, // duración estimada en horas
     startHour: 2, // hora de inicio (0-23)
-    progress: 8 // horas completadas
+    progress: 0, // horas completadas
+    id: 1,
+    category: 'Electrónico',
+    author: 'AlwaysBlue',
+    files: 9,
+    status: 'listo'
   },
   {
-    name: 'SensorHub',
+    name: 'Aquarium Guard Tower',
     color: 'amber',
-    durationHours: 10,
+    durationHours: 6,
     startHour: 6,
-    progress: 5
+    progress: 0,
+    id: 2,
+    category: 'Decorativo', 
+    author: 'J_Tonkin',
+    files: 4,
+    status: 'listo'
   },
   {
-    name: 'BetaRig',
+    name: 'Flexi Dog',
     color: 'emerald',
-    durationHours: 6,
+    durationHours: 4,
     startHour: 12,
-    progress: 2
+    progress: 0,
+    id: 3,
+    category: 'Juguete',
+    author: 'CapybaraLover',
+    files: 1,
+    status: 'listo'
   }
 ];
+
+// Función para cargar proyectos desde la API
+async function loadProjectsFromAPI() {
+  try {
+    const response = await fetch('/api/gallery/projects');
+    if (response.ok) {
+      const data = await response.json();
+      // Convertir formato de API a formato de Gantt
+      ganttProjects = data.projects.map(project => ({
+        name: project.nombre,
+        color: getProjectColor(project.categoria),
+        durationHours: parseTimeEstimate(project.analisis_ia.tiempo_estimado),
+        startHour: 2, // Por defecto
+        progress: project.progreso.piezas_completadas || 0,
+        id: project.id,
+        category: project.tipo,
+        author: project.autor,
+        files: project.archivos.length,
+        status: project.estado
+      }));
+      console.log('📋 Proyectos cargados desde API:', ganttProjects.length);
+    }
+  } catch (error) {
+    console.warn('⚠️ Error cargando proyectos desde API, usando datos por defecto:', error);
+  }
+}
+
+// Función auxiliar para mapear categorías a colores
+function getProjectColor(categoria) {
+  const colorMap = {
+    'funcional': 'indigo',
+    'decorativo': 'amber', 
+    'juguete': 'emerald',
+    'electronico': 'blue',
+    'mecanico': 'green'
+  };
+  return colorMap[categoria.toLowerCase()] || 'gray';
+}
+
+// Función auxiliar para parsear tiempo estimado
+function parseTimeEstimate(timeStr) {
+  // Parsear formato "18h 30m" a horas decimales
+  const match = timeStr.match(/(\d+)h\s*(\d+)?m?/);
+  if (match) {
+    const hours = parseInt(match[1]) || 0;
+    const minutes = parseInt(match[2]) || 0;
+    return hours + (minutes / 60);
+  }
+  return 8; // Por defecto
+}
 
 function renderGanttTimeline(scale) {
   const labelsContainer = document.getElementById('gantt-timeline-labels');
@@ -91,7 +156,10 @@ function renderGanttRows(scale) {
   });
 }
 
-function initProjectManagement() {
+async function initProjectManagement() {
+    // Cargar proyectos desde la API al inicializar
+    await loadProjectsFromAPI();
+    
     const detailViewBtn = document.getElementById('detail-view-btn');
     const ganttViewBtn = document.getElementById('gantt-view-btn');
     const detailView = document.getElementById('detail-view');

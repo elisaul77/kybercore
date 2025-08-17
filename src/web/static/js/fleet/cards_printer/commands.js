@@ -64,7 +64,7 @@ window.FleetCards.Commands = {
 
         return this.sendCommand(printerId, 'home', {
             action: 'home',
-            axes: axes,
+            axis: axesText,  // Enviar en mayúsculas para coincidir con la validación del backend
             successMessage: `🏠 Home ${axesText} ejecutado correctamente`,
             errorMessage: `ejecutar home ${axesText}`
         });
