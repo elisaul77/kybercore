@@ -1,0 +1,227 @@
+{
+  "estadisticas": {
+    "total_proyectos": 12,
+    "total_stls": 47,
+    "completados": 8,
+    "en_progreso": 3,
+    "tasa_exito": 92
+  },
+  "proyectos": [
+    {
+      "id": 1,
+      "nombre": "Robot Explorador Kit",
+      "descripcion": "Kit completo de robot explorador con sensores y ruedas",
+      "estado": "completado",
+      "tipo": "Mecánico",
+      "categoria": "funcional",
+      "imagen": "https://placehold.co/350x200/6366f1/ffffff?text=Robot+Explorador",
+      "badges": {
+        "estado": "✅ Completado",
+        "piezas": "5 piezas",
+        "tipo": "Funcional"
+      },
+      "archivos": [
+        {"nombre": "chassis_principal.stl", "tamaño": "2.3 MB", "estado": "validado"},
+        {"nombre": "rueda_izquierda.stl", "tamaño": "1.1 MB", "estado": "validado"},
+        {"nombre": "rueda_derecha.stl", "tamaño": "1.1 MB", "estado": "validado"},
+        {"nombre": "soporte_sensores.stl", "tamaño": "0.8 MB", "estado": "validado"},
+        {"nombre": "tapa_bateria.stl", "tamaño": "1.2 MB", "estado": "validado"}
+      ],
+      "analisis_ia": {
+        "impresoras_sugeridas": "2 tipos",
+        "materiales": "PLA, PETG",
+        "tiempo_estimado": "12h 15m",
+        "filamento_total": "156.3g",
+        "costo_estimado": "€3.78"
+      },
+      "progreso": {
+        "piezas_completadas": 5,
+        "piezas_totales": 5,
+        "porcentaje": 100,
+        "mensaje": "100% completado - ¡Proyecto terminado!"
+      },
+      "fecha_creacion": "2025-07-10",
+      "fecha_completado": "2025-07-15",
+      "favorito": false
+    },
+    {
+      "id": 2,
+      "nombre": "Organizador Escritorio Modular",
+      "descripcion": "Sistema completo de organización para escritorio",
+      "estado": "en_progreso",
+      "tipo": "Organizador",
+      "categoria": "funcional",
+      "imagen": "https://placehold.co/350x200/10b981/ffffff?text=Organizador+Modular",
+      "badges": {
+        "estado": "⏳ En Progreso",
+        "piezas": "8 piezas",
+        "tipo": "Funcional"
+      },
+      "archivos": [
+        {"nombre": "base_principal.stl", "tamaño": "3.2 MB", "estado": "validado"},
+        {"nombre": "compartimento_lapices.stl", "tamaño": "1.5 MB", "estado": "validado"},
+        {"nombre": "bandeja_clips.stl", "tamaño": "0.9 MB", "estado": "validado"},
+        {"nombre": "soporte_telefono.stl", "tamaño": "1.8 MB", "estado": "pendiente"},
+        {"nombre": "organizador_cables.stl", "tamaño": "2.1 MB", "estado": "pendiente"}
+      ],
+      "analisis_ia": {
+        "impresoras_sugeridas": "1 tipo",
+        "materiales": "PLA",
+        "tiempo_estimado": "15h 45m",
+        "filamento_total": "187.2g",
+        "costo_estimado": "€4.25"
+      },
+      "progreso": {
+        "piezas_completadas": 3,
+        "piezas_totales": 8,
+        "porcentaje": 37,
+        "mensaje": "37% completado - Imprimiendo ahora"
+      },
+      "fecha_creacion": "2025-07-20",
+      "fecha_completado": null,
+      "favorito": false
+    },
+    {
+      "id": 3,
+      "nombre": "Set Herramientas de Taller",
+      "descripcion": "Kit completo de herramientas para taller mecánico",
+      "estado": "listo",
+      "tipo": "Herramientas",
+      "categoria": "herramientas",
+      "imagen": "https://placehold.co/350x200/f59e0b/ffffff?text=Set+Herramientas",
+      "badges": {
+        "estado": "📋 Listo",
+        "piezas": "12 piezas",
+        "tipo": "Herramientas"
+      },
+      "archivos": [
+        {"nombre": "destornillador_phillips.stl", "tamaño": "1.2 MB", "estado": "validado"},
+        {"nombre": "destornillador_plano.stl", "tamaño": "1.1 MB", "estado": "validado"},
+        {"nombre": "llave_inglesa_10mm.stl", "tamaño": "2.3 MB", "estado": "validado"},
+        {"nombre": "martillo_pequeño.stl", "tamaño": "3.1 MB", "estado": "validado"},
+        {"nombre": "soporte_herramientas.stl", "tamaño": "4.2 MB", "estado": "validado"}
+      ],
+      "analisis_ia": {
+        "impresoras_sugeridas": "3 tipos",
+        "materiales": "PETG, ABS",
+        "tiempo_estimado": "18h 30m",
+        "filamento_total": "298.7g",
+        "costo_estimado": "€7.45"
+      },
+      "progreso": {
+        "piezas_completadas": 0,
+        "piezas_totales": 12,
+        "porcentaje": 0,
+        "mensaje": "Analizado y listo para imprimir"
+      },
+      "fecha_creacion": "2025-07-25",
+      "fecha_completado": null,
+      "favorito": false
+    },
+    {
+      "id": 4,
+      "nombre": "Ajedrez Temático Medieval",
+      "descripcion": "Set completo de ajedrez con diseño medieval personalizado",
+      "estado": "problemas",
+      "tipo": "Decorativo",
+      "categoria": "decorativo",
+      "imagen": "https://placehold.co/350x200/8b5cf6/ffffff?text=Ajedrez+Custom",
+      "badges": {
+        "estado": "⚠️ Problemas",
+        "piezas": "33 piezas",
+        "tipo": "Decorativo"
+      },
+      "archivos": [
+        {"nombre": "tablero_base.stl", "tamaño": "5.2 MB", "estado": "validado"},
+        {"nombre": "rey_blanco.stl", "tamaño": "2.1 MB", "estado": "error"},
+        {"nombre": "reina_blanca.stl", "tamaño": "2.3 MB", "estado": "validado"},
+        {"nombre": "torres_blancas.stl", "tamaño": "1.8 MB", "estado": "validado"},
+        {"nombre": "alfiles_blancos.stl", "tamaño": "1.9 MB", "estado": "advertencia"}
+      ],
+      "analisis_ia": {
+        "impresoras_sugeridas": "2 tipos",
+        "materiales": "PLA multicolor",
+        "tiempo_estimado": "45h 15m",
+        "filamento_total": "856.2g",
+        "costo_estimado": "€18.95"
+      },
+      "progreso": {
+        "piezas_completadas": 8,
+        "piezas_totales": 33,
+        "porcentaje": 24,
+        "mensaje": "24% completado - Requiere atención"
+      },
+      "fecha_creacion": "2025-06-15",
+      "fecha_completado": null,
+      "favorito": true
+    },
+    {
+      "id": 5,
+      "nombre": "Robot Cuadrúpedo v0.8",
+      "descripcion": "Prototipo de robot caminante con articulaciones móviles",
+      "estado": "diseño",
+      "tipo": "Prototipo",
+      "categoria": "prototipo",
+      "imagen": "https://placehold.co/350x200/64748b/ffffff?text=Robot+Prototipo",
+      "badges": {
+        "estado": "⏳ En Diseño",
+        "piezas": "24 piezas",
+        "tipo": "Prototipo"
+      },
+      "archivos": [
+        {"nombre": "cuerpo_principal.stl", "tamaño": "0 MB", "estado": "diseño"},
+        {"nombre": "pata_delantera_izq.stl", "tamaño": "0 MB", "estado": "diseño"},
+        {"nombre": "articulacion_hombro.stl", "tamaño": "0 MB", "estado": "diseño"},
+        {"nombre": "articulacion_codo.stl", "tamaño": "0 MB", "estado": "diseño"},
+        {"nombre": "pie_articulado.stl", "tamaño": "0 MB", "estado": "diseño"}
+      ],
+      "analisis_ia": null,
+      "progreso": {
+        "piezas_completadas": 0,
+        "piezas_totales": 24,
+        "porcentaje": 8,
+        "mensaje": "8% diseñado - En desarrollo"
+      },
+      "fecha_creacion": "2025-08-01",
+      "fecha_completado": null,
+      "favorito": false
+    },
+    {
+      "id": 6,
+      "nombre": "Kit Reparación Ender 3",
+      "descripcion": "Piezas de repuesto y mejoras para impresora Ender 3",
+      "estado": "completado",
+      "tipo": "Reparación",
+      "categoria": "funcional",
+      "imagen": "https://placehold.co/350x200/059669/ffffff?text=Kit+Reparacion",
+      "badges": {
+        "estado": "✅ Completado",
+        "piezas": "7 piezas",
+        "tipo": "Funcional"
+      },
+      "archivos": [
+        {"nombre": "tensor_correa_mejorado.stl", "tamaño": "1.2 MB", "estado": "validado"},
+        {"nombre": "soporte_extrusor.stl", "tamaño": "2.1 MB", "estado": "validado"},
+        {"nombre": "tapa_electronica.stl", "tamaño": "1.8 MB", "estado": "validado"},
+        {"nombre": "guia_filamento.stl", "tamaño": "0.9 MB", "estado": "validado"},
+        {"nombre": "pie_antivibracion.stl", "tamaño": "0.6 MB", "estado": "validado"}
+      ],
+      "analisis_ia": {
+        "impresoras_sugeridas": "1 tipo",
+        "materiales": "PETG Negro",
+        "tiempo_estimado": "5h 20m",
+        "filamento_total": "73.8g",
+        "costo_estimado": "€1.89"
+      },
+      "progreso": {
+        "piezas_completadas": 7,
+        "piezas_totales": 7,
+        "porcentaje": 100,
+        "mensaje": "100% completado - ¡Excelente calidad!"
+      },
+      "fecha_creacion": "2025-07-01",
+      "fecha_completado": "2025-07-03",
+      "favorito": true
+    }
+  ]
+}
