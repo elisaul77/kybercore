@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class FleetService:
-    def __init__(self, printers_file='printers.json'):
+    def __init__(self, printers_file='base_datos/printers.json'):
         self.printers_file = printers_file
         self.printers = self._load_printers()
         self._session = None
