@@ -38,12 +38,45 @@ Orquestador local de múltiples impresoras 3D con **Inteligencia Artificial inte
    ```
 3. Accede a la API o interfaz en el puerto 8000 (ajusta según configuración).
 
+## 🔧 APISLICER - Servicio de Slicing
+
+KyberCore incluye **APISLICER**, un servicio dedicado para la conversión de archivos STL a G-code usando PrusaSlicer.
+
+### 🚀 Inicio Rápido
+
+```bash
+# Iniciar todos los servicios (KyberCore + APISLICER)
+docker compose up --build -d
+
+# Probar APISLICER
+./scripts/test_apislicer.sh
+
+# Acceso directo a APISLICER
+curl http://localhost:8001/health
+```
+
+### 📚 Documentación APISLICER
+
+- 📋 **[Documentación Técnica Completa](docs/apislicer-technical-docs.md)** - API, configuración y troubleshooting
+- 🎨 **[Diagramas de Arquitectura](docs/apislicer-diagrams.md)** - Flujos, componentes y despliegue (Mermaid)  
+- 🧪 **[Interfaz de Test Interactiva](docs/apislicer-test-interface.html)** - Herramienta web para probar la API
+
+### ⚡ Características del Servicio
+
+- **🔄 API REST**: Conversión STL → G-code via HTTP
+- **🐳 Containerizado**: PrusaSlicer 2.8.1 en Ubuntu 24.04
+- **⚙️ Configurable**: Perfiles de impresora y parámetros de slice
+- **📊 Monitoreo**: Health checks y logs detallados
+- **🧪 Testing**: Scripts automáticos y interfaz web
+
 ## Estructura del Proyecto
 - `src/` : Código fuente principal (API, controladores, modelos, servicios, etc.)
+- `APISLICER/` : Servicio de slicing STL → G-code con PrusaSlicer
 - `prototype/` : Prototipos y pruebas de UI/UX
 - `docs/` : Documentación estratégica y técnica
 - `infografia/` : Material visual y justificación del proyecto
 - `tests/` : Pruebas automatizadas
+- `scripts/` : Scripts de automatización y testing
 
 ## 🤝 Contribuir
 
