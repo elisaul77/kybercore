@@ -99,34 +99,34 @@ sequenceDiagram
 graph LR
     subgraph "APISLICER Container"
         subgraph "FastAPI Application"
-            MAIN[main.py]
-            HEALTH[/health endpoint]
-            SLICE[/slice endpoint] 
-            PROF[/profiles endpoint]
+            MAIN(main.py)
+            HEALTH(/health endpoint)
+            SLICE(/slice endpoint) 
+            PROF(/profiles endpoint)
         end
         
         subgraph "PrusaSlicer Integration"
-            WRAPPER[Binary Wrapper]
-            EXEC[prusa-slicer executable]
-            EXTRACT[AppImage Extract]
+            WRAPPER(Binary Wrapper)
+            EXEC(prusa-slicer executable)
+            EXTRACT(AppImage Extract)
         end
         
         subgraph "File Management"
-            UPLOAD[Upload Handler]
-            OUTPUT[Output Manager]
-            CLEANUP[Cleanup Service]
+            UPLOAD(Upload Handler)
+            OUTPUT(Output Manager)
+            CLEANUP(Cleanup Service)
         end
         
         subgraph "Configuration"
-            INI[Printer Profiles .ini]
-            ENV[Environment Variables]
-            PATHS[Path Configuration]
+            INI(Printer Profiles .ini)
+            ENV(Environment Variables)
+            PATHS(Path Configuration)
         end
         
         subgraph "System Services"
-            XVFB[Virtual Display]
-            PYTHON[Python Runtime]
-            UBUNTU[Ubuntu 24.04 Base]
+            XVFB(Virtual Display)
+            PYTHON(Python Runtime)
+            UBUNTU(Ubuntu 24.04 Base)
         end
     end
     
@@ -151,6 +151,7 @@ graph LR
     MAIN --> PYTHON
     PYTHON --> UBUNTU
 ```
+
 
 ## Flujo de Estados del Archivo
 

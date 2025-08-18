@@ -8,14 +8,14 @@ APISLICER es un microservicio que proporciona una API REST para laminar archivos
 
 ```mermaid
 graph TB
-    A[Cliente/KyberCore] --> B[APISLICER API]
-    B --> C[FastAPI Server]
-    C --> D[File Manager]
-    C --> E[PrusaSlicer Engine]
-    D --> F[/app/uploads]
-    D --> G[/app/output]
-    E --> H[Printer Configs]
-    E --> I[G-code Generator]
+    A(Cliente/KyberCore) --> B(APISLICER API)
+    B --> C(FastAPI Server)
+    C --> D(File Manager)
+    C --> E(PrusaSlicer Engine)
+    D --> F(/app/uploads)
+    D --> G(/app/output)
+    E --> H(Printer Configs)
+    E --> I(G-code Generator)
     I --> G
 ```
 
