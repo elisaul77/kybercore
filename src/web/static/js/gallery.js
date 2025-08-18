@@ -502,6 +502,10 @@
         window.viewProject = viewProject;
         window.closeModal = closeModal;
         window.initGalleryEventListeners = initEventListeners;
+    // Funciones que pueden ser llamadas desde plantillas/modals inline
+    window.startPrinting = startPrinting;
+    window.toggleFavorite = toggleFavorite;
+    window.showToast = showToast;
     }
 
     // Inicialización del módulo de galería
