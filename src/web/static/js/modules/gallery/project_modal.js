@@ -2,9 +2,13 @@
  * Project Modal Component JavaScript
  * Maneja la funcionalidad del modal de vista detallada de proyectos
  */
+
+console.log('📦 project_modal.js loaded at:', new Date().toISOString());
+
 if (!window.ProjectModal) {
     window.ProjectModal = class ProjectModal {
         constructor() {
+            console.log('🔧 ProjectModal constructor called');
             this.modal = null;
             this.modalTitle = null;
             this.modalContent = null;
@@ -12,14 +16,21 @@ if (!window.ProjectModal) {
         }
 
         init() {
-        // Inicializar elementos del DOM
-        this.modal = document.getElementById('stl-preview-modal');
-        this.modalTitle = document.getElementById('modal-title');
-        this.modalContent = document.getElementById('modal-content');
+            console.log('🚀 ProjectModal init() called');
+            // Inicializar elementos del DOM
+            this.modal = document.getElementById('stl-preview-modal');
+            this.modalTitle = document.getElementById('modal-title');
+            this.modalContent = document.getElementById('modal-content');
+            
+            console.log('🔍 Modal elements found:', {
+                modal: !!this.modal,
+                modalTitle: !!this.modalTitle,
+                modalContent: !!this.modalContent
+            });
 
-        // Configurar event listeners
-        this.setupEventListeners();
-    }
+            // Configurar event listeners
+            this.setupEventListeners();
+        }
 
     setupEventListeners() {
         // Cerrar modal con botón X
@@ -46,11 +57,16 @@ if (!window.ProjectModal) {
     }
 
     open(projectData) {
-        if (!this.modal) return;
+        console.log('🚀 ProjectModal.open() called with data:', projectData);
+        if (!this.modal) {
+            console.error('❌ Modal element not found, cannot open modal');
+            return;
+        }
 
         // Establecer título
         if (this.modalTitle && projectData.title) {
             this.modalTitle.textContent = projectData.title;
+            console.log('📝 Modal title set to:', projectData.title);
         }
 
         // Generar contenido del modal
@@ -59,6 +75,7 @@ if (!window.ProjectModal) {
         // Mostrar modal
         this.modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+        console.log('✅ Modal opened successfully');
     }
 
     close() {
@@ -73,7 +90,11 @@ if (!window.ProjectModal) {
     }
 
     generateContent(projectData) {
-        if (!this.modalContent) return;
+        console.log('🎨 generateContent() called with:', projectData);
+        if (!this.modalContent) {
+            console.error('❌ Modal content element not found');
+            return;
+        }
 
         const content = `
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -151,6 +172,7 @@ if (!window.ProjectModal) {
         `;
 
         this.modalContent.innerHTML = content;
+        console.log('🎉 Modal content generated and inserted successfully');
     }
 
     generateFileList(files) {
@@ -266,11 +288,24 @@ function editProject(projectId) {
     }, 1000);
 }
 
-// Inicializar el modal cuando el DOM esté listo
-if (!window.projectModal) {
-    document.addEventListener('DOMContentLoaded', function() {
+// Función para inicializar el modal
+function initProjectModal() {
+    if (!window.projectModal) {
+        console.log('🚀 Initializing ProjectModal...');
         window.projectModal = new ProjectModal();
-    });
+        console.log('✅ ProjectModal initialized successfully');
+    } else {
+        console.log('⚠️ ProjectModal already initialized');
+    }
+}
+
+// Inicializar inmediatamente si el DOM está listo, o esperar si no
+if (document.readyState === 'loading') {
+    console.log('⏳ DOM still loading, waiting for DOMContentLoaded for ProjectModal...');
+    document.addEventListener('DOMContentLoaded', initProjectModal);
+} else {
+    console.log('✅ DOM already loaded, initializing ProjectModal immediately');
+    initProjectModal();
 }
 
 // Exportar para uso en otros módulos
