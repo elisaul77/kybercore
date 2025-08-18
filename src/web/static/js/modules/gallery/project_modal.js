@@ -2,16 +2,16 @@
  * Project Modal Component JavaScript
  * Maneja la funcionalidad del modal de vista detallada de proyectos
  */
+if (!window.ProjectModal) {
+    window.ProjectModal = class ProjectModal {
+        constructor() {
+            this.modal = null;
+            this.modalTitle = null;
+            this.modalContent = null;
+            this.init();
+        }
 
-class ProjectModal {
-    constructor() {
-        this.modal = null;
-        this.modalTitle = null;
-        this.modalContent = null;
-        this.init();
-    }
-
-    init() {
+        init() {
         // Inicializar elementos del DOM
         this.modal = document.getElementById('stl-preview-modal');
         this.modalTitle = document.getElementById('modal-title');
@@ -123,17 +123,26 @@ class ProjectModal {
                     </div>
 
                     <!-- Botones de acción -->
-                    <div class="grid grid-cols-2 gap-2">
+                    <div class="grid grid-cols-3 gap-2">
                         <button onclick="printProject('${projectData.id}')" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors text-sm">
-                            🚀 Imprimir Proyecto
+                            🚀 Imprimir
                         </button>
                         <button onclick="scheduleProject('${projectData.id}')" class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-purple-700 transition-colors text-sm">
-                            📋 Planificar Cola
+                            📋 Planificar
                         </button>
-                        <button onclick="exportProject('${projectData.title}')" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+                        <button data-action="export" data-project-id="${projectData.id}" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm">
                             📥 Exportar
                         </button>
-                        <button onclick="editProject('${projectData.id}')" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+                        <button data-action="duplicate" data-project-id="${projectData.id}" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+                            � Duplicar
+                        </button>
+                        <button data-action="delete" data-project-id="${projectData.id}" class="bg-red-100 text-red-700 px-4 py-2 rounded-lg hover:bg-red-200 transition-colors text-sm">
+                            🗑️ Eliminar
+                        </button>
+                        <button data-action="favorite" data-project-id="${projectData.id}" class="bg-white text-yellow-400 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                            ⭐ Favorito
+                        </button>
+                        <button onclick="editProject('${projectData.id}')" class="col-span-3 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm">
                             📝 Editar
                         </button>
                     </div>
@@ -231,6 +240,7 @@ class ProjectModal {
 
         return statusList.map(item => `<p>• ${item}</p>`).join('');
     }
+    };
 }
 
 // Funciones globales para acciones del modal
@@ -257,10 +267,11 @@ function editProject(projectId) {
 }
 
 // Inicializar el modal cuando el DOM esté listo
-let projectModal;
-document.addEventListener('DOMContentLoaded', function() {
-    projectModal = new ProjectModal();
-});
+if (!window.projectModal) {
+    document.addEventListener('DOMContentLoaded', function() {
+        window.projectModal = new ProjectModal();
+    });
+}
 
 // Exportar para uso en otros módulos
 if (typeof module !== 'undefined' && module.exports) {

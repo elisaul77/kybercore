@@ -127,6 +127,60 @@ async def toggle_favorite(project_id: int):
     else:
         raise HTTPException(status_code=500, detail="Error al guardar cambios")
 
+
+@router.post("/projects/{project_id}/duplicate")
+async def duplicate_project(project_id: int):
+    """Duplica un proyecto y lo guarda en el JSON (simulación)."""
+    data = load_projects_data()
+    project = next((p for p in data["proyectos"] if p["id"] == project_id), None)
+    if not project:
+        raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+
+    # Crear copia superficial y asignar nuevo ID
+    new_id = max((p.get('id', 0) for p in data['proyectos']), default=0) + 1
+    new_project = json.loads(json.dumps(project))
+    new_project['id'] = new_id
+    new_project['nombre'] = f"{project.get('nombre')} - Copia"
+    new_project['favorito'] = False
+    data['proyectos'].append(new_project)
+
+    # Actualizar estadísticas mínimas
+    data['estadisticas']['total_proyectos'] = len(data['proyectos'])
+
+    if save_projects_data(data):
+        return {"message": "Proyecto duplicado", "project": new_project}
+    else:
+        raise HTTPException(status_code=500, detail="Error al guardar copia")
+
+
+@router.post("/projects/{project_id}/delete")
+async def delete_project(project_id: int):
+    """Elimina un proyecto del JSON (simulación)."""
+    data = load_projects_data()
+    idx = next((i for i, p in enumerate(data['proyectos']) if p.get('id') == project_id), None)
+    if idx is None:
+        raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+
+    removed = data['proyectos'].pop(idx)
+    data['estadisticas']['total_proyectos'] = len(data['proyectos'])
+
+    if save_projects_data(data):
+        return {"message": "Proyecto eliminado", "removed": removed}
+    else:
+        raise HTTPException(status_code=500, detail="Error al eliminar proyecto")
+
+
+@router.post("/projects/{project_id}/export")
+async def export_project(project_id: int):
+    """Simula la exportación de un proyecto (no crea archivos)."""
+    data = load_projects_data()
+    project = next((p for p in data['proyectos'] if p.get('id') == project_id), None)
+    if not project:
+        raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+
+    # En esta simulación solo devolvemos un mensaje
+    return {"message": "Exportación iniciada", "project": {"id": project_id, "nombre": project.get('nombre')}}
+
 @router.get("/projects/stats")
 async def get_projects_stats():
     """Obtener estadísticas de proyectos"""

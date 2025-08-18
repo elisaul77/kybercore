@@ -135,52 +135,240 @@ function showProjectsStatistics() {
 }
 
 // Funciones de acciones individuales de proyecto
-function exportProject(projectName) {
-    showToast('Exportando', `Preparando exportación del proyecto "${projectName}"...`, 'info');
-    setTimeout(() => {
-        showToast('Exportación Completa', `Proyecto "${projectName}" exportado como archivo ZIP`, 'success');
-    }, 2000);
-}
-
-function duplicateProject(projectName) {
-    showToast('Duplicando', `Creando copia del proyecto "${projectName}"...`, 'info');
-    setTimeout(() => {
-        showToast('Proyecto Duplicado', `Copia creada: "${projectName} - Copia"`, 'success');
-    }, 1500);
-}
-
-function deleteProject(projectName) {
-    if (confirm(`¿Estás seguro de que deseas eliminar el proyecto "${projectName}"?`)) {
-        showToast('Eliminando', `Eliminando proyecto "${projectName}"...`, 'warning');
-        setTimeout(() => {
-            showToast('Proyecto Eliminado', `El proyecto "${projectName}" ha sido eliminado`, 'success');
-        }, 1000);
+function exportProject(projectId) {
+    if (!projectId) {
+        showToast('Error', 'ID de proyecto no proporcionado', 'error');
+        return;
     }
+    showToast('Exportando', `Preparando exportación del proyecto...`, 'info');
+    fetch(`/api/gallery/projects/${projectId}/export`, { method: 'POST' })
+        .then(resp => resp.json())
+        .then(data => {
+            showToast('Exportación Completa', data.message || 'Exportación finalizada', 'success');
+        })
+        .catch(err => {
+            console.error(err);
+            showToast('Error', 'No se pudo exportar el proyecto', 'error');
+        });
+}
+
+function duplicateProject(projectId) {
+    if (!projectId) {
+        showToast('Error', 'ID de proyecto no proporcionado', 'error');
+        return;
+    }
+    showToast('Duplicando', `Creando copia del proyecto...`, 'info');
+    fetch(`/api/gallery/projects/${projectId}/duplicate`, { method: 'POST' })
+        .then(resp => resp.json())
+        .then(data => {
+            showToast('Proyecto Duplicado', data.message || 'Copia creada', 'success');
+            if (typeof reloadGallery === 'function') reloadGallery();
+        })
+        .catch(err => {
+            console.error(err);
+            showToast('Error', 'No se pudo duplicar el proyecto', 'error');
+        });
+}
+
+function deleteProject(projectId) {
+    if (!projectId) {
+        showToast('Error', 'ID de proyecto no proporcionado', 'error');
+        return;
+    }
+    if (!confirm(`¿Estás seguro de que deseas eliminar el proyecto con ID ${projectId}?`)) return;
+
+    showToast('Eliminando', `Eliminando proyecto...`, 'warning');
+    fetch(`/api/gallery/projects/${projectId}/delete`, { method: 'POST' })
+        .then(resp => resp.json())
+        .then(data => {
+            showToast('Proyecto Eliminado', data.message || 'Eliminado', 'success');
+            // Remover tarjeta del DOM
+            const card = document.querySelector(`[data-project-id="${projectId}"]`);
+            if (card) card.remove();
+            if (typeof reloadGallery === 'function') reloadGallery();
+        })
+        .catch(err => {
+            console.error(err);
+            showToast('Error', 'No se pudo eliminar el proyecto', 'error');
+        });
+}
+
+// Toggle favorito
+function favoriteProject(projectId, buttonEl) {
+    fetch(`/api/gallery/projects/${projectId}/favorite`, { method: 'POST' })
+        .then(resp => resp.json())
+        .then(data => {
+            if (data && typeof data.favorito !== 'undefined') {
+                // Actualizar UI
+                if (buttonEl) {
+                    buttonEl.classList.toggle('text-yellow-400', data.favorito);
+                }
+                showToast('Favorito', data.message || 'Favorito actualizado', 'success');
+            } else {
+                showToast('Error', 'Respuesta inesperada del servidor', 'error');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            showToast('Error', 'No se pudo actualizar favorito', 'error');
+        });
 }
 
 // Inicialización de event listeners para la galería
 function initGalleryEventListeners() {
     // Event listener para botones "Ver Proyecto"
-    document.addEventListener('click', function(e) {
-        const button = e.target.closest('button');
-        if (!button) return;
-
-        // Buscar botones "Ver Proyecto" en las tarjetas
-        if (button.textContent.includes('Ver Proyecto') || button.textContent.includes('📂')) {
-            e.preventDefault();
-            const card = button.closest('.bg-white, .border');
-            const titleEl = card ? card.querySelector('h3, .font-bold') : null;
-            const title = titleEl ? titleEl.textContent.trim() : 'Proyecto Sin Nombre';
-            showProjectDetails(title);
-            return;
+    // Use capture phase to handle clicks before other scripts, and stop propagation when handled
+    const _galleryClickHandler = function(e) {
+        // Buscar el elemento más cercano que declare una acción
+        const el = e.target.closest('[data-action]');
+        if (!el) return;
+        // Manejo por data-action/data-project-id
+        const action = el.getAttribute('data-action');
+        // resolver projectId: el elemento puede llevarlo o el contenedor padre con data-project-id
+        let projectId = el.getAttribute('data-project-id');
+        if (!projectId) {
+            const card = el.closest('[data-project-id]');
+            if (card) projectId = card.getAttribute('data-project-id');
         }
 
-        // Otros event listeners para acciones específicas...
-    });
+        if (action) {
+            e.preventDefault();
+            // Normalizar alias: 'view-project' => 'view'
+            const normalizedAction = action === 'view-project' ? 'view' : action;
+            switch(normalizedAction) {
+                case 'view': {
+                    // Obtener projectId y pedir datos al backend para abrir modal con datos reales
+                    if (projectId) {
+                        fetch(`/api/gallery/projects/${projectId}`)
+                            .then(resp => {
+                                if (!resp.ok) throw new Error('Proyecto no encontrado');
+                                return resp.json();
+                            })
+                            .then(projectData => {
+                                // Normalizar campos para el modal
+                                const modalData = {
+                                    id: projectData.id,
+                                    title: projectData.nombre || projectData.title || `Proyecto ${projectData.id}`,
+                                    icon: projectData.badges && projectData.badges.estado ? '📁' : '📁',
+                                    files: projectData.archivos || projectData.files || [],
+                                    stats: {
+                                        pieces: projectData.badges && projectData.badges.piezas ? projectData.badges.piezas : (projectData.progreso && projectData.progreso.piezas_totales ? `${projectData.progreso.piezas_totales} piezas` : 'N/A'),
+                                        totalTime: projectData.analisis_ia && projectData.analisis_ia.tiempo_estimado ? projectData.analisis_ia.tiempo_estimado : (projectData.stats && projectData.stats.totalTime) || 'N/A',
+                                        filament: projectData.analisis_ia && projectData.analisis_ia.filamento_total ? projectData.analisis_ia.filamento_total : 'N/A',
+                                        cost: projectData.analisis_ia && projectData.analisis_ia.costo_estimado ? projectData.analisis_ia.costo_estimado : 'N/A',
+                                        volume: projectData.stats && projectData.stats.volume ? projectData.stats.volume : 'N/A',
+                                        created: projectData.fecha_creacion || projectData.created || 'N/A'
+                                    },
+                                    aiAnalysis: projectData.analisis_ia || projectData.aiAnalysis || {},
+                                    status: { items: projectData.status || projectData.status_list || [] }
+                                };
+                                showProjectDetails(modalData.title, modalData);
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                showToast('Error', 'No se pudo cargar el proyecto', 'error');
+                            });
+                    } else {
+                        // Fallback: abrir modal con título genérico
+                        const card = el.closest('[data-project-id]');
+                        const titleEl = card ? card.querySelector('h3') : null;
+                        const title = titleEl ? titleEl.textContent.trim() : 'Proyecto';
+                        showProjectDetails(title);
+                    }
+                    break;
+                }
+                case 'favorite': {
+                    if (projectId) favoriteProject(parseInt(projectId, 10), el);
+                    break;
+                }
+                case 'export': {
+                    if (projectId) exportProject(parseInt(projectId, 10));
+                    break;
+                }
+                case 'duplicate': {
+                    if (projectId) duplicateProject(parseInt(projectId, 10));
+                    break;
+                }
+                case 'delete': {
+                    if (projectId) deleteProject(parseInt(projectId, 10));
+                    break;
+                }
+            }
+            // evitar que otros handlers interfieran
+            e.stopPropagation();
+            e.stopImmediatePropagation && e.stopImmediatePropagation();
+            return;
+        }
+    };
+    document.addEventListener('click', _galleryClickHandler, true);
+    
 }
 
-// Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
-    initGalleryEventListeners();
+// Also bind a capture-phase handler once so actions work even if other handlers exist
+if (!window._kyber_gallery_click_bound) {
+    const _kyberGalleryHandler = function(e) {
+        // Buscar el elemento más cercano que declare una acción
+        const el = e.target.closest('[data-action]');
+        if (!el) return;
+        const action = el.getAttribute('data-action');
+        let projectId = el.getAttribute('data-project-id');
+        if (!projectId) {
+            const card = el.closest('[data-project-id]');
+            if (card) projectId = card.getAttribute('data-project-id');
+        }
+        if (!action) return;
+
+        try {
+            e.preventDefault();
+            const normalizedAction = action === 'view-project' ? 'view' : action;
+            switch (normalizedAction) {
+                case 'view':
+                    if (projectId) {
+                        fetch(`/api/gallery/projects/${projectId}`)
+                            .then(resp => { if (!resp.ok) throw new Error('Proyecto no encontrado'); return resp.json(); })
+                            .then(projectData => showProjectDetails(projectData.nombre || projectData.title || `Proyecto ${projectData.id}`, {
+                                id: projectData.id,
+                                title: projectData.nombre || projectData.title || `Proyecto ${projectData.id}`,
+                                files: projectData.archivos || projectData.files || [],
+                                stats: {},
+                                aiAnalysis: projectData.analisis_ia || projectData.aiAnalysis || {},
+                                status: { items: projectData.status || projectData.status_list || [] }
+                            }))
+                            .catch(err => { console.error(err); showToast('Error', 'No se pudo cargar el proyecto', 'error'); });
+                    } else {
+                        const card = el.closest('[data-project-id]');
+                        const titleEl = card ? card.querySelector('h3') : null;
+                        const title = titleEl ? titleEl.textContent.trim() : 'Proyecto';
+                        showProjectDetails(title);
+                    }
+                    break;
+                case 'favorite':
+                    if (projectId) favoriteProject(parseInt(projectId, 10), el);
+                    break;
+                case 'export':
+                    if (projectId) exportProject(parseInt(projectId, 10));
+                    break;
+                case 'duplicate':
+                    if (projectId) duplicateProject(parseInt(projectId, 10));
+                    break;
+                case 'delete':
+                    if (projectId) deleteProject(parseInt(projectId, 10));
+                    break;
+            }
+        } finally {
+            e.stopPropagation && e.stopPropagation();
+            e.stopImmediatePropagation && e.stopImmediatePropagation();
+        }
+    };
+    document.addEventListener('click', _kyberGalleryHandler, true);
+    window._kyber_gallery_click_bound = true;
+    console.log('Gallery capture-phase click handler bound');
+    }
+});
+
+// Also initialize legacy listener for compatibility
+document.addEventListener('DOMContentLoaded', function() {
+    try { initGalleryEventListeners(); } catch(e) { console.warn('initGalleryEventListeners failed', e); }
     console.log('Gallery main functions initialized');
 });

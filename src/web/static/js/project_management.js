@@ -1,5 +1,5 @@
 // --- Configuración de proyectos reales ---
-let ganttProjects = [
+window.ganttProjects = window.ganttProjects || [
   {
     name: 'ATX Power Supply',
     color: 'indigo',
@@ -205,18 +205,20 @@ async function initProjectManagement() {
 document.addEventListener('DOMContentLoaded', initProjectManagement);
 window.initProjectManagement = initProjectManagement;
 
-const observer = new MutationObserver(function(mutations) {
+if (!window._projectManagementObserver) {
+  window._projectManagementObserver = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
-        if (mutation.type === 'childList') {
-            const addedNodes = Array.from(mutation.addedNodes);
-            const hasProjectManagement = addedNodes.some(node => {
-                return node.nodeType === Node.ELEMENT_NODE && 
-                       (node.querySelector && (node.querySelector('#detail-view-btn') || node.querySelector('#gantt-view-btn')));
-            });
-            if (hasProjectManagement) {
-                setTimeout(initProjectManagement, 100);
-            }
+      if (mutation.type === 'childList') {
+        const addedNodes = Array.from(mutation.addedNodes);
+        const hasProjectManagement = addedNodes.some(node => {
+          return node.nodeType === Node.ELEMENT_NODE && 
+               (node.querySelector && (node.querySelector('#detail-view-btn') || node.querySelector('#gantt-view-btn')));
+        });
+        if (hasProjectManagement) {
+          setTimeout(initProjectManagement, 100);
         }
+      }
     });
-});
-observer.observe(document.body, { childList: true, subtree: true });
+  });
+  window._projectManagementObserver.observe(document.body, { childList: true, subtree: true });
+}
