@@ -3,6 +3,8 @@
  * Funciones principales para la gestión de la galería de proyectos
  */
 
+console.log('📦 gallery_functions.js loaded at:', new Date().toISOString());
+
 // Función para mostrar detalles de un proyecto en el modal
 function showProjectDetails(projectTitle, projectData = null) {
     // Datos de ejemplo o datos reales del proyecto
@@ -136,6 +138,7 @@ function showProjectsStatistics() {
 
 // Funciones de acciones individuales de proyecto
 function exportProject(projectId) {
+    console.log('📤 exportProject called with ID:', projectId);
     if (!projectId) {
         showToast('Error', 'ID de proyecto no proporcionado', 'error');
         return;
@@ -153,6 +156,7 @@ function exportProject(projectId) {
 }
 
 function duplicateProject(projectId) {
+    console.log('📋 duplicateProject called with ID:', projectId);
     if (!projectId) {
         showToast('Error', 'ID de proyecto no proporcionado', 'error');
         return;
@@ -171,6 +175,7 @@ function duplicateProject(projectId) {
 }
 
 function deleteProject(projectId) {
+    console.log('🗑️ deleteProject called with ID:', projectId);
     if (!projectId) {
         showToast('Error', 'ID de proyecto no proporcionado', 'error');
         return;
@@ -195,6 +200,7 @@ function deleteProject(projectId) {
 
 // Toggle favorito
 function favoriteProject(projectId, buttonEl) {
+    console.log('⭐ favoriteProject called with ID:', projectId, 'buttonEl:', buttonEl);
     fetch(`/api/gallery/projects/${projectId}/favorite`, { method: 'POST' })
         .then(resp => resp.json())
         .then(data => {
@@ -304,12 +310,20 @@ function initGalleryEventListeners() {
     
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-// Also bind a capture-phase handler once so actions work even if other handlers exist
-if (!window._kyber_gallery_click_bound) {
+// Función para inicializar el handler de galería
+function initGalleryClickHandler() {
+    console.log('🔧 Initializing gallery click handler...');
+    
+    if (window._kyber_gallery_click_bound) {
+        console.log('⚠️ Gallery click handler already bound, skipping');
+        return;
+    }
+    
     const _kyberGalleryHandler = function(e) {
+        console.log('🔍 Gallery click captured:', e.target, e.type);
         // Buscar el elemento más cercano que declare una acción
         const el = e.target.closest('[data-action]');
+        console.log('🎯 Found element with data-action:', el);
         if (!el) return;
         const action = el.getAttribute('data-action');
         let projectId = el.getAttribute('data-project-id');
@@ -317,13 +331,16 @@ if (!window._kyber_gallery_click_bound) {
             const card = el.closest('[data-project-id]');
             if (card) projectId = card.getAttribute('data-project-id');
         }
+        console.log('⚡ Action:', action, 'ProjectID:', projectId);
         if (!action) return;
 
         try {
             e.preventDefault();
             const normalizedAction = action === 'view-project' ? 'view' : action;
+            console.log('🚀 Executing action:', normalizedAction, 'with projectId:', projectId);
             switch (normalizedAction) {
                 case 'view':
+                    console.log('👁️ View action triggered');
                     if (projectId) {
                         fetch(`/api/gallery/projects/${projectId}`)
                             .then(resp => { if (!resp.ok) throw new Error('Proyecto no encontrado'); return resp.json(); })
@@ -344,15 +361,19 @@ if (!window._kyber_gallery_click_bound) {
                     }
                     break;
                 case 'favorite':
+                    console.log('⭐ Favorite action triggered');
                     if (projectId) favoriteProject(parseInt(projectId, 10), el);
                     break;
                 case 'export':
+                    console.log('📤 Export action triggered');
                     if (projectId) exportProject(parseInt(projectId, 10));
                     break;
                 case 'duplicate':
+                    console.log('📋 Duplicate action triggered');
                     if (projectId) duplicateProject(parseInt(projectId, 10));
                     break;
                 case 'delete':
+                    console.log('🗑️ Delete action triggered');
                     if (projectId) deleteProject(parseInt(projectId, 10));
                     break;
             }
@@ -361,11 +382,23 @@ if (!window._kyber_gallery_click_bound) {
             e.stopImmediatePropagation && e.stopImmediatePropagation();
         }
     };
+    
     document.addEventListener('click', _kyberGalleryHandler, true);
     window._kyber_gallery_click_bound = true;
-    console.log('Gallery capture-phase click handler bound');
-    }
-});
+    console.log('✅ Gallery capture-phase click handler bound successfully');
+}
+
+// Inicializar inmediatamente si el DOM está listo, o esperar si no
+if (document.readyState === 'loading') {
+    console.log('⏳ DOM still loading, waiting for DOMContentLoaded...');
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 DOMContentLoaded fired for gallery_functions.js');
+        initGalleryClickHandler();
+    });
+} else {
+    console.log('✅ DOM already loaded, initializing immediately');
+    initGalleryClickHandler();
+}
 
 // Also initialize legacy listener for compatibility
 document.addEventListener('DOMContentLoaded', function() {
