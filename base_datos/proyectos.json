@@ -1,6 +1,6 @@
 {
   "estadisticas": {
-    "total_proyectos": 4,
+    "total_proyectos": 7,
     "total_stls": 14,
     "completados": 0,
     "en_progreso": 0,
@@ -85,7 +85,7 @@
       },
       "fecha_creacion": "2024-12-15",
       "fecha_completado": null,
-      "favorito": true,
+      "favorito": false,
       "carpeta": "src/proyect/ATX Power supply - 6749455",
       "tags": [
         "electronics",
@@ -264,6 +264,189 @@
         "decoration",
         "tower",
         "miniature"
+      ]
+    },
+    {
+      "id": 5,
+      "nombre": "ATX Power Supply - Copia",
+      "descripcion": "ATX Power Supply enclosure for lab bench use - Professional electronic enclosure",
+      "estado": "listo",
+      "tipo": "Electrónico",
+      "categoria": "funcional",
+      "imagen": "/api/gallery/projects/atx-power-supply-6749455/image/03b81ce4-4d90-46a8-88bc-ef73685321f8.png",
+      "thingiverse_id": "6749455",
+      "autor": "AlwaysBlue",
+      "url": "https://www.thingiverse.com/thing:6749455",
+      "badges": {
+        "estado": "📋 Listo",
+        "piezas": "9 piezas",
+        "tipo": "Electrónico"
+      },
+      "archivos": [
+        {
+          "nombre": "Cover_USB.stl",
+          "tamaño": "1.2 MB",
+          "estado": "listo"
+        },
+        {
+          "nombre": "back_frame.stl",
+          "tamaño": "2.1 MB",
+          "estado": "listo"
+        },
+        {
+          "nombre": "front_cover_volt_amp_adj.stl",
+          "tamaño": "1.8 MB",
+          "estado": "listo"
+        },
+        {
+          "nombre": "front_cover_volt_ampmeter.stl",
+          "tamaño": "1.7 MB",
+          "estado": "listo"
+        },
+        {
+          "nombre": "front_frame.stl",
+          "tamaño": "2.3 MB",
+          "estado": "listo"
+        },
+        {
+          "nombre": "front_panel.stl",
+          "tamaño": "1.5 MB",
+          "estado": "listo"
+        },
+        {
+          "nombre": "handle.stl",
+          "tamaño": "0.9 MB",
+          "estado": "listo"
+        },
+        {
+          "nombre": "rail_bottom.stl",
+          "tamaño": "1.1 MB",
+          "estado": "listo"
+        },
+        {
+          "nombre": "rail_top.stl",
+          "tamaño": "1.1 MB",
+          "estado": "listo"
+        }
+      ],
+      "analisis_ia": {
+        "impresoras_sugeridas": "Ender 3, Prusa i3",
+        "materiales": "PLA, PETG",
+        "tiempo_estimado": "18h 30m",
+        "filamento_total": "450g",
+        "costo_estimado": "€12.50"
+      },
+      "progreso": {
+        "piezas_completadas": 0,
+        "piezas_totales": 9,
+        "porcentaje": 0,
+        "mensaje": "Proyecto listo para imprimir"
+      },
+      "fecha_creacion": "2024-12-15",
+      "fecha_completado": null,
+      "favorito": true,
+      "carpeta": "src/proyect/ATX Power supply - 6749455",
+      "tags": [
+        "electronics",
+        "power-supply",
+        "lab-equipment",
+        "atx"
+      ]
+    },
+    {
+      "id": 6,
+      "nombre": "Flexi Dog - Copia",
+      "descripcion": "Flexible articulated dog toy that moves and bends - Print-in-place mechanism",
+      "estado": "listo",
+      "tipo": "Juguete",
+      "categoria": "juguete",
+      "imagen": "/api/gallery/projects/flexi-dog-2810483/image/Flexi_Dog_printed.jpg",
+      "thingiverse_id": "2810483",
+      "autor": "CapybaraLover",
+      "url": "https://www.thingiverse.com/thing:2810483",
+      "badges": {
+        "estado": "📋 Listo",
+        "piezas": "1 pieza",
+        "tipo": "Articulado"
+      },
+      "archivos": [
+        {
+          "nombre": "Flexi-Dog.stl",
+          "tamaño": "2.1 MB",
+          "estado": "listo"
+        }
+      ],
+      "analisis_ia": {
+        "impresoras_sugeridas": "Prusa, Ender 3",
+        "materiales": "PLA flexible",
+        "tiempo_estimado": "4h 20m",
+        "filamento_total": "45g",
+        "costo_estimado": "€1.25"
+      },
+      "progreso": {
+        "piezas_completadas": 0,
+        "piezas_totales": 1,
+        "porcentaje": 0,
+        "mensaje": "Proyecto listo para imprimir"
+      },
+      "fecha_creacion": "2024-12-08",
+      "fecha_completado": null,
+      "favorito": false,
+      "carpeta": "src/proyect/Flexi Dog - 2810483",
+      "tags": [
+        "toy",
+        "flexible",
+        "articulated",
+        "dog",
+        "flexi"
+      ]
+    },
+    {
+      "id": 7,
+      "nombre": "Flexi Dog - Copia - Copia",
+      "descripcion": "Flexible articulated dog toy that moves and bends - Print-in-place mechanism",
+      "estado": "listo",
+      "tipo": "Juguete",
+      "categoria": "juguete",
+      "imagen": "/api/gallery/projects/flexi-dog-2810483/image/Flexi_Dog_printed.jpg",
+      "thingiverse_id": "2810483",
+      "autor": "CapybaraLover",
+      "url": "https://www.thingiverse.com/thing:2810483",
+      "badges": {
+        "estado": "📋 Listo",
+        "piezas": "1 pieza",
+        "tipo": "Articulado"
+      },
+      "archivos": [
+        {
+          "nombre": "Flexi-Dog.stl",
+          "tamaño": "2.1 MB",
+          "estado": "listo"
+        }
+      ],
+      "analisis_ia": {
+        "impresoras_sugeridas": "Prusa, Ender 3",
+        "materiales": "PLA flexible",
+        "tiempo_estimado": "4h 20m",
+        "filamento_total": "45g",
+        "costo_estimado": "€1.25"
+      },
+      "progreso": {
+        "piezas_completadas": 0,
+        "piezas_totales": 1,
+        "porcentaje": 0,
+        "mensaje": "Proyecto listo para imprimir"
+      },
+      "fecha_creacion": "2024-12-08",
+      "fecha_completado": null,
+      "favorito": false,
+      "carpeta": "src/proyect/Flexi Dog - 2810483",
+      "tags": [
+        "toy",
+        "flexible",
+        "articulated",
+        "dog",
+        "flexi"
       ]
     }
   ]
