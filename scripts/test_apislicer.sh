@@ -18,36 +18,92 @@ curl -s http://localhost:8001/health | jq . || echo "Health check failed"
 # Crear STL de prueba
 echo -e "\n3. Creando archivo STL de prueba..."
 cat > /tmp/test_cube.stl << 'EOF'
-solid cube
+solid Cube
   facet normal 0.0 0.0 1.0
     outer loop
-      vertex 0.0 0.0 1.0
-      vertex 1.0 0.0 1.0
-      vertex 1.0 1.0 1.0
+      vertex 0.0 0.0 5.0
+      vertex 5.0 0.0 5.0
+      vertex 5.0 5.0 5.0
     endloop
   endfacet
   facet normal 0.0 0.0 1.0
     outer loop
-      vertex 0.0 0.0 1.0
-      vertex 1.0 1.0 1.0
-      vertex 0.0 1.0 1.0
+      vertex 0.0 0.0 5.0
+      vertex 5.0 5.0 5.0
+      vertex 0.0 5.0 5.0
     endloop
   endfacet
   facet normal 0.0 0.0 -1.0
     outer loop
       vertex 0.0 0.0 0.0
-      vertex 1.0 1.0 0.0
-      vertex 1.0 0.0 0.0
+      vertex 5.0 5.0 0.0
+      vertex 5.0 0.0 0.0
     endloop
   endfacet
   facet normal 0.0 0.0 -1.0
     outer loop
       vertex 0.0 0.0 0.0
-      vertex 0.0 1.0 0.0
-      vertex 1.0 1.0 0.0
+      vertex 0.0 5.0 0.0
+      vertex 5.0 5.0 0.0
     endloop
   endfacet
-endsolid cube
+  facet normal 0.0 -1.0 0.0
+    outer loop
+      vertex 0.0 0.0 0.0
+      vertex 5.0 0.0 0.0
+      vertex 5.0 0.0 5.0
+    endloop
+  endfacet
+  facet normal 0.0 -1.0 0.0
+    outer loop
+      vertex 0.0 0.0 0.0
+      vertex 5.0 0.0 5.0
+      vertex 0.0 0.0 5.0
+    endloop
+  endfacet
+  facet normal 1.0 0.0 0.0
+    outer loop
+      vertex 5.0 0.0 0.0
+      vertex 5.0 5.0 0.0
+      vertex 5.0 5.0 5.0
+    endloop
+  endfacet
+  facet normal 1.0 0.0 0.0
+    outer loop
+      vertex 5.0 0.0 0.0
+      vertex 5.0 5.0 5.0
+      vertex 5.0 0.0 5.0
+    endloop
+  endfacet
+  facet normal 0.0 1.0 0.0
+    outer loop
+      vertex 0.0 5.0 0.0
+      vertex 5.0 5.0 5.0
+      vertex 5.0 5.0 0.0
+    endloop
+  endfacet
+  facet normal 0.0 1.0 0.0
+    outer loop
+      vertex 0.0 5.0 0.0
+      vertex 0.0 5.0 5.0
+      vertex 5.0 5.0 5.0
+    endloop
+  endfacet
+  facet normal -1.0 0.0 0.0
+    outer loop
+      vertex 0.0 0.0 0.0
+      vertex 0.0 5.0 5.0
+      vertex 0.0 5.0 0.0
+    endloop
+  endfacet
+  facet normal -1.0 0.0 0.0
+    outer loop
+      vertex 0.0 0.0 0.0
+      vertex 0.0 0.0 5.0
+      vertex 0.0 5.0 5.0
+    endloop
+  endfacet
+endsolid Cube
 EOF
 
 echo "STL creado: $(wc -c < /tmp/test_cube.stl) bytes"
