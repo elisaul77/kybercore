@@ -6,6 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Instalar dependencias del sistema (nombres actualizados para Ubuntu 24.04)
 RUN apt-get update && apt-get install -y \
     python3 \
+    curl \
     python3-pip \
     wget \
     xvfb \
