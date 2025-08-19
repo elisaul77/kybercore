@@ -33,31 +33,75 @@ if (!window.ProjectModal) {
         }
 
     setupEventListeners() {
+        // Limpiar listeners previos si existen
+        if (this._closeHandler) {
+            const oldCloseButton = document.getElementById('close-modal');
+            if (oldCloseButton) {
+                oldCloseButton.removeEventListener('click', this._closeHandler);
+            }
+        }
+        if (this._modalClickHandler && this.modal) {
+            this.modal.removeEventListener('click', this._modalClickHandler);
+        }
+        if (this._escapeHandler) {
+            document.removeEventListener('keydown', this._escapeHandler);
+        }
+
+        // Crear nuevos handlers
+        this._closeHandler = () => {
+            console.log('🔴 Close button clicked');
+            this.close();
+        };
+        
+        this._modalClickHandler = (e) => {
+            if (e.target === this.modal) {
+                console.log('🔴 Modal backdrop clicked');
+                this.close();
+            }
+        };
+        
+        this._escapeHandler = (e) => {
+            if (e.key === 'Escape' && this.isOpen()) {
+                console.log('🔴 Escape key pressed');
+                this.close();
+            }
+        };
+
         // Cerrar modal con botón X
         const closeButton = document.getElementById('close-modal');
         if (closeButton) {
-            closeButton.addEventListener('click', () => this.close());
+            closeButton.addEventListener('click', this._closeHandler);
+            console.log('✅ Close button listener attached');
+        } else {
+            console.warn('⚠️ Close button not found');
         }
 
         // Cerrar modal al hacer clic fuera del contenido
         if (this.modal) {
-            this.modal.addEventListener('click', (e) => {
-                if (e.target === this.modal) {
-                    this.close();
-                }
-            });
+            this.modal.addEventListener('click', this._modalClickHandler);
+            console.log('✅ Modal backdrop listener attached');
         }
 
         // Cerrar modal con tecla ESC
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.isOpen()) {
-                this.close();
-            }
-        });
+        document.addEventListener('keydown', this._escapeHandler);
+        console.log('✅ Escape key listener attached');
     }
 
     open(projectData) {
         console.log('🚀 ProjectModal.open() called with data:', projectData);
+        
+        // Revalidar elementos del modal en caso de que el DOM haya cambiado
+        this.modal = document.getElementById('stl-preview-modal');
+        this.modalTitle = document.getElementById('modal-title');
+        this.modalContent = document.getElementById('modal-content');
+        
+        console.log('🔍 Modal elements revalidated:', {
+            modal: !!this.modal,
+            modalTitle: !!this.modalTitle,
+            modalContent: !!this.modalContent,
+            modalHidden: this.modal ? this.modal.classList.contains('hidden') : 'N/A'
+        });
+        
         if (!this.modal) {
             console.error('❌ Modal element not found, cannot open modal');
             return;
@@ -69,21 +113,39 @@ if (!window.ProjectModal) {
             console.log('📝 Modal title set to:', projectData.title);
         }
 
+        // Reconfigurar event listeners con los elementos actualizados
+        this.setupEventListeners();
+
         // Generar contenido del modal
         this.generateContent(projectData);
 
         // Mostrar modal con clases actualizadas
         this.modal.classList.remove('hidden');
+        this.modal.style.display = 'flex'; // Forzar display flex
         document.body.style.overflow = 'hidden'; // Prevenir scroll del body
         
-        console.log('✅ Modal opened successfully');
+        console.log('✅ Modal opened successfully, classes:', this.modal.className);
     }
 
     close() {
-        if (!this.modal) return;
+        console.log('🔴 Modal close() called');
+        
+        // Revalidar modal element en caso de cambios en el DOM
+        if (!this.modal) {
+            this.modal = document.getElementById('stl-preview-modal');
+        }
+        
+        if (!this.modal) {
+            console.warn('⚠️ Modal element not found for closing');
+            return;
+        }
 
+        console.log('🔴 Closing modal...');
         this.modal.classList.add('hidden');
+        this.modal.style.display = 'none'; // Forzar display none
         document.body.style.overflow = ''; // Restaurar scroll del body
+        
+        console.log('✅ Modal closed successfully');
     }
 
     isOpen() {
@@ -321,10 +383,21 @@ function editProject(projectId) {
 function initProjectModal() {
     if (!window.projectModal) {
         console.log('🚀 Initializing ProjectModal...');
-        window.projectModal = new ProjectModal();
-        console.log('✅ ProjectModal initialized successfully');
+        try {
+            window.projectModal = new ProjectModal();
+            console.log('✅ ProjectModal initialized successfully:', !!window.projectModal);
+        } catch (error) {
+            console.error('❌ Failed to initialize ProjectModal:', error);
+        }
     } else {
         console.log('⚠️ ProjectModal already initialized');
+    }
+    
+    // Verificar que el modal funciona
+    if (window.projectModal && typeof window.projectModal.open === 'function') {
+        console.log('✅ ProjectModal is ready and functional');
+    } else {
+        console.error('❌ ProjectModal initialization failed or is not functional');
     }
 }
 
