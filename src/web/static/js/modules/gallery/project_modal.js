@@ -72,9 +72,10 @@ if (!window.ProjectModal) {
         // Generar contenido del modal
         this.generateContent(projectData);
 
-        // Mostrar modal
+        // Mostrar modal con clases actualizadas
         this.modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+        
         console.log('✅ Modal opened successfully');
     }
 
@@ -96,23 +97,38 @@ if (!window.ProjectModal) {
             return;
         }
 
+        // Normalizar y asegurar campos mínimos
+        const pd = projectData || {};
+        const title = pd.title || pd.nombre || 'Proyecto sin título';
+        const files = pd.files || pd.archivos || [];
+        const stats = pd.stats || {
+            pieces: (files.length ? `${files.length} piezas` : 'N/A'),
+            totalTime: pd.aiAnalysis && pd.aiAnalysis.tiempo_estimado ? pd.aiAnalysis.tiempo_estimado : 'N/A',
+            filament: pd.aiAnalysis && pd.aiAnalysis.filamento_total ? pd.aiAnalysis.filamento_total : 'N/A',
+            cost: pd.aiAnalysis && pd.aiAnalysis.costo_estimado ? pd.aiAnalysis.costo_estimado : 'N/A',
+            volume: pd.aiAnalysis && pd.aiAnalysis.volumen_total ? pd.aiAnalysis.volumen_total : 'N/A',
+            created: pd.fecha_creacion || pd.created || 'N/A'
+        };
+
+        console.log('🔎 Using normalized project data for modal:', { title, filesLength: files.length, stats });
+
         const content = `
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Vista 3D / Imagen del proyecto -->
                 <div class="space-y-4">
                     <div class="bg-gray-100 rounded-lg p-4 h-64 flex items-center justify-center">
                         <div class="text-center">
-                            <div class="text-6xl mb-4">${projectData.icon || '📁'}</div>
-                            <p class="text-gray-600">${projectData.title}</p>
+                            <div class="text-6xl mb-4">${pd.icon || projectData.icon || '📁'}</div>
+                            <p class="text-gray-600">${title}</p>
                             <p class="text-sm text-gray-500 mt-2">Vista 3D del proyecto completo</p>
                         </div>
                     </div>
 
                     <!-- Lista de archivos STL -->
                     <div class="bg-gray-50 rounded-lg p-4 max-h-64 overflow-y-auto">
-                        <h4 class="font-medium text-gray-900 mb-3">📋 Archivos del Proyecto</h4>
+                        <h4 class="font-medium text-gray-900 mb-3">📋 Archivos del Proyecto (${files.length})</h4>
                         <div class="space-y-2 text-sm">
-                            ${this.generateFileList(projectData.files || [])}
+                            ${this.generateFileList(files)}
                         </div>
                     </div>
                 </div>
@@ -123,7 +139,7 @@ if (!window.ProjectModal) {
                     <div class="bg-blue-50 rounded-lg p-4">
                         <h4 class="font-medium text-blue-900 mb-3">📊 Estadísticas del Proyecto</h4>
                         <div class="grid grid-cols-2 gap-4 text-sm text-blue-800">
-                            ${this.generateStats(projectData.stats || {})}
+                            ${this.generateStats(stats)}
                         </div>
                     </div>
 
@@ -131,7 +147,7 @@ if (!window.ProjectModal) {
                     <div class="bg-blue-50 rounded-lg p-4">
                         <h4 class="font-medium text-blue-900 mb-2">🤖 Planificación IA del Proyecto</h4>
                         <div class="space-y-2 text-sm text-blue-800">
-                            ${this.generateAIAnalysis(projectData.aiAnalysis || {})}
+                            ${this.generateAIAnalysis(pd.aiAnalysis || pd.analisis_ia || {})}
                         </div>
                     </div>
 
@@ -139,7 +155,7 @@ if (!window.ProjectModal) {
                     <div class="bg-green-50 rounded-lg p-4">
                         <h4 class="font-medium text-green-900 mb-2">✅ Estado del Proyecto</h4>
                         <div class="space-y-1 text-sm text-green-800">
-                            ${this.generateStatus(projectData.status || {})}
+                            ${this.generateStatus(pd.status || {})}
                         </div>
                     </div>
 
@@ -155,7 +171,7 @@ if (!window.ProjectModal) {
                             📥 Exportar
                         </button>
                         <button data-action="duplicate" data-project-id="${projectData.id}" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm">
-                            � Duplicar
+                            📋 Duplicar
                         </button>
                         <button data-action="delete" data-project-id="${projectData.id}" class="bg-red-100 text-red-700 px-4 py-2 rounded-lg hover:bg-red-200 transition-colors text-sm">
                             🗑️ Eliminar
@@ -180,15 +196,26 @@ if (!window.ProjectModal) {
             return '<p class="text-gray-500 italic">No hay archivos en este proyecto</p>';
         }
 
-        return files.map(file => `
+        console.log('🔍 generateFileList received files:', files);
+        return files.map(file => {
+            console.log('🔎 file entry:', file);
+            // Normalizar posibles campos de nombre
+            const filename = file.nombre || file.name || file.filename || file.fileName || file.title || file.nombre_archivo || 'Sin nombre';
+            // Normalizar posibles campos de tamaño
+            const filesize = file.tamaño || file.size || file.tamano || file.size_human || file.sizeHuman || file.sizeBytes || 'N/A';
+            // Normalizar validez
+            const validated = (typeof file.validated !== 'undefined') ? file.validated : ((typeof file.valid !== 'undefined') ? file.valid : ((typeof file.validar !== 'undefined') ? file.validar : false));
+
+            return `
             <div class="flex justify-between items-center p-2 bg-white rounded border">
-                <span>${file.name}</span>
+                <span>${filename}</span>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs text-gray-500">${file.size || 'N/A'}</span>
-                    <span class="text-green-600">${file.validated ? '✓' : '⚠️'}</span>
+                    <span class="text-xs text-gray-500">${filesize}</span>
+                    <span class="text-${validated ? 'green' : 'yellow'}-600">${validated ? '✓' : '⚠️'}</span>
                 </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
     }
 
     generateStats(stats) {
@@ -270,7 +297,9 @@ function printProject(projectId) {
     showToast('Impresión', `Iniciando impresión del proyecto ${projectId}...`, 'info');
     setTimeout(() => {
         showToast('Impresión Iniciada', 'El proyecto se ha agregado a la cola de impresión', 'success');
-        projectModal.close();
+        if (window.projectModal) {
+            window.projectModal.close();
+        }
     }, 2000);
 }
 

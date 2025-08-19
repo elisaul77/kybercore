@@ -1,28 +1,21 @@
 <!-- Modal Component para Vista Detallada de Proyectos -->
 <!-- Este componente se incluye en gallery_dynamic.html -->
-<div id="stl-preview-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
-    <div class="min-h-screen px-4 text-center">
-        <!-- Centrar verticalmente -->
-        <span class="inline-block h-screen align-middle" aria-hidden="true">&#8203;</span>
+<div id="stl-preview-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden" style="z-index: 9999;">
+    <!-- Panel del modal -->
+    <div class="bg-white rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden shadow-2xl transform transition-all">
+        <!-- Header del modal -->
+        <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4 flex items-center justify-between">
+            <h3 id="modal-title" class="text-xl font-bold text-white">Vista Detallada del Proyecto</h3>
+            <button id="close-modal" class="text-white hover:text-gray-200 transition-colors rounded-full p-1 hover:bg-white hover:bg-opacity-20">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
         
-        <!-- Panel del modal -->
-        <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full">
-            <!-- Header del modal -->
-            <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4">
-                <div class="flex items-center justify-between">
-                    <h3 id="modal-title" class="text-xl font-bold text-white">Vista Detallada del Proyecto</h3>
-                    <button id="close-modal" class="text-white hover:text-gray-200 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Contenido del modal -->
-            <div id="modal-content" class="p-6">
-                <!-- El contenido se carga dinámicamente -->
-            </div>
+        <!-- Contenido del modal -->
+        <div id="modal-content" class="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+            <!-- El contenido se carga dinámicamente -->
         </div>
     </div>
 </div>

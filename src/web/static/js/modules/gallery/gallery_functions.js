@@ -205,9 +205,10 @@ function favoriteProject(projectId, buttonEl) {
         .then(resp => resp.json())
         .then(data => {
             if (data && typeof data.favorito !== 'undefined') {
-                // Actualizar UI
+                // Actualizar UI solo si el backend confirma
                 if (buttonEl) {
                     buttonEl.classList.toggle('text-yellow-400', data.favorito);
+                    buttonEl.classList.toggle('text-gray-400', !data.favorito);
                 }
                 showToast('Favorito', data.message || 'Favorito actualizado', 'success');
             } else {
@@ -221,63 +222,91 @@ function favoriteProject(projectId, buttonEl) {
 }
 
 // Inicialización de event listeners para la galería
-function initGalleryEventListeners() {
-    // ...existing code...
+
+function initGalleryClickHandler() {
+    if (window._kyber_gallery_click_bound) {
+        console.log('⚠️ Gallery click handler already bound, skipping');
+        return;
+    }
+
+    const _kyberGalleryHandler = function(e) {
+        const el = e.target.closest('[data-action]');
+        if (!el) return;
+
+        const action = el.getAttribute('data-action');
+        let projectId = el.getAttribute('data-project-id');
+        if (!projectId) {
             const card = el.closest('[data-project-id]');
             if (card) projectId = card.getAttribute('data-project-id');
         }
+
+        console.log('🔍 Gallery click captured:', el);
         console.log('⚡ Action:', action, 'ProjectID:', projectId);
         if (!action) return;
 
-        try {
-            e.preventDefault();
-            const normalizedAction = action === 'view-project' ? 'view' : action;
-            console.log('🚀 Executing action:', normalizedAction, 'with projectId:', projectId);
-            switch (normalizedAction) {
-                case 'view':
-                    console.log('👁️ View action triggered');
-                    if (projectId) {
-                        fetch(`/api/gallery/projects/${projectId}`)
-                            .then(resp => { if (!resp.ok) throw new Error('Proyecto no encontrado'); return resp.json(); })
-                            .then(projectData => showProjectDetails(projectData.nombre || projectData.title || `Proyecto ${projectData.id}`, {
+        e.preventDefault();
+        const normalizedAction = action === 'view-project' ? 'view' : action;
+
+        switch (normalizedAction) {
+            case 'view': {
+                console.log('👁️ View action triggered');
+                if (projectId) {
+                    fetch(`/api/gallery/projects/${projectId}`)
+                        .then(resp => { if (!resp.ok) throw new Error('Proyecto no encontrado'); return resp.json(); })
+                        .then(projectData => {
+                            const modalData = {
                                 id: projectData.id,
                                 title: projectData.nombre || projectData.title || `Proyecto ${projectData.id}`,
                                 files: projectData.archivos || projectData.files || [],
-                                stats: {},
-                                aiAnalysis: projectData.analisis_ia || projectData.aiAnalysis || {},
-                                status: { items: projectData.status || projectData.status_list || [] }
-                            }))
-                            .catch(err => { console.error(err); showToast('Error', 'No se pudo cargar el proyecto', 'error'); });
-                    } else {
-                        const card = el.closest('[data-project-id]');
-                        const titleEl = card ? card.querySelector('h3') : null;
-                        const title = titleEl ? titleEl.textContent.trim() : 'Proyecto';
-                        showProjectDetails(title);
-                    }
-                    break;
-                case 'favorite':
-                    console.log('⭐ Favorite action triggered');
-                    if (projectId) favoriteProject(parseInt(projectId, 10), el);
-                    break;
-                case 'export':
-                    console.log('📤 Export action triggered');
-                    if (projectId) exportProject(parseInt(projectId, 10));
-                    break;
-                case 'duplicate':
-                    console.log('📋 Duplicate action triggered');
-                    if (projectId) duplicateProject(parseInt(projectId, 10));
-                    break;
-                case 'delete':
-                    console.log('🗑️ Delete action triggered');
-                    if (projectId) deleteProject(parseInt(projectId, 10));
-                    break;
+                                stats: {
+                                    pieces: (projectData.badges && projectData.badges.piezas) ? projectData.badges.piezas : (projectData.files ? `${projectData.files.length} piezas` : 'N/A'),
+                                    totalTime: (projectData.aiAnalysis && projectData.aiAnalysis.tiempo_estimado) ? projectData.aiAnalysis.tiempo_estimado : 'N/A',
+                                    filament: (projectData.aiAnalysis && projectData.aiAnalysis.filamento_total) ? projectData.aiAnalysis.filamento_total : 'N/A',
+                                    cost: (projectData.aiAnalysis && projectData.aiAnalysis.costo_estimado) ? projectData.aiAnalysis.costo_estimado : 'N/A',
+                                    volume: (projectData.aiAnalysis && projectData.aiAnalysis.volumen_total) ? projectData.aiAnalysis.volumen_total : 'N/A',
+                                    created: projectData.fecha_creacion || projectData.created || 'N/A'
+                                },
+                                aiAnalysis: projectData.aiAnalysis || projectData.analisis_ia || {},
+                                status: { items: [projectData.estado, projectData.progreso && projectData.progreso.mensaje].filter(Boolean) }
+                            };
+                            console.log('🎨 Mapped modal data:', modalData);
+                            showProjectDetails(modalData.title, modalData);
+                        })
+                        .catch(err => { console.error(err); showToast('Error', 'No se pudo cargar el proyecto', 'error'); });
+                } else {
+                    const card = el.closest('[data-project-id]');
+                    const titleEl = card ? card.querySelector('h3') : null;
+                    const title = titleEl ? titleEl.textContent.trim() : 'Proyecto';
+                    showProjectDetails(title);
+                }
+                break;
             }
-        } finally {
-            e.stopPropagation && e.stopPropagation();
-            e.stopImmediatePropagation && e.stopImmediatePropagation();
+            case 'favorite': {
+                console.log('⭐ Favorite action triggered');
+                if (projectId) favoriteProject(parseInt(projectId, 10), el);
+                break;
+            }
+            case 'export': {
+                console.log('📤 Export action triggered');
+                if (projectId) exportProject(parseInt(projectId, 10));
+                break;
+            }
+            case 'duplicate': {
+                console.log('📋 Duplicate action triggered');
+                if (projectId) duplicateProject(parseInt(projectId, 10));
+                break;
+            }
+            case 'delete': {
+                console.log('🗑️ Delete action triggered');
+                if (projectId) deleteProject(parseInt(projectId, 10));
+                break;
+            }
         }
+
+        e.stopPropagation && e.stopPropagation();
+        e.stopImmediatePropagation && e.stopImmediatePropagation();
     };
-    
+
     document.addEventListener('click', _kyberGalleryHandler, true);
     window._kyber_gallery_click_bound = true;
     console.log('✅ Gallery capture-phase click handler bound successfully');
@@ -295,8 +324,4 @@ if (document.readyState === 'loading') {
     initGalleryClickHandler();
 }
 
-// Also initialize legacy listener for compatibility
-document.addEventListener('DOMContentLoaded', function() {
-    try { initGalleryEventListeners(); } catch(e) { console.warn('initGalleryEventListeners failed', e); }
-    console.log('Gallery main functions initialized');
-});
+// Fin de gallery_functions.js
