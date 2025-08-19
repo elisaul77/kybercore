@@ -201,15 +201,39 @@ function deleteProject(projectId) {
         showToast('Error', 'ID de proyecto no proporcionado', 'error');
         return;
     }
-    if (!confirm(`¿Estás seguro de que deseas eliminar el proyecto con ID ${projectId}?`)) return;
+    
+    const card = document.querySelector(`[data-project-id="${projectId}"]`);
+    const projectName = card ? card.querySelector('h3')?.textContent : `proyecto ${projectId}`;
+    
+    if (!confirm(`¿Estás seguro de que deseas eliminar "${projectName}"?`)) return;
 
+    // Verificar si es un proyecto duplicado (ID generado temporalmente)
+    const isDuplicatedProject = projectId > 1000000000000; // IDs generados con Date.now()
+    
+    if (isDuplicatedProject) {
+        // Eliminar solo del DOM, no llamar al servidor
+        console.log('📋 Deleting duplicated project (frontend only)');
+        showToast('Proyecto Eliminado', 'Copia eliminada', 'success');
+        
+        if (card) {
+            card.style.transition = 'opacity 0.3s, transform 0.3s';
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                card.remove();
+                updateGalleryStats(-1); // -1 proyecto
+            }, 300);
+        }
+        return;
+    }
+
+    // Proyecto original - eliminar del servidor
     showToast('Eliminando', `Eliminando proyecto...`, 'warning');
     fetch(`/api/gallery/projects/${projectId}/delete`, { method: 'POST' })
         .then(resp => resp.json())
         .then(data => {
             showToast('Proyecto Eliminado', data.message || 'Eliminado', 'success');
             // Remover tarjeta del DOM con animación
-            const card = document.querySelector(`[data-project-id="${projectId}"]`);
             if (card) {
                 card.style.transition = 'opacity 0.3s, transform 0.3s';
                 card.style.opacity = '0';
@@ -427,6 +451,9 @@ function updateGalleryStats(projectChange = 0) {
 function favoriteProject(projectId, buttonEl) {
     console.log('⭐ favoriteProject called with ID:', projectId, 'buttonEl:', buttonEl);
     
+    // Verificar si es un proyecto duplicado
+    const isDuplicatedProject = projectId > 1000000000000;
+    
     // UI optimista: cambiar inmediatamente el estado visual
     let currentlyFavorite = false;
     if (buttonEl) {
@@ -434,6 +461,13 @@ function favoriteProject(projectId, buttonEl) {
         // Cambiar inmediatamente el estado visual
         buttonEl.classList.toggle('text-yellow-400', !currentlyFavorite);
         buttonEl.classList.toggle('text-gray-400', currentlyFavorite);
+    }
+    
+    if (isDuplicatedProject) {
+        // Para proyectos duplicados, solo actualizar la UI
+        console.log('📋 Toggling favorite for duplicated project (frontend only)');
+        showToast('Favorito', `${!currentlyFavorite ? 'Agregado a' : 'Removido de'} favoritos`, 'success');
+        return;
     }
     
     fetch(`/api/gallery/projects/${projectId}/favorite`, { method: 'POST' })
