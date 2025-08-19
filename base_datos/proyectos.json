@@ -85,7 +85,7 @@
       },
       "fecha_creacion": "2024-12-15",
       "fecha_completado": null,
-      "favorito": true,
+      "favorito": false,
       "carpeta": "src/proyect/ATX Power supply - 6749455",
       "tags": [
         "electronics",
@@ -194,7 +194,7 @@
       },
       "fecha_creacion": "2024-12-08",
       "fecha_completado": null,
-      "favorito": false,
+      "favorito": true,
       "carpeta": "src/proyect/Flexi Dog - 2810483",
       "tags": [
         "toy",
@@ -205,8 +205,8 @@
       ]
     },
     {
-      "id": 8,
-      "nombre": "Aquarium Guard Tower - Copia",
+      "id": 13,
+      "nombre": "Aquarium Guard Tower - Copia - Copia",
       "descripcion": "Decorative guard tower for aquarium decoration - Miniature architectural piece",
       "estado": "listo",
       "tipo": "Decorativo",
