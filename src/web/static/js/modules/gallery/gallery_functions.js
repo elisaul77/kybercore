@@ -179,24 +179,30 @@ function duplicateProject(projectId) {
     showToast('Duplicando', `Creando copia del proyecto...`, 'info');
     
     fetch(`/api/gallery/projects/${numericProjectId}/duplicate`, { method: 'POST' })
-        .then(resp => resp.json())
-        .then(data => {
-            showToast('Proyecto Duplicado', data.message || 'Copia creada', 'success');
-            // Si el servidor devuelve los datos del proyecto duplicado, agregarlo al DOM
-            if (data.proyecto) {
-                addProjectToGallery(data.proyecto);
+        .then(resp => {
+            console.log('🔍 Server response status:', resp.status);
+            const isOk = resp.ok;
+            return resp.json().then(data => ({ data, isOk }));
+        })
+        .then(({ data, isOk }) => {
+            console.log('🔍 Server response data:', data);
+            console.log('🔍 Server response ok:', isOk);
+            
+            // Manejar diferentes formatos de respuesta del servidor
+            const isSuccess = isOk || data.success === true || data.status === 'success' || 
+                              (data.message && data.message.toLowerCase().includes('duplicado'));
+            
+            if (isSuccess) {
+                showToast('Proyecto Duplicado', data.message || 'Copia creada correctamente', 'success');
+                console.log('✅ Project duplicated successfully on server, reloading page...');
+                
+                // Recargar solo el módulo de galería para mostrar el proyecto duplicado con el ID correcto del servidor
+                setTimeout(() => {
+                    console.log('🔄 Reloading gallery module...');
+                    reloadGalleryModule();
+                }, 1500); // Dar tiempo para que el usuario vea el toast de éxito
             } else {
-                // Fallback: crear una copia del proyecto original si no viene en la respuesta
-                const originalCard = document.querySelector(`[data-project-id="${numericProjectId}"]`);
-                if (originalCard) {
-                    // Generar ID único para el duplicado basado en timestamp
-                    const uniqueId = Date.now() + Math.floor(Math.random() * 1000);
-                    console.log('🆔 Generated unique ID for duplicate:', uniqueId);
-                    createDuplicateFromOriginal(originalCard, uniqueId);
-                } else {
-                    console.warn('⚠️ Could not find original card to duplicate:', numericProjectId);
-                    showToast('Advertencia', 'No se encontró el proyecto original', 'warning');
-                }
+                throw new Error(data.message || data.detail || 'Error en la duplicación');
             }
         })
         .catch(err => {
@@ -233,21 +239,46 @@ function deleteProject(projectId) {
     });
     
     if (isDuplicatedProject) {
-        // Eliminar solo del DOM, no llamar al servidor
-        console.log('📋 Deleting duplicated project (frontend only)');
+        // Eliminar proyecto duplicado solo del DOM (no existe en servidor)
+        console.log('📋 Deleting duplicated project (frontend only - temporary ID)');
         showToast('Proyecto Eliminado', 'Copia eliminada', 'success');
         
         if (card) {
+            console.log('🎯 Found card for deletion:', card);
+            console.log('🎯 Card parent:', card.parentNode);
+            console.log('🎯 Card classes:', card.className);
+            
             // Animación de eliminación mejorada
             card.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
             card.style.opacity = '0';
             card.style.transform = 'scale(0.8)';
+            
+            console.log('⏱️ Starting removal animation...');
+            
             setTimeout(() => {
-                if (card.parentNode) {
-                    card.remove();
+                console.log('⏱️ Animation timeout reached, attempting removal...');
+                if (card && card.parentNode) {
+                    console.log('✅ Parent node exists, removing card...');
+                    card.parentNode.removeChild(card);
                     console.log('✅ Duplicated project card removed from DOM');
+                    updateGalleryStats(-1); // -1 proyecto
+                    
+                    // Verificar después de 1 segundo si el elemento realmente desapareció
+                    setTimeout(() => {
+                        const checkCard = document.querySelector(`.bg-white.rounded-2xl.shadow-lg[data-project-id="${numericProjectId}"]`);
+                        if (checkCard) {
+                            console.error('🚨 PROBLEMA: El elemento fue eliminado pero sigue en el DOM!', checkCard);
+                            console.error('🚨 Esto indica que algo está restaurando el elemento');
+                            // Forzar eliminación definitiva
+                            checkCard.style.display = 'none';
+                            checkCard.remove();
+                        } else {
+                            console.log('✅ CONFIRMADO: Elemento realmente eliminado del DOM');
+                        }
+                    }, 1000);
+                } else {
+                    console.warn('⚠️ Card or parent node no longer exists:', {card: !!card, parent: card ? !!card.parentNode : false});
                 }
-                updateGalleryStats(-1); // -1 proyecto
             }, 300);
         } else {
             console.warn('⚠️ Could not find card for duplicated project:', numericProjectId);
@@ -453,8 +484,23 @@ function createDuplicateFromOriginal(originalCard, newProjectId) {
         console.log('✅ Proyecto duplicado agregado al DOM con ID:', newProjectId);
         
         // Asegurar que los event listeners funcionen para el nuevo elemento
-        // Los event listeners ya están configurados con event delegation en initGalleryClickHandler
-        // y deberían funcionar automáticamente para elementos agregados dinámicamente
+        // Usar setTimeout para asegurar que el elemento esté completamente integrado
+        setTimeout(() => {
+            // Verificar que el elemento esté accesible en el DOM
+            const verifyCard = document.querySelector(`.bg-white.rounded-2xl.shadow-lg[data-project-id="${newProjectId}"]`);
+            if (verifyCard) {
+                console.log('✅ Duplicated project card verified in DOM and ready for interactions');
+                // Forzar reflow para asegurar que el DOM esté actualizado
+                verifyCard.offsetHeight; // trigger reflow
+                
+                // Reinicializar los event listeners para asegurar que funcionen
+                console.log('🔄 Reinitializing gallery event listeners for new element...');
+                reinitializeGallery();
+            } else {
+                console.warn('⚠️ Could not verify duplicated project card in DOM');
+            }
+        }, 100);
+        
         console.log('🎯 Event listeners should be active for duplicate project:', newProjectId);
     }
 }
@@ -691,6 +737,123 @@ window.notifyGalleryReload = function() {
     console.log('📢 Notifying gallery reload...');
     window.dispatchEvent(new CustomEvent('galleryModuleReloaded'));
 };
+
+// Función para recargar el módulo de galería completo
+function reloadGalleryModule() {
+    console.log('🔄 Reloading gallery module...');
+    
+    // Disparar evento personalizado para que otros sistemas sepan que se va a recargar
+    window.dispatchEvent(new CustomEvent('galleryModuleReloading'));
+    
+    // Solución simple: recargar solo los datos de proyectos vía API
+    console.log('🔄 Fetching updated project data...');
+    fetch('/api/gallery/projects')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('✅ Updated project data received:', data);
+            
+            // Encontrar el grid de proyectos
+            const projectGrid = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3.xl\\:grid-cols-4');
+            const projects = data.projects || data.proyectos || []; // Manejar ambos formatos
+            
+            console.log('🔍 Project grid found:', !!projectGrid);
+            console.log('🔍 Projects data count:', projects.length);
+            
+            if (projectGrid) {
+                // Limpiar el grid actual
+                projectGrid.innerHTML = '';
+                console.log('🧹 Cleared existing project grid');
+                
+                // Reconstruir cada proyecto
+                projects.forEach(project => {
+                    const projectCard = createProjectCardHTML(project);
+                    projectGrid.appendChild(projectCard);
+                });
+                
+                console.log('✅ Gallery module reloaded with', projects.length, 'projects');
+                
+                // Reinicializar event listeners
+                setTimeout(() => {
+                    reinitializeGallery();
+                    console.log('✅ Event listeners reinitialized');
+                }, 100);
+                
+                // Actualizar estadísticas si están disponibles
+                if (data.statistics) {
+                    updateGalleryStats(0); // Recalcular estadísticas
+                }
+                
+            } else {
+                console.warn('⚠️ Could not find project grid');
+                showToast('Error', 'No se pudo actualizar la galería', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error fetching updated project data:', error);
+            console.log('🔄 Falling back to page reload...');
+            window.location.reload();
+        });
+}
+
+// Función para crear HTML de tarjeta de proyecto desde datos de API
+function createProjectCardHTML(project) {
+    console.log('🏗️ Creating project card for:', project.nombre || project.name);
+    
+    // Crear el elemento de la tarjeta
+    const card = document.createElement('div');
+    card.setAttribute('data-project-id', project.id);
+    card.className = 'bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300';
+    
+    // HTML básico de la tarjeta - simplificado para funcionalidad
+    card.innerHTML = `
+        <div class="relative h-48 bg-gray-100">
+            ${project.imagen ? 
+                `<img src="${project.imagen}" alt="${project.nombre}" class="w-full h-full object-cover">` :
+                `<div class="w-full h-full flex items-center justify-center text-gray-400">
+                    <div class="text-center">
+                        <div class="text-4xl mb-2">🏗️</div>
+                        <p class="text-sm">Sin imagen</p>
+                    </div>
+                </div>`
+            }
+            <div class="absolute top-3 left-3 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                ${project.estado || 'listo'}
+            </div>
+            <button data-action="favorite" data-project-id="${project.id}" class="absolute top-3 right-3 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition-colors ${project.favorito ? 'text-yellow-400' : 'text-gray-400'}">
+                ⭐
+            </button>
+        </div>
+        <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+                <h3 class="font-bold text-lg text-gray-900 leading-tight">${project.nombre || project.name || 'Proyecto sin nombre'}</h3>
+            </div>
+            <p class="text-gray-600 text-sm mb-4 line-clamp-2">${project.descripcion || 'Sin descripción'}</p>
+            <div class="space-y-2">
+                <button data-action="view-project" data-project-id="${project.id}" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:from-blue-600 hover:to-blue-700 transition-colors">
+                    👁️ Ver Proyecto
+                </button>
+                <div class="grid grid-cols-3 gap-2">
+                    <button data-action="export" data-project-id="${project.id}" class="px-2 py-2 bg-blue-100 text-blue-700 rounded-lg text-xs hover:bg-blue-200 transition-colors">
+                        📤 Exportar
+                    </button>
+                    <button data-action="duplicate" data-project-id="${project.id}" class="px-2 py-2 bg-purple-100 text-purple-700 rounded-lg text-xs hover:bg-purple-200 transition-colors">
+                        📋 Duplicar
+                    </button>
+                    <button data-action="delete" data-project-id="${project.id}" class="px-2 py-2 bg-red-100 text-red-700 rounded-lg text-xs hover:bg-red-200 transition-colors">
+                        🗑️ Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    return card;
+}
 
 console.log('📦 gallery_functions.js fully loaded and ready');
 
