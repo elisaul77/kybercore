@@ -166,7 +166,10 @@ function duplicateProject(projectId) {
         .then(resp => resp.json())
         .then(data => {
             showToast('Proyecto Duplicado', data.message || 'Copia creada', 'success');
-            if (typeof reloadGallery === 'function') reloadGallery();
+            // Si el servidor devuelve los datos del proyecto duplicado, agregarlo al DOM
+            if (data.proyecto) {
+                addProjectToGallery(data.proyecto);
+            }
         })
         .catch(err => {
             console.error(err);
@@ -187,15 +190,171 @@ function deleteProject(projectId) {
         .then(resp => resp.json())
         .then(data => {
             showToast('Proyecto Eliminado', data.message || 'Eliminado', 'success');
-            // Remover tarjeta del DOM
+            // Remover tarjeta del DOM con animación
             const card = document.querySelector(`[data-project-id="${projectId}"]`);
-            if (card) card.remove();
-            if (typeof reloadGallery === 'function') reloadGallery();
+            if (card) {
+                card.style.transition = 'opacity 0.3s, transform 0.3s';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    card.remove();
+                    // Actualizar estadísticas después de eliminar
+                    updateGalleryStats(-1); // -1 proyecto
+                }, 300);
+            }
         })
         .catch(err => {
             console.error(err);
             showToast('Error', 'No se pudo eliminar el proyecto', 'error');
         });
+}
+
+// Función para agregar un proyecto al DOM dinámicamente
+function addProjectToGallery(proyecto) {
+    const gallery = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3.xl\\:grid-cols-4');
+    if (!gallery) {
+        console.error('No se encontró el contenedor de la galería');
+        return;
+    }
+
+    // Crear el HTML de la nueva tarjeta
+    const estadoColors = {
+        'completado': 'bg-green-500',
+        'en_progreso': 'bg-blue-500',
+        'listo': 'bg-purple-500',
+        'problemas': 'bg-yellow-500'
+    };
+    
+    const progressColors = {
+        'completado': 'bg-green-500',
+        'en_progreso': 'bg-blue-500',
+        'listo': 'bg-purple-500',
+        'problemas': 'bg-yellow-500'
+    };
+
+    const estadoClass = estadoColors[proyecto.estado] || 'bg-gray-500';
+    const progressClass = progressColors[proyecto.estado] || 'bg-gray-500';
+    const favoriteClass = proyecto.favorito ? 'text-yellow-400' : 'text-gray-400';
+
+    const cardHTML = `
+        <div data-project-id="${proyecto.id}" class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300" style="opacity: 0; transform: scale(0.8);">
+            <!-- Imagen del proyecto -->
+            <div class="relative h-48 bg-gray-100">
+                ${proyecto.imagen ? 
+                    `<img src="${proyecto.imagen}" alt="${proyecto.nombre}" class="w-full h-full object-cover">` :
+                    `<div class="w-full h-full flex items-center justify-center text-gray-400">
+                        <div class="text-center">
+                            <div class="text-4xl mb-2">🏗️</div>
+                            <p class="text-sm">Sin imagen</p>
+                        </div>
+                    </div>`
+                }
+                
+                <!-- Badge de estado -->
+                <div class="absolute top-3 left-3 ${estadoClass} text-white px-3 py-1 rounded-full text-sm font-medium">
+                    ${proyecto.badges?.estado || proyecto.estado}
+                </div>
+                
+                <!-- Botón de favorito -->
+                <button data-action="favorite" data-project-id="${proyecto.id}" class="absolute top-3 right-3 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition-colors ${favoriteClass}">
+                    ⭐
+                </button>
+            </div>
+            
+            <!-- Contenido del proyecto -->
+            <div class="p-6">
+                <div class="flex items-start justify-between mb-3">
+                    <h3 class="font-bold text-lg text-gray-900 leading-tight">${proyecto.nombre}</h3>
+                    <div class="flex flex-col gap-1 text-xs">
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-md">${proyecto.badges?.tipo || 'Proyecto'}</span>
+                        <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-md">${proyecto.badges?.piezas || (proyecto.archivos?.length || 0) + ' archivos'}</span>
+                    </div>
+                </div>
+                
+                <p class="text-gray-600 text-sm mb-4 line-clamp-2">${proyecto.descripcion || 'Sin descripción'}</p>
+                
+                <!-- Progreso -->
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span>Progreso</span>
+                        <span>${proyecto.progreso?.porcentaje || 0}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="h-2 ${progressClass} rounded-full" style="width: ${proyecto.progreso?.porcentaje || 0}%"></div>
+                    </div>
+                    <div class="text-xs text-${proyecto.estado === 'completado' ? 'green' : 'blue'}-700 mt-1">${proyecto.progreso?.mensaje || 'Estado: ' + proyecto.estado}</div>
+                </div>
+                
+                <!-- Botones de acción -->
+                <div class="space-y-2">
+                    <button data-action="view-project" data-project-id="${proyecto.id}" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:from-blue-600 hover:to-blue-700 transition-colors">
+                        👁️ Ver Proyecto
+                    </button>
+                    
+                    <div class="grid grid-cols-3 gap-2">
+                        <button data-action="export" data-project-id="${proyecto.id}" class="px-2 py-2 bg-blue-100 text-blue-700 rounded-lg text-xs hover:bg-blue-200 transition-colors">
+                            📤 Exportar
+                        </button>
+                        <button data-action="duplicate" data-project-id="${proyecto.id}" class="px-2 py-2 bg-purple-100 text-purple-700 rounded-lg text-xs hover:bg-purple-200 transition-colors">
+                            📋 Duplicar
+                        </button>
+                        <button data-action="delete" data-project-id="${proyecto.id}" class="px-2 py-2 bg-red-100 text-red-700 rounded-lg text-xs hover:bg-red-200 transition-colors">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Información adicional -->
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <div class="flex items-center justify-between text-xs text-gray-500">
+                        <span>Por: ${proyecto.autor || 'Usuario'}</span>
+                        <span>${proyecto.archivos?.length || 0} archivos</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Agregar la nueva tarjeta al final de la galería
+    gallery.insertAdjacentHTML('beforeend', cardHTML);
+    
+    // Animar la entrada
+    const newCard = gallery.lastElementChild;
+    setTimeout(() => {
+        newCard.style.transition = 'opacity 0.3s, transform 0.3s';
+        newCard.style.opacity = '1';
+        newCard.style.transform = 'scale(1)';
+    }, 50);
+
+    console.log('✅ Proyecto agregado al DOM:', proyecto.nombre);
+    // Actualizar estadísticas
+    updateGalleryStats(1); // +1 proyecto
+}
+
+// Función para actualizar las estadísticas de la galería
+function updateGalleryStats(projectChange = 0) {
+    // Actualizar contador de proyectos totales
+    const totalProjectsEl = document.querySelector('.bg-gradient-to-br.from-blue-500 .text-3xl');
+    if (totalProjectsEl && projectChange !== 0) {
+        const currentTotal = parseInt(totalProjectsEl.textContent) || 0;
+        totalProjectsEl.textContent = currentTotal + projectChange;
+    }
+    
+    // Recalcular número de archivos STL dinámicamente
+    const totalFilesEl = document.querySelector('.bg-gradient-to-br.from-green-500 .text-3xl');
+    if (totalFilesEl) {
+        const allCards = document.querySelectorAll('[data-project-id]');
+        let totalFiles = 0;
+        allCards.forEach(card => {
+            const fileCountEl = card.querySelector('.text-xs.text-gray-500:last-child');
+            if (fileCountEl) {
+                const fileText = fileCountEl.textContent;
+                const fileCount = parseInt(fileText.match(/(\d+)/)?.[0] || '0');
+                totalFiles += fileCount;
+            }
+        });
+        totalFilesEl.textContent = totalFiles;
+    }
 }
 
 // Toggle favorito
@@ -229,7 +388,7 @@ function initGalleryClickHandler() {
         return;
     }
 
-    const _kyberGalleryHandler = function(e) {
+    window._kyberGalleryHandler = function(e) {
         const el = e.target.closest('[data-action]');
         if (!el) return;
 
@@ -307,7 +466,7 @@ function initGalleryClickHandler() {
         e.stopImmediatePropagation && e.stopImmediatePropagation();
     };
 
-    document.addEventListener('click', _kyberGalleryHandler, true);
+    document.addEventListener('click', window._kyberGalleryHandler, true);
     window._kyber_gallery_click_bound = true;
     console.log('✅ Gallery capture-phase click handler bound successfully');
 }
