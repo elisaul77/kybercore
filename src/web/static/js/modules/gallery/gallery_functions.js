@@ -809,11 +809,57 @@ function createProjectCardHTML(project) {
     card.setAttribute('data-project-id', project.id);
     card.className = 'bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300';
     
-    // HTML básico de la tarjeta - simplificado para funcionalidad
+    // Mapear colores de estado
+    const estadoColors = {
+        'completado': 'bg-green-500',
+        'en_progreso': 'bg-blue-500',
+        'listo': 'bg-purple-500',
+        'problemas': 'bg-yellow-500'
+    };
+    
+    const progressColors = {
+        'completado': 'bg-green-500',
+        'en_progreso': 'bg-blue-500',
+        'listo': 'bg-purple-500',
+        'problemas': 'bg-yellow-500'
+    };
+    
+    const progressTextColors = {
+        'completado': 'text-green-700',
+        'en_progreso': 'text-blue-700',
+        'listo': 'text-purple-700',
+        'problemas': 'text-yellow-700'
+    };
+    
+    // Determinar botón de ver proyecto según estado
+    let viewButtonClass = 'w-full bg-gradient-to-r from-gray-400 to-gray-500 text-white px-3 py-2 rounded-lg text-sm hover:from-gray-500 hover:to-gray-600 transition-colors';
+    switch(project.estado) {
+        case 'completado':
+            viewButtonClass = 'w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-2 rounded-lg text-sm hover:from-green-600 hover:to-green-700 transition-colors';
+            break;
+        case 'en_progreso':
+            viewButtonClass = 'w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:from-blue-600 hover:to-blue-700 transition-colors';
+            break;
+        case 'listo':
+            viewButtonClass = 'w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white px-3 py-2 rounded-lg text-sm hover:from-purple-600 hover:to-purple-700 transition-colors';
+            break;
+        case 'problemas':
+            viewButtonClass = 'w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-white px-3 py-2 rounded-lg text-sm hover:from-yellow-600 hover:to-yellow-700 transition-colors';
+            break;
+    }
+    
+    const estado = project.estado || 'listo';
+    const estadoClass = estadoColors[estado] || 'bg-gray-500';
+    const progressClass = progressColors[estado] || 'bg-gray-500';
+    const progressTextClass = progressTextColors[estado] || 'text-gray-700';
+    const porcentaje = (project.progreso && project.progreso.porcentaje) || 0;
+    
+    // HTML completo que coincide con el template
     card.innerHTML = `
+        <!-- Imagen del proyecto -->
         <div class="relative h-48 bg-gray-100">
             ${project.imagen ? 
-                `<img src="${project.imagen}" alt="${project.nombre}" class="w-full h-full object-cover">` :
+                `<img src="${project.imagen}" alt="${project.nombre || project.name}" class="w-full h-full object-cover">` :
                 `<div class="w-full h-full flex items-center justify-center text-gray-400">
                     <div class="text-center">
                         <div class="text-4xl mb-2">🏗️</div>
@@ -821,22 +867,48 @@ function createProjectCardHTML(project) {
                     </div>
                 </div>`
             }
-            <div class="absolute top-3 left-3 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                ${project.estado || 'listo'}
+            
+            <!-- Badge de estado -->
+            <div class="absolute top-3 left-3 ${estadoClass} text-white px-3 py-1 rounded-full text-sm font-medium">
+                ${(project.badges && project.badges.estado) || estado}
             </div>
+            
+            <!-- Botón de favorito -->
             <button data-action="favorite" data-project-id="${project.id}" class="absolute top-3 right-3 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition-colors ${project.favorito ? 'text-yellow-400' : 'text-gray-400'}">
                 ⭐
             </button>
         </div>
+        
+        <!-- Contenido del proyecto -->
         <div class="p-6">
             <div class="flex items-start justify-between mb-3">
                 <h3 class="font-bold text-lg text-gray-900 leading-tight">${project.nombre || project.name || 'Proyecto sin nombre'}</h3>
+                <div class="flex flex-col gap-1 text-xs">
+                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-md">${(project.badges && project.badges.tipo) || 'Proyecto'}</span>
+                    <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-md">${(project.badges && project.badges.piezas) || '1 pieza'}</span>
+                </div>
             </div>
+            
             <p class="text-gray-600 text-sm mb-4 line-clamp-2">${project.descripcion || 'Sin descripción'}</p>
+            
+            <!-- Progreso -->
+            <div class="mb-4">
+                <div class="flex justify-between text-sm mb-1">
+                    <span>Progreso</span>
+                    <span>${porcentaje}%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="h-2 ${progressClass} rounded-full" style="width: ${porcentaje}%"></div>
+                </div>
+                <div class="text-xs ${progressTextClass} mt-1">${(project.progreso && project.progreso.mensaje) || 'Listo para imprimir'}</div>
+            </div>
+            
+            <!-- Botones de acción -->
             <div class="space-y-2">
-                <button data-action="view-project" data-project-id="${project.id}" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:from-blue-600 hover:to-blue-700 transition-colors">
+                <button data-action="view-project" data-project-id="${project.id}" class="${viewButtonClass}">
                     👁️ Ver Proyecto
                 </button>
+                
                 <div class="grid grid-cols-3 gap-2">
                     <button data-action="export" data-project-id="${project.id}" class="px-2 py-2 bg-blue-100 text-blue-700 rounded-lg text-xs hover:bg-blue-200 transition-colors">
                         📤 Exportar
@@ -847,6 +919,14 @@ function createProjectCardHTML(project) {
                     <button data-action="delete" data-project-id="${project.id}" class="px-2 py-2 bg-red-100 text-red-700 rounded-lg text-xs hover:bg-red-200 transition-colors">
                         🗑️ Eliminar
                     </button>
+                </div>
+            </div>
+            
+            <!-- Información adicional -->
+            <div class="mt-4 pt-4 border-t border-gray-100">
+                <div class="flex items-center justify-between text-xs text-gray-500">
+                    <span>Por: ${project.autor || 'Usuario'}</span>
+                    <span>${(project.archivos && project.archivos.length) || 0} archivos</span>
                 </div>
             </div>
         </div>
