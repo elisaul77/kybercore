@@ -73,45 +73,69 @@ async def get_project(project_id: int):
 @router.get("/projects/{project_slug}/image/{filename}")
 async def get_project_image(project_slug: str, filename: str):
     """Sirve imágenes de proyectos"""
-    # Mapear slug a carpeta
-    slug_to_folder = {
-        "atx-power-supply-6749455": "ATX Power supply - 6749455",
-        "aquarium-guard-tower-3139513": "Aquarium Guard Tower - 3139513", 
-        "flexi-dog-2810483": "Flexi Dog - 2810483"
-    }
-    
-    folder_name = slug_to_folder.get(project_slug)
-    if not folder_name:
+    # Resolver dinámicamente el slug buscando el proyecto en el JSON
+    data = load_projects_data()
+
+    # Intentar extraer ID del slug (forma: some-name-<id>)
+    folder_name = None
+    project = None
+    try:
+        if '-' in project_slug:
+            possible_id = project_slug.split('-')[-1]
+            if possible_id.isdigit():
+                pid = int(possible_id)
+                project = next((p for p in data['proyectos'] if p.get('id') == pid), None)
+    except Exception:
+        project = None
+
+    # Si no se encontró por id, intentar buscar por campo 'imagen' que contenga el slug
+    if not project:
+        project = next((p for p in data['proyectos'] if p.get('imagen') and f"/api/gallery/projects/{project_slug}/" in p.get('imagen')), None)
+
+    if not project:
         raise HTTPException(status_code=404, detail="Proyecto no encontrado")
-    
+
+    # Determinar carpeta del proyecto
+    folder_name = project.get('carpeta') or f"{project.get('nombre')} - {project.get('id')}"
+
     # Construir ruta a la imagen
     image_path = os.path.join("src", "proyect", folder_name, "images", filename)
-    
+
     if not os.path.exists(image_path):
         raise HTTPException(status_code=404, detail="Imagen no encontrada")
-    
+
     return FileResponse(image_path)
 
 @router.get("/projects/{project_slug}/file/{filename}")
 async def get_project_file(project_slug: str, filename: str):
     """Sirve archivos STL de proyectos"""
-    # Mapear slug a carpeta
-    slug_to_folder = {
-        "atx-power-supply-6749455": "ATX Power supply - 6749455",
-        "aquarium-guard-tower-3139513": "Aquarium Guard Tower - 3139513",
-        "flexi-dog-2810483": "Flexi Dog - 2810483"
-    }
-    
-    folder_name = slug_to_folder.get(project_slug)
-    if not folder_name:
+    # Resolver dinámicamente el slug buscando el proyecto en el JSON
+    data = load_projects_data()
+
+    project = None
+    try:
+        if '-' in project_slug:
+            possible_id = project_slug.split('-')[-1]
+            if possible_id.isdigit():
+                pid = int(possible_id)
+                project = next((p for p in data['proyectos'] if p.get('id') == pid), None)
+    except Exception:
+        project = None
+
+    if not project:
+        project = next((p for p in data['proyectos'] if p.get('imagen') and f"/api/gallery/projects/{project_slug}/" in p.get('imagen')), None)
+
+    if not project:
         raise HTTPException(status_code=404, detail="Proyecto no encontrado")
-    
+
+    folder_name = project.get('carpeta') or f"{project.get('nombre')} - {project.get('id')}"
+
     # Construir ruta al archivo
     file_path = os.path.join("src", "proyect", folder_name, "files", filename)
-    
+
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
-    
+
     return FileResponse(file_path, filename=filename)
 
 @router.post("/projects/{project_id}/favorite")
@@ -274,7 +298,7 @@ async def create_project(
             "fecha_creacion": datetime.now().strftime("%Y-%m-%d"),
             "estado": "listo",
             "favorito": False,
-            "imagen": f"/api/gallery/projects/{name.lower().replace(' ', '-')}-{new_id}/images/{image_files[0]}" if image_files else None,
+            "imagen": f"/api/gallery/projects/{name.lower().replace(' ', '-')}-{new_id}/image/{image_files[0]}" if image_files else None,
             "badges": {
                 "estado": "Listo",
                 "tipo": category.title(),
