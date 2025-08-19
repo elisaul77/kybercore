@@ -1,9 +1,13 @@
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, UploadFile, File, Form
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 import json
 import os
+import zipfile
+import shutil
 from pathlib import Path
+from datetime import datetime
+import tempfile
 
 router = APIRouter()
 templates = Jinja2Templates(directory="src/web/templates")
@@ -186,3 +190,147 @@ async def get_projects_stats():
     """Obtener estadísticas de proyectos"""
     data = load_projects_data()
     return data["estadisticas"]
+
+
+@router.post("/projects/create")
+async def create_project(
+    name: str = Form(...),
+    description: str = Form(""),
+    category: str = Form("funcional"),
+    zip_file: UploadFile = File(...)
+):
+    """Crear un nuevo proyecto desde un archivo ZIP"""
+    
+    # Validar archivo ZIP
+    if not zip_file.filename.endswith('.zip'):
+        raise HTTPException(status_code=400, detail="El archivo debe ser un ZIP")
+    
+    # Cargar datos actuales
+    data = load_projects_data()
+    
+    # Generar nuevo ID
+    new_id = max((p.get('id', 0) for p in data['proyectos']), default=0) + 1
+    
+    # Crear directorio del proyecto
+    project_dir = f"src/proyect/{name} - {new_id}"
+    project_path = Path(project_dir)
+    project_path.mkdir(parents=True, exist_ok=True)
+    
+    # Crear subdirectorios
+    (project_path / "files").mkdir(exist_ok=True)
+    (project_path / "images").mkdir(exist_ok=True)
+    
+    try:
+        # Guardar archivo ZIP temporalmente
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as temp_zip:
+            content = await zip_file.read()
+            temp_zip.write(content)
+            temp_zip_path = temp_zip.name
+        
+        # Extraer ZIP
+        with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
+            extracted_files = []
+            image_files = []
+            
+            for file_info in zip_ref.filelist:
+                if file_info.is_dir():
+                    continue
+                
+                # Obtener nombre de archivo sin ruta
+                filename = os.path.basename(file_info.filename)
+                if not filename:  # Saltear si es solo directorio
+                    continue
+                
+                # Determinar dónde extraer según extensión
+                file_ext = filename.lower().split('.')[-1] if '.' in filename else ''
+                
+                if file_ext in ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']:
+                    # Extraer imágenes a carpeta images
+                    dest_path = project_path / "images" / filename
+                    with zip_ref.open(file_info) as source, open(dest_path, "wb") as target:
+                        shutil.copyfileobj(source, target)
+                    image_files.append(filename)
+                    
+                elif file_ext in ['stl', 'obj', 'ply', 'gcode', 'gco', 'txt', 'md', 'json']:
+                    # Extraer archivos 3D y documentos a carpeta files
+                    dest_path = project_path / "files" / filename
+                    with zip_ref.open(file_info) as source, open(dest_path, "wb") as target:
+                        shutil.copyfileobj(source, target)
+                    extracted_files.append({
+                        "nombre": filename,
+                        "tipo": "STL" if file_ext == 'stl' else "G-code" if file_ext in ['gcode', 'gco'] else "Archivo",
+                        "tamano": f"{file_info.file_size / 1024:.2f} KB" if file_info.file_size > 0 else "0 KB"
+                    })
+        
+        # Limpiar archivo temporal
+        os.unlink(temp_zip_path)
+        
+        # Crear nuevo proyecto en JSON
+        new_project = {
+            "id": new_id,
+            "nombre": name,
+            "descripcion": description,
+            "autor": "Usuario",
+            "fecha_creacion": datetime.now().strftime("%Y-%m-%d"),
+            "estado": "listo",
+            "favorito": False,
+            "imagen": f"/api/gallery/projects/{name.lower().replace(' ', '-')}-{new_id}/image/{image_files[0]}" if image_files else None,
+            "badges": {
+                "estado": "Listo",
+                "tipo": category.title(),
+                "piezas": f"{len([f for f in extracted_files if f['tipo'] == 'STL'])} piezas"
+            },
+            "progreso": {
+                "porcentaje": 100,
+                "mensaje": "Listo para imprimir"
+            },
+            "archivos": extracted_files,
+            "estadisticas": {
+                "tiempo_estimado": "2-4 horas",
+                "filamento_estimado": "50-100g",
+                "complejidad": "Media"
+            },
+            "aiAnalysis": {
+                "tiempo_estimado": "3 horas",
+                "filamento_total": "75g",
+                "costo_estimado": "$2.50",
+                "recomendaciones": [
+                    "Usar soporte en voladizos",
+                    "Temperatura de cama: 60°C"
+                ]
+            }
+        }
+        
+        # Agregar proyecto a los datos
+        data['proyectos'].append(new_project)
+        
+        # Actualizar estadísticas
+        data['estadisticas']['total_proyectos'] = len(data['proyectos'])
+        data['estadisticas']['total_stls'] += len([f for f in extracted_files if f['tipo'] == 'STL'])
+        
+        # Guardar datos actualizados
+        if save_projects_data(data):
+            return {
+                "success": True,
+                "message": f"Proyecto '{name}' creado correctamente",
+                "project": new_project,
+                "extracted_files": len(extracted_files),
+                "images": len(image_files)
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Error al guardar el proyecto")
+            
+    except zipfile.BadZipFile:
+        # Limpiar directorio si hay error
+        if project_path.exists():
+            shutil.rmtree(project_path)
+        raise HTTPException(status_code=400, detail="El archivo ZIP está corrupto")
+    
+    except Exception as e:
+        # Limpiar directorio si hay error
+        if project_path.exists():
+            shutil.rmtree(project_path)
+        # Limpiar archivo temporal si existe
+        if 'temp_zip_path' in locals() and os.path.exists(temp_zip_path):
+            os.unlink(temp_zip_path)
+        raise HTTPException(status_code=500, detail=f"Error al procesar el proyecto: {str(e)}")

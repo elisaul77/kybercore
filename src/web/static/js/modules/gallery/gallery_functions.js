@@ -935,6 +935,211 @@ function createProjectCardHTML(project) {
     return card;
 }
 
+// Función para crear un nuevo proyecto
+function createNewProject() {
+    console.log('🆕 Creating new project...');
+    
+    // Crear modal para subir archivo ZIP
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">📁 Crear Nuevo Proyecto</h2>
+                <button id="close-new-project-modal" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            
+            <form id="new-project-form" enctype="multipart/form-data">
+                <div class="space-y-4">
+                    <!-- Nombre del proyecto -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nombre del Proyecto</label>
+                        <input type="text" id="project-name" name="name" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                               placeholder="Mi Proyecto Increíble">
+                    </div>
+                    
+                    <!-- Descripción -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+                        <textarea id="project-description" name="description" rows="3"
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                  placeholder="Describe tu proyecto..."></textarea>
+                    </div>
+                    
+                    <!-- Subir archivo ZIP -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Archivo del Proyecto (.zip)</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-400 transition-colors"
+                             id="drop-zone">
+                            <input type="file" id="project-zip" name="zip_file" accept=".zip" class="hidden">
+                            <div id="drop-text">
+                                <div class="text-4xl mb-2">📦</div>
+                                <p class="text-gray-600">Arrastra tu archivo ZIP aquí o <button type="button" class="text-purple-600 hover:text-purple-700 underline" onclick="document.getElementById('project-zip').click()">selecciónalo</button></p>
+                                <p class="text-sm text-gray-500 mt-2">Sube un archivo ZIP con tus modelos STL, G-code, etc.</p>
+                            </div>
+                            <div id="file-info" class="hidden">
+                                <div class="text-4xl mb-2">✅</div>
+                                <p class="text-green-600 font-medium" id="file-name"></p>
+                                <p class="text-sm text-gray-500" id="file-size"></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Opciones adicionales -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
+                        <select id="project-category" name="category" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <option value="funcional">Funcional</option>
+                            <option value="decorativo">Decorativo</option>
+                            <option value="mecanico">Mecánico</option>
+                            <option value="herramientas">Herramientas</option>
+                            <option value="prototipo">Prototipo</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3 mt-8">
+                    <button type="button" id="cancel-new-project" 
+                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="create-project-btn"
+                            class="flex-1 bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-purple-700 transition-colors disabled:opacity-50"
+                            disabled>
+                        Crear Proyecto
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    
+    // Agregar modal al DOM
+    document.body.appendChild(modal);
+    
+    // Event listeners
+    setupNewProjectModal(modal);
+}
+
+// Configurar event listeners para el modal de nuevo proyecto
+function setupNewProjectModal(modal) {
+    const closeBtn = modal.querySelector('#close-new-project-modal');
+    const cancelBtn = modal.querySelector('#cancel-new-project');
+    const form = modal.querySelector('#new-project-form');
+    const fileInput = modal.querySelector('#project-zip');
+    const dropZone = modal.querySelector('#drop-zone');
+    const createBtn = modal.querySelector('#create-project-btn');
+    
+    // Cerrar modal
+    const closeModal = () => {
+        modal.remove();
+    };
+    
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    
+    // Cerrar al hacer clic fuera del modal
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    
+    // Manejar drag & drop
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('border-purple-400', 'bg-purple-50');
+    });
+    
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('border-purple-400', 'bg-purple-50');
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('border-purple-400', 'bg-purple-50');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].name.endsWith('.zip')) {
+            fileInput.files = files;
+            updateFileInfo(files[0]);
+        } else {
+            showToast('Error', 'Por favor sube un archivo ZIP válido', 'error');
+        }
+    });
+    
+    // Manejar selección de archivo
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            updateFileInfo(e.target.files[0]);
+        }
+    });
+    
+    // Actualizar info del archivo
+    function updateFileInfo(file) {
+        const dropText = modal.querySelector('#drop-text');
+        const fileInfo = modal.querySelector('#file-info');
+        const fileName = modal.querySelector('#file-name');
+        const fileSize = modal.querySelector('#file-size');
+        
+        dropText.classList.add('hidden');
+        fileInfo.classList.remove('hidden');
+        fileName.textContent = file.name;
+        fileSize.textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
+        
+        createBtn.disabled = false;
+    }
+    
+    // Manejar envío del formulario
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        
+        if (!formData.get('zip_file') || formData.get('zip_file').size === 0) {
+            showToast('Error', 'Por favor selecciona un archivo ZIP', 'error');
+            return;
+        }
+        
+        createBtn.disabled = true;
+        createBtn.textContent = 'Creando Proyecto...';
+        
+        try {
+            console.log('🚀 Submitting new project...');
+            const response = await fetch('/api/gallery/projects/create', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                showToast('Proyecto Creado', result.message || 'Proyecto creado correctamente', 'success');
+                console.log('✅ Project created successfully:', result);
+                
+                closeModal();
+                
+                // Recargar galería para mostrar el nuevo proyecto
+                setTimeout(() => {
+                    reloadGalleryModule();
+                }, 1500);
+                
+            } else {
+                throw new Error(result.message || result.detail || 'Error al crear el proyecto');
+            }
+            
+        } catch (error) {
+            console.error('❌ Error creating project:', error);
+            showToast('Error', error.message || 'No se pudo crear el proyecto', 'error');
+        } finally {
+            createBtn.disabled = false;
+            createBtn.textContent = 'Crear Proyecto';
+        }
+    });
+}
+
+// Hacer disponible globalmente
+window.createNewProject = createNewProject;
+
 console.log('📦 gallery_functions.js fully loaded and ready');
 
 // Fin de gallery_functions.js
