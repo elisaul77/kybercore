@@ -96,11 +96,28 @@ async def get_project_image(project_slug: str, filename: str):
     if not project:
         raise HTTPException(status_code=404, detail="Proyecto no encontrado")
 
-    # Determinar carpeta del proyecto
+    # Determinar carpeta del proyecto. Algunos proyectos guardaron la ruta completa
+    # en el campo 'carpeta' (ej: 'src/proyect/ATX Power supply - 6749455'). En ese caso
+    # no debemos volver a anteponer 'src/proyect' o generará una ruta duplicada.
     folder_name = project.get('carpeta') or f"{project.get('nombre')} - {project.get('id')}"
 
+    # Normalizar base del directorio del proyecto
+    if folder_name.startswith("src" + os.sep) or folder_name.startswith("src/"):
+        base_folder = folder_name
+    else:
+        base_folder = os.path.join("src", "proyect", folder_name)
+
     # Construir ruta a la imagen
-    image_path = os.path.join("src", "proyect", folder_name, "images", filename)
+    image_path = os.path.join(base_folder, "images", filename)
+
+    # DEBUG: imprimir información para entender fallos en la resolución de rutas
+    try:
+        print(f"[gallery_controller] Resuelto proyecto: {project.get('nombre')} (id={project.get('id')})")
+        print(f"[gallery_controller] carpeta campo: {project.get('carpeta')}")
+        print(f"[gallery_controller] image_path calculada: {image_path}")
+        print(f"[gallery_controller] existe en FS: {os.path.exists(image_path)}")
+    except Exception as _:
+        print("[gallery_controller] DEBUG: error imprimiendo info del proyecto")
 
     if not os.path.exists(image_path):
         raise HTTPException(status_code=404, detail="Imagen no encontrada")
@@ -131,8 +148,14 @@ async def get_project_file(project_slug: str, filename: str):
 
     folder_name = project.get('carpeta') or f"{project.get('nombre')} - {project.get('id')}"
 
+    # Normalizar base del directorio del proyecto (mismo criterio que para imágenes)
+    if folder_name.startswith("src" + os.sep) or folder_name.startswith("src/"):
+        base_folder = folder_name
+    else:
+        base_folder = os.path.join("src", "proyect", folder_name)
+
     # Construir ruta al archivo
-    file_path = os.path.join("src", "proyect", folder_name, "files", filename)
+    file_path = os.path.join(base_folder, "files", filename)
 
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
