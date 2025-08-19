@@ -1,7 +1,7 @@
 {
   "estadisticas": {
-    "total_proyectos": 3,
-    "total_stls": 14,
+    "total_proyectos": 5,
+    "total_stls": 16,
     "completados": 0,
     "en_progreso": 0,
     "tasa_exito": 0
@@ -203,6 +203,106 @@
         "dog",
         "flexi"
       ]
+    },
+    {
+      "id": 8,
+      "nombre": "camido",
+      "descripcion": "dew",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-08-19",
+      "estado": "listo",
+      "favorito": false,
+      "imagen": "/api/gallery/projects/camido-8/image/photo_2022-03-01_14.06.54.jpeg",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "1 piezas"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "Articulated_mouse.stl",
+          "tipo": "STL",
+          "tamano": "1056.92 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "nombre": "cadsa",
+      "descripcion": "casd",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-08-19",
+      "estado": "listo",
+      "favorito": false,
+      "imagen": "/api/gallery/projects/cadsa-9/image/Bluey_White.jpg",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "1 piezas"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "Starfish.stl",
+          "tipo": "STL",
+          "tamano": "17075.38 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
     }
   ]
 }
