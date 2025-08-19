@@ -71,6 +71,7 @@ async def get_project(project_id: int):
     return project
 
 @router.get("/projects/{project_slug}/image/{filename}")
+@router.get("/projects/{project_slug}/images/{filename}")
 async def get_project_image(project_slug: str, filename: str):
     """Sirve imágenes de proyectos"""
     # Resolver dinámicamente el slug buscando el proyecto en el JSON
@@ -298,7 +299,8 @@ async def create_project(
             "fecha_creacion": datetime.now().strftime("%Y-%m-%d"),
             "estado": "listo",
             "favorito": False,
-            "imagen": f"/api/gallery/projects/{name.lower().replace(' ', '-')}-{new_id}/image/{image_files[0]}" if image_files else None,
+                # Usar ruta plural '/images/' para coincidir con la carpeta en el filesystem
+                "imagen": f"/api/gallery/projects/{name.lower().replace(' ', '-')}-{new_id}/images/{image_files[0]}" if image_files else None,
             "badges": {
                 "estado": "Listo",
                 "tipo": category.title(),
