@@ -274,7 +274,7 @@ async def create_project(
             "fecha_creacion": datetime.now().strftime("%Y-%m-%d"),
             "estado": "listo",
             "favorito": False,
-            "imagen": f"/api/gallery/projects/{name.lower().replace(' ', '-')}-{new_id}/image/{image_files[0]}" if image_files else None,
+            "imagen": f"/api/gallery/projects/{name.lower().replace(' ', '-')}-{new_id}/images/{image_files[0]}" if image_files else None,
             "badges": {
                 "estado": "Listo",
                 "tipo": category.title(),
