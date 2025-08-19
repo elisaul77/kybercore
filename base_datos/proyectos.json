@@ -147,7 +147,7 @@
       },
       "fecha_creacion": "2024-12-10",
       "fecha_completado": null,
-      "favorito": true,
+      "favorito": false,
       "carpeta": "src/proyect/Aquarium Guard Tower - 3139513",
       "tags": [
         "aquarium",
@@ -202,68 +202,6 @@
         "articulated",
         "dog",
         "flexi"
-      ]
-    },
-    {
-      "id": 13,
-      "nombre": "Aquarium Guard Tower - Copia - Copia",
-      "descripcion": "Decorative guard tower for aquarium decoration - Miniature architectural piece",
-      "estado": "listo",
-      "tipo": "Decorativo",
-      "categoria": "decorativo",
-      "imagen": "/api/gallery/projects/aquarium-guard-tower-3139513/image/69a792f4b7cada9f613e7bdc65f32bfb.png",
-      "thingiverse_id": "3139513",
-      "autor": "J_Tonkin",
-      "url": "https://www.thingiverse.com/thing:3139513",
-      "badges": {
-        "estado": "📋 Listo",
-        "piezas": "4 piezas",
-        "tipo": "Decorativo"
-      },
-      "archivos": [
-        {
-          "nombre": "Body.stl",
-          "tamaño": "1.8 MB",
-          "estado": "listo"
-        },
-        {
-          "nombre": "UpperFloor.stl",
-          "tamaño": "0.9 MB",
-          "estado": "listo"
-        },
-        {
-          "nombre": "Roof.stl",
-          "tamaño": "1.2 MB",
-          "estado": "listo"
-        },
-        {
-          "nombre": "Columns.stl",
-          "tamaño": "0.7 MB",
-          "estado": "listo"
-        }
-      ],
-      "analisis_ia": {
-        "impresoras_sugeridas": "Cualquier FDM",
-        "materiales": "PLA",
-        "tiempo_estimado": "6h 15m",
-        "filamento_total": "85g",
-        "costo_estimado": "€2.30"
-      },
-      "progreso": {
-        "piezas_completadas": 0,
-        "piezas_totales": 4,
-        "porcentaje": 0,
-        "mensaje": "Proyecto listo para imprimir"
-      },
-      "fecha_creacion": "2024-12-10",
-      "fecha_completado": null,
-      "favorito": false,
-      "carpeta": "src/proyect/Aquarium Guard Tower - 3139513",
-      "tags": [
-        "aquarium",
-        "decoration",
-        "tower",
-        "miniature"
       ]
     },
     {
@@ -355,6 +293,68 @@
     },
     {
       "id": 15,
+      "nombre": "Aquarium Guard Tower - Copia",
+      "descripcion": "Decorative guard tower for aquarium decoration - Miniature architectural piece",
+      "estado": "listo",
+      "tipo": "Decorativo",
+      "categoria": "decorativo",
+      "imagen": "/api/gallery/projects/aquarium-guard-tower-3139513/image/69a792f4b7cada9f613e7bdc65f32bfb.png",
+      "thingiverse_id": "3139513",
+      "autor": "J_Tonkin",
+      "url": "https://www.thingiverse.com/thing:3139513",
+      "badges": {
+        "estado": "📋 Listo",
+        "piezas": "4 piezas",
+        "tipo": "Decorativo"
+      },
+      "archivos": [
+        {
+          "nombre": "Body.stl",
+          "tamaño": "1.8 MB",
+          "estado": "listo"
+        },
+        {
+          "nombre": "UpperFloor.stl",
+          "tamaño": "0.9 MB",
+          "estado": "listo"
+        },
+        {
+          "nombre": "Roof.stl",
+          "tamaño": "1.2 MB",
+          "estado": "listo"
+        },
+        {
+          "nombre": "Columns.stl",
+          "tamaño": "0.7 MB",
+          "estado": "listo"
+        }
+      ],
+      "analisis_ia": {
+        "impresoras_sugeridas": "Cualquier FDM",
+        "materiales": "PLA",
+        "tiempo_estimado": "6h 15m",
+        "filamento_total": "85g",
+        "costo_estimado": "€2.30"
+      },
+      "progreso": {
+        "piezas_completadas": 0,
+        "piezas_totales": 4,
+        "porcentaje": 0,
+        "mensaje": "Proyecto listo para imprimir"
+      },
+      "fecha_creacion": "2024-12-10",
+      "fecha_completado": null,
+      "favorito": false,
+      "carpeta": "src/proyect/Aquarium Guard Tower - 3139513",
+      "tags": [
+        "aquarium",
+        "decoration",
+        "tower",
+        "miniature"
+      ]
+    },
+    {
+      "id": 16,
       "nombre": "Aquarium Guard Tower - Copia",
       "descripcion": "Decorative guard tower for aquarium decoration - Miniature architectural piece",
       "estado": "listo",
