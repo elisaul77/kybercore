@@ -169,12 +169,16 @@ function exportProject(projectId) {
 
 function duplicateProject(projectId) {
     console.log('📋 duplicateProject called with ID:', projectId);
-    if (!projectId) {
+    
+    const numericProjectId = parseInt(projectId, 10);
+    if (!numericProjectId) {
         showToast('Error', 'ID de proyecto no proporcionado', 'error');
         return;
     }
+    
     showToast('Duplicando', `Creando copia del proyecto...`, 'info');
-    fetch(`/api/gallery/projects/${projectId}/duplicate`, { method: 'POST' })
+    
+    fetch(`/api/gallery/projects/${numericProjectId}/duplicate`, { method: 'POST' })
         .then(resp => resp.json())
         .then(data => {
             showToast('Proyecto Duplicado', data.message || 'Copia creada', 'success');
@@ -183,32 +187,50 @@ function duplicateProject(projectId) {
                 addProjectToGallery(data.proyecto);
             } else {
                 // Fallback: crear una copia del proyecto original si no viene en la respuesta
-                const originalCard = document.querySelector(`[data-project-id="${projectId}"]`);
+                const originalCard = document.querySelector(`[data-project-id="${numericProjectId}"]`);
                 if (originalCard) {
-                    createDuplicateFromOriginal(originalCard, data.newProjectId || (Date.now()));
+                    // Generar ID único para el duplicado basado en timestamp
+                    const uniqueId = Date.now() + Math.floor(Math.random() * 1000);
+                    console.log('🆔 Generated unique ID for duplicate:', uniqueId);
+                    createDuplicateFromOriginal(originalCard, uniqueId);
+                } else {
+                    console.warn('⚠️ Could not find original card to duplicate:', numericProjectId);
+                    showToast('Advertencia', 'No se encontró el proyecto original', 'warning');
                 }
             }
         })
         .catch(err => {
-            console.error(err);
+            console.error('❌ Error duplicating project:', err);
             showToast('Error', 'No se pudo duplicar el proyecto', 'error');
         });
 }
 
 function deleteProject(projectId) {
     console.log('🗑️ deleteProject called with ID:', projectId);
-    if (!projectId) {
+    
+    // Convertir projectId a número para comparaciones consistentes
+    const numericProjectId = parseInt(projectId, 10);
+    
+    if (!numericProjectId) {
         showToast('Error', 'ID de proyecto no proporcionado', 'error');
         return;
     }
     
-    const card = document.querySelector(`[data-project-id="${projectId}"]`);
-    const projectName = card ? card.querySelector('h3')?.textContent : `proyecto ${projectId}`;
+    const card = document.querySelector(`.bg-white.rounded-2xl.shadow-lg[data-project-id="${numericProjectId}"]`);
+    const projectName = card ? card.querySelector('h3')?.textContent : `proyecto ${numericProjectId}`;
     
     if (!confirm(`¿Estás seguro de que deseas eliminar "${projectName}"?`)) return;
 
     // Verificar si es un proyecto duplicado (ID generado temporalmente)
-    const isDuplicatedProject = projectId > 1000000000000; // IDs generados con Date.now()
+    const isDuplicatedProject = numericProjectId > 1000000000000; // IDs generados con Date.now()
+    
+    console.log('🔍 Project analysis:', {
+        originalId: projectId,
+        numericId: numericProjectId,
+        isDuplicated: isDuplicatedProject,
+        cardFound: !!card,
+        projectName: projectName
+    });
     
     if (isDuplicatedProject) {
         // Eliminar solo del DOM, no llamar al servidor
@@ -216,37 +238,48 @@ function deleteProject(projectId) {
         showToast('Proyecto Eliminado', 'Copia eliminada', 'success');
         
         if (card) {
-            card.style.transition = 'opacity 0.3s, transform 0.3s';
+            // Animación de eliminación mejorada
+            card.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
             card.style.opacity = '0';
             card.style.transform = 'scale(0.8)';
             setTimeout(() => {
-                card.remove();
+                if (card.parentNode) {
+                    card.remove();
+                    console.log('✅ Duplicated project card removed from DOM');
+                }
                 updateGalleryStats(-1); // -1 proyecto
             }, 300);
+        } else {
+            console.warn('⚠️ Could not find card for duplicated project:', numericProjectId);
+            showToast('Advertencia', 'No se encontró la tarjeta del proyecto', 'warning');
         }
         return;
     }
 
     // Proyecto original - eliminar del servidor
+    console.log('🔄 Deleting original project via server');
     showToast('Eliminando', `Eliminando proyecto...`, 'warning');
-    fetch(`/api/gallery/projects/${projectId}/delete`, { method: 'POST' })
+    fetch(`/api/gallery/projects/${numericProjectId}/delete`, { method: 'POST' })
         .then(resp => resp.json())
         .then(data => {
             showToast('Proyecto Eliminado', data.message || 'Eliminado', 'success');
             // Remover tarjeta del DOM con animación
             if (card) {
-                card.style.transition = 'opacity 0.3s, transform 0.3s';
+                card.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
                 card.style.opacity = '0';
                 card.style.transform = 'scale(0.8)';
                 setTimeout(() => {
-                    card.remove();
+                    if (card.parentNode) {
+                        card.remove();
+                        console.log('✅ Original project card removed from DOM');
+                    }
                     // Actualizar estadísticas después de eliminar
                     updateGalleryStats(-1); // -1 proyecto
                 }, 300);
             }
         })
         .catch(err => {
-            console.error(err);
+            console.error('❌ Error deleting project:', err);
             showToast('Error', 'No se pudo eliminar el proyecto', 'error');
         });
 }
@@ -418,6 +451,11 @@ function createDuplicateFromOriginal(originalCard, newProjectId) {
         // Actualizar estadísticas
         updateGalleryStats(1);
         console.log('✅ Proyecto duplicado agregado al DOM con ID:', newProjectId);
+        
+        // Asegurar que los event listeners funcionen para el nuevo elemento
+        // Los event listeners ya están configurados con event delegation en initGalleryClickHandler
+        // y deberían funcionar automáticamente para elementos agregados dinámicamente
+        console.log('🎯 Event listeners should be active for duplicate project:', newProjectId);
     }
 }
 
