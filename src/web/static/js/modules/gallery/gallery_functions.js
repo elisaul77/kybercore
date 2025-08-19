@@ -169,6 +169,12 @@ function duplicateProject(projectId) {
             // Si el servidor devuelve los datos del proyecto duplicado, agregarlo al DOM
             if (data.proyecto) {
                 addProjectToGallery(data.proyecto);
+            } else {
+                // Fallback: crear una copia del proyecto original si no viene en la respuesta
+                const originalCard = document.querySelector(`[data-project-id="${projectId}"]`);
+                if (originalCard) {
+                    createDuplicateFromOriginal(originalCard, data.newProjectId || (Date.now()));
+                }
             }
         })
         .catch(err => {
@@ -331,6 +337,54 @@ function addProjectToGallery(proyecto) {
     updateGalleryStats(1); // +1 proyecto
 }
 
+// Función para crear un duplicado basado en el proyecto original del DOM
+function createDuplicateFromOriginal(originalCard, newProjectId) {
+    const newCard = originalCard.cloneNode(true);
+    
+    // Actualizar el ID del nuevo proyecto
+    newCard.setAttribute('data-project-id', newProjectId);
+    
+    // Actualizar todos los botones con el nuevo ID
+    const actionButtons = newCard.querySelectorAll('[data-project-id]');
+    actionButtons.forEach(button => {
+        button.setAttribute('data-project-id', newProjectId);
+    });
+    
+    // Modificar el título para indicar que es una copia
+    const titleElement = newCard.querySelector('h3');
+    if (titleElement) {
+        titleElement.textContent = titleElement.textContent + ' - Copia';
+    }
+    
+    // Resetear el estado de favorito para la copia
+    const favoriteButton = newCard.querySelector('[data-action="favorite"]');
+    if (favoriteButton) {
+        favoriteButton.classList.remove('text-yellow-400');
+        favoriteButton.classList.add('text-gray-400');
+    }
+    
+    // Preparar animación
+    newCard.style.opacity = '0';
+    newCard.style.transform = 'scale(0.8)';
+    
+    // Agregar al DOM
+    const gallery = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3.xl\\:grid-cols-4');
+    if (gallery) {
+        gallery.appendChild(newCard);
+        
+        // Animar la entrada
+        setTimeout(() => {
+            newCard.style.transition = 'opacity 0.3s, transform 0.3s';
+            newCard.style.opacity = '1';
+            newCard.style.transform = 'scale(1)';
+        }, 50);
+        
+        // Actualizar estadísticas
+        updateGalleryStats(1);
+        console.log('✅ Proyecto duplicado agregado al DOM con ID:', newProjectId);
+    }
+}
+
 // Función para actualizar las estadísticas de la galería
 function updateGalleryStats(projectChange = 0) {
     // Actualizar contador de proyectos totales
@@ -360,14 +414,29 @@ function updateGalleryStats(projectChange = 0) {
 // Toggle favorito
 function favoriteProject(projectId, buttonEl) {
     console.log('⭐ favoriteProject called with ID:', projectId, 'buttonEl:', buttonEl);
+    
+    // UI optimista: cambiar inmediatamente el estado visual
+    let currentlyFavorite = false;
+    if (buttonEl) {
+        currentlyFavorite = buttonEl.classList.contains('text-yellow-400');
+        // Cambiar inmediatamente el estado visual
+        buttonEl.classList.toggle('text-yellow-400', !currentlyFavorite);
+        buttonEl.classList.toggle('text-gray-400', currentlyFavorite);
+    }
+    
     fetch(`/api/gallery/projects/${projectId}/favorite`, { method: 'POST' })
         .then(resp => resp.json())
         .then(data => {
             if (data && typeof data.favorito !== 'undefined') {
-                // Actualizar UI solo si el backend confirma
-                if (buttonEl) {
-                    buttonEl.classList.toggle('text-yellow-400', data.favorito);
-                    buttonEl.classList.toggle('text-gray-400', !data.favorito);
+                // Verificar si necesitamos corregir el estado UI optimista
+                const targetButton = buttonEl || document.querySelector(`[data-project-id="${projectId}"][data-action="favorite"]`);
+                if (targetButton) {
+                    const currentVisualState = targetButton.classList.contains('text-yellow-400');
+                    if (currentVisualState !== data.favorito) {
+                        // Corregir si el servidor responde algo diferente
+                        targetButton.classList.toggle('text-yellow-400', data.favorito);
+                        targetButton.classList.toggle('text-gray-400', !data.favorito);
+                    }
                 }
                 showToast('Favorito', data.message || 'Favorito actualizado', 'success');
             } else {
@@ -376,6 +445,11 @@ function favoriteProject(projectId, buttonEl) {
         })
         .catch(err => {
             console.error(err);
+            // Revertir el estado visual si falló la petición
+            if (buttonEl) {
+                buttonEl.classList.toggle('text-yellow-400', currentlyFavorite);
+                buttonEl.classList.toggle('text-gray-400', !currentlyFavorite);
+            }
             showToast('Error', 'No se pudo actualizar favorito', 'error');
         });
 }
@@ -442,7 +516,11 @@ function initGalleryClickHandler() {
             }
             case 'favorite': {
                 console.log('⭐ Favorite action triggered');
-                if (projectId) favoriteProject(parseInt(projectId, 10), el);
+                if (projectId) {
+                    // Asegurar que tenemos el botón correcto
+                    const favoriteButton = el.closest('[data-action="favorite"]') || el;
+                    favoriteProject(parseInt(projectId, 10), favoriteButton);
+                }
                 break;
             }
             case 'export': {
