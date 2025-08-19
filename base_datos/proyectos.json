@@ -1,7 +1,7 @@
 {
   "estadisticas": {
-    "total_proyectos": 3,
-    "total_stls": 22,
+    "total_proyectos": 4,
+    "total_stls": 74,
     "completados": 0,
     "en_progreso": 0,
     "tasa_exito": 0
@@ -203,6 +203,66 @@
         "dog",
         "flexi"
       ]
+    },
+    {
+      "id": 8,
+      "nombre": "casa",
+      "descripcion": "casa",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-08-19",
+      "estado": "listo",
+      "favorito": false,
+      "imagen": "/api/gallery/projects/casa-8/images/Rocket_Spiral_Passthrough_Fidget_V2.webp",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Prototipo",
+        "piezas": "3 piezas"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "inside.stl",
+          "tipo": "STL",
+          "tamano": "5347.93 KB"
+        },
+        {
+          "nombre": "outside-pointy.stl",
+          "tipo": "STL",
+          "tamano": "5678.01 KB"
+        },
+        {
+          "nombre": "outside-stubby.stl",
+          "tipo": "STL",
+          "tamano": "5981.43 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.14 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
     }
   ]
 }

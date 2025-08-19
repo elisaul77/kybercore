@@ -252,30 +252,54 @@ async def create_project(
     # Validar archivo ZIP
     if not zip_file.filename.endswith('.zip'):
         raise HTTPException(status_code=400, detail="El archivo debe ser un ZIP")
-    
-    # Cargar datos actuales
-    data = load_projects_data()
-    
-    # Generar nuevo ID
-    new_id = max((p.get('id', 0) for p in data['proyectos']), default=0) + 1
-    
-    # Crear directorio del proyecto
-    project_dir = f"src/proyect/{name} - {new_id}"
-    project_path = Path(project_dir)
-    project_path.mkdir(parents=True, exist_ok=True)
-    
-    # Crear subdirectorios
-    (project_path / "files").mkdir(exist_ok=True)
-    (project_path / "images").mkdir(exist_ok=True)
-    
+
+    project_name = name
+    temp_zip_path = None
+    project_path = None
+    source_badge = None
+
     try:
-        # Guardar archivo ZIP temporalmente
+        # Guardar archivo ZIP temporalmente para inspección y extracción
         with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as temp_zip:
             content = await zip_file.read()
             temp_zip.write(content)
             temp_zip_path = temp_zip.name
+
+        # --- Lógica para extraer nombre del proyecto desde README.txt ---
+        with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
+            # Buscar README.txt en el ZIP (insensible a mayúsculas/minúsculas y rutas)
+            readme_filename = next((f for f in zip_ref.namelist() if f.lower().endswith('readme.txt')), None)
+            
+            if readme_filename:
+                readme_content = zip_ref.read(readme_filename).decode('utf-8', errors='ignore')
+                if "Thingiverse" in readme_content:
+                    source_badge = "Thingiverse"
+                    # Asumir formato 'NOMBRE : URL' en la primera línea
+                    first_line = readme_content.splitlines()[0]
+                    if ':' in first_line:
+                        parsed_name = first_line.split(':')[0].strip()
+                        # Limpiar el texto "on Thingiverse" del nombre
+                        parsed_name = parsed_name.replace("on Thingiverse", "").strip()
+                        if parsed_name:
+                            project_name = parsed_name
+        # --- Fin de la lógica del README ---
+
+        # Cargar datos actuales
+        data = load_projects_data()
         
-        # Extraer ZIP
+        # Generar nuevo ID
+        new_id = max((p.get('id', 0) for p in data['proyectos']), default=0) + 1
+        
+        # Crear directorio del proyecto con el nombre final
+        project_dir = f"src/proyect/{project_name} - {new_id}"
+        project_path = Path(project_dir)
+        project_path.mkdir(parents=True, exist_ok=True)
+        
+        # Crear subdirectorios
+        (project_path / "files").mkdir(exist_ok=True)
+        (project_path / "images").mkdir(exist_ok=True)
+        
+        # Extraer ZIP al directorio final
         with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
             extracted_files = []
             image_files = []
@@ -284,23 +308,19 @@ async def create_project(
                 if file_info.is_dir():
                     continue
                 
-                # Obtener nombre de archivo sin ruta
                 filename = os.path.basename(file_info.filename)
-                if not filename:  # Saltear si es solo directorio
+                if not filename:
                     continue
                 
-                # Determinar dónde extraer según extensión
                 file_ext = filename.lower().split('.')[-1] if '.' in filename else ''
                 
                 if file_ext in ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']:
-                    # Extraer imágenes a carpeta images
                     dest_path = project_path / "images" / filename
                     with zip_ref.open(file_info) as source, open(dest_path, "wb") as target:
                         shutil.copyfileobj(source, target)
                     image_files.append(filename)
                     
                 elif file_ext in ['stl', 'obj', 'ply', 'gcode', 'gco', 'txt', 'md', 'json']:
-                    # Extraer archivos 3D y documentos a carpeta files
                     dest_path = project_path / "files" / filename
                     with zip_ref.open(file_info) as source, open(dest_path, "wb") as target:
                         shutil.copyfileobj(source, target)
@@ -310,25 +330,27 @@ async def create_project(
                         "tamano": f"{file_info.file_size / 1024:.2f} KB" if file_info.file_size > 0 else "0 KB"
                     })
         
-        # Limpiar archivo temporal
-        os.unlink(temp_zip_path)
-        
+        # Crear el diccionario de badges base
+        badges = {
+            "estado": "Listo",
+            "tipo": category.title(),
+            "piezas": f"{len([f for f in extracted_files if f['tipo'] == 'STL'])} piezas"
+        }
+        # Añadir el badge de origen si se identificó
+        if source_badge:
+            badges["origen"] = source_badge
+
         # Crear nuevo proyecto en JSON
         new_project = {
             "id": new_id,
-            "nombre": name,
+            "nombre": project_name, # Usar el nombre final y limpio
             "descripcion": description,
             "autor": "Usuario",
             "fecha_creacion": datetime.now().strftime("%Y-%m-%d"),
             "estado": "listo",
             "favorito": False,
-                # Usar ruta plural '/images/' para coincidir con la carpeta en el filesystem
-                "imagen": f"/api/gallery/projects/{name.lower().replace(' ', '-')}-{new_id}/images/{image_files[0]}" if image_files else None,
-            "badges": {
-                "estado": "Listo",
-                "tipo": category.title(),
-                "piezas": f"{len([f for f in extracted_files if f['tipo'] == 'STL'])} piezas"
-            },
+            "imagen": f"/api/gallery/projects/{project_name.lower().replace(' ', '-')}-{new_id}/images/{image_files[0]}" if image_files else None,
+            "badges": badges,
             "progreso": {
                 "porcentaje": 100,
                 "mensaje": "Listo para imprimir"
@@ -350,18 +372,14 @@ async def create_project(
             }
         }
         
-        # Agregar proyecto a los datos
         data['proyectos'].append(new_project)
-        
-        # Actualizar estadísticas
         data['estadisticas']['total_proyectos'] = len(data['proyectos'])
         data['estadisticas']['total_stls'] += len([f for f in extracted_files if f['tipo'] == 'STL'])
         
-        # Guardar datos actualizados
         if save_projects_data(data):
             return {
                 "success": True,
-                "message": f"Proyecto '{name}' creado correctamente",
+                "message": f"Proyecto '{project_name}' creado correctamente",
                 "project": new_project,
                 "extracted_files": len(extracted_files),
                 "images": len(image_files)
@@ -370,16 +388,16 @@ async def create_project(
             raise HTTPException(status_code=500, detail="Error al guardar el proyecto")
             
     except zipfile.BadZipFile:
-        # Limpiar directorio si hay error
-        if project_path.exists():
+        if project_path and project_path.exists():
             shutil.rmtree(project_path)
         raise HTTPException(status_code=400, detail="El archivo ZIP está corrupto")
     
     except Exception as e:
-        # Limpiar directorio si hay error
-        if project_path.exists():
+        if project_path and project_path.exists():
             shutil.rmtree(project_path)
-        # Limpiar archivo temporal si existe
-        if 'temp_zip_path' in locals() and os.path.exists(temp_zip_path):
-            os.unlink(temp_zip_path)
         raise HTTPException(status_code=500, detail=f"Error al procesar el proyecto: {str(e)}")
+
+    finally:
+        # Limpiar archivo temporal
+        if temp_zip_path and os.path.exists(temp_zip_path):
+            os.unlink(temp_zip_path)
