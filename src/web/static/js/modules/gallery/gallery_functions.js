@@ -49,10 +49,22 @@ function showProjectDetails(projectTitle, projectData = null) {
     finalProjectData.title = projectTitle; // Asegurar que el título coincida
 
     // Abrir el modal con los datos del proyecto
-    if (typeof projectModal !== 'undefined' && projectModal) {
-        projectModal.open(finalProjectData);
+    const modal = window.projectModal;
+    if (modal && typeof modal.open === 'function') {
+        console.log('📂 Opening project modal with data:', finalProjectData.title);
+        modal.open(finalProjectData);
     } else {
-        console.error('Project modal not initialized');
+        console.error('❌ Project modal not initialized or not available:', {
+            modalExists: !!modal,
+            openFunction: modal && typeof modal.open
+        });
+        // Intentar inicializar el modal si no existe
+        if (typeof initProjectModal === 'function') {
+            initProjectModal();
+            if (window.projectModal) {
+                window.projectModal.open(finalProjectData);
+            }
+        }
     }
 }
 
@@ -457,9 +469,10 @@ function favoriteProject(projectId, buttonEl) {
 // Inicialización de event listeners para la galería
 
 function initGalleryClickHandler() {
-    if (window._kyber_gallery_click_bound) {
-        console.log('⚠️ Gallery click handler already bound, skipping');
-        return;
+    // Limpiar cualquier listener previo
+    if (window._kyberGalleryHandler) {
+        document.removeEventListener('click', window._kyberGalleryHandler, true);
+        console.log('🧹 Removed previous gallery click handler');
     }
 
     window._kyberGalleryHandler = function(e) {
@@ -482,7 +495,13 @@ function initGalleryClickHandler() {
 
         switch (normalizedAction) {
             case 'view': {
-                console.log('👁️ View action triggered');
+                console.log('👁️ View action triggered for project:', projectId);
+                console.log('🔍 Click details:', {
+                    element: el.tagName,
+                    action: action,
+                    projectId: projectId,
+                    modalExists: !!window.projectModal
+                });
                 if (projectId) {
                     fetch(`/api/gallery/projects/${projectId}`)
                         .then(resp => { if (!resp.ok) throw new Error('Proyecto no encontrado'); return resp.json(); })
@@ -540,8 +559,8 @@ function initGalleryClickHandler() {
             }
         }
 
-        e.stopPropagation && e.stopPropagation();
-        e.stopImmediatePropagation && e.stopImmediatePropagation();
+        e.preventDefault();
+        e.stopPropagation();
     };
 
     document.addEventListener('click', window._kyberGalleryHandler, true);
@@ -549,16 +568,58 @@ function initGalleryClickHandler() {
     console.log('✅ Gallery capture-phase click handler bound successfully');
 }
 
-// Inicializar inmediatamente si el DOM está listo, o esperar si no
-if (document.readyState === 'loading') {
-    console.log('⏳ DOM still loading, waiting for DOMContentLoaded...');
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('🚀 DOMContentLoaded fired for gallery_functions.js');
-        initGalleryClickHandler();
-    });
-} else {
-    console.log('✅ DOM already loaded, initializing immediately');
-    initGalleryClickHandler();
+// Función para forzar reinicialización
+function reinitializeGallery() {
+    console.log('🔄 Force reinitializing gallery system...');
+    window._gallerySystemInitialized = false;
+    window._kyber_gallery_click_bound = false;
+    initGallery();
 }
+
+// Función de inicialización unificada
+function initGallery() {
+    // Prevenir múltiples inicializaciones
+    if (window._gallerySystemInitialized) {
+        console.log('⚠️ Gallery system already initialized, skipping');
+        return;
+    }
+    
+    console.log('🚀 Initializing gallery system...');
+    initGalleryClickHandler();
+    
+    // Asegurar que el modal esté inicializado también
+    if (typeof initProjectModal === 'function' && !window.projectModal) {
+        initProjectModal();
+    }
+    
+    window._gallerySystemInitialized = true;
+    console.log('✅ Gallery system initialized');
+}
+
+// Exponer funciones globalmente para otros módulos
+window.initGallery = initGallery;
+window.reinitializeGallery = reinitializeGallery;
+
+// Inicializar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGallery);
+} else {
+    // Usar setTimeout para asegurar que todos los scripts se hayan cargado
+    setTimeout(initGallery, 0);
+}
+
+// Hook para sistemas externos que recargan el módulo de galería
+window.addEventListener('galleryModuleReloaded', function() {
+    console.log('🔄 Gallery module reload detected, reinitializing...');
+    reinitializeGallery();
+});
+
+// Función que pueden llamar otros módulos cuando recargan la galería
+window.notifyGalleryReload = function() {
+    console.log('📢 Notifying gallery reload...');
+    window.dispatchEvent(new CustomEvent('galleryModuleReloaded'));
+};
+
+console.log('📦 gallery_functions.js fully loaded and ready');
 
 // Fin de gallery_functions.js
