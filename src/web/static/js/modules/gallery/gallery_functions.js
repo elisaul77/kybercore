@@ -290,10 +290,10 @@ function deleteProject(projectId) {
     // Proyecto original - eliminar del servidor
     console.log('🔄 Deleting original project via server');
     showToast('Eliminando', `Eliminando proyecto...`, 'warning');
-    fetch(`/api/gallery/projects/${numericProjectId}/delete`, { method: 'POST' })
-        .then(resp => resp.json())
-        .then(data => {
-            showToast('Proyecto Eliminado', data.message || 'Eliminado', 'success');
+      fetch(`/api/gallery/projects/${numericProjectId}/delete`, { method: 'POST' })
+          .then(resp => resp.json())
+          .then(data => {
+              showToast('Proyecto Eliminado', data.message || 'Eliminado', 'success');
             // Remover tarjeta del DOM con animación
             if (card) {
                 card.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
@@ -538,48 +538,53 @@ function favoriteProject(projectId, buttonEl) {
     // Verificar si es un proyecto duplicado
     const isDuplicatedProject = projectId > 1000000000000;
     
-    // UI optimista: cambiar inmediatamente el estado visual
+    // Helper: actualizar UI de todas las estrellas del proyecto
+    function setFavoriteUI(id, isFav) {
+        const favButtons = document.querySelectorAll(`[data-action="favorite"][data-project-id="${id}"]`);
+        favButtons.forEach(btn => {
+            btn.classList.toggle('text-yellow-400', !!isFav);
+            btn.classList.toggle('text-gray-400', !isFav);
+            // Actualizar símbolo interno (mantener limpio)
+            btn.textContent = !!isFav ? '⭐' : '☆';
+            btn.setAttribute('aria-pressed', !!isFav ? 'true' : 'false');
+        });
+    }
+
+    // Determinar estado actual visual
     let currentlyFavorite = false;
     if (buttonEl) {
-        currentlyFavorite = buttonEl.classList.contains('text-yellow-400');
-        // Cambiar inmediatamente el estado visual
-        buttonEl.classList.toggle('text-yellow-400', !currentlyFavorite);
-        buttonEl.classList.toggle('text-gray-400', currentlyFavorite);
+        currentlyFavorite = buttonEl.classList.contains('text-yellow-400') || (String(buttonEl.textContent).includes('⭐'));
+        // UI optimista: cambiar inmediatamente el estado visual (se corregirá tras la respuesta)
+        setFavoriteUI(projectId, !currentlyFavorite);
     }
-    
+
     if (isDuplicatedProject) {
         // Para proyectos duplicados, solo actualizar la UI
         console.log('📋 Toggling favorite for duplicated project (frontend only)');
         showToast('Favorito', `${!currentlyFavorite ? 'Agregado a' : 'Removido de'} favoritos`, 'success');
         return;
     }
-    
+
     fetch(`/api/gallery/projects/${projectId}/favorite`, { method: 'POST' })
-        .then(resp => resp.json())
+        .then(resp => {
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            return resp.json();
+        })
         .then(data => {
             if (data && typeof data.favorito !== 'undefined') {
-                // Verificar si necesitamos corregir el estado UI optimista
-                const targetButton = buttonEl || document.querySelector(`[data-project-id="${projectId}"][data-action="favorite"]`);
-                if (targetButton) {
-                    const currentVisualState = targetButton.classList.contains('text-yellow-400');
-                    if (currentVisualState !== data.favorito) {
-                        // Corregir si el servidor responde algo diferente
-                        targetButton.classList.toggle('text-yellow-400', data.favorito);
-                        targetButton.classList.toggle('text-gray-400', !data.favorito);
-                    }
-                }
+                // Actualizar todas las estrellas según respuesta real del servidor
+                setFavoriteUI(projectId, !!data.favorito);
                 showToast('Favorito', data.message || 'Favorito actualizado', 'success');
             } else {
+                // Respuesta inesperada: revertir y notificar
+                setFavoriteUI(projectId, currentlyFavorite);
                 showToast('Error', 'Respuesta inesperada del servidor', 'error');
             }
         })
         .catch(err => {
             console.error(err);
             // Revertir el estado visual si falló la petición
-            if (buttonEl) {
-                buttonEl.classList.toggle('text-yellow-400', currentlyFavorite);
-                buttonEl.classList.toggle('text-gray-400', !currentlyFavorite);
-            }
+            setFavoriteUI(projectId, currentlyFavorite);
             showToast('Error', 'No se pudo actualizar favorito', 'error');
         });
 }

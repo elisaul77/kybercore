@@ -45,18 +45,25 @@ async function loadProjectsFromAPI() {
     if (response.ok) {
       const data = await response.json();
       // Convertir formato de API a formato de Gantt
-      ganttProjects = data.projects.map(project => ({
-        name: project.nombre,
-        color: getProjectColor(project.categoria),
-        durationHours: parseTimeEstimate(project.analisis_ia.tiempo_estimado),
-        startHour: 2, // Por defecto
-        progress: project.progreso.piezas_completadas || 0,
-        id: project.id,
-        category: project.tipo,
-        author: project.autor,
-        files: project.archivos.length,
-        status: project.estado
-      }));
+      ganttProjects = data.projects.map(project => {
+        const categoria = project.categoria || project.tipo || project.category || '';
+        const analisis = (project.analisis_ia || project.aiAnalysis || {});
+        const progreso = project.progreso || {};
+        const archivos = Array.isArray(project.archivos) ? project.archivos : (Array.isArray(project.files) ? project.files : []);
+
+        return {
+          name: project.nombre || project.name || 'Proyecto',
+          color: getProjectColor(categoria),
+          durationHours: parseTimeEstimate(analisis.tiempo_estimado || analisis.estimatedTime || '8h'),
+          startHour: 2, // Por defecto
+          progress: progreso.piezas_completadas || progreso.completadas || 0,
+          id: project.id,
+          category: categoria,
+          author: project.autor || project.author || 'Usuario',
+          files: archivos.length,
+          status: project.estado || project.status || 'listo'
+        };
+      });
       console.log('📋 Proyectos cargados desde API:', ganttProjects.length);
     }
   } catch (error) {
@@ -73,6 +80,7 @@ function getProjectColor(categoria) {
     'electronico': 'blue',
     'mecanico': 'green'
   };
+  if (!categoria || typeof categoria !== 'string') return 'gray';
   return colorMap[categoria.toLowerCase()] || 'gray';
 }
 
