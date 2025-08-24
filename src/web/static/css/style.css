@@ -3,6 +3,15 @@ body {
     background-color: #f0f2f5;
 }
 
+/* Fallback styles for favorites functionality (in case Tailwind CDN is blocked) */
+.text-yellow-400 {
+    color: #fbbf24 !important; /* Yellow for favorited items */
+}
+
+.text-gray-400 {
+    color: #9ca3af !important; /* Gray for non-favorited items */
+}
+
 /* Estilos para sidebar colapsable */
 #sidebar {
     z-index: 30;
