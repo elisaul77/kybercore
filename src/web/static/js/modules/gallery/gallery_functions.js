@@ -363,7 +363,7 @@ function addProjectToGallery(proyecto) {
                 
                 <!-- Botón de favorito -->
                 <button data-action="favorite" data-project-id="${proyecto.id}" class="absolute top-3 right-3 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition-colors ${favoriteClass}">
-                    ⭐
+                    ${proyecto.favorito ? '⭐' : '☆'}
                 </button>
             </div>
             

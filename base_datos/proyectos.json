@@ -1,7 +1,7 @@
 {
   "estadisticas": {
-    "total_proyectos": 4,
-    "total_stls": 74,
+    "total_proyectos": 5,
+    "total_stls": 75,
     "completados": 0,
     "en_progreso": 0,
     "tasa_exito": 0
@@ -147,7 +147,7 @@
       },
       "fecha_creacion": "2024-12-10",
       "fecha_completado": null,
-      "favorito": false,
+      "favorito": true,
       "carpeta": "src/proyect/Aquarium Guard Tower - 3139513",
       "tags": [
         "aquarium",
@@ -194,7 +194,7 @@
       },
       "fecha_creacion": "2024-12-08",
       "fecha_completado": null,
-      "favorito": true,
+      "favorito": false,
       "carpeta": "src/proyect/Flexi Dog - 2810483",
       "tags": [
         "toy",
@@ -247,6 +247,62 @@
           "nombre": "LICENSE.txt",
           "tipo": "Archivo",
           "tamano": "0.14 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "nombre": "Lattice Christmas Bulb 2024 by dazus",
+      "descripcion": "e3rfr",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-08-20",
+      "estado": "listo",
+      "favorito": false,
+      "imagen": "/api/gallery/projects/lattice-christmas-bulb-2024-by-dazus-9/images/Bulb_Lattice.jpg",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "1 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "Bulb_Lattice.stl",
+          "tipo": "STL",
+          "tamano": "8347.74 KB"
+        },
+        {
+          "nombre": "Bulb_Lattice_0.15mm_PLA_MK3S_5h58m.gcode",
+          "tipo": "G-code",
+          "tamano": "13785.03 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
         }
       ],
       "estadisticas": {
