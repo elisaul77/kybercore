@@ -29,28 +29,15 @@ src/web/templates/modules/gallery/
 **Propósito**: Clase JavaScript que maneja toda la funcionalidad del modal.
 
 **Características**:
-- Clase `ProjectModal` con métodos para abrir/cerrar
-- Generación dinámica de contenido del modal
-- Event listeners para interacciones del usuario
-- Funciones globales para acciones del modal
 
 **Métodos principales**:
-- `open(projectData)`: Abre el modal con datos del proyecto
-- `close()`: Cierra el modal
-- `generateContent(projectData)`: Genera contenido dinámico
-- `generateFileList()`: Lista de archivos STL
-- `generateStats()`: Estadísticas del proyecto
-- `generateAIAnalysis()`: Análisis de IA
-- `generateStatus()`: Estado del proyecto
 
 ### 3. `gallery_functions.js`
-**Propósito**: Funciones principales para la gestión de la galería.
+Contiene las funciones principales de la galería en su variante modular. En este repositorio la decisión actual es usar el integrador único `gallery.js` (ubicado en `/static/js/gallery.js`) como punto de entrada por defecto para inicializar la galería y sus componentes. La variante modular (`/static/js/modules/gallery/gallery_functions.js` y `/static/js/modules/gallery/project_modal.js`) puede cargarse de forma opcional en páginas específicas si se desea una carga más granular.
 
 **Características**:
 - Sistema de notificaciones toast
 - Funciones de simulación para botones del header
-- Funciones de acciones individuales de proyecto
-- Event listeners para interacciones de la galería
 
 **Funciones principales**:
 - `showProjectDetails()`: Muestra detalles en el modal
