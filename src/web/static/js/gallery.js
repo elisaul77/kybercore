@@ -92,8 +92,8 @@ console.log('📁 gallery integrator loaded');
     }
     
     // Función para abrir el modal real de "Nuevo Proyecto"
+    // En producción no debe haber toasts de simulación: delegamos únicamente al ProjectModal.
     function createNewProject() {
-        // Si el ProjectModal está disponible, usarlo
         if (typeof window !== 'undefined' && typeof window.initProjectModal === 'function') {
             try {
                 window.initProjectModal();
@@ -106,11 +106,8 @@ console.log('📁 gallery integrator loaded');
             }
         }
 
-        // Fallback: mostrar mensajes informativos si el modal no está disponible
-        showToast('Nuevo Proyecto', 'Abriendo asistente para crear nuevo proyecto...', 'info');
-        setTimeout(() => {
-            showToast('Proyecto Creado', 'Proyecto "MiniBot v2.1" creado exitosamente', 'success');
-        }, 1200);
+        // Si llegamos aquí, el ProjectModal no está disponible. Registrar y no mostrar toasts automáticos.
+        console.error('createNewProject called but ProjectModal is not initialized. Ensure project_modal.js is loaded.');
     }
     
     function analyzeAllProjects() {
