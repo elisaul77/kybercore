@@ -1051,7 +1051,22 @@ function createProjectCardHTML(project) {
 
 // Función para crear un nuevo proyecto
 function createNewProject() {
-    console.log('🆕 Creating new project...');
+    // Preferir el modal centralizado (ProjectModal) si está disponible
+    if (typeof window !== 'undefined' && typeof window.initProjectModal === 'function') {
+        try {
+            window.initProjectModal();
+            if (window.projectModal && typeof window.projectModal.open === 'function') {
+                window.projectModal.open({ mode: 'import' });
+                return;
+            }
+        } catch (err) {
+            console.error('Error opening centralized ProjectModal:', err);
+            // caerá al fallback inline
+        }
+    }
+
+    // Fallback: crear el modal inline (legacy) para entornos donde ProjectModal no esté cargado
+    console.log('🆕 Creating new project (inline fallback)...');
     
     // Crear modal para subir archivo ZIP
     const modal = document.createElement('div');
