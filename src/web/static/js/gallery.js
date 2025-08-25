@@ -464,6 +464,43 @@ console.log('📁 gallery integrator loaded');
         }
     }
 
+    // Cierre robusto del modal de proyecto: intenta múltiples selectores y backdoors
+    function closeProjectModal() {
+        // 1) Intentar API del modal centralizado
+        try {
+            if (window.projectModal && typeof window.projectModal.close === 'function') {
+                window.projectModal.close();
+                return;
+            }
+        } catch (e) {
+            console.error('Error closing projectModal via API:', e);
+        }
+
+        // 2) Intentar el modal clásico con id known
+        const stlModal = document.getElementById('stl-preview-modal');
+        if (stlModal) {
+            stlModal.classList.add('hidden');
+            return;
+        }
+
+        // 3) Buscar overlays creados dinámicamente (fall back conservative)
+        const overlays = Array.from(document.querySelectorAll('div')).filter(d => {
+            const style = window.getComputedStyle(d);
+            return style.position === 'fixed' && style.zIndex && parseInt(style.zIndex, 10) >= 50;
+        });
+        for (const ov of overlays) {
+            // intentamos cerrar los que parezcan modales de proyecto por tamaño/estructura
+            if (ov.querySelector && ov.querySelector('form#new-project-form, #modal-content, .bg-white.rounded-2xl')) {
+                ov.classList.add('hidden');
+                // además eliminar del DOM para evitar overlay stuck
+                setTimeout(() => { try { ov.remove(); } catch(_){} }, 300);
+                return;
+            }
+        }
+
+        console.log('closeProjectModal: no se encontró modal conocido para cerrar');
+    }
+
     // Función showProjectDetails original (ahora usa datos reales)
     function showProjectDetails(projectName) {
         // Buscar proyecto por nombre y llamar a viewProject con el ID
@@ -497,15 +534,46 @@ console.log('📁 gallery integrator loaded');
             const gallerySection = button.closest('#galeria');
             if (!gallerySection) return;
 
+            // Si el módulo de galería ya ha enlazado su handler, evitar duplicar el manejo
+            if (window._kyber_gallery_click_bound) {
+                // dejar que el módulo se encargue cuando esté presente
+                return;
+            }
+
             // Nuevo sistema: usar data-action
             const action = button.getAttribute('data-action');
             const projectId = button.getAttribute('data-project-id');
 
-            if (action === 'view-project' && projectId) {
-                e.preventDefault();
-                console.log('Opening project:', projectId);
-                viewProject(parseInt(projectId));
-                return;
+            // Soporte mínimo para data-action desde el integrador para que los botones
+            // funcionen incluso si el módulo completo aún no se ha cargado.
+            if (action && projectId) {
+                switch (action) {
+                    case 'view-project':
+                        e.preventDefault();
+                        console.log('Opening project (integrator):', projectId);
+                        viewProject(parseInt(projectId));
+                        return;
+                    case 'favorite':
+                        e.preventDefault();
+                        console.log('Favorite (integrator):', projectId);
+                        try { toggleFavorite(parseInt(projectId)); } catch(err){ console.error(err); }
+                        return;
+                    case 'export':
+                        e.preventDefault();
+                        console.log('Export (integrator):', projectId);
+                        try { exportProject(parseInt(projectId)); } catch(err){ console.error(err); }
+                        return;
+                    case 'duplicate':
+                        e.preventDefault();
+                        console.log('Duplicate (integrator):', projectId);
+                        try { duplicateProject(parseInt(projectId)); } catch(err){ console.error(err); }
+                        return;
+                    case 'delete':
+                        e.preventDefault();
+                        console.log('Delete (integrator):', projectId);
+                        try { deleteProject(parseInt(projectId)); } catch(err){ console.error(err); }
+                        return;
+                }
             }
 
             const buttonText = button.textContent.trim();
@@ -553,26 +621,65 @@ console.log('📁 gallery integrator loaded');
             }
         });
 
+        // Delegado robusto para botones de cierre (X) que puedan no tener id concreto
+        // Evitar doble registro
+        if (!window._kyber_modal_close_bound) {
+            document.addEventListener('click', function(e){
+                try {
+                    const el = e.target.closest && e.target.closest('button, [role="button"], .modal-close, [data-close], [aria-label="Cerrar"], [title="Cerrar"]');
+                    if (!el) return;
+
+                    // Solo proceder si está dentro de un modal conocido o overlay
+                    const modalAncestor = el.closest('#stl-preview-modal') || el.closest('.modal') || el.closest('[data-modal]');
+                    if (!modalAncestor) return;
+
+                    // Llamar al cierre robusto y prevenir propagación para evitar handlers conflictivos
+                    closeProjectModal();
+                    e.preventDefault();
+                    e.stopPropagation();
+                } catch (err) {
+                    console.error('Error in modal close delegate:', err);
+                }
+            }, false);
+            window._kyber_modal_close_bound = true;
+            console.log('✅ Modal close delegate bound');
+        }
+
         eventListenersInitialized = true;
         console.log('Gallery event listeners inicializados correctamente');
     }
 
     // Exposición de funciones globales
     function exposeGlobalFunctions() {
-        window.createNewProject = createNewProject;
-        window.analyzeAllProjects = analyzeAllProjects;
-        window.showProjectsStatistics = showProjectsStatistics;
-        window.exportProject = exportProject;
-        window.duplicateProject = duplicateProject;
-        window.deleteProject = deleteProject;
-        window.showProjectDetails = showProjectDetails;
-        window.viewProject = viewProject;
-        window.closeModal = closeModal;
-        window.initGalleryEventListeners = initEventListeners;
-    // Funciones que pueden ser llamadas desde plantillas/modals inline
-    window.startPrinting = startPrinting;
-    window.toggleFavorite = toggleFavorite;
-    window.showToast = showToast;
+        // Preferir implementaciones ya presentes (módulo) y no sobrescribir
+        function assignIfAllowed(name, fn) {
+            const existing = window[name];
+            if (typeof existing === 'function' && !existing._isIntegrator) {
+                // existente proviene del módulo; respetarlo
+                return;
+            }
+            window[name] = fn;
+            try { window[name]._isIntegrator = true; } catch(e){}
+        }
+
+        assignIfAllowed('createNewProject', createNewProject);
+        assignIfAllowed('analyzeAllProjects', analyzeAllProjects);
+        assignIfAllowed('showProjectsStatistics', showProjectsStatistics);
+        assignIfAllowed('exportProject', exportProject);
+        assignIfAllowed('duplicateProject', duplicateProject);
+        assignIfAllowed('deleteProject', deleteProject);
+        assignIfAllowed('showProjectDetails', showProjectDetails);
+        assignIfAllowed('viewProject', viewProject);
+        assignIfAllowed('closeModal', closeModal);
+        assignIfAllowed('initGalleryEventListeners', initEventListeners);
+
+    // Exponer cierre robusto del modal
+    assignIfAllowed('closeProjectModal', closeProjectModal);
+
+        // Funciones que pueden ser llamadas desde plantillas/modals inline
+        assignIfAllowed('startPrinting', startPrinting);
+        assignIfAllowed('toggleFavorite', toggleFavorite);
+        assignIfAllowed('showToast', showToast);
     }
 
     // Inicialización del módulo de galería
@@ -580,6 +687,30 @@ console.log('📁 gallery integrator loaded');
         initEventListeners();
         exposeGlobalFunctions();
         console.log('Módulo de galería de proyectos inicializado correctamente');
+
+        // Intentar cargar el módulo completo de la galería en background si no está presente.
+        try {
+            const scriptPath = '/static/js/modules/gallery/gallery_functions.js';
+            if (!document.querySelector(`script[src="${scriptPath}"]`)) {
+                console.log('Integrador: cargando módulo completo de gallery en background...');
+                const script = document.createElement('script');
+                script.src = scriptPath;
+                script.async = true;
+                script.onload = () => {
+                    console.log('Integrador: gallery_functions.js cargado por integrador');
+                    // Si el módulo expone su inicializador, llamarlo para que reemplace implementaciones
+                    if (typeof window.initGalleryModule === 'function' && window.initGalleryModule !== initGalleryModule) {
+                        try { window.initGalleryModule(); } catch(e) { console.error('Error ejecutando initGalleryModule del módulo:', e); }
+                    }
+                };
+                script.onerror = () => console.error('Integrador: fallo al cargar gallery_functions.js');
+                document.head.appendChild(script);
+            } else {
+                console.log('Integrador: gallery_functions.js ya presente en la página');
+            }
+        } catch (err) {
+            console.error('Integrador: error intentando cargar módulo gallery:', err);
+        }
     }
 
     // Auto-inicialización cuando el DOM esté listo
