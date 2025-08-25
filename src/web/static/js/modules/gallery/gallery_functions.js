@@ -723,6 +723,24 @@ function initGallery() {
 window.initGallery = initGallery;
 window.reinitializeGallery = reinitializeGallery;
 
+// Exponer un inicializador único compatible para el integrador
+window.initGalleryModule = function() {
+    try {
+        initGallery();
+        if (typeof initGalleryClickHandler === 'function') {
+            initGalleryClickHandler();
+        }
+        console.log('✅ initGalleryModule executed');
+    } catch (err) {
+        console.error('❌ Error initializing gallery module:', err);
+    }
+};
+
+// Compatibilidad: exponer alias legacy si existen
+if (typeof initGalleryClickHandler === 'function') {
+    window.initGalleryEventListeners = initGalleryClickHandler;
+}
+
 // Inicializar cuando el DOM esté listo
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initGallery);
