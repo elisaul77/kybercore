@@ -236,6 +236,4 @@
     {% include 'modules/gallery/project_modal.html' %}
 </section>
 
-<!-- Scripts de la galería modular: cargar primero las funciones globales, luego el modal -->
-<script src="/static/js/modules/gallery/gallery_functions.js"></script>
-<script src="/static/js/modules/gallery/project_modal.js"></script>
+<!-- Galería: usar el integrador único `gallery.js` para evitar cargas duplicadas de handlers -->
