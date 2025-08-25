@@ -91,12 +91,26 @@ console.log('📁 gallery integrator loaded');
         }, duration);
     }
     
-    // Funciones de simulación para botones del header
+    // Función para abrir el modal real de "Nuevo Proyecto"
     function createNewProject() {
+        // Si el ProjectModal está disponible, usarlo
+        if (typeof window !== 'undefined' && typeof window.initProjectModal === 'function') {
+            try {
+                window.initProjectModal();
+                if (window.projectModal && typeof window.projectModal.open === 'function') {
+                    window.projectModal.open({ mode: 'import' });
+                    return;
+                }
+            } catch (err) {
+                console.error('Error opening ProjectModal:', err);
+            }
+        }
+
+        // Fallback: mostrar mensajes informativos si el modal no está disponible
         showToast('Nuevo Proyecto', 'Abriendo asistente para crear nuevo proyecto...', 'info');
         setTimeout(() => {
             showToast('Proyecto Creado', 'Proyecto "MiniBot v2.1" creado exitosamente', 'success');
-        }, 2000);
+        }, 1200);
     }
     
     function analyzeAllProjects() {
