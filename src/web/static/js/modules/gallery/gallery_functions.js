@@ -684,14 +684,21 @@ function favoriteProject(projectId, buttonEl) {
 
 function initGalleryClickHandler() {
     // Limpiar cualquier listener previo
+    // Si ya está enlazado, evitar volver a enlazar
+    if (window._kyberGalleryHandler && window._kyber_gallery_click_bound) {
+        console.log('ℹ️ Gallery click handler ya está enlazado, omitiendo rebind');
+        return;
+    }
+
+    // Si existe un handler previo no marcado como ligado, eliminarlo (misma fase)
     if (window._kyberGalleryHandler) {
-        document.removeEventListener('click', window._kyberGalleryHandler, true);
+        document.removeEventListener('click', window._kyberGalleryHandler, false);
         console.log('🧹 Removed previous gallery click handler');
     }
 
     window._kyberGalleryHandler = function(e) {
         const el = e.target.closest('[data-action]');
-        if (!el) return;
+        if (!el) return; // nothing for us to do, allow other handlers to run
 
         const action = el.getAttribute('data-action');
         let projectId = el.getAttribute('data-project-id');
@@ -702,14 +709,24 @@ function initGalleryClickHandler() {
 
         console.log('🔍 Gallery click captured:', el);
         console.log('⚡ Action:', action, 'ProjectID:', projectId);
-        if (!action) return;
+        if (!action) return; // again, nothing to do here
 
-        e.preventDefault();
+        // Only prevent default/stopPropagation when we will actually handle the action here.
         const normalizedAction = action === 'view-project' ? 'view' : action;
+        let handled = false;
 
         switch (normalizedAction) {
             case 'view': {
                 console.log('👁️ View action triggered for project:', projectId);
+                // Si el modal centralizado no está disponible y existe el fallback del integrador,
+                // delegar al integrador para mantener compatibilidad en páginas donde el ProjectModal
+                // se carga por separado.
+                if (!window.projectModal && typeof initProjectModal !== 'function' && typeof window.viewProject === 'function') {
+                    console.log('🔁 ProjectModal no disponible: delegando a window.viewProject fallback');
+                    try { window.viewProject(parseInt(projectId, 10)); } catch(err) { console.error('Error calling fallback viewProject:', err); }
+                    handled = true;
+                    break;
+                }
                 console.log('🔍 Click details:', {
                     element: el.tagName,
                     action: action,
@@ -738,13 +755,21 @@ function initGalleryClickHandler() {
                             console.log('🎨 Mapped modal data:', modalData);
                             showProjectDetails(modalData.title, modalData);
                         })
-                        .catch(err => { console.error(err); showToast('Error', 'No se pudo cargar el proyecto', 'error'); });
+                        .catch(err => { 
+                            console.error(err); 
+                            showToast('Error', 'No se pudo cargar el proyecto', 'error'); 
+                            // Fallback: si existe la función global del integrador, delegar a ella
+                            if (typeof window.viewProject === 'function') {
+                                try { window.viewProject(parseInt(projectId, 10)); } catch(fbErr) { console.error('Fallback viewProject failed:', fbErr); }
+                            }
+                        });
                 } else {
                     const card = el.closest('[data-project-id]');
                     const titleEl = card ? card.querySelector('h3') : null;
                     const title = titleEl ? titleEl.textContent.trim() : 'Proyecto';
                     showProjectDetails(title);
                 }
+                handled = true;
                 break;
             }
             case 'favorite': {
@@ -754,32 +779,43 @@ function initGalleryClickHandler() {
                     const favoriteButton = el.closest('[data-action="favorite"]') || el;
                     favoriteProject(parseInt(projectId, 10), favoriteButton);
                 }
+                handled = true;
                 break;
             }
             case 'export': {
                 console.log('📤 Export action triggered');
                 if (projectId) exportProject(parseInt(projectId, 10));
+                handled = true;
                 break;
             }
             case 'duplicate': {
                 console.log('📋 Duplicate action triggered');
                 if (projectId) duplicateProject(parseInt(projectId, 10));
+                handled = true;
                 break;
             }
             case 'delete': {
                 console.log('🗑️ Delete action triggered');
                 if (projectId) deleteProject(parseInt(projectId, 10));
+                handled = true;
                 break;
             }
         }
-
-        e.preventDefault();
-        e.stopPropagation();
+        if (handled) {
+            // We handled the action: prevent defaults and stop propagation to avoid duplicate handling.
+            e.preventDefault();
+            e.stopPropagation();
+        } else {
+            // Not handled here: allow other handlers (legacy integrator) to process the event.
+            console.log('ℹ️ Gallery handler did not handle the action, allowing other listeners to run');
+        }
     };
 
-    document.addEventListener('click', window._kyberGalleryHandler, true);
+    // Bind in bubble phase so other modules that rely on bubbling (legacy integrator)
+    // can still observe clicks if we don't fully handle them here.
+    document.addEventListener('click', window._kyberGalleryHandler, false);
     window._kyber_gallery_click_bound = true;
-    console.log('✅ Gallery capture-phase click handler bound successfully');
+    console.log('✅ Gallery click handler bound successfully (bubble phase)');
 }
 
 // Función para forzar reinicialización
@@ -818,9 +854,6 @@ window.reinitializeGallery = reinitializeGallery;
 window.initGalleryModule = function() {
     try {
         initGallery();
-        if (typeof initGalleryClickHandler === 'function') {
-            initGalleryClickHandler();
-        }
         console.log('✅ initGalleryModule executed');
     } catch (err) {
         console.error('❌ Error initializing gallery module:', err);
