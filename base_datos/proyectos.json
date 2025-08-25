@@ -85,7 +85,7 @@
       },
       "fecha_creacion": "2024-12-15",
       "fecha_completado": null,
-      "favorito": true,
+      "favorito": false,
       "carpeta": "src/proyect/ATX Power supply - 6749455",
       "tags": [
         "electronics",
@@ -147,7 +147,7 @@
       },
       "fecha_creacion": "2024-12-10",
       "fecha_completado": null,
-      "favorito": false,
+      "favorito": true,
       "carpeta": "src/proyect/Aquarium Guard Tower - 3139513",
       "tags": [
         "aquarium",
