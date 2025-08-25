@@ -94,48 +94,48 @@ console.log('📁 gallery integrator loaded');
     // Función para abrir el modal real de "Nuevo Proyecto"
     // En producción no debe haber toasts de simulación: delegamos únicamente al ProjectModal.
     function createNewProject() {
-        // Si initProjectModal ya está disponible, usarlo
-        if (typeof window !== 'undefined' && typeof window.initProjectModal === 'function') {
-            try {
-                window.initProjectModal();
-                if (window.projectModal && typeof window.projectModal.open === 'function') {
-                    window.projectModal.open({ mode: 'import' });
-                    return;
-                }
-            } catch (err) {
-                console.error('Error opening ProjectModal:', err);
+        // Marcar esta función como la integradora para evitar llamadas recursivas tras cargar el módulo
+        // (la versión del módulo sobrescribirá window.createNewProject sin esta marca)
+        try { createNewProject._isIntegrator = true; } catch(e){}
+
+        // Si existe una función explícita para abrir el modal de importación, usarla
+        if (typeof window !== 'undefined') {
+            if (typeof window.openImportModal === 'function') {
+                window.openImportModal();
+                return;
+            }
+            // Si el módulo de funciones de galería ya definió createNewProject (no esta integradora), llamarla
+            if (typeof window.createNewProject === 'function' && !window.createNewProject._isIntegrator) {
+                // Llamar a la implementación del módulo (import modal)
+                try { window.createNewProject(); } catch(e) { console.error('Error invoking module createNewProject:', e); }
+                return;
             }
         }
 
-        // Si no está disponible, cargar el script dinámicamente y abrir el modal cuando cargue
-        const scriptPath = '/static/js/modules/gallery/project_modal.js';
+        // Si no está definida, cargar dinámicamente el módulo que contiene la UI de importación
+        const scriptPath = '/static/js/modules/gallery/gallery_functions.js';
         if (!document.querySelector(`script[src="${scriptPath}"]`)) {
             const script = document.createElement('script');
             script.src = scriptPath;
             script.async = true;
             script.onload = () => {
-                try {
-                    if (typeof window.initProjectModal === 'function') {
-                        window.initProjectModal();
-                        if (window.projectModal && typeof window.projectModal.open === 'function') {
-                            window.projectModal.open({ mode: 'import' });
-                        } else {
-                            console.error('ProjectModal loaded but window.projectModal.open not available');
-                        }
-                    } else {
-                        console.error('project_modal.js loaded but initProjectModal is not defined');
+                // Tras cargar, la implementación del módulo debería sobrescribir window.createNewProject
+                if (typeof window.createNewProject === 'function' && !window.createNewProject._isIntegrator) {
+                    try {
+                        window.createNewProject();
+                    } catch (e) {
+                        console.error('Error invoking createNewProject from loaded module:', e);
                     }
-                } catch (e) {
-                    console.error('Error after loading project_modal.js:', e);
+                } else {
+                    console.error('gallery_functions.js loaded but createNewProject not available or still integrator');
                 }
             };
-            script.onerror = () => console.error('Failed to load project_modal.js');
+            script.onerror = () => console.error('Failed to load gallery_functions.js');
             document.head.appendChild(script);
             return;
         }
 
-        // Si el script ya está presente pero no inicializado correctamente, registrar el error
-        console.error('createNewProject: project_modal.js present but ProjectModal is not initialized.');
+        console.error('createNewProject: gallery_functions.js present but createNewProject not initialized');
     }
     
     function analyzeAllProjects() {
