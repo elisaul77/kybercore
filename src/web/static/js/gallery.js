@@ -94,6 +94,7 @@ console.log('📁 gallery integrator loaded');
     // Función para abrir el modal real de "Nuevo Proyecto"
     // En producción no debe haber toasts de simulación: delegamos únicamente al ProjectModal.
     function createNewProject() {
+        // Si initProjectModal ya está disponible, usarlo
         if (typeof window !== 'undefined' && typeof window.initProjectModal === 'function') {
             try {
                 window.initProjectModal();
@@ -106,8 +107,35 @@ console.log('📁 gallery integrator loaded');
             }
         }
 
-        // Si llegamos aquí, el ProjectModal no está disponible. Registrar y no mostrar toasts automáticos.
-        console.error('createNewProject called but ProjectModal is not initialized. Ensure project_modal.js is loaded.');
+        // Si no está disponible, cargar el script dinámicamente y abrir el modal cuando cargue
+        const scriptPath = '/static/js/modules/gallery/project_modal.js';
+        if (!document.querySelector(`script[src="${scriptPath}"]`)) {
+            const script = document.createElement('script');
+            script.src = scriptPath;
+            script.async = true;
+            script.onload = () => {
+                try {
+                    if (typeof window.initProjectModal === 'function') {
+                        window.initProjectModal();
+                        if (window.projectModal && typeof window.projectModal.open === 'function') {
+                            window.projectModal.open({ mode: 'import' });
+                        } else {
+                            console.error('ProjectModal loaded but window.projectModal.open not available');
+                        }
+                    } else {
+                        console.error('project_modal.js loaded but initProjectModal is not defined');
+                    }
+                } catch (e) {
+                    console.error('Error after loading project_modal.js:', e);
+                }
+            };
+            script.onerror = () => console.error('Failed to load project_modal.js');
+            document.head.appendChild(script);
+            return;
+        }
+
+        // Si el script ya está presente pero no inicializado correctamente, registrar el error
+        console.error('createNewProject: project_modal.js present but ProjectModal is not initialized.');
     }
     
     function analyzeAllProjects() {
