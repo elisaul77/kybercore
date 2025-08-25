@@ -238,10 +238,36 @@ function showToast(title, message, type = 'info', duration = 3000) {
 
 // Funciones de simulación para botones del header
 function createNewProject() {
-    showToast('Nuevo Proyecto', 'Abriendo asistente para crear nuevo proyecto...', 'info');
-    setTimeout(() => {
-        showToast('Proyecto Creado', 'Proyecto "MiniBot v2.1" creado exitosamente', 'success');
-    }, 2000);
+    // Inicializar modal real y abrir el flujo de importación/creación
+    showToast('Nuevo Proyecto', 'Abriendo asistente para crear/importar nuevo proyecto...', 'info');
+
+    // Si existe la función initProjectModal, inicializar módulo de modal
+    if (typeof initProjectModal === 'function') {
+        try {
+            initProjectModal();
+        } catch (err) {
+            console.error('Error inicializando ProjectModal:', err);
+        }
+    }
+
+    // Esperar a que window.projectModal esté disponible y abrirlo
+    const tryOpen = () => {
+        if (window.projectModal && typeof window.projectModal.open === 'function') {
+            console.log('📂 Opening project import modal (real)');
+            try {
+                // Abrir en modo import si el modal soporta modos
+                window.projectModal.open({ mode: 'import' });
+            } catch (err) {
+                console.warn('projectModal.open threw, intentando sin payload', err);
+                try { window.projectModal.open(); } catch(e) { console.error('No se pudo abrir projectModal', e); }
+            }
+        } else {
+            // Reintentar breve si aún no está listo
+            setTimeout(tryOpen, 200);
+        }
+    };
+
+    tryOpen();
 }
 
 function analyzeAllProjects() {
