@@ -68,6 +68,116 @@ function showProjectDetails(projectTitle, projectData = null) {
     }
 }
 
+// Generar contenido HTML del modal con datos reales (traído desde archivo archivado si hace falta)
+function generateProjectModalContent(project) {
+    const imageUrl = project.imagen || '/static/images/placeholder-project.png';
+    const archivos = project.archivos || [];
+    const analisis = project.analisis_ia || project.aiAnalysis || {};
+    const progreso = project.progreso || {};
+    
+    return `
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Columna izquierda: Imagen y archivos -->
+                <div class="space-y-4">
+                    <!-- Imagen principal del proyecto -->
+                    <div class="bg-gray-100 rounded-lg overflow-hidden">
+                        <img src="${imageUrl}" alt="${project.nombre || project.title}" 
+                             class="w-full h-64 object-cover" 
+                             onerror="this.src='/static/images/placeholder-project.png'; this.onerror=null;">
+                    </div>
+
+                    <!-- Lista de archivos STL -->
+                    <div class="bg-gray-50 rounded-lg p-4 max-h-64 overflow-y-auto">
+                        <h4 class="font-medium text-gray-900 mb-3">📋 Archivos del Proyecto (${archivos.length})</h4>
+                        <div class="space-y-2 text-sm">
+                            ${archivos.map(archivo => `
+                                <div class="flex justify-between items-center p-2 bg-white rounded border hover:bg-gray-50">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-blue-600">📄</span>
+                                        <span class="font-medium">${archivo.nombre}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs text-gray-500">${archivo.tamano || archivo.tamaño || ''}</span>
+                                        <span class="text-green-600">✓</span>
+                                        <button onclick="downloadFile('${project.id}', '${archivo.nombre}')" 
+                                                class="text-blue-600 hover:text-blue-800 text-xs">
+                                            ⬇️
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Enlaces externos -->
+                    ${project.url ? `
+                        <div class="bg-blue-50 rounded-lg p-4">
+                            <h4 class="font-medium text-blue-900 mb-2">🔗 Enlaces</h4>
+                            <a href="${project.url}" target="_blank" 
+                               class="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-2">
+                                <span>🌐</span>
+                                Ver en fuente externa
+                                <span>↗️</span>
+                            </a>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <!-- Columna derecha: Detalles del proyecto -->
+                <div class="space-y-4">
+                    <!-- Título y descripción -->
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">${project.nombre || project.title}</h3>
+                        <p class="text-gray-600 text-sm mb-4">${project.descripcion || project.description || ''}</p>
+                        
+                        <!-- Badges -->
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">${project.tipo || ''}
+                            </span>
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">${project.estado || ''}
+                            </span>
+                            ${project.autor ? `
+                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">👤 ${project.autor}
+                                </span>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <!-- Análisis de IA -->
+                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-200">
+                        <h4 class="font-medium text-purple-900 mb-3 flex items-center gap-2">🤖 Análisis de IA</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-purple-700">Tiempo estimado:</span>
+                                <span class="font-medium">${analisis.tiempo_estimado || analisis.estimatedTime || 'No calculado'}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-purple-700">Filamento total:</span>
+                                <span class="font-medium">${analisis.filamento_total || analisis.filament || 'No calculado'}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-purple-700">Costo estimado:</span>
+                                <span class="font-medium">${analisis.costo_estimado || analisis.cost || 'No calculado'}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-purple-700">Material sugerido:</span>
+                                <span class="font-medium">${analisis.materials || analisis.material || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    `;
+}
+
+// Helper para descargar archivos del proyecto (llamado desde el modal)
+function downloadFile(projectId, filename) {
+    console.log('⬇️ downloadFile called for', projectId, filename);
+    // Intento simple: abrir la ruta de descarga del API en una nueva pestaña
+    const url = `/api/gallery/projects/${projectId}/files/${encodeURIComponent(filename)}/download`;
+    window.open(url, '_blank');
+}
+
 // Sistema de notificaciones toast
 function showToast(title, message, type = 'info', duration = 3000) {
     // Crear contenedor si no existe

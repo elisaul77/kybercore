@@ -1,31 +1,3 @@
-/* Minimal gallery integrator
-   Calls the modular initializer exposed by gallery functions. */
-console.log('📁 gallery integrator loaded');
-
-(function(){
-    function init() {
-        if (typeof window !== 'undefined' && typeof window.initGalleryModule === 'function') {
-            try {
-                window.initGalleryModule();
-            } catch (err) {
-                console.error('Error executing initGalleryModule:', err);
-            }
-        } else {
-            console.log('initGalleryModule not available yet; will try again on DOMContentLoaded');
-            document.addEventListener('DOMContentLoaded', function() {
-                if (typeof window.initGalleryModule === 'function') {
-                    window.initGalleryModule();
-                }
-            });
-        }
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        setTimeout(init, 0);
-    }
-})();
 // GALERÍA DE PROYECTOS - JavaScript modular
 (function(){
     'use strict';
