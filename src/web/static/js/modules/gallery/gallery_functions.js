@@ -236,53 +236,8 @@ function showToast(title, message, type = 'info', duration = 3000) {
     }, duration);
 }
 
-// Funciones de simulación para botones del header
-function createNewProject() {
-    // Inicializar modal real y abrir el flujo de importación/creación
-    showToast('Nuevo Proyecto', 'Abriendo asistente para crear/importar nuevo proyecto...', 'info');
-
-    // Si existe la función initProjectModal, inicializar módulo de modal
-    if (typeof initProjectModal === 'function') {
-        try {
-            initProjectModal();
-        } catch (err) {
-            console.error('Error inicializando ProjectModal:', err);
-        }
-    }
-
-    // Esperar a que window.projectModal esté disponible y abrirlo
-    const tryOpen = () => {
-        if (window.projectModal && typeof window.projectModal.open === 'function') {
-            console.log('📂 Opening project import modal (real)');
-            try {
-                // Abrir en modo import si el modal soporta modos
-                window.projectModal.open({ mode: 'import' });
-            } catch (err) {
-                console.warn('projectModal.open threw, intentando sin payload', err);
-                try { window.projectModal.open(); } catch(e) { console.error('No se pudo abrir projectModal', e); }
-            }
-        } else {
-            // Reintentar breve si aún no está listo
-            setTimeout(tryOpen, 200);
-        }
-    };
-
-    tryOpen();
-}
-
-function analyzeAllProjects() {
-    showToast('Análisis IA', 'Iniciando análisis inteligente de todos los proyectos...', 'info');
-    setTimeout(() => {
-        showToast('Análisis Completo', 'Se han identificado 3 optimizaciones y 2 recomendaciones', 'success');
-    }, 3000);
-}
-
-function showProjectsStatistics() {
-    showToast('Estadísticas', 'Generando reporte estadístico completo...', 'info');
-    setTimeout(() => {
-        showToast('Reporte Generado', 'Estadísticas disponibles: 12 proyectos, 147 impresiones exitosas', 'success');
-    }, 2500);
-}
+// (Las funciones de creación/estadísticas de proyecto reales están definidas más abajo —
+// se usa la implementación completa que incluye el modal de importación.)
 
 // Funciones de acciones individuales de proyecto
 function exportProject(projectId) {
