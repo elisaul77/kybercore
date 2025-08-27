@@ -9,18 +9,27 @@ window.FleetBulkCommands = (function() {
      * Inicializa el módulo de comandos masivos
      */
     function init() {
-        if (isInitialized) {
-            console.log('⚠️ FleetBulkCommands ya está inicializado');
-            return;
-        }
-        
-        console.log('🎛️ Inicializando módulo de comandos masivos...');
+        // Nota: el DOM de la vista puede recargarse parcialmente (re-render) y
+        // los elementos con listeners pueden ser reemplazados. Por eso las
+        // funciones de setup se diseñan para ser idempotentes y re-adjuntar
+        // listeners solo si el elemento actual no tiene marcado el binding.
+
+        console.log('🎛️ Inicializando (o re-validando) módulo de comandos masivos...');
+
+        // Siempre (re)adjuntamos listeners dependientes del DOM para cubrir
+        // casos donde la vista fue re-renderizada. La lógica interna del
+        // módulo (selectedPrinters) sólo se inicializa la primera vez.
         setupTogglePanel();
         setupSelectionButtons();
         setupBulkCommandButtons();
         setupPrinterSelection();
-        isInitialized = true;
-        console.log('✅ Módulo de comandos masivos inicializado');
+
+        if (!isInitialized) {
+            isInitialized = true;
+            console.log('✅ Módulo de comandos masivos inicializado por primera vez');
+        } else {
+            console.log('🔁 Módulo de comandos masivos revalidado (listeners adjuntados si fue necesario)');
+        }
     }
     
     /**
@@ -30,15 +39,21 @@ window.FleetBulkCommands = (function() {
         const toggleBtn = document.getElementById('toggle-bulk-commands');
         const panel = document.getElementById('bulk-commands-panel');
         const toggleText = document.getElementById('bulk-toggle-text');
-        
+
         if (!toggleBtn || !panel || !toggleText) {
             console.log('ℹ️ Elementos del panel de comandos masivos no encontrados');
             return;
         }
-        
+
+        // Si el botón actual ya tiene el listener adjuntado, no lo volvemos a añadir.
+        if (toggleBtn.dataset && toggleBtn.dataset.fleetBulkToggleBound) {
+            // Ya tenía listener (posiblemente de una instancia anterior), no duplicar.
+            return;
+        }
+
         toggleBtn.addEventListener('click', () => {
             const isHidden = panel.classList.contains('hidden');
-            
+
             if (isHidden) {
                 panel.classList.remove('hidden');
                 toggleText.textContent = 'Ocultar';
@@ -52,59 +67,42 @@ window.FleetBulkCommands = (function() {
                 toggleBtn.innerHTML = toggleBtn.innerHTML.replace('▲', '▼');
             }
         });
+
+        // Marcar el elemento actual para indicar que ya le añadimos el listener
+        try { toggleBtn.dataset.fleetBulkToggleBound = '1'; } catch (e) { /* dataset puede fallar en IE */ }
     }
     
     /**
      * Configura los botones de selección rápida
      */
     function setupSelectionButtons() {
+        // Helper para bind once por elemento
+        function bindIfNeeded(el, event, handler, flagName) {
+            if (!el) return;
+            try {
+                if (el.dataset && el.dataset[flagName]) return;
+                el.addEventListener(event, handler);
+                el.dataset[flagName] = '1';
+            } catch (e) {
+                // Fallback: si dataset no está disponible, intentar bind sin guard
+                try { el.addEventListener(event, handler); } catch (e2) {}
+            }
+        }
+
         // Seleccionar todas
-        const selectAllBtn = document.getElementById('select-all');
-        if (selectAllBtn) {
-            selectAllBtn.addEventListener('click', () => {
-                selectPrintersByCondition(() => true);
-            });
-        }
-        
+        bindIfNeeded(document.getElementById('select-all'), 'click', () => selectPrintersByCondition(() => true), 'fleetBulkBound');
+
         // Seleccionar solo inactivas
-        const selectIdleBtn = document.getElementById('select-idle');
-        if (selectIdleBtn) {
-            selectIdleBtn.addEventListener('click', () => {
-                selectPrintersByCondition(printer => 
-                    printer.status === 'idle' || printer.status === 'ready'
-                );
-            });
-        }
-        
+        bindIfNeeded(document.getElementById('select-idle'), 'click', () => selectPrintersByCondition(printer => printer.status === 'idle' || printer.status === 'ready'), 'fleetBulkBound');
+
         // Seleccionar solo imprimiendo
-        const selectPrintingBtn = document.getElementById('select-printing');
-        if (selectPrintingBtn) {
-            selectPrintingBtn.addEventListener('click', () => {
-                selectPrintersByCondition(printer => 
-                    printer.status === 'printing'
-                );
-            });
-        }
-        
+        bindIfNeeded(document.getElementById('select-printing'), 'click', () => selectPrintersByCondition(printer => printer.status === 'printing'), 'fleetBulkBound');
+
         // Seleccionar solo con error
-        const selectErrorBtn = document.getElementById('select-error');
-        if (selectErrorBtn) {
-            selectErrorBtn.addEventListener('click', () => {
-                selectPrintersByCondition(printer => 
-                    printer.status === 'error' || printer.status === 'offline'
-                );
-            });
-        }
-        
+        bindIfNeeded(document.getElementById('select-error'), 'click', () => selectPrintersByCondition(printer => printer.status === 'error' || printer.status === 'offline'), 'fleetBulkBound');
+
         // Limpiar selección
-        const clearSelectionBtn = document.getElementById('clear-selection');
-        if (clearSelectionBtn) {
-            clearSelectionBtn.addEventListener('click', () => {
-                selectedPrinters.clear();
-                updatePrinterSelection();
-                updateSelectionCount();
-            });
-        }
+        bindIfNeeded(document.getElementById('clear-selection'), 'click', () => { selectedPrinters.clear(); updatePrinterSelection(); updateSelectionCount(); }, 'fleetBulkBound');
     }
     
     /**
@@ -112,17 +110,23 @@ window.FleetBulkCommands = (function() {
      */
     function setupBulkCommandButtons() {
         const commandButtons = document.querySelectorAll('.bulk-command-btn');
-        
+
         commandButtons.forEach(btn => {
+            // evitar duplicar listeners si el mismo botón es reinsertado
+            if (btn.dataset && btn.dataset.fleetBulkCmdBound) return;
+
             btn.addEventListener('click', async (e) => {
-                const command = e.target.getAttribute('data-command');
+                const el = e.currentTarget || e.target;
+                const command = el.getAttribute('data-command');
                 if (selectedPrinters.size === 0) {
                     alert('Selecciona al menos una impresora');
                     return;
                 }
-                
+
                 await executeBulkCommand(command);
             });
+
+            try { btn.dataset.fleetBulkCmdBound = '1'; } catch (e) {}
         });
     }
     
@@ -345,4 +349,47 @@ window.FleetBulkCommands = (function() {
             updateSelectionCount();
         }
     };
+})();
+
+// Observador opcional para re-adjuntar listeners si la sección de comandos masivos
+// es reemplazada dinámicamente en el DOM por otras partes de la UI.
+(function attachGlobalBulkObserver() {
+    try {
+        if (window._fleetBulkObserverAttached) return;
+        window._fleetBulkObserverAttached = true;
+
+        const observer = new MutationObserver((mutations) => {
+            // Small heuristic: si aparece el panel o el toggle, re-inicializar
+            let found = false;
+            for (const m of mutations) {
+                for (const node of m.addedNodes || []) {
+                    if (!(node instanceof HTMLElement)) continue;
+                    if (node.querySelector && (node.querySelector('#toggle-bulk-commands') || node.querySelector('#bulk-commands-panel') || node.querySelector('.bulk-command-btn'))) {
+                        found = true;
+                        break;
+                    }
+                    if (node.id === 'toggle-bulk-commands' || node.id === 'bulk-commands-panel') {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) break;
+            }
+
+            if (found && window.FleetBulkCommands && typeof window.FleetBulkCommands.init === 'function') {
+                // Revalidar init para re-adjuntar listeners en nuevos elementos
+                try {
+                    window.FleetBulkCommands.init();
+                } catch (e) {
+                    console.error('Error re-inicializando FleetBulkCommands desde observer:', e);
+                }
+            }
+        });
+
+        // Observar el body por cambios que puedan afectar la sección
+        observer.observe(document.body, { childList: true, subtree: true });
+        console.log('🔎 FleetBulkCommands DOM observer instalado');
+    } catch (e) {
+        console.warn('⚠️ No se pudo instalar observer para FleetBulkCommands:', e);
+    }
 })();

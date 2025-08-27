@@ -263,7 +263,7 @@
       },
       "fecha_creacion": "2024-12-10",
       "fecha_completado": null,
-      "favorito": false,
+      "favorito": true,
       "carpeta": "src/proyect/Aquarium Guard Tower - 3139513",
       "tags": [
         "aquarium",
@@ -310,7 +310,7 @@
       },
       "fecha_creacion": "2024-12-08",
       "fecha_completado": null,
-      "favorito": true,
+      "favorito": false,
       "carpeta": "src/proyect/Flexi Dog - 2810483",
       "tags": [
         "toy",

@@ -283,9 +283,22 @@ window.initFleetModule = async function() {
         // 4. Configurar listeners para sincronización entre módulos
         if (window.FleetEventBus) {
             // Cuando se actualicen los datos de impresoras, actualizar selección masiva
-            window.FleetEventBus.on('printersUpdated', () => {
-                if (window.FleetBulkCommands && window.FleetBulkCommands.updatePrinterSelection) {
-                    window.FleetBulkCommands.updatePrinterSelection();
+            window.FleetEventBus.on('printersUpdated', (printers) => {
+                console.log('📣 Event printersUpdated recibido en integrador de flota');
+                // Actualizar selección masiva
+                if (window.FleetBulkCommands) {
+                    try {
+                        // Revalidar init para asegurar que los listeners se adjunten
+                        if (typeof window.FleetBulkCommands.init === 'function') {
+                            window.FleetBulkCommands.init();
+                        }
+
+                        if (typeof window.FleetBulkCommands.updatePrinterSelection === 'function') {
+                            window.FleetBulkCommands.updatePrinterSelection();
+                        }
+                    } catch (e) {
+                        console.error('Error actualizando FleetBulkCommands tras printersUpdated:', e);
+                    }
                 }
             });
         }
