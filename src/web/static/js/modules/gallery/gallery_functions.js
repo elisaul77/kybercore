@@ -827,6 +827,37 @@ function reinitializeGallery() {
 }
 
 // Función de inicialización unificada
+// Función para inicializar el módulo de filtros y búsqueda
+function initGalleryFilters() {
+    console.log('🎯 Initializing gallery filters module...');
+    
+    // Verificar si el módulo ya está cargado
+    if (window.GalleryFilters) {
+        console.log('✅ GalleryFilters module already loaded, initializing...');
+        if (typeof window.GalleryFilters.init === 'function') {
+            window.GalleryFilters.init();
+        }
+        return;
+    }
+    
+    // Cargar el módulo de filtros dinámicamente
+    const script = document.createElement('script');
+    script.src = '/static/js/modules/gallery/gallery_filters.js';
+    script.onload = function() {
+        console.log('✅ GalleryFilters module loaded successfully');
+        if (window.GalleryFilters && typeof window.GalleryFilters.init === 'function') {
+            window.GalleryFilters.init();
+        } else {
+            console.error('❌ GalleryFilters module loaded but init function not found');
+        }
+    };
+    script.onerror = function() {
+        console.error('❌ Failed to load GalleryFilters module');
+    };
+    
+    document.head.appendChild(script);
+}
+
 function initGallery() {
     // Prevenir múltiples inicializaciones
     if (window._gallerySystemInitialized) {
@@ -841,6 +872,9 @@ function initGallery() {
     if (typeof initProjectModal === 'function' && !window.projectModal) {
         initProjectModal();
     }
+    
+    // Inicializar módulo de filtros y búsqueda
+    initGalleryFilters();
     
     window._gallerySystemInitialized = true;
     console.log('✅ Gallery system initialized');
