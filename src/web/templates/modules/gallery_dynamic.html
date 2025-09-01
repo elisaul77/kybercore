@@ -26,36 +26,36 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Buscar proyectos</label>
-                <input type="text" placeholder="Nombre o descripción..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <input id="gallery-search" type="text" placeholder="Nombre o descripción..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de proyecto</label>
-                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                    <option>Todos los tipos</option>
-                    <option>Mecánico</option>
-                    <option>Decorativo</option>
-                    <option>Funcional</option>
-                    <option>Herramientas</option>
-                    <option>Prototipo</option>
+                <select id="gallery-type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    <option value="">Todos los tipos</option>
+                    <option value="Mecánico">Mecánico</option>
+                    <option value="Decorativo">Decorativo</option>
+                    <option value="Funcional">Funcional</option>
+                    <option value="Herramientas">Herramientas</option>
+                    <option value="Prototipo">Prototipo</option>
                 </select>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
-                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                    <option>Todos los estados</option>
-                    <option>Completado</option>
-                    <option>En progreso</option>
-                    <option>Listo para imprimir</option>
-                    <option>Con problemas</option>
+                <select id="gallery-status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    <option value="">Todos los estados</option>
+                    <option value="Completado">Completado</option>
+                    <option value="En progreso">En progreso</option>
+                    <option value="Listo">Listo para imprimir</option>
+                    <option value="Con problemas">Con problemas</option>
                 </select>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Ordenar por</label>
-                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                    <option>Fecha de creación</option>
-                    <option>Nombre (A-Z)</option>
-                    <option>Estado</option>
-                    <option>Tipo</option>
+                <select id="gallery-sort" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    <option value="nombre">Nombre (A-Z)</option>
+                    <option value="fecha">Fecha de creación</option>
+                    <option value="estado">Estado</option>
+                    <option value="tipo">Tipo</option>
                 </select>
             </div>
         </div>
@@ -111,7 +111,7 @@
     </div>
 
     <!-- Grid de proyectos -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {% for proyecto in proyectos %}
     <div data-project-id="{{ proyecto.id }}" class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
             <!-- Imagen del proyecto -->
@@ -237,3 +237,196 @@
 </section>
 
 <!-- Galería: usar el integrador único `gallery.js` para evitar cargas duplicadas de handlers -->
+
+<script>
+// Filtros de galería - implementación simple y directa
+(function() {
+    let originalProjects = [];
+    
+    function initGalleryFilters() {
+        console.log('🔍 Inicializando filtros de galería...');
+        
+        // Obtener elementos
+        const searchInput = document.getElementById('gallery-search');
+        const typeSelect = document.getElementById('gallery-type');
+        const statusSelect = document.getElementById('gallery-status');
+        const sortSelect = document.getElementById('gallery-sort');
+        const grid = document.getElementById('gallery-grid');
+        
+        if (!searchInput || !typeSelect || !statusSelect || !sortSelect || !grid) {
+            console.log('⚠️ No se encontraron todos los elementos de filtros');
+            return;
+        }
+        
+        // Cargar proyectos originales
+        loadOriginalProjects();
+        
+        // Debounce para búsqueda
+        let searchTimeout;
+        function debounce(func, wait) {
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(searchTimeout);
+                    func(...args);
+                };
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(later, wait);
+            };
+        }
+        
+        // Event listeners
+        searchInput.addEventListener('input', debounce(applyFilters, 300));
+        typeSelect.addEventListener('change', applyFilters);
+        statusSelect.addEventListener('change', applyFilters);
+        sortSelect.addEventListener('change', applyFilters);
+        
+        console.log('✅ Filtros de galería iniciados');
+        applyFilters(); // Aplicar filtros iniciales
+    }
+    
+    function loadOriginalProjects() {
+        // Solo buscar proyectos dentro del grid de la galería específico
+        const grid = document.getElementById('gallery-grid');
+        if (!grid) {
+            console.warn('⚠️ No se encontró el grid de galería');
+            return;
+        }
+        
+        // Buscar solo elementos directos del grid (evitar elementos anidados en modales)
+        const projectCards = Array.from(grid.children).filter(child => 
+            child.hasAttribute('data-project-id')
+        );
+        
+        originalProjects = projectCards.map(card => {
+            const nameEl = card.querySelector('h3');
+            const descEl = card.querySelector('p.text-gray-600');
+            const typeEl = card.querySelector('.bg-blue-100');
+            const statusEl = card.querySelector('.absolute.top-3.left-3');
+            
+            return {
+                element: card,
+                id: card.getAttribute('data-project-id'),
+                name: nameEl ? nameEl.textContent.trim() : '',
+                description: descEl ? descEl.textContent.trim() : '',
+                type: typeEl ? typeEl.textContent.trim() : '',
+                status: statusEl ? statusEl.textContent.trim() : ''
+            };
+        });
+        
+        console.log(`📋 Cargados ${originalProjects.length} proyectos para filtrar`);
+    }
+    
+    function applyFilters() {
+        const searchTerm = document.getElementById('gallery-search').value.toLowerCase();
+        const selectedType = document.getElementById('gallery-type').value;
+        const selectedStatus = document.getElementById('gallery-status').value;
+        const sortBy = document.getElementById('gallery-sort').value;
+        
+        console.log('🔍 Aplicando filtros:', { searchTerm, selectedType, selectedStatus, sortBy });
+        
+        // Filtrar proyectos
+        let filteredProjects = originalProjects.filter(project => {
+            // Filtro de búsqueda
+            if (searchTerm) {
+                const searchText = (project.name + ' ' + project.description).toLowerCase();
+                if (!searchText.includes(searchTerm)) return false;
+            }
+            
+            // Filtro de tipo
+            if (selectedType && selectedType !== '') {
+                if (!project.type.includes(selectedType)) return false;
+            }
+            
+            // Filtro de estado
+            if (selectedStatus && selectedStatus !== '') {
+                if (!project.status.includes(selectedStatus)) return false;
+            }
+            
+            return true;
+        });
+        
+        // Ordenar proyectos
+        switch(sortBy) {
+            case 'nombre':
+                filteredProjects.sort((a, b) => a.name.localeCompare(b.name));
+                break;
+            case 'estado':
+                filteredProjects.sort((a, b) => a.status.localeCompare(b.status));
+                break;
+            case 'tipo':
+                filteredProjects.sort((a, b) => a.type.localeCompare(b.type));
+                break;
+            case 'fecha':
+            default:
+                // Mantener orden original (que viene del servidor)
+                break;
+        }
+        
+        // Mostrar/ocultar proyectos y reordenar
+        const grid = document.getElementById('gallery-grid');
+        
+        // Resetear todos los elementos a visible primero
+        originalProjects.forEach(project => {
+            project.element.style.display = 'block';
+            project.element.style.order = '';
+        });
+        
+        // Solo si hay ordenamiento, usar la lógica de reordenar
+        if (sortBy !== 'fecha') {
+            // Ocultar todos primero
+            originalProjects.forEach(project => {
+                project.element.style.display = 'none';
+            });
+            
+            // Mostrar y reordenar solo los proyectos filtrados
+            filteredProjects.forEach((project, index) => {
+                project.element.style.display = 'block';
+                project.element.style.order = index;
+            });
+        } else {
+            // Para filtrado simple (sin reordenamiento), solo mostrar/ocultar
+            originalProjects.forEach(project => {
+                const shouldShow = filteredProjects.includes(project);
+                project.element.style.display = shouldShow ? 'block' : 'none';
+            });
+        }
+        
+        // Mostrar mensaje si no hay resultados
+        showNoResultsMessage(filteredProjects.length === 0);
+        
+        console.log(`✅ Filtrado completado: ${filteredProjects.length}/${originalProjects.length} proyectos mostrados`);
+    }
+    
+    function showNoResultsMessage(show) {
+        const grid = document.getElementById('gallery-grid');
+        let noResultsMsg = document.getElementById('no-results-message');
+        
+        if (show) {
+            if (!noResultsMsg) {
+                noResultsMsg = document.createElement('div');
+                noResultsMsg.id = 'no-results-message';
+                noResultsMsg.className = 'col-span-full text-center py-12 text-gray-500';
+                noResultsMsg.innerHTML = `
+                    <div class="text-6xl mb-4">🔍</div>
+                    <h3 class="text-xl font-semibold mb-2">No se encontraron proyectos</h3>
+                    <p>Intenta ajustar los filtros de búsqueda</p>
+                `;
+                grid.appendChild(noResultsMsg);
+            }
+            noResultsMsg.style.display = '';
+        } else if (noResultsMsg) {
+            noResultsMsg.style.display = 'none';
+        }
+    }
+    
+    // Inicializar cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initGalleryFilters);
+    } else {
+        initGalleryFilters();
+    }
+    
+    // También exponer para reinicialización externa
+    window.initGalleryFilters = initGalleryFilters;
+})();
+</script>

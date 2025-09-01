@@ -218,6 +218,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (typeof window.initGalleryModule === 'function') {
                     window.initGalleryModule();
                 }
+                // Inicializar filtros de galería
+                setTimeout(() => {
+                    if (typeof window.initGalleryFilters === 'function') {
+                        window.initGalleryFilters();
+                    }
+                }, 200);
                 // Re-inicializar event listeners para el contenido dinámico
                 if (typeof window.initGalleryEventListeners === 'function') {
                     window.initGalleryEventListeners();
