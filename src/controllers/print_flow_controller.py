@@ -397,14 +397,22 @@ async def get_piece_selection_options(project_id: str):
     total_estimated_time = 0
     
     for archivo in project["archivos"]:
+        # Solo incluir archivos STL para impresión
+        filename = archivo["nombre"].lower()
+        if not (filename.endswith('.stl') or filename.endswith('.obj') or filename.endswith('.3mf')):
+            continue
+            
         # Estimaciones mock - en el futuro se calcularán con análisis real
         estimated_volume = 15.5  # cm³
         estimated_time = 45      # minutos 
         estimated_filament = 12.3 # gramos
         
+        # Manejar inconsistencia en la clave de tamaño (tamaño vs tamano)
+        file_size = archivo.get("tamaño") or archivo.get("tamano") or "Desconocido"
+        
         pieces_info.append({
             "filename": archivo["nombre"],
-            "size": archivo["tamaño"], 
+            "size": file_size, 
             "status": archivo.get("estado", "listo"),
             "estimated_volume": estimated_volume,
             "estimated_time_minutes": estimated_time,

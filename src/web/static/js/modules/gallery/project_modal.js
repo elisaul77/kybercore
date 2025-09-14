@@ -491,15 +491,15 @@ async function loadPieceSelectionStep(projectId) {
                         <div class="text-blue-800">Piezas totales</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-blue-600">${data.summary.total_estimated_time_hours}h</div>
+                        <div class="text-2xl font-bold text-blue-600">${parseFloat(data.summary.total_estimated_time_hours).toFixed(1)}h</div>
                         <div class="text-blue-800">Tiempo estimado</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-blue-600">${data.summary.total_estimated_filament_grams}g</div>
+                        <div class="text-2xl font-bold text-blue-600">${parseFloat(data.summary.total_estimated_filament_grams).toFixed(1)}g</div>
                         <div class="text-blue-800">Filamento</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-blue-600">${data.summary.total_volume_cm3}cm³</div>
+                        <div class="text-2xl font-bold text-blue-600">${parseFloat(data.summary.total_volume_cm3).toFixed(1)}cm³</div>
                         <div class="text-blue-800">Volumen</div>
                     </div>
                 </div>
