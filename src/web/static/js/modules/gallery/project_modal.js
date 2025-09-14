@@ -1359,8 +1359,8 @@ async function loadValidationStep() {
         }
     }, 100);
     
-    // Cargar reporte de validación
-    const response = await fetch('/api/print/validation-report/mock-job-id');
+    // Cargar reporte de validación usando la sesión actual
+    const response = await fetch(`/api/print/validation-report/${currentWizardSessionId}`);
     const data = await response.json();
     
     if (!data.success) {
