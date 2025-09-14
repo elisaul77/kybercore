@@ -1586,12 +1586,152 @@
       "started_at": "2025-09-14T18:09:43.321567",
       "queue_position": 14,
       "queued_at": "2025-09-14T18:09:43.323313"
+    },
+    {
+      "job_id": "a6f5b9f8-fbf4-4953-9e34-13b19971c01e",
+      "session_id": "temp_11_20250914_184346",
+      "project_id": "11",
+      "status": "queued",
+      "priority": "normal",
+      "estimated_start_time": "2025-09-14T18:46:06.583731",
+      "created_at": "2025-09-14T18:46:06.583747",
+      "user_notes": "",
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "wizard_data": {
+        "project_id": "11",
+        "current_step": "validation",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing"
+        ],
+        "created_at": "2025-09-14T18:43:46.720555",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Flexi-Dog.stl"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-09-14T18:43:46.720570"
+        },
+        "updated_at": "2025-09-14T18:44:15.208660",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-09-14T18:43:52.525785"
+        },
+        "production_mode": {
+          "mode": "prototype",
+          "priority": "speed",
+          "settings": {
+            "layer_height": 0.3,
+            "infill_density": 15,
+            "print_speed": 80,
+            "quality_preset": "draft"
+          },
+          "estimated_impact": {
+            "time_factor": 0.7,
+            "quality_level": "estándar",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-09-14T18:44:01.019871"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Impresora Prueba",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-09-14T18:44:07.939878"
+        },
+        "stl_processing": {
+          "processed_files": [
+            {
+              "filename": "Flexi-Dog.stl",
+              "status": "success",
+              "gcode_path": "/tmp/kybercore_gcode_9b8dea93-a7f6-48fb-ad3e-0f62801c150b_Flexi-Dog.gcode",
+              "gcode_size_bytes": 3896225,
+              "estimated_time_minutes": 156,
+              "layer_count": 556,
+              "filament_used_grams": 12.5,
+              "processing_time_seconds": 15
+            }
+          ],
+          "errors": [],
+          "slicer_config": {
+            "layer_height": 0.3,
+            "fill_density": 15,
+            "print_speed": 80,
+            "nozzle_temp": 210,
+            "bed_temp": 60,
+            "printer_profile": "ender3"
+          },
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-09-14T18:44:15.208214"
+        }
+      },
+      "queue_position": 15,
+      "queued_at": "2025-09-14T18:46:06.584216"
+    },
+    {
+      "job_id": "temp_11_20250914_184346",
+      "printer_id": "printer-test-1",
+      "moonraker_url": "http://10.10.10.71:7126",
+      "status": "printing",
+      "gcode_filename": "kybercore_temp_11_20250914_184346_kybercore_gcode_9b8dea93-a7f6-48fb-ad3e-0f62801c150b_Flexi-Dog.gcode",
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "started_at": "2025-09-14T18:46:18.025831",
+      "queue_position": 16,
+      "queued_at": "2025-09-14T18:46:18.027165"
     }
   ],
   "metadata": {
     "version": "1.0",
     "created": "2025-09-14",
     "description": "Cola de trabajos de impresión pendientes y en proceso",
-    "next_queue_position": 15
+    "next_queue_position": 17
   }
 }

@@ -946,7 +946,8 @@ async def process_stl_files(request: Request):
         slicer_config = prepare_slicer_config(
             material_selection.get("selected_material_data", {}),
             production_mode.get("settings", {}),
-            printer_assignment
+            printer_assignment,
+            session_id
         )
         
         # Procesar cada archivo STL seleccionado
@@ -1006,28 +1007,88 @@ async def process_stl_files(request: Request):
         logger.error(f"Error procesando STL: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
 
-def prepare_slicer_config(material_data, production_settings, printer_assignment):
-    """Prepara la configuración para enviar al slicer"""
+def prepare_slicer_config(material_data, production_settings, printer_assignment, session_id):
+    """Prepara la configuración para enviar al slicer generando un perfil dinámico"""
     
-    # Configuración base por material
-    material_settings = {
-        "PLA": {"nozzle_temp": 210, "bed_temp": 60},
-        "PETG": {"nozzle_temp": 235, "bed_temp": 85},
-        "ABS": {"nozzle_temp": 245, "bed_temp": 100}
-    }
-    
-    # Obtener configuración del material
-    material_type = material_data.get('tipo', 'PLA')
-    temps = material_settings.get(material_type, material_settings["PLA"])
+    # Generar perfil dinámico en APISLICER
+    profile_result = generate_dynamic_profile(material_data, production_settings, printer_assignment, session_id)
     
     return {
-        "layer_height": production_settings.get('layer_height', 0.2),
-        "fill_density": production_settings.get('infill_density', 20),
-        "print_speed": production_settings.get('print_speed', 50),
-        "nozzle_temp": temps["nozzle_temp"],
-        "bed_temp": temps["bed_temp"],
-        "printer_profile": map_printer_to_profile(printer_assignment.get('printer_name', 'Generic'))
+        "job_id": profile_result["job_id"],
+        "profile_name": profile_result["profile_name"],
+        "printer_profile": profile_result["base_profile"],
+        "applied_configurations": profile_result["applied_configurations"]
     }
+
+async def generate_dynamic_profile(material_data, production_settings, printer_assignment, session_id):
+    """Genera un perfil dinámico llamando al endpoint de APISLICER"""
+    
+    # Preparar datos para el request
+    profile_request = {
+        "job_id": session_id,  # Usar session_id como job_id
+        "material": {
+            "tipo": material_data.get('tipo', 'PLA'),
+            "color": material_data.get('color', 'Blanco'),
+            "marca": material_data.get('marca', 'Genérica'),
+            "precio_por_kg": material_data.get('precio_por_kg', 0)
+        },
+        "production_mode": {
+            "mode": production_settings.get('mode', 'prototype'),
+            "priority": production_settings.get('priority', 'speed'),
+            "settings": production_settings
+        },
+        "printer": {
+            "id": printer_assignment.get('printer_id', 'unknown'),
+            "nombre": printer_assignment.get('printer_name', 'Impresora Genérica'),
+            "model": printer_assignment.get('printer_model', 'Generic'),
+            "marca": printer_assignment.get('printer_brand', 'Genérica')
+        }
+    }
+    
+    try:
+        # Llamar al endpoint de APISLICER
+        apisliser_url = os.getenv('APISLICER_URL', 'http://localhost:8001')
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                f"{apisliser_url}/generate-profile",
+                json=profile_request,
+                headers={'Content-Type': 'application/json'}
+            ) as response:
+                
+                if response.status != 200:
+                    error_text = await response.text()
+                    logger.error(f"Error generando perfil dinámico: {error_text}")
+                    raise HTTPException(
+                        status_code=500,
+                        detail=f"Error generando perfil dinámico: {error_text}"
+                    )
+                
+                result = await response.json()
+                logger.info(f"Perfil dinámico generado exitosamente: {result['profile_name']}")
+                return result
+                
+    except aiohttp.ClientError as e:
+        logger.error(f"Error de conexión con APISLICER: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error de conexión con APISLICER: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Error generando perfil dinámico: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error generando perfil dinámico: {str(e)}"
+        )
+
+def map_printer_to_profile(printer_name):
+    """Mapea el nombre de impresora a un perfil de APISLICER"""
+    if 'ender' in printer_name.lower():
+        return 'ender3'
+    elif 'prusa' in printer_name.lower():
+        return 'prusa_mk3'
+    else:
+        return 'ender3'  # Por defecto
 
 def map_printer_to_profile(printer_name):
     """Mapea el nombre de impresora a un perfil de APISLICER"""
@@ -1162,9 +1223,14 @@ async def process_single_stl(filename, file_path, config):
                       filename=filename, 
                       content_type='application/octet-stream')
         
-        # Agregar parámetros de configuración
-        for key, value in config.items():
-            data.add_field(key, str(value))
+        # Agregar job_id para usar perfil dinámico
+        if 'job_id' in config:
+            data.add_field('job_id', config['job_id'])
+        else:
+            # Fallback a parámetros individuales si no hay job_id
+            for key, value in config.items():
+                if key not in ['job_id', 'profile_name', 'applied_configurations']:
+                    data.add_field(key, str(value))
         
         # URL de APISLICER (comunicación entre contenedores Docker)
         apislicer_url = "http://apislicer:8000/slice"
