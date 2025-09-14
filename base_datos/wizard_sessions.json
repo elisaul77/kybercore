@@ -339,11 +339,13 @@
     },
     "temp_10_20250914_151908": {
       "project_id": "10",
-      "current_step": "printer_assignment",
+      "current_step": "validation",
       "completed_steps": [
         "piece_selection",
         "material_selection",
-        "production_mode"
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
       ],
       "created_at": "2025-09-14T15:19:08.246805",
       "status": "active",
@@ -357,7 +359,7 @@
         "total_estimated_time_hours": 0.75,
         "completed_at": "2025-09-14T15:19:08.246819"
       },
-      "updated_at": "2025-09-14T15:19:28.314266",
+      "updated_at": "2025-09-14T15:20:51.973061",
       "material_selection": {
         "material_type": "PLA",
         "color": "Negro",
@@ -393,6 +395,55 @@
           "material_usage": "estándar"
         },
         "completed_at": "2025-09-14T15:19:28.314164"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-09-14T15:20:11.966484"
+      },
+      "stl_processing": {
+        "processed_files": [
+          {
+            "filename": "Columns.stl",
+            "status": "success",
+            "gcode_path": "/tmp/mock_gcode_7ebf0347-43b8-4323-86ae-cfa2dc6cbe26_Columns.gcode",
+            "estimated_time_minutes": 45,
+            "layer_count": 200,
+            "filament_used_grams": 12.5,
+            "processing_time_seconds": 5
+          }
+        ],
+        "errors": [],
+        "slicer_config": {
+          "layer_height": 0.3,
+          "fill_density": 15,
+          "print_speed": 80,
+          "nozzle_temp": 210,
+          "bed_temp": 60,
+          "printer_profile": "ender3"
+        },
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-09-14T15:20:51.972513"
       }
     }
   },

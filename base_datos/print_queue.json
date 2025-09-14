@@ -674,12 +674,137 @@
       },
       "queue_position": 5,
       "queued_at": "2025-09-14T08:03:10.315786"
+    },
+    {
+      "job_id": "2bdad875-10d6-4965-a795-7ae90dfc794d",
+      "session_id": "temp_10_20250914_151908",
+      "project_id": "10",
+      "status": "queued",
+      "priority": "normal",
+      "estimated_start_time": "2025-09-14T15:21:38.465235",
+      "created_at": "2025-09-14T15:21:38.465262",
+      "user_notes": "",
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "wizard_data": {
+        "project_id": "10",
+        "current_step": "validation",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing"
+        ],
+        "created_at": "2025-09-14T15:19:08.246805",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Columns.stl"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-09-14T15:19:08.246819"
+        },
+        "updated_at": "2025-09-14T15:20:51.973061",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-09-14T15:19:18.808215"
+        },
+        "production_mode": {
+          "mode": "prototype",
+          "priority": "speed",
+          "settings": {
+            "layer_height": 0.3,
+            "infill_density": 15,
+            "print_speed": 80,
+            "quality_preset": "draft"
+          },
+          "estimated_impact": {
+            "time_factor": 0.7,
+            "quality_level": "estándar",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-09-14T15:19:28.314164"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Impresora Prueba",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-09-14T15:20:11.966484"
+        },
+        "stl_processing": {
+          "processed_files": [
+            {
+              "filename": "Columns.stl",
+              "status": "success",
+              "gcode_path": "/tmp/mock_gcode_7ebf0347-43b8-4323-86ae-cfa2dc6cbe26_Columns.gcode",
+              "estimated_time_minutes": 45,
+              "layer_count": 200,
+              "filament_used_grams": 12.5,
+              "processing_time_seconds": 5
+            }
+          ],
+          "errors": [],
+          "slicer_config": {
+            "layer_height": 0.3,
+            "fill_density": 15,
+            "print_speed": 80,
+            "nozzle_temp": 210,
+            "bed_temp": 60,
+            "printer_profile": "ender3"
+          },
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-09-14T15:20:51.972513"
+        }
+      },
+      "queue_position": 6,
+      "queued_at": "2025-09-14T15:21:38.466380"
     }
   ],
   "metadata": {
     "version": "1.0",
     "created": "2025-09-14",
     "description": "Cola de trabajos de impresión pendientes y en proceso",
-    "next_queue_position": 6
+    "next_queue_position": 7
   }
 }
