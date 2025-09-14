@@ -236,5 +236,128 @@
     {% include 'modules/gallery/project_modal.html' %}
 </section>
 
-<!-- Script de filtros de galería -->
+<!-- Scripts de galería -->
 <script src="/static/js/modules/gallery/gallery_filters.js"></script>
+<script src="/static/js/modules/gallery/project_modal.js"></script>
+
+<!-- Script de inicialización de la galería -->
+<script>
+// Inicializar componentes cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Inicializando galería de proyectos...');
+    
+    // Inicializar el modal de proyectos
+    window.projectModal = new ProjectModal();
+    
+    // Event listener para botones "Ver Proyecto"
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('[data-action="view-project"]') || e.target.closest('[data-action="view-project"]')) {
+            const button = e.target.matches('[data-action="view-project"]') ? e.target : e.target.closest('[data-action="view-project"]');
+            const projectId = button.getAttribute('data-project-id');
+            
+            console.log('📁 Abriendo proyecto:', projectId);
+            openProjectModal(projectId);
+            e.preventDefault();
+        }
+    });
+    
+    console.log('✅ Galería inicializada correctamente');
+});
+
+// Función para abrir el modal del proyecto
+async function openProjectModal(projectId) {
+    try {
+        console.log('🔄 Cargando datos del proyecto:', projectId);
+        
+        // Aquí cargarías los datos reales del proyecto desde el backend
+        // Por ahora usamos datos mock
+        const projectData = {
+            id: projectId,
+            title: 'ATX Power Supply',
+            description: 'Fuente de alimentación ATX personalizada con carcasa impresa en 3D',
+            type: 'Mecánico',
+            status: 'listo',
+            files: [
+                'Cover_USB.stl',
+                'back_frame.stl', 
+                'front_cover_volt_amp_adj.stl',
+                'front_cover_volt_ampmeter.stl',
+                'front_frame.stl',
+                'front_panel.stl',
+                'handle.stl',
+                'rail_bottom.stl',
+                'rail_top.stl'
+            ],
+            progress: 85,
+            author: 'Usuario Test',
+            created_date: '2025-09-14',
+            estimated_print_time: '6.5 horas',
+            estimated_filament: '110g',
+            icon: '🔌'
+        };
+        
+        // Abrir el modal con los datos del proyecto
+        window.projectModal.open(projectData);
+        
+    } catch (error) {
+        console.error('❌ Error cargando proyecto:', error);
+        // Mostrar mensaje de error al usuario
+        alert('Error cargando el proyecto. Por favor, intenta nuevamente.');
+    }
+}
+
+// Funciones para otras acciones de la galería
+function createNewProject() {
+    alert('🚧 Función en desarrollo: Crear nuevo proyecto');
+}
+
+function analyzeAllProjects() {
+    alert('🚧 Función en desarrollo: Análisis IA de todos los proyectos');
+}
+
+function showProjectsStatistics() {
+    alert('🚧 Función en desarrollo: Estadísticas detalladas');
+}
+
+// Event listeners para acciones de proyectos
+document.addEventListener('click', function(e) {
+    const action = e.target.getAttribute('data-action');
+    const projectId = e.target.getAttribute('data-project-id');
+    
+    if (!action || !projectId) return;
+    
+    switch(action) {
+        case 'favorite':
+            toggleFavorite(projectId);
+            break;
+        case 'export':
+            exportProject(projectId);
+            break;
+        case 'duplicate':
+            duplicateProject(projectId);
+            break;
+        case 'delete':
+            deleteProject(projectId);
+            break;
+    }
+});
+
+function toggleFavorite(projectId) {
+    console.log('⭐ Toggling favorite for project:', projectId);
+    // Implementar lógica de favoritos
+}
+
+function exportProject(projectId) {
+    alert(`📤 Exportando proyecto ${projectId}`);
+}
+
+function duplicateProject(projectId) {
+    alert(`📋 Duplicando proyecto ${projectId}`);
+}
+
+function deleteProject(projectId) {
+    if (confirm('¿Estás seguro de que quieres eliminar este proyecto?')) {
+        alert(`🗑️ Eliminando proyecto ${projectId}`);
+    }
+}
+</script>

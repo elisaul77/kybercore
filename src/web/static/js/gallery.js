@@ -425,7 +425,27 @@ console.log('📁 gallery integrator loaded');
     }
 
     function startPrinting(projectId) {
-        showToast('Función pendiente', 'La función de impresión se integrará con el módulo de flota', 'info');
+        console.log('🖨️ Iniciando flujo de impresión para proyecto:', projectId);
+        
+        // Cerrar el modal actual del proyecto
+        const modal = document.getElementById('stl-preview-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+        
+        // Llamar al wizard de impresión
+        try {
+            if (typeof openPrintFlowWizard === 'function') {
+                // Abrir el wizard con datos mock para ahora
+                openPrintFlowWizard('mock-flow-id', projectId, 'ready');
+            } else {
+                console.error('openPrintFlowWizard no está definido');
+                showToast('Error', 'El asistente de impresión no está disponible', 'error');
+            }
+        } catch (error) {
+            console.error('Error abriendo wizard de impresión:', error);
+            showToast('Error', 'Error iniciando el flujo de impresión', 'error');
+        }
     }
 
     async function toggleFavorite(projectId) {

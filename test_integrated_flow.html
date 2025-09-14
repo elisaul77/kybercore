@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Flujo Integrado - KyberCore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">🧪 Prueba del Flujo Integrado</h1>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Instrucciones de Prueba</h2>
+            <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                <li>Haz clic en "Abrir Galería KyberCore" para cargar la galería real</li>
+                <li>Busca cualquier proyecto en la galería</li>
+                <li>Haz clic en "👁️ Ver Proyecto" en cualquier tarjeta</li>
+                <li>En el modal que se abre, haz clic en "🖨️ Imprimir"</li>
+                <li>Debe abrirse el asistente de flujo de impresión completo</li>
+                <li>Prueba navegando por todos los pasos del wizard</li>
+            </ol>
+            
+            <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                <p class="text-blue-800 font-medium">✅ Si ves el asistente de impresión, el flujo está funcionando correctamente!</p>
+                <p class="text-blue-600 text-sm mt-1">❌ Si aún ves "Función pendiente", hay un problema con la carga de scripts.</p>
+            </div>
+        </div>
+        
+        <div class="text-center">
+            <a href="http://localhost:8000" target="_blank" 
+               class="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-3 rounded-xl hover:from-purple-600 hover:to-pink-600 transition-colors shadow-lg text-lg font-semibold">
+                🚀 Abrir Galería KyberCore
+            </a>
+        </div>
+        
+        <!-- Log de pruebas -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mt-8">
+            <h3 class="text-lg font-semibold mb-4">📋 Estado de Integración</h3>
+            <div class="space-y-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span>Controlador de flujo de impresión implementado</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span>Wizard de JavaScript completado</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span>Integración con APISLICER configurada</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span>Función startPrinting actualizada</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <span>Pruebas finales pendientes</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-refresh para verificar estado del servidor
+        setInterval(() => {
+            fetch('http://localhost:8000/health')
+                .then(response => {
+                    if (response.ok) {
+                        document.title = '✅ Servidor OK - Prueba Flujo Integrado';
+                    }
+                })
+                .catch(() => {
+                    document.title = '❌ Servidor Offline - Prueba Flujo Integrado';
+                });
+        }, 5000);
+    </script>
+</body>
+</html>

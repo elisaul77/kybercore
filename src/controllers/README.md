@@ -2,6 +2,27 @@
 
 Controladores que gestionan la lógica de negocio y orquestan las operaciones entre servicios y modelos.
 
+## 🖨️ print_flow_controller.py - NUEVO
+
+### Controlador para el Flujo de Impresión
+Este controlador maneja todos los endpoints relacionados con el flujo de impresión 3D,
+desde la selección inicial de piezas hasta el monitoreo del trabajo en progreso.
+
+#### Endpoints principales:
+- POST /print/start/{project_id} - Inicia el flujo de impresión para un proyecto
+- GET /print/piece-selection/{project_id} - Obtiene opciones de selección de piezas  
+- POST /print/select-pieces - Confirma selección de piezas específicas
+- GET /print/material-selection - Obtiene materiales disponibles
+- POST /print/validate-material - Valida disponibilidad de material
+- GET /print/production-modes - Obtiene modos de producción disponibles
+- POST /print/set-production-mode - Establece modo prototipo o producción
+- GET /print/available-printers - Lista impresoras disponibles
+- POST /print/assign-printer - Asigna impresora manualmente
+- POST /print/process-stl - Procesa archivos STL y genera G-code
+- GET /print/validation-report - Obtiene reporte de validación
+- POST /print/confirm-job - Usuario confirma el plan de impresión
+- GET /print/job-status/{job_id} - Monitorea estado del trabajo
+
 ## 🚀 fleet_controller.py - ACTUALIZADO
 
 ### Funcionalidades Principales:

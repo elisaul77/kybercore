@@ -1,0 +1,339 @@
+{
+  "perfil_pla_prueba": {
+    "id": "perfil_pla_prueba",
+    "nombre": "Perfil PLA Estándar - Prueba",
+    "descripcion": "Perfil completo de PLA optimizado para calidad general y velocidad balanceada",
+    "material": "PLA",
+    "version": "1.0",
+    "creado_por": "KyberCore System",
+    "fecha_creacion": "2025-09-14T00:00:00Z",
+    "ultima_modificacion": "2025-09-14T00:00:00Z",
+    "activo": true,
+    "predeterminado": false,
+    
+    "configuracion_material": {
+      "tipo": "PLA",
+      "diametro": 1.75,
+      "densidad": 1.24,
+      "punto_fusion": "180-220°C",
+      "propiedades": {
+        "biodegradable": true,
+        "facilidad_uso": "Alta",
+        "warping_tendencia": "Baja",
+        "adhesion_necesaria": "Baja",
+        "resistencia_quimica": "Baja",
+        "resistencia_temperatura": "60°C max"
+      }
+    },
+
+    "configuracion_temperaturas": {
+      "extrusor": {
+        "temperatura": 210,
+        "temperatura_min": 190,
+        "temperatura_max": 220,
+        "primera_capa": 215,
+        "comentario": "Temperaturas optimizadas para buena adherencia de capas"
+      },
+      "cama_caliente": {
+        "temperatura": 60,
+        "temperatura_min": 50,
+        "temperatura_max": 70,
+        "primera_capa": 65,
+        "mantener_encendida": true,
+        "comentario": "Mejora adhesión, previene warping"
+      },
+      "camara": {
+        "temperatura_ambiente": 25,
+        "ventilacion_necesaria": false,
+        "recinto_cerrado": false
+      }
+    },
+
+    "configuracion_capas": {
+      "altura_capa": 0.2,
+      "altura_capa_min": 0.1,
+      "altura_capa_max": 0.3,
+      "altura_primera_capa": 0.25,
+      "capas_adaptativas": {
+        "habilitado": false,
+        "variacion_maxima": 0.1,
+        "suavizado": true
+      },
+      "capas_superiores": {
+        "cantidad": 4,
+        "espesor_total": 0.8,
+        "patron": "concentrico"
+      },
+      "capas_inferiores": {
+        "cantidad": 4,
+        "espesor_total": 0.8,
+        "patron": "concentrico"
+      }
+    },
+
+    "configuracion_velocidades": {
+      "velocidad_impresion": 60,
+      "velocidad_maxima": 150,
+      "velocidad_primera_capa": 30,
+      "velocidades_especificas": {
+        "perimetros_exteriores": 50,
+        "perimetros_interiores": 60,
+        "relleno_pequeno": 45,
+        "relleno_grande": 80,
+        "relleno_solido": 40,
+        "capas_superiores": 35,
+        "soportes": 50,
+        "borde": 30,
+        "viaje": 120,
+        "puentes": 40
+      },
+      "aceleraciones": {
+        "perimetros": 800,
+        "relleno": 1000,
+        "primera_capa": 500,
+        "viaje": 1500,
+        "predeterminada": 800
+      },
+      "jerk": {
+        "perimetros": 8,
+        "relleno": 10,
+        "viaje": 15,
+        "predeterminado": 8
+      }
+    },
+
+    "configuracion_extrusion": {
+      "multiplicador_extrusion": 1.0,
+      "flujo_primera_capa": 1.05,
+      "ancho_extrusion": {
+        "perimetros": 0.4,
+        "perimetros_exteriores": 0.4,
+        "relleno": 0.4,
+        "relleno_solido": 0.4,
+        "capas_superiores": 0.4,
+        "soportes": 0.35
+      },
+      "retraccion": {
+        "distancia": 4.0,
+        "velocidad": 40,
+        "velocidad_regreso": 30,
+        "distancia_extra_restart": 0.0,
+        "elevacion_z": 0.2,
+        "elevacion_z_velocidad": 3,
+        "solo_cruzar_perimetros": true,
+        "distancia_minima_viaje": 1.5
+      },
+      "limpieza_boquilla": {
+        "habilitado": true,
+        "longitud": 0.4,
+        "velocidad": 20
+      }
+    },
+
+    "configuracion_perimetros": {
+      "perimetros": 3,
+      "perimetros_minimos": 2,
+      "espesor_cascaron": 1.2,
+      "perimetros_espirales": false,
+      "solo_un_perimetro_capa_superior": false,
+      "evitar_cruces_perimetros": true,
+      "detectar_paredes_delgadas": true,
+      "sobrecolgado_perimetro": 0.1,
+      "costura_aleatoria": false,
+      "posicion_costura": "alineada",
+      "gap_fill": {
+        "habilitado": true,
+        "velocidad": 40,
+        "flujo": 1.0
+      }
+    },
+
+    "configuracion_relleno": {
+      "densidad": 20,
+      "patron": "gyroid",
+      "patrones_disponibles": [
+        "rectilineo", "grid", "triangular", "estrella", 
+        "cubico", "linea", "concentrico", "panal", 
+        "3d_panal", "gyroid", "hilbert", "archimediano", 
+        "octagrammespiral"
+      ],
+      "angulo_relleno": 45,
+      "cada_n_capas": 1,
+      "solo_donde_necesario": false,
+      "relleno_antes_perimetros": false,
+      "combinacion_relleno": {
+        "habilitado": false,
+        "distancia_maxima": 150
+      },
+      "anclaje_longitud": {
+        "relleno": 1000,
+        "relleno_solido": 1000
+      }
+    },
+
+    "configuracion_soporte": {
+      "soportes_habilitados": false,
+      "material_soporte": "PLA",
+      "generar_soportes": "nunca",
+      "patron_soporte": "rectilineo",
+      "densidad_soporte": 15,
+      "angulo_voladizo": 45,
+      "distancia_contacto_Z": 0.2,
+      "distancia_contacto_XY": 0.6,
+      "interfaz_soporte": {
+        "habilitada": true,
+        "capas": 2,
+        "densidad": 70,
+        "espaciado": 0.2
+      },
+      "soportes_solubles": false,
+      "umbral_area_minima": 1.0
+    },
+
+    "configuracion_adhesion_cama": {
+      "tipo": "ninguno",
+      "opciones_disponibles": ["ninguno", "falda", "borde", "balsa"],
+      "falda": {
+        "distancia": 6,
+        "altura": 1,
+        "bucles": 2
+      },
+      "borde": {
+        "ancho": 8,
+        "solo_exterior": false
+      },
+      "balsa": {
+        "capas": 3,
+        "densidad": 90,
+        "separacion": 0.15
+      }
+    },
+
+    "configuracion_refrigeracion": {
+      "ventilador_habilitado": true,
+      "velocidad_ventilador_minima": 50,
+      "velocidad_ventilador_maxima": 100,
+      "puentes_velocidad_ventilador": 100,
+      "deshabilitar_ventilador_primeras_capas": 2,
+      "refrigeracion_voladizos": {
+        "habilitada": true,
+        "umbral_voladizo": 25,
+        "velocidad_ventilador": 100
+      },
+      "velocidad_reducir_cuando_fan": {
+        "habilitado": true,
+        "temperatura_umbral": 25,
+        "factor_reduccion": 0.5
+      }
+    },
+
+    "configuracion_calibracion": {
+      "factor_extrusion_lineal": 0.0,
+      "compensacion_presion": 0.0,
+      "compensacion_elefante_pie": 0.2,
+      "compensacion_agujeros_xy": 0.0,
+      "resolucion_impresion": 0.0125,
+      "resolucion_arco": 0.0125
+    },
+
+    "configuracion_post_procesado": {
+      "eliminar_pequenas_islas": {
+        "habilitado": true,
+        "area_minima": 2.0
+      },
+      "suavizado": {
+        "habilitado": false,
+        "factor": 1.0
+      },
+      "simplificacion": {
+        "resolucion": 0.0125
+      }
+    },
+
+    "configuracion_avanzada": {
+      "gcode_personalizado": {
+        "inicio_gcode": "G28 ; home all axes\\nG1 Z5 F5000 ; lift nozzle",
+        "fin_gcode": "M104 S0 ; turn off temperature\\nG28 X0 ; home X axis\\nM84 ; disable motors",
+        "antes_cambio_capa": "",
+        "despues_cambio_capa": "",
+        "cambio_herramienta": ""
+      },
+      "configuracion_firmware": {
+        "gcode_flavor": "marlin",
+        "usar_volumetrico": false,
+        "usar_firmware_retraction": false,
+        "machine_max_feedrate": {
+          "x": 200,
+          "y": 200,
+          "z": 12,
+          "e": 120
+        },
+        "machine_max_acceleration": {
+          "x": 1500,
+          "y": 1500,
+          "z": 500,
+          "e": 5000
+        }
+      }
+    },
+
+    "compatibilidad": {
+      "impresoras_compatibles": [
+        "Ender 3",
+        "Ender 3 Pro", 
+        "Prusa i3 MK3S",
+        "Creality CR-10",
+        "Generic FDM"
+      ],
+      "boquillas_compatibles": [0.3, 0.4, 0.5, 0.6, 0.8],
+      "boquilla_recomendada": 0.4,
+      "volumen_construccion_min": {
+        "x": 200,
+        "y": 200, 
+        "z": 200
+      }
+    },
+
+    "estadisticas_uso": {
+      "veces_usado": 0,
+      "impresiones_exitosas": 0,
+      "impresiones_fallidas": 0,
+      "tiempo_total_impresion": 0,
+      "material_usado_total": 0,
+      "calidad_promedio": null,
+      "ultima_vez_usado": null
+    },
+
+    "notas_y_consejos": {
+      "consejos_generales": [
+        "PLA es ideal para principiantes por su facilidad de uso",
+        "No requiere cama caliente obligatoria pero mejora adhesión",
+        "Enfriamiento activo mejora calidad en voladizos",
+        "Sensible a humedad - almacenar en lugar seco"
+      ],
+      "problemas_comunes": {
+        "stringing": "Ajustar retracción (4-6mm) y temperatura (190-200°C)",
+        "warping": "Usar cama caliente a 60°C y evitar corrientes de aire",
+        "mala_adhesion": "Limpiar cama, usar temperatura cama 60-70°C",
+        "sobre_extrusion": "Reducir flujo a 95-98% o bajar temperatura"
+      },
+      "optimizaciones": {
+        "calidad_maxima": "Altura capa 0.1mm, velocidad 40mm/s, refrigeración 100%",
+        "velocidad_maxima": "Altura capa 0.3mm, velocidad 80mm/s, temperatura 220°C",
+        "ahorro_material": "Relleno 10-15%, perimetros 2, soportes minimos"
+      }
+    },
+
+    "metadatos": {
+      "tags": ["PLA", "estandar", "principiante", "calidad", "balanceado"],
+      "categoria": "filamento_basico",
+      "nivel_dificultad": "principiante",
+      "tiempo_estimado_setup": "5 minutos",
+      "confiabilidad": "alta",
+      "documentado": true,
+      "testeado": false,
+      "origen": "sistema",
+      "licencia": "libre"
+    }
+  }
+}

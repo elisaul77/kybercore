@@ -1,0 +1,472 @@
+{
+  "historial_trabajos": {
+    "configuracion": {
+      "version": "1.0",
+      "total_trabajos": 5,
+      "directorio_fotos": "/src/web/static/img/job_results/",
+      "formato_fotos": ["svg", "png", "jpg"],
+      "retention_policy": {
+        "mantener_meses": 12,
+        "archivar_despues_meses": 6,
+        "comprimir_fotos_antiguas": true
+      }
+    },
+    "estadisticas": {
+      "trabajos_exitosos": 3,
+      "trabajos_con_advertencias": 1,
+      "trabajos_fallidos": 1,
+      "tasa_exito": 80.0,
+      "tiempo_total_impresion": "12h 35min",
+      "material_total_usado": "245.7g",
+      "impresora_mas_usada": "printer-test-1",
+      "perfil_mas_usado": "perfil_pla_prueba"
+    },
+    "trabajos": [
+      {
+        "id": "job_001",
+        "numero_trabajo": 1,
+        "nombre": "Engranaje 20 dientes",
+        "descripcion": "Engranaje mecánico para prototipo de transmisión",
+        
+        "fechas": {
+          "creado": "2025-09-14T12:00:00Z",
+          "iniciado": "2025-09-14T12:05:00Z",
+          "finalizado": "2025-09-14T14:50:00Z",
+          "duracion_real": "2h 45min",
+          "duracion_estimada": "2h 30min"
+        },
+        
+        "impresora": {
+          "id": "printer-test-1",
+          "nombre": "Impresora Prueba",
+          "modelo": "Generic",
+          "ip": "10.10.10.71:7126"
+        },
+        
+        "perfil": {
+          "id": "perfil_pla_prueba",
+          "nombre": "Perfil PLA Estándar - Prueba",
+          "material": "PLA",
+          "temperatura_extrusor": 210,
+          "temperatura_cama": 60,
+          "velocidad_impresion": 60,
+          "altura_capa": 0.2,
+          "relleno": 20
+        },
+        
+        "archivo": {
+          "stl_original": "/uploads/engranaje_20_dientes.stl",
+          "gcode_generado": "/output/job_001_engranaje.gcode",
+          "tamaño_archivo": "2.4MB",
+          "tiempo_slicing": "45s"
+        },
+        
+        "material_usado": {
+          "tipo": "PLA",
+          "color": "Blanco",
+          "cantidad": "65.2g",
+          "longitud_filamento": "21.7m",
+          "costo_estimado": "1.30 USD"
+        },
+        
+        "resultado": {
+          "estado": "completado_exitoso",
+          "calidad": "excelente",
+          "calidad_score": 95,
+          "cumple_tolerancias": true,
+          "defectos_detectados": [],
+          "notas": "Impresión perfecta, todas las dimensiones dentro de tolerancia",
+          
+          "fotos": [
+            {
+              "tipo": "resultado_final",
+              "ruta": "/src/web/static/img/job_results/2025/09/job_001_result.svg",
+              "descripcion": "Vista general del resultado final",
+              "timestamp": "2025-09-14T14:55:00Z"
+            }
+          ]
+        },
+        
+        "metricas_impresion": {
+          "capas_total": 138,
+          "capas_completadas": 138,
+          "porcentaje_completado": 100,
+          "temperatura_promedio_extrusor": 209.8,
+          "temperatura_promedio_cama": 59.5,
+          "velocidad_promedio": 58.2,
+          "retracciones_total": 1247,
+          "pausas_usuario": 0,
+          "errores_menores": 0
+        },
+        
+        "post_procesado": {
+          "requerido": false,
+          "limpieza_soportes": false,
+          "lijado": false,
+          "pintura": false,
+          "ensamble": false,
+          "tiempo_post_procesado": "0min"
+        }
+      },
+      
+      {
+        "id": "job_002",
+        "numero_trabajo": 2,
+        "nombre": "Soporte de teléfono",
+        "descripcion": "Soporte ajustable para smartphones",
+        
+        "fechas": {
+          "creado": "2025-09-13T09:00:00Z",
+          "iniciado": "2025-09-13T09:15:00Z",
+          "finalizado": "2025-09-13T10:35:00Z",
+          "duracion_real": "1h 20min",
+          "duracion_estimada": "1h 15min"
+        },
+        
+        "impresora": {
+          "id": "printer-test-1",
+          "nombre": "Impresora Prueba",
+          "modelo": "Generic",
+          "ip": "10.10.10.71:7126"
+        },
+        
+        "perfil": {
+          "id": "perfil_pla_prueba",
+          "nombre": "Perfil PLA Estándar - Prueba",
+          "material": "PLA",
+          "temperatura_extrusor": 210,
+          "temperatura_cama": 60,
+          "velocidad_impresion": 60,
+          "altura_capa": 0.2,
+          "relleno": 20
+        },
+        
+        "archivo": {
+          "stl_original": "/uploads/soporte_telefono.stl",
+          "gcode_generado": "/output/job_002_soporte.gcode",
+          "tamaño_archivo": "1.8MB",
+          "tiempo_slicing": "32s"
+        },
+        
+        "material_usado": {
+          "tipo": "PLA",
+          "color": "Negro",
+          "cantidad": "38.4g",
+          "longitud_filamento": "12.8m",
+          "costo_estimado": "0.77 USD"
+        },
+        
+        "resultado": {
+          "estado": "completado_con_advertencias",
+          "calidad": "buena",
+          "calidad_score": 78,
+          "cumple_tolerancias": true,
+          "defectos_detectados": ["superficie_rugosa_menor"],
+          "notas": "Superficie ligeramente rugosa en una cara, posiblemente por refrigeración insuficiente",
+          
+          "fotos": [
+            {
+              "tipo": "resultado_final",
+              "ruta": "/src/web/static/img/job_results/2025/09/job_002_result.svg",
+              "descripcion": "Vista general con advertencia de calidad",
+              "timestamp": "2025-09-13T10:40:00Z"
+            }
+          ]
+        },
+        
+        "metricas_impresion": {
+          "capas_total": 67,
+          "capas_completadas": 67,
+          "porcentaje_completado": 100,
+          "temperatura_promedio_extrusor": 211.2,
+          "temperatura_promedio_cama": 60.1,
+          "velocidad_promedio": 59.8,
+          "retracciones_total": 892,
+          "pausas_usuario": 0,
+          "errores_menores": 1
+        },
+        
+        "post_procesado": {
+          "requerido": true,
+          "limpieza_soportes": false,
+          "lijado": true,
+          "pintura": false,
+          "ensamble": false,
+          "tiempo_post_procesado": "15min"
+        }
+      },
+      
+      {
+        "id": "job_003",
+        "numero_trabajo": 3,
+        "nombre": "Miniatura dragón",
+        "descripcion": "Figura decorativa detallada de dragón fantástico",
+        
+        "fechas": {
+          "creado": "2025-09-12T07:30:00Z",
+          "iniciado": "2025-09-12T08:00:00Z",
+          "finalizado": "2025-09-12T12:15:00Z",
+          "duracion_real": "4h 15min",
+          "duracion_estimada": "5h 30min"
+        },
+        
+        "impresora": {
+          "id": "printer-test-1",
+          "nombre": "Impresora Prueba",
+          "modelo": "Generic",
+          "ip": "10.10.10.71:7126"
+        },
+        
+        "perfil": {
+          "id": "perfil_pla_prueba",
+          "nombre": "Perfil PLA Estándar - Prueba",
+          "material": "PLA",
+          "temperatura_extrusor": 210,
+          "temperatura_cama": 60,
+          "velocidad_impresion": 60,
+          "altura_capa": 0.2,
+          "relleno": 20
+        },
+        
+        "archivo": {
+          "stl_original": "/uploads/dragon_miniature.stl",
+          "gcode_generado": "/output/job_003_dragon.gcode",
+          "tamaño_archivo": "8.7MB",
+          "tiempo_slicing": "2m 15s"
+        },
+        
+        "material_usado": {
+          "tipo": "PLA",
+          "color": "Rojo",
+          "cantidad": "85.6g",
+          "longitud_filamento": "28.5m",
+          "costo_estimado": "1.71 USD"
+        },
+        
+        "resultado": {
+          "estado": "fallido",
+          "calidad": "fallo",
+          "calidad_score": 15,
+          "cumple_tolerancias": false,
+          "defectos_detectados": ["despegue_cama", "warping", "impresion_incompleta"],
+          "notas": "Fallo catastrófico por despegue de la primera capa a las 4h de impresión. Warping severo.",
+          
+          "fotos": [
+            {
+              "tipo": "fallo",
+              "ruta": "/src/web/static/img/job_results/2025/09/job_003_result.svg",
+              "descripcion": "Evidencia del fallo de impresión",
+              "timestamp": "2025-09-12T12:20:00Z"
+            }
+          ]
+        },
+        
+        "metricas_impresion": {
+          "capas_total": 285,
+          "capas_completadas": 215,
+          "porcentaje_completado": 75,
+          "temperatura_promedio_extrusor": 210.5,
+          "temperatura_promedio_cama": 59.2,
+          "velocidad_promedio": 61.3,
+          "retracciones_total": 3458,
+          "pausas_usuario": 0,
+          "errores_menores": 5
+        },
+        
+        "post_procesado": {
+          "requerido": false,
+          "limpieza_soportes": false,
+          "lijado": false,
+          "pintura": false,
+          "ensamble": false,
+          "tiempo_post_procesado": "0min"
+        },
+        
+        "analisis_fallo": {
+          "causa_principal": "adhesion_cama_insuficiente",
+          "factores_contribuyentes": ["temperatura_ambiente_baja", "cama_desnivelada", "superficie_sucia"],
+          "recomendaciones": [
+            "Limpiar cama con isopropanol",
+            "Verificar nivelación de cama",
+            "Aumentar temperatura de cama a 70°C",
+            "Usar borde (brim) de adhesión"
+          ]
+        }
+      },
+      
+      {
+        "id": "job_004",
+        "numero_trabajo": 4,
+        "nombre": "Carcasa Arduino",
+        "descripcion": "Carcasa protectora para placa Arduino Uno",
+        
+        "fechas": {
+          "creado": "2025-09-11T15:00:00Z",
+          "iniciado": "2025-09-11T15:20:00Z",
+          "finalizado": "2025-09-11T18:50:00Z",
+          "duracion_real": "3h 30min",
+          "duracion_estimada": "3h 15min"
+        },
+        
+        "impresora": {
+          "id": "printer-test-1",
+          "nombre": "Impresora Prueba",
+          "modelo": "Generic",
+          "ip": "10.10.10.71:7126"
+        },
+        
+        "perfil": {
+          "id": "perfil_pla_prueba",
+          "nombre": "Perfil PLA Estándar - Prueba",
+          "material": "PLA",
+          "temperatura_extrusor": 210,
+          "temperatura_cama": 60,
+          "velocidad_impresion": 60,
+          "altura_capa": 0.2,
+          "relleno": 20
+        },
+        
+        "archivo": {
+          "stl_original": "/uploads/arduino_case.stl",
+          "gcode_generado": "/output/job_004_case.gcode",
+          "tamaño_archivo": "3.2MB",
+          "tiempo_slicing": "58s"
+        },
+        
+        "material_usado": {
+          "tipo": "PLA",
+          "color": "Azul",
+          "cantidad": "42.7g",
+          "longitud_filamento": "14.2m",
+          "costo_estimado": "0.85 USD"
+        },
+        
+        "resultado": {
+          "estado": "completado_exitoso",
+          "calidad": "perfecta",
+          "calidad_score": 98,
+          "cumple_tolerancias": true,
+          "defectos_detectados": [],
+          "notas": "Impresión de calidad profesional. Tolerancias perfectas para ensamble.",
+          
+          "fotos": [
+            {
+              "tipo": "resultado_final",
+              "ruta": "/src/web/static/img/job_results/2025/09/job_004_result.svg",
+              "descripcion": "Carcasa perfectamente terminada",
+              "timestamp": "2025-09-11T19:00:00Z"
+            }
+          ]
+        },
+        
+        "metricas_impresion": {
+          "capas_total": 105,
+          "capas_completadas": 105,
+          "porcentaje_completado": 100,
+          "temperatura_promedio_extrusor": 209.9,
+          "temperatura_promedio_cama": 60.0,
+          "velocidad_promedio": 59.5,
+          "retracciones_total": 1156,
+          "pausas_usuario": 0,
+          "errores_menores": 0
+        },
+        
+        "post_procesado": {
+          "requerido": false,
+          "limpieza_soportes": false,
+          "lijado": false,
+          "pintura": false,
+          "ensamble": true,
+          "tiempo_post_procesado": "10min"
+        }
+      },
+      
+      {
+        "id": "job_005",
+        "numero_trabajo": 5,
+        "nombre": "Llavero personalizado",
+        "descripción": "Llavero con texto personalizado 'KyberCore'",
+        
+        "fechas": {
+          "creado": "2025-09-10T11:30:00Z",
+          "iniciado": "2025-09-10T11:35:00Z",
+          "finalizado": "2025-09-10T12:20:00Z",
+          "duracion_real": "45min",
+          "duracion_estimada": "40min"
+        },
+        
+        "impresora": {
+          "id": "printer-test-1",
+          "nombre": "Impresora Prueba",
+          "modelo": "Generic",
+          "ip": "10.10.10.71:7126"
+        },
+        
+        "perfil": {
+          "id": "perfil_pla_prueba",
+          "nombre": "Perfil PLA Estándar - Prueba",
+          "material": "PLA",
+          "temperatura_extrusor": 210,
+          "temperatura_cama": 60,
+          "velocidad_impresion": 60,
+          "altura_capa": 0.2,
+          "relleno": 20
+        },
+        
+        "archivo": {
+          "stl_original": "/uploads/keychain_kybercore.stl",
+          "gcode_generado": "/output/job_005_keychain.gcode",
+          "tamaño_archivo": "0.8MB",
+          "tiempo_slicing": "18s"
+        },
+        
+        "material_usado": {
+          "tipo": "PLA",
+          "color": "Verde",
+          "cantidad": "13.8g",
+          "longitud_filamento": "4.6m",
+          "costo_estimado": "0.28 USD"
+        },
+        
+        "resultado": {
+          "estado": "completado_exitoso",
+          "calidad": "excelente",
+          "calidad_score": 92,
+          "cumple_tolerancias": true,
+          "defectos_detectados": [],
+          "notas": "Llavero con detalles nítidos y texto perfectamente legible",
+          
+          "fotos": [
+            {
+              "tipo": "resultado_final",
+              "ruta": "/src/web/static/img/job_results/2025/09/job_005_result.svg",
+              "descripcion": "Llavero terminado con texto claro",
+              "timestamp": "2025-09-10T12:25:00Z"
+            }
+          ]
+        },
+        
+        "metricas_impresion": {
+          "capas_total": 15,
+          "capas_completadas": 15,
+          "porcentaje_completado": 100,
+          "temperatura_promedio_extrusor": 210.1,
+          "temperatura_promedio_cama": 59.8,
+          "velocidad_promedio": 61.2,
+          "retracciones_total": 234,
+          "pausas_usuario": 0,
+          "errores_menores": 0
+        },
+        
+        "post_procesado": {
+          "requerido": true,
+          "limpieza_soportes": false,
+          "lijado": true,
+          "pintura": false,
+          "ensamble": false,
+          "tiempo_post_procesado": "5min"
+        }
+      }
+    ]
+  }
+}
