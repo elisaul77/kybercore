@@ -10,6 +10,7 @@
         "printer_assignment",
         "stl_processing",
         "stl_processing",
+        "stl_processing",
         "stl_processing"
       ],
       "created_at": "2025-09-14T07:53:51.071259",
@@ -24,7 +25,7 @@
         "total_estimated_time_hours": 0.75,
         "completed_at": "2025-09-14T07:53:51.071289"
       },
-      "updated_at": "2025-09-14T16:32:41.812550",
+      "updated_at": "2025-09-14T17:19:19.970913",
       "material_selection": {
         "material_type": "PLA",
         "color": "Blanco",
@@ -87,10 +88,10 @@
           {
             "filename": "rail_top.stl",
             "status": "success",
-            "gcode_path": "/tmp/kybercore_gcode_e5d41c30-b506-4572-b2f1-48556764f3ca_rail_top.gcode",
-            "gcode_size_bytes": 214286,
-            "estimated_time_minutes": 23,
-            "layer_count": 401,
+            "gcode_path": "/tmp/kybercore_gcode_7ba32447-40b0-4242-9bb1-19d29c7c29ea_rail_top.gcode",
+            "gcode_size_bytes": 2778236,
+            "estimated_time_minutes": 136,
+            "layer_count": 1658,
             "filament_used_grams": 12.5,
             "processing_time_seconds": 15
           }
@@ -109,7 +110,7 @@
           "successful": 1,
           "failed": 0
         },
-        "completed_at": "2025-09-14T16:32:41.812263"
+        "completed_at": "2025-09-14T17:19:19.970532"
       }
     },
     "temp_1_20250914_075459": {
@@ -927,6 +928,196 @@
           "failed": 0
         },
         "completed_at": "2025-09-14T16:34:53.573156"
+      }
+    },
+    "temp_12_20250914_163826": {
+      "project_id": "12",
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-09-14T16:38:26.476376",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "back_frame.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-09-14T16:38:26.476411"
+      },
+      "updated_at": "2025-09-14T16:38:46.574835",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-09-14T16:38:31.510604"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-09-14T16:38:36.864610"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-09-14T16:38:42.134563"
+      },
+      "stl_processing": {
+        "processed_files": [
+          {
+            "filename": "back_frame.stl",
+            "status": "success",
+            "gcode_path": "/tmp/kybercore_gcode_a3ba6495-2bcc-4667-a1f2-44f411b897b1_back_frame.gcode",
+            "gcode_size_bytes": 214286,
+            "estimated_time_minutes": 23,
+            "layer_count": 401,
+            "filament_used_grams": 12.5,
+            "processing_time_seconds": 15
+          }
+        ],
+        "errors": [],
+        "slicer_config": {
+          "layer_height": 0.3,
+          "fill_density": 15,
+          "print_speed": 80,
+          "nozzle_temp": 210,
+          "bed_temp": 60,
+          "printer_profile": "ender3"
+        },
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-09-14T16:38:46.574500"
+      }
+    },
+    "temp_10_20250914_172117": {
+      "project_id": "10",
+      "current_step": "stl_processing",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment"
+      ],
+      "created_at": "2025-09-14T17:21:17.403558",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Body.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-09-14T17:21:17.403576"
+      },
+      "updated_at": "2025-09-14T17:21:31.901306",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-09-14T17:21:21.753437"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-09-14T17:21:27.050425"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-09-14T17:21:31.900928"
       }
     }
   },

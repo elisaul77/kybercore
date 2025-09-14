@@ -1122,10 +1122,10 @@ endsolid cube"""
 
 def find_stl_file_path(project, filename):
     """Busca la ruta del archivo STL en el proyecto"""
-    # Por ahora es mock, en una implementación real buscaría en el sistema de archivos
     project_folder = project.get("carpeta", "")
     if project_folder:
-        return f"/app/{project_folder}/{filename}"
+        # Los archivos STL están en la subcarpeta 'files' dentro de la carpeta del proyecto
+        return f"/app/{project_folder}/files/{filename}"
     return None
 
 async def process_single_stl(filename, file_path, config):
