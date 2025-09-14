@@ -333,6 +333,24 @@ function generateSessionId() {
     return 'wizard_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 }
 
+// Función para obtener el estado actual de la sesión del wizard
+async function getCurrentWizardSessionState() {
+    if (!currentWizardSessionId) {
+        return null;
+    }
+
+    try {
+        const response = await fetch(`/api/print/session-state/${currentWizardSessionId}`);
+        if (response.ok) {
+            const data = await response.json();
+            return data.session_data || null;
+        }
+    } catch (error) {
+        console.error('Error obteniendo estado de sesión:', error);
+    }
+    return null;
+}
+
 async function loadPrintFlowStep(flowId, projectId, step, status) {
     console.log('📋 Cargando paso del wizard:', { flowId, projectId, step, status });
     
@@ -407,7 +425,7 @@ async function loadPrintFlowStep(flowId, projectId, step, status) {
                 <!-- Footer con navegación - siempre visible -->
                 <div class="border-t border-gray-200 px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 flex-shrink-0">
                     <div class="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
-                        <button onclick="previousPrintFlowStep()" class="px-3 sm:px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors text-sm sm:text-base order-2 sm:order-1" ${status.completed_steps.length === 0 ? 'disabled style="opacity: 0.5;"' : ''}>
+                        <button onclick="previousPrintFlowStep()" class="px-3 sm:px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors text-sm sm:text-base order-2 sm:order-1" ${step === 'piece_selection' ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
                             ← Anterior
                         </button>
                         <div id="wizard-actions" class="flex gap-2 flex-wrap justify-center sm:justify-end order-1 sm:order-2">
@@ -1765,8 +1783,64 @@ function closePrintFlowWizard() {
     document.body.style.overflow = ''; // Restaurar scroll
 }
 
-function previousPrintFlowStep() {
-    showToast('Navegación', 'Funcionalidad de navegación hacia atrás en desarrollo', 'info');
+async function previousPrintFlowStep() {
+    if (!currentWizardSessionId) {
+        showToast('Error', 'No hay sesión activa del wizard', 'error');
+        return;
+    }
+
+    try {
+        // Obtener el estado actual de la sesión
+        const sessionState = await getCurrentWizardSessionState();
+        
+        if (!sessionState) {
+            showToast('Error', 'No se pudo obtener el estado de la sesión', 'error');
+            return;
+        }
+
+        // Definir el orden de los pasos
+        const stepOrder = [
+            'piece_selection',
+            'material_selection', 
+            'production_mode',
+            'printer_assignment',
+            'stl_processing',
+            'validation',
+            'confirmation',
+            'monitoring'
+        ];
+
+        const currentStep = sessionState.current_step;
+        const completedSteps = sessionState.completed_steps || [];
+        
+        // Encontrar el paso anterior
+        const currentIndex = stepOrder.indexOf(currentStep);
+        if (currentIndex <= 0) {
+            showToast('Información', 'Ya estás en el primer paso del wizard', 'info');
+            return;
+        }
+
+        const previousStep = stepOrder[currentIndex - 1];
+        
+        // Calcular qué pasos deberían estar completados para el paso anterior
+        const previousCompletedSteps = stepOrder.slice(0, currentIndex - 1);
+        
+        showToast('Navegando', `Regresando al paso: ${getStepLabel(previousStep)}`, 'info');
+
+        // Cargar el paso anterior con el estado correcto
+        await loadPrintFlowStep(null, sessionState.project_id, previousStep, {
+            completed_steps: previousCompletedSteps,
+            data: { 
+                project_name: 'Proyecto',
+                navigate_back: true,
+                session_data: sessionState
+            }
+        });
+
+    } catch (error) {
+        console.error('Error en navegación hacia atrás:', error);
+        showToast('Error', 'No se pudo navegar hacia atrás', 'error');
+    }
 }
 
 // Inicializar el modal cuando el DOM esté listo

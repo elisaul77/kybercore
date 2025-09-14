@@ -1688,3 +1688,35 @@ def get_available_actions(status):
     }
     
     return actions.get(status, [])
+
+@router.get("/print/session-state/{session_id}")
+async def get_session_state(session_id: str):
+    """
+    Obtiene el estado actual de una sesión del wizard para navegación.
+    """
+    try:
+        session_data = load_wizard_session(session_id)
+        
+        if not session_data:
+            return JSONResponse(content={
+                "success": False,
+                "error": "session_not_found",
+                "message": "Sesión no encontrada"
+            }, status_code=404)
+        
+        return JSONResponse(content={
+            "success": True,
+            "session_data": session_data,
+            "current_step": session_data.get("current_step", "piece_selection"),
+            "completed_steps": session_data.get("completed_steps", []),
+            "project_id": session_data.get("project_id"),
+            "status": session_data.get("status", "active")
+        })
+        
+    except Exception as e:
+        logger.error(f"Error obteniendo estado de sesión {session_id}: {e}")
+        return JSONResponse(content={
+            "success": False,
+            "error": "server_error",
+            "message": "Error interno del servidor"
+        }, status_code=500)
