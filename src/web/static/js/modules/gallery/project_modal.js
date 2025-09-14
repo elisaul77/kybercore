@@ -1574,7 +1574,7 @@ async function confirmPrintJob() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 session_id: currentWizardSessionId,
-                job_id: 'validation-mock-job-id',
+                job_id: currentWizardSessionId,
                 confirmed_settings: {
                     priority: 'normal',
                     notifications: true

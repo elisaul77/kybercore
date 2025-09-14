@@ -2,7 +2,7 @@
   "sessions": {
     "temp_14_20250914_075351": {
       "project_id": "14",
-      "current_step": "validation",
+      "current_step": "monitoring",
       "completed_steps": [
         "piece_selection",
         "material_selection",
@@ -11,7 +11,8 @@
         "stl_processing",
         "stl_processing",
         "stl_processing",
-        "stl_processing"
+        "stl_processing",
+        "confirmation"
       ],
       "created_at": "2025-09-14T07:53:51.071259",
       "status": "active",
@@ -25,7 +26,7 @@
         "total_estimated_time_hours": 0.75,
         "completed_at": "2025-09-14T07:53:51.071289"
       },
-      "updated_at": "2025-09-14T17:19:19.970913",
+      "updated_at": "2025-09-14T17:51:28.835813",
       "material_selection": {
         "material_type": "PLA",
         "color": "Blanco",
@@ -111,7 +112,10 @@
           "failed": 0
         },
         "completed_at": "2025-09-14T17:19:19.970532"
-      }
+      },
+      "confirmed_job_id": "d9170104-66cf-4c43-8152-9f65c8080bea",
+      "final_status": "job_sent_to_printer",
+      "completed_at": "2025-09-14T17:51:28.835502"
     },
     "temp_1_20250914_075459": {
       "project_id": "1",
@@ -1118,6 +1122,116 @@
         },
         "printer_ip": "10.10.10.71:7126",
         "confirmed_at": "2025-09-14T17:21:31.900928"
+      }
+    },
+    "temp_10_20250914_174339": {
+      "project_id": "10",
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-09-14T17:43:39.814787",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Columns.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-09-14T17:43:39.814800"
+      },
+      "updated_at": "2025-09-14T17:44:14.317679",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-09-14T17:43:48.090762"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-09-14T17:43:52.406350"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-09-14T17:44:01.784944"
+      },
+      "stl_processing": {
+        "processed_files": [
+          {
+            "filename": "Columns.stl",
+            "status": "success",
+            "gcode_path": "/tmp/kybercore_gcode_cf51f5e0-9b33-4e9d-9a1e-497f41e4c26b_Columns.gcode",
+            "gcode_size_bytes": 25219548,
+            "estimated_time_minutes": 988,
+            "layer_count": 2022,
+            "filament_used_grams": 12.5,
+            "processing_time_seconds": 15
+          }
+        ],
+        "errors": [],
+        "slicer_config": {
+          "layer_height": 0.3,
+          "fill_density": 15,
+          "print_speed": 80,
+          "nozzle_temp": 210,
+          "bed_temp": 60,
+          "printer_profile": "ender3"
+        },
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-09-14T17:44:14.316477"
       }
     }
   },
