@@ -565,6 +565,135 @@
         "estimated_completion": "2025-09-14T17:51:28.835479"
       },
       "completed_at": "2025-09-14T17:51:28.838343"
+    },
+    {
+      "job_id": "35bb8137-e2bf-427e-95d5-82b1d4dd6c2f",
+      "status": "started",
+      "session_data": {
+        "project_id": "1",
+        "current_step": "monitoring",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing",
+          "confirmation"
+        ],
+        "created_at": "2025-09-14T18:08:57.560018",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Cover_USB.stl"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-09-14T18:08:57.560031"
+        },
+        "updated_at": "2025-09-14T18:09:21.557890",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-09-14T18:09:02.437556"
+        },
+        "production_mode": {
+          "mode": "prototype",
+          "priority": "speed",
+          "settings": {
+            "layer_height": 0.3,
+            "infill_density": 15,
+            "print_speed": 80,
+            "quality_preset": "draft"
+          },
+          "estimated_impact": {
+            "time_factor": 0.7,
+            "quality_level": "estándar",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-09-14T18:09:08.969894"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Impresora Prueba",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-09-14T18:09:15.559100"
+        },
+        "stl_processing": {
+          "processed_files": [
+            {
+              "filename": "Cover_USB.stl",
+              "status": "success",
+              "gcode_path": "/tmp/kybercore_gcode_28080cf1-7f45-429e-abb2-1c13a3021242_Cover_USB.gcode",
+              "gcode_size_bytes": 57346,
+              "estimated_time_minutes": 5,
+              "layer_count": 281,
+              "filament_used_grams": 12.5,
+              "processing_time_seconds": 15
+            }
+          ],
+          "errors": [],
+          "slicer_config": {
+            "layer_height": 0.3,
+            "fill_density": 15,
+            "print_speed": 80,
+            "nozzle_temp": 210,
+            "bed_temp": 60,
+            "printer_profile": "ender3"
+          },
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-09-14T18:09:21.557530"
+        },
+        "confirmed_job_id": "35bb8137-e2bf-427e-95d5-82b1d4dd6c2f",
+        "final_status": "job_sent_to_printer",
+        "completed_at": "2025-09-14T18:09:43.327998"
+      },
+      "printer_response": {
+        "success": true,
+        "printer_job_id": "printer_temp_1_20250914_180857",
+        "message": "Trabajo enviado e iniciado en la impresora exitosamente",
+        "printer_id": "printer-test-1",
+        "queue_position": 14,
+        "moonraker_url": "http://10.10.10.71:7126",
+        "gcode_filename": "kybercore_temp_1_20250914_180857_kybercore_gcode_28080cf1-7f45-429e-abb2-1c13a3021242_Cover_USB.gcode",
+        "estimated_completion": "2025-09-14T18:09:43.327970"
+      },
+      "completed_at": "2025-09-14T18:09:43.332824"
     }
   ],
   "estadisticas": {
