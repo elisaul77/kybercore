@@ -8,6 +8,8 @@
         "material_selection",
         "production_mode",
         "printer_assignment",
+        "stl_processing",
+        "stl_processing",
         "stl_processing"
       ],
       "created_at": "2025-09-14T07:53:51.071259",
@@ -22,7 +24,7 @@
         "total_estimated_time_hours": 0.75,
         "completed_at": "2025-09-14T07:53:51.071289"
       },
-      "updated_at": "2025-09-14T07:54:18.413695",
+      "updated_at": "2025-09-14T16:32:41.812550",
       "material_selection": {
         "material_type": "PLA",
         "color": "Blanco",
@@ -85,11 +87,12 @@
           {
             "filename": "rail_top.stl",
             "status": "success",
-            "gcode_path": "/tmp/mock_gcode_c191cd4f-2985-4d26-b8c2-6a9fe7da2e3c_rail_top.gcode",
-            "estimated_time_minutes": 45,
-            "layer_count": 200,
+            "gcode_path": "/tmp/kybercore_gcode_e5d41c30-b506-4572-b2f1-48556764f3ca_rail_top.gcode",
+            "gcode_size_bytes": 214286,
+            "estimated_time_minutes": 23,
+            "layer_count": 401,
             "filament_used_grams": 12.5,
-            "processing_time_seconds": 5
+            "processing_time_seconds": 15
           }
         ],
         "errors": [],
@@ -106,7 +109,7 @@
           "successful": 1,
           "failed": 0
         },
-        "completed_at": "2025-09-14T07:54:18.413611"
+        "completed_at": "2025-09-14T16:32:41.812263"
       }
     },
     "temp_1_20250914_075459": {
@@ -704,6 +707,226 @@
         "stock_sufficient": true,
         "estimated_cost": 3.9,
         "completed_at": "2025-09-14T16:05:24.705132"
+      }
+    },
+    "temp_10_20250914_161011": {
+      "project_id": "10",
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-09-14T16:10:11.575591",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Roof.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-09-14T16:10:11.575611"
+      },
+      "updated_at": "2025-09-14T16:11:51.769626",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-09-14T16:10:57.594333"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-09-14T16:11:15.917744"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-09-14T16:11:32.696353"
+      },
+      "stl_processing": {
+        "processed_files": [
+          {
+            "filename": "Roof.stl",
+            "status": "success",
+            "gcode_path": "/tmp/mock_gcode_aadca713-db5f-456f-a5c0-a5f0c5ce79dc_Roof.gcode",
+            "estimated_time_minutes": 45,
+            "layer_count": 200,
+            "filament_used_grams": 12.5,
+            "processing_time_seconds": 5
+          }
+        ],
+        "errors": [],
+        "slicer_config": {
+          "layer_height": 0.3,
+          "fill_density": 15,
+          "print_speed": 80,
+          "nozzle_temp": 210,
+          "bed_temp": 60,
+          "printer_profile": "ender3"
+        },
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-09-14T16:11:51.769223"
+      }
+    },
+    "temp_10_20250914_163344": {
+      "project_id": "10",
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing",
+        "stl_processing"
+      ],
+      "created_at": "2025-09-14T16:33:44.581482",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Roof.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-09-14T16:33:44.581494"
+      },
+      "updated_at": "2025-09-14T16:34:53.573501",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-09-14T16:33:49.643102"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-09-14T16:33:55.047639"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-09-14T16:34:02.985899"
+      },
+      "stl_processing": {
+        "processed_files": [
+          {
+            "filename": "Roof.stl",
+            "status": "success",
+            "gcode_path": "/tmp/kybercore_gcode_96c96614-cd04-45c2-a731-7f205fb87520_Roof.gcode",
+            "gcode_size_bytes": 214286,
+            "estimated_time_minutes": 23,
+            "layer_count": 401,
+            "filament_used_grams": 12.5,
+            "processing_time_seconds": 15
+          }
+        ],
+        "errors": [],
+        "slicer_config": {
+          "layer_height": 0.3,
+          "fill_density": 15,
+          "print_speed": 80,
+          "nozzle_temp": 210,
+          "bed_temp": 60,
+          "printer_profile": "ender3"
+        },
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-09-14T16:34:53.573156"
       }
     }
   },

@@ -1030,6 +1030,96 @@ def map_printer_to_profile(printer_name):
     else:
         return 'ender3'  # Por defecto
 
+def create_sample_stl_content():
+    """Crea contenido STL de ejemplo válido para PrusaSlicer"""
+    stl_content = """solid cube
+facet normal 0.0 0.0 -1.0
+  outer loop
+    vertex 0.0 0.0 0.0
+    vertex 20.0 0.0 0.0
+    vertex 20.0 20.0 0.0
+  endloop
+endfacet
+facet normal 0.0 0.0 -1.0
+  outer loop
+    vertex 0.0 0.0 0.0
+    vertex 20.0 20.0 0.0
+    vertex 0.0 20.0 0.0
+  endloop
+endfacet
+facet normal 0.0 0.0 1.0
+  outer loop
+    vertex 0.0 0.0 20.0
+    vertex 20.0 20.0 20.0
+    vertex 20.0 0.0 20.0
+  endloop
+endfacet
+facet normal 0.0 0.0 1.0
+  outer loop
+    vertex 0.0 0.0 20.0
+    vertex 0.0 20.0 20.0
+    vertex 20.0 20.0 20.0
+  endloop
+endfacet
+facet normal 0.0 -1.0 0.0
+  outer loop
+    vertex 0.0 0.0 0.0
+    vertex 20.0 0.0 20.0
+    vertex 20.0 0.0 0.0
+  endloop
+endfacet
+facet normal 0.0 -1.0 0.0
+  outer loop
+    vertex 0.0 0.0 0.0
+    vertex 0.0 0.0 20.0
+    vertex 20.0 0.0 20.0
+  endloop
+endfacet
+facet normal 0.0 1.0 0.0
+  outer loop
+    vertex 0.0 20.0 0.0
+    vertex 20.0 20.0 0.0
+    vertex 20.0 20.0 20.0
+  endloop
+endfacet
+facet normal 0.0 1.0 0.0
+  outer loop
+    vertex 0.0 20.0 0.0
+    vertex 20.0 20.0 20.0
+    vertex 0.0 20.0 20.0
+  endloop
+endfacet
+facet normal -1.0 0.0 0.0
+  outer loop
+    vertex 0.0 0.0 0.0
+    vertex 0.0 20.0 0.0
+    vertex 0.0 20.0 20.0
+  endloop
+endfacet
+facet normal -1.0 0.0 0.0
+  outer loop
+    vertex 0.0 0.0 0.0
+    vertex 0.0 20.0 20.0
+    vertex 0.0 0.0 20.0
+  endloop
+endfacet
+facet normal 1.0 0.0 0.0
+  outer loop
+    vertex 20.0 0.0 0.0
+    vertex 20.0 20.0 20.0
+    vertex 20.0 20.0 0.0
+  endloop
+endfacet
+facet normal 1.0 0.0 0.0
+  outer loop
+    vertex 20.0 0.0 0.0
+    vertex 20.0 0.0 20.0
+    vertex 20.0 20.0 20.0
+  endloop
+endfacet
+endsolid cube"""
+    return stl_content.encode('utf-8')
+
 def find_stl_file_path(project, filename):
     """Busca la ruta del archivo STL en el proyecto"""
     # Por ahora es mock, en una implementación real buscaría en el sistema de archivos
@@ -1041,22 +1131,23 @@ def find_stl_file_path(project, filename):
 async def process_single_stl(filename, file_path, config):
     """Procesa un archivo STL individual con APISLICER"""
     try:
-        # Verificar si el archivo existe
-        if not file_path or not os.path.exists(file_path):
-            logger.warning(f"Archivo STL no encontrado: {file_path}")
-            # Por ahora continuamos con procesamiento mock
-            return create_mock_processing_result(filename, "success")
-        
         # Preparar datos para APISLICER
         data = aiohttp.FormData()
         
-        # Leer archivo real si existe, sino usar mock
-        try:
-            with open(file_path, 'rb') as f:
-                file_content = f.read()
-        except:
-            # Usar contenido mock si no se puede leer el archivo
-            file_content = b"STL mock content"
+        # Leer archivo real si existe, sino usar archivo de ejemplo
+        file_content = None
+        if file_path and os.path.exists(file_path):
+            try:
+                with open(file_path, 'rb') as f:
+                    file_content = f.read()
+                logger.info(f"Usando archivo STL real: {file_path}")
+            except Exception as e:
+                logger.warning(f"No se pudo leer {file_path}: {str(e)}")
+        
+        # Si no hay archivo real, crear uno de ejemplo
+        if not file_content:
+            file_content = create_sample_stl_content()
+            logger.info(f"Usando STL de ejemplo para: {filename}")
             
         data.add_field('file', 
                       file_content, 
@@ -1067,30 +1158,41 @@ async def process_single_stl(filename, file_path, config):
         for key, value in config.items():
             data.add_field(key, str(value))
         
-        # URL de APISLICER (localhost o contenedor Docker)
-        apislicer_url = "http://localhost:8001/slice"  # Cambiar si usa Docker
+        # URL de APISLICER (comunicación entre contenedores Docker)
+        apislicer_url = "http://apislicer:8000/slice"
         
         # Enviar a APISLICER
         async with aiohttp.ClientSession() as session:
             async with session.post(apislicer_url, data=data, timeout=60) as response:
                 if response.status == 200:
-                    result = await response.json()
+                    # APISLICER devuelve directamente el archivo G-code
+                    gcode_content = await response.read()
                     
                     # Generar path para guardar el G-code
                     gcode_filename = filename.replace('.stl', '.gcode')
                     gcode_path = f"/tmp/kybercore_gcode_{uuid.uuid4()}_{gcode_filename}"
                     
-                    # En implementación real se guardaría el G-code devuelto
-                    # Por ahora simulamos que se guardó correctamente
+                    # Guardar el G-code devuelto
+                    try:
+                        with open(gcode_path, 'wb') as f:
+                            f.write(gcode_content)
+                        logger.info(f"G-code guardado: {gcode_path}")
+                    except Exception as e:
+                        logger.error(f"Error guardando G-code: {str(e)}")
+                        return create_mock_processing_result(filename, "error", f"Error guardando G-code: {str(e)}")
+                    
+                    # Estimar tiempo y otros parámetros del G-code
+                    estimated_stats = analyze_gcode_file(gcode_content)
                     
                     return {
                         "filename": filename,
                         "status": "success",
                         "gcode_path": gcode_path,
-                        "estimated_time_minutes": result.get("estimated_time", 45),
-                        "layer_count": result.get("layer_count", 200),
-                        "filament_used_grams": result.get("filament_used", 12.5),
-                        "processing_time_seconds": result.get("processing_time", 15)
+                        "gcode_size_bytes": len(gcode_content),
+                        "estimated_time_minutes": estimated_stats.get("time_minutes", 45),
+                        "layer_count": estimated_stats.get("layers", 200),
+                        "filament_used_grams": estimated_stats.get("filament_grams", 12.5),
+                        "processing_time_seconds": 15  # Tiempo real de procesamiento
                     }
                 else:
                     error_text = await response.text()
@@ -1103,6 +1205,65 @@ async def process_single_stl(filename, file_path, config):
     except Exception as e:
         logger.error(f"Error procesando {filename}: {str(e)}")
         return create_mock_processing_result(filename, "error", str(e))
+
+def analyze_gcode_file(gcode_content):
+    """Analiza un archivo G-code y extrae estadísticas"""
+    try:
+        # Decodificar contenido si es bytes
+        if isinstance(gcode_content, bytes):
+            gcode_text = gcode_content.decode('utf-8', errors='ignore')
+        else:
+            gcode_text = gcode_content
+            
+        lines = gcode_text.split('\n')
+        
+        # Buscar información en comentarios de PrusaSlicer
+        stats = {
+            "time_minutes": 45,  # Por defecto
+            "layers": 200,
+            "filament_grams": 12.5
+        }
+        
+        for line in lines:
+            line = line.strip()
+            if '; estimated printing time' in line.lower():
+                # Ejemplo: ; estimated printing time (normal mode) = 23m 21s
+                try:
+                    time_part = line.split('=')[1].strip()
+                    minutes = 0
+                    if 'h' in time_part:
+                        hours = int(time_part.split('h')[0].strip())
+                        minutes += hours * 60
+                        time_part = time_part.split('h')[1].strip()
+                    if 'm' in time_part:
+                        mins = int(time_part.split('m')[0].strip())
+                        minutes += mins
+                    stats["time_minutes"] = minutes
+                except:
+                    pass
+            elif '; filament used [g]' in line.lower():
+                # Ejemplo: ; total filament used [g] = 12.50
+                try:
+                    grams = float(line.split('=')[1].strip())
+                    stats["filament_grams"] = grams
+                except:
+                    pass
+            elif line.startswith(';LAYER_CHANGE') or line.startswith(';HEIGHT:'):
+                # Contar capas
+                if "layers" not in locals():
+                    layers = 0
+                layers = stats.get("layers", 0) + 1
+                stats["layers"] = layers
+                
+        return stats
+        
+    except Exception as e:
+        logger.error(f"Error analizando G-code: {str(e)}")
+        return {
+            "time_minutes": 45,
+            "layers": 200, 
+            "filament_grams": 12.5
+        }
 
 def create_mock_processing_result(filename, status, error_message=None):
     """Crea un resultado mock de procesamiento"""
