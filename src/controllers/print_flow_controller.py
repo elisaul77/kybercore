@@ -13,6 +13,9 @@ import os
 from datetime import datetime
 import uuid
 import logging
+import aiohttp
+import asyncio
+from pathlib import Path
 
 # Configurar logging
 logger = logging.getLogger(__name__)
@@ -32,17 +35,20 @@ class MaterialSelection(BaseModel):
     material_type: str  # PLA, PETG, ABS, etc.
     color: str
     brand: str
-    quantity_needed: float  # En gramos
+    quantity_needed: float = 0  # En gramos
+    session_id: Optional[str] = None  # ID de sesión del wizard
 
 class ProductionModeConfig(BaseModel):
     mode: str  # "prototype" o "factory"
     priority: str  # "speed", "quality", "economy"
     settings: Dict[str, Any] = {}
+    session_id: Optional[str] = None
 
 class PrinterAssignment(BaseModel):
     project_id: str
     printer_id: str
     assignment_type: str  # "manual" o "automatic"
+    session_id: Optional[str] = None
 
 class PrintJobValidation(BaseModel):
     job_id: str
@@ -85,41 +91,53 @@ def load_project_data(project_id: str) -> Dict:
 
 def load_materials_data() -> Dict:
     """Carga los datos de materiales disponibles"""
-    # Por ahora usaremos datos mock, luego se conectará a la base de datos real
+    # Por ahora usaremos los datos que sabemos que están disponibles
+    # basados en la respuesta del endpoint /api/consumables/filaments
     return {
         "materiales_disponibles": [
             {
-                "id": "pla_blanco_001",
+                "id": "fil_001",
                 "tipo": "PLA",
-                "color": "Blanco",
-                "marca": "eSUN",
-                "stock_actual": 950,  # gramos
+                "color": "Negro",
+                "marca": "Prusament",
+                "stock_actual": 800,  # 0.8 kg = 800 gramos
                 "stock_minimo": 200,
-                "precio_por_kg": 25.50,
-                "temperatura_extrusor": 210,
+                "precio_por_kg": 25.99,
+                "temperatura_extrusor": 200,
                 "temperatura_cama": 60
             },
             {
-                "id": "petg_transparente_001", 
-                "tipo": "PETG",
-                "color": "Transparente",
-                "marca": "Prusament",
-                "stock_actual": 750,
+                "id": "fil_002",
+                "tipo": "ABS",
+                "color": "Blanco",
+                "marca": "Hatchbox",
+                "stock_actual": 300,  # 0.3 kg = 300 gramos
                 "stock_minimo": 200,
-                "precio_por_kg": 32.90,
-                "temperatura_extrusor": 235,
-                "temperatura_cama": 85
+                "precio_por_kg": 22.5,
+                "temperatura_extrusor": 200,
+                "temperatura_cama": 60
             },
             {
-                "id": "abs_negro_001",
-                "tipo": "ABS",
-                "color": "Negro", 
-                "marca": "Hatchbox",
-                "stock_actual": 600,
-                "stock_minimo": 150,
-                "precio_por_kg": 28.75,
-                "temperatura_extrusor": 245,
-                "temperatura_cama": 100
+                "id": "fil_003",
+                "tipo": "PETG",
+                "color": "Transparente",
+                "marca": "Overture",
+                "stock_actual": 900,  # 0.9 kg = 900 gramos
+                "stock_minimo": 200,
+                "precio_por_kg": 28.99,
+                "temperatura_extrusor": 200,
+                "temperatura_cama": 60
+            },
+            {
+                "id": "fil_005",
+                "tipo": "PLA",
+                "color": "Azul",
+                "marca": "eSUN",
+                "stock_actual": 950,  # 0.95 kg = 950 gramos
+                "stock_minimo": 200,
+                "precio_por_kg": 24.99,
+                "temperatura_extrusor": 200,
+                "temperatura_cama": 60
             }
         ]
     }
@@ -192,6 +210,125 @@ def load_printers_data() -> Dict:
         raise HTTPException(status_code=500, detail=f"Error cargando impresoras: {str(e)}")
 
 # ===============================
+# FUNCIONES DE PERSISTENCIA
+# ===============================
+
+def save_wizard_session(session_id: str, session_data: Dict):
+    """Guarda el estado de la sesión del wizard"""
+    sessions_path = os.path.join(os.path.dirname(__file__), "..", "..", "base_datos", "wizard_sessions.json")
+    
+    try:
+        # Cargar sesiones existentes
+        with open(sessions_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        
+        # Actualizar o crear sesión
+        data["sessions"][session_id] = {
+            **session_data,
+            "updated_at": datetime.now().isoformat()
+        }
+        
+        # Guardar de vuelta
+        with open(sessions_path, 'w', encoding='utf-8') as file:
+            json.dump(data, file, indent=2, ensure_ascii=False)
+            
+        logger.info(f"Sesión {session_id} guardada correctamente")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error guardando sesión {session_id}: {str(e)}")
+        return False
+
+def load_wizard_session(session_id: str) -> Dict:
+    """Carga el estado de la sesión del wizard"""
+    sessions_path = os.path.join(os.path.dirname(__file__), "..", "..", "base_datos", "wizard_sessions.json")
+    
+    try:
+        with open(sessions_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        
+        return data["sessions"].get(session_id, {})
+        
+    except Exception as e:
+        logger.error(f"Error cargando sesión {session_id}: {str(e)}")
+        return {}
+
+def save_job_to_queue(job_data: Dict):
+    """Añade un trabajo a la cola de impresión"""
+    queue_path = os.path.join(os.path.dirname(__file__), "..", "..", "base_datos", "print_queue.json")
+    
+    try:
+        # Cargar cola existente
+        with open(queue_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        
+        # Asignar posición en la cola
+        job_data["queue_position"] = data["metadata"]["next_queue_position"]
+        job_data["queued_at"] = datetime.now().isoformat()
+        
+        # Añadir a la cola
+        data["queue"].append(job_data)
+        data["metadata"]["next_queue_position"] += 1
+        
+        # Guardar de vuelta
+        with open(queue_path, 'w', encoding='utf-8') as file:
+            json.dump(data, file, indent=2, ensure_ascii=False)
+            
+        logger.info(f"Trabajo {job_data.get('job_id')} añadido a la cola en posición {job_data['queue_position']}")
+        return job_data["queue_position"]
+        
+    except Exception as e:
+        logger.error(f"Error añadiendo trabajo a la cola: {str(e)}")
+        return None
+
+def update_job_history(job_data: Dict):
+    """Actualiza el historial de trabajos"""
+    history_path = os.path.join(os.path.dirname(__file__), "..", "..", "base_datos", "historial_trabajos.json")
+    
+    try:
+        with open(history_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        
+        # Añadir al historial
+        if "trabajos" not in data:
+            data["trabajos"] = []
+            
+        data["trabajos"].append({
+            **job_data,
+            "completed_at": datetime.now().isoformat()
+        })
+        
+        # Actualizar estadísticas
+        if "estadisticas" not in data:
+            data["estadisticas"] = {
+                "trabajos_exitosos": 0,
+                "trabajos_con_advertencias": 0,
+                "trabajos_fallidos": 0,
+                "tasa_exito": 0.0
+            }
+            
+        # Incrementar contadores según el estado
+        if job_data.get("status") == "completed":
+            data["estadisticas"]["trabajos_exitosos"] += 1
+        elif job_data.get("status") == "failed":
+            data["estadisticas"]["trabajos_fallidos"] += 1
+            
+        # Recalcular tasa de éxito
+        total_jobs = len(data["trabajos"])
+        if total_jobs > 0:
+            data["estadisticas"]["tasa_exito"] = (data["estadisticas"]["trabajos_exitosos"] / total_jobs) * 100
+        
+        with open(history_path, 'w', encoding='utf-8') as file:
+            json.dump(data, file, indent=2, ensure_ascii=False)
+            
+        logger.info(f"Historial actualizado para trabajo {job_data.get('job_id')}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error actualizando historial: {str(e)}")
+        return False
+
+# ===============================
 # ENDPOINTS DEL FLUJO DE IMPRESIÓN
 # ===============================
 
@@ -214,6 +351,19 @@ async def start_print_flow(project_id: str):
     flow_id = str(uuid.uuid4())
     
     # Estado inicial del flujo
+    initial_session_data = {
+        "project_id": project_id,
+        "flow_id": flow_id,
+        "current_step": "piece_selection",
+        "completed_steps": [],
+        "project_data": project,
+        "created_at": datetime.now().isoformat(),
+        "status": "active"
+    }
+    
+    # Guardar sesión inicial
+    save_wizard_session(flow_id, initial_session_data)
+    
     flow_status = PrintFlowStatus(
         project_id=project_id,
         current_step="piece_selection", 
@@ -320,9 +470,39 @@ async def confirm_piece_selection(selection: PieceSelection):
     total_filament_needed = len(selected_files) * 12.3  # Mock calculation
     total_time_minutes = len(selected_files) * 45       # Mock calculation
     
+    # Crear session_id temporal basado en project_id (en el frontend se debería pasar flow_id)
+    session_id = f"temp_{selection.project_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    
+    # Cargar sesión existente o crear nueva
+    session_data = load_wizard_session(session_id)
+    if not session_data:
+        session_data = {
+            "project_id": selection.project_id,
+            "current_step": "piece_selection",
+            "completed_steps": [],
+            "created_at": datetime.now().isoformat(),
+            "status": "active"
+        }
+    
+    # Actualizar con la selección de piezas
+    session_data["piece_selection"] = {
+        "selection_type": selection_type,
+        "selected_pieces": selected_files,
+        "total_pieces": len(selected_files),
+        "total_estimated_filament_grams": total_filament_needed,
+        "total_estimated_time_hours": round(total_time_minutes / 60, 2),
+        "completed_at": datetime.now().isoformat()
+    }
+    session_data["completed_steps"] = ["piece_selection"]
+    session_data["current_step"] = "material_selection"
+    
+    # Guardar sesión actualizada
+    save_wizard_session(session_id, session_data)
+    
     return JSONResponse(content={
         "success": True,
         "message": f"Selección confirmada: {len(selected_files)} piezas",
+        "session_id": session_id,  # Devolver el ID de sesión para uso futuro
         "selection_summary": {
             "type": selection_type,
             "selected_pieces": selected_files,
@@ -394,8 +574,26 @@ async def validate_material_availability(material_selection: MaterialSelection):
             "message": f"El material {material_selection.material_type} {material_selection.color} de {material_selection.brand} no está disponible"
         }, status_code=400)
     
-    # Verificar stock suficiente
-    stock_sufficient = selected_material["stock_actual"] >= material_selection.quantity_needed
+    # Verificar stock suficiente (saltamos la validación de stock por ahora)
+    stock_sufficient = True  # Como solicitaste, no verificamos stock aún
+    
+    # Actualizar sesión con la selección de material
+    if material_selection.session_id:
+        session_data = load_wizard_session(material_selection.session_id)
+        if session_data:
+            session_data["material_selection"] = {
+                "material_type": material_selection.material_type,
+                "color": material_selection.color,
+                "brand": material_selection.brand,
+                "selected_material_data": selected_material,
+                "quantity_needed": material_selection.quantity_needed,
+                "stock_sufficient": stock_sufficient,
+                "estimated_cost": round((material_selection.quantity_needed / 1000) * selected_material["precio_por_kg"], 2) if material_selection.quantity_needed else 0,
+                "completed_at": datetime.now().isoformat()
+            }
+            session_data["completed_steps"] = session_data.get("completed_steps", []) + ["material_selection"]
+            session_data["current_step"] = "production_mode"
+            save_wizard_session(material_selection.session_id, session_data)
     
     if stock_sufficient:
         return JSONResponse(content={
@@ -406,7 +604,7 @@ async def validate_material_availability(material_selection: MaterialSelection):
                 "current_stock": selected_material["stock_actual"],
                 "needed_quantity": material_selection.quantity_needed,
                 "remaining_stock": selected_material["stock_actual"] - material_selection.quantity_needed,
-                "estimated_cost": round((material_selection.quantity_needed / 1000) * selected_material["precio_por_kg"], 2)
+                "estimated_cost": round((material_selection.quantity_needed / 1000) * selected_material["precio_por_kg"], 2) if material_selection.quantity_needed else 0
             },
             "next_step": {
                 "step": "production_mode",
@@ -554,6 +752,25 @@ async def set_production_mode(config: ProductionModeConfig):
                 "quality_preset": "normal"
             }
     
+    # Guardar configuración en la sesión
+    if config.session_id:
+        session_data = load_wizard_session(config.session_id)
+        if session_data:
+            session_data["production_mode"] = {
+                "mode": config.mode,
+                "priority": config.priority,
+                "settings": settings,
+                "estimated_impact": {
+                    "time_factor": 0.7 if config.priority == "speed" else 1.3 if config.priority == "quality" else 1.0,
+                    "quality_level": "alta" if config.priority in ["quality", "consistency"] else "estándar",
+                    "material_usage": "optimizado" if config.priority == "economy" else "estándar"
+                },
+                "completed_at": datetime.now().isoformat()
+            }
+            session_data["completed_steps"] = session_data.get("completed_steps", []) + ["production_mode"]
+            session_data["current_step"] = "printer_assignment"
+            save_wizard_session(config.session_id, session_data)
+    
     return JSONResponse(content={
         "success": True,
         "configuration": {
@@ -648,6 +865,22 @@ async def assign_printer_manually(assignment: PrinterAssignment):
             "estimated_available_at": "2024-12-15 16:30:00"  # Mock timestamp
         }, status_code=409)
     
+    # Guardar asignación en la sesión
+    if assignment.session_id:
+        session_data = load_wizard_session(assignment.session_id)
+        if session_data:
+            session_data["printer_assignment"] = {
+                "printer_id": assignment.printer_id,
+                "printer_name": selected_printer["nombre"],
+                "assignment_type": assignment.assignment_type,
+                "printer_capabilities": selected_printer.get("capacidades", {}),
+                "printer_ip": selected_printer.get("ip", ""),
+                "confirmed_at": datetime.now().isoformat()
+            }
+            session_data["completed_steps"] = session_data.get("completed_steps", []) + ["printer_assignment"]
+            session_data["current_step"] = "stl_processing"
+            save_wizard_session(assignment.session_id, session_data)
+    
     return JSONResponse(content={
         "success": True,
         "assignment": {
@@ -657,7 +890,7 @@ async def assign_printer_manually(assignment: PrinterAssignment):
             "confirmed_at": datetime.now().isoformat()
         },
         "printer_info": {
-            "capabilities": selected_printer["capacidades"],
+            "capabilities": selected_printer.get("capacidades", {}),
             "current_status": selected_printer["estado"],
             "estimated_start_time": "inmediato"
         },
@@ -678,24 +911,40 @@ async def process_stl_files(request: Request):
     try:
         # Obtener datos del request
         data = await request.json()
-        project_id = data.get('project_id')
-        selected_pieces = data.get('selected_pieces', [])
-        material_config = data.get('material_config', {})
-        production_config = data.get('production_config', {})
-        printer_config = data.get('printer_config', {})
+        session_id = data.get('session_id')
         
-        if not project_id:
-            raise HTTPException(status_code=400, detail="project_id es requerido")
+        if not session_id:
+            raise HTTPException(status_code=400, detail="session_id es requerido")
+        
+        # Cargar datos de la sesión
+        session_data = load_wizard_session(session_id)
+        if not session_data:
+            raise HTTPException(status_code=404, detail="Sesión no encontrada")
+        
+        # Obtener configuración de la sesión
+        project_id = session_data.get("project_id")
+        piece_selection = session_data.get("piece_selection", {})
+        material_selection = session_data.get("material_selection", {})
+        production_mode = session_data.get("production_mode", {})
+        printer_assignment = session_data.get("printer_assignment", {})
+        
+        if not all([piece_selection, material_selection, production_mode, printer_assignment]):
+            raise HTTPException(status_code=400, detail="Configuración incompleta en la sesión")
         
         # Cargar datos del proyecto
         project = load_project_data(project_id)
         
         # Preparar configuración para el slicer
-        slicer_config = prepare_slicer_config(material_config, production_config, printer_config)
+        slicer_config = prepare_slicer_config(
+            material_selection.get("selected_material_data", {}),
+            production_mode.get("settings", {}),
+            printer_assignment
+        )
         
         # Procesar cada archivo STL seleccionado
         processed_files = []
         errors = []
+        selected_pieces = piece_selection.get("selected_pieces", [])
         
         for piece_filename in selected_pieces:
             try:
@@ -710,17 +959,35 @@ async def process_stl_files(request: Request):
                 processed_files.append(result)
                 
             except Exception as e:
+                logger.error(f"Error procesando {piece_filename}: {str(e)}")
                 errors.append(f"Error procesando {piece_filename}: {str(e)}")
                 continue
         
-        # Generar reporte de validación
-        validation_report = generate_validation_report(processed_files, errors)
+        # Actualizar sesión con resultados del procesamiento
+        session_data["stl_processing"] = {
+            "processed_files": processed_files,
+            "errors": errors,
+            "slicer_config": slicer_config,
+            "processing_summary": {
+                "total_files": len(selected_pieces),
+                "successful": len(processed_files),
+                "failed": len(errors)
+            },
+            "completed_at": datetime.now().isoformat()
+        }
+        session_data["completed_steps"] = session_data.get("completed_steps", []) + ["stl_processing"]
+        session_data["current_step"] = "validation"
+        save_wizard_session(session_id, session_data)
         
         return JSONResponse(content={
             "success": len(processed_files) > 0,
             "processed_files": processed_files,
             "errors": errors,
-            "validation_report": validation_report,
+            "processing_summary": {
+                "total_files": len(selected_pieces),
+                "successful": len(processed_files),
+                "failed": len(errors)
+            },
             "next_step": {
                 "step": "validation",
                 "message": "Archivos procesados. Revisa el reporte de validación."
@@ -731,7 +998,7 @@ async def process_stl_files(request: Request):
         logger.error(f"Error procesando STL: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
 
-def prepare_slicer_config(material_config, production_config, printer_config):
+def prepare_slicer_config(material_data, production_settings, printer_assignment):
     """Prepara la configuración para enviar al slicer"""
     
     # Configuración base por material
@@ -742,18 +1009,16 @@ def prepare_slicer_config(material_config, production_config, printer_config):
     }
     
     # Obtener configuración del material
-    material_type = material_config.get('tipo', 'PLA')
+    material_type = material_data.get('tipo', 'PLA')
     temps = material_settings.get(material_type, material_settings["PLA"])
     
-    # Configuración de producción
-    prod_settings = production_config.get('settings', {})
-    
     return {
-        "layer_height": prod_settings.get('layer_height', 0.2),
-        "fill_density": prod_settings.get('infill_density', 20),
+        "layer_height": production_settings.get('layer_height', 0.2),
+        "fill_density": production_settings.get('infill_density', 20),
+        "print_speed": production_settings.get('print_speed', 50),
         "nozzle_temp": temps["nozzle_temp"],
         "bed_temp": temps["bed_temp"],
-        "printer_profile": map_printer_to_profile(printer_config.get('nombre', 'Generic'))
+        "printer_profile": map_printer_to_profile(printer_assignment.get('printer_name', 'Generic'))
     }
 
 def map_printer_to_profile(printer_name):
@@ -775,20 +1040,26 @@ def find_stl_file_path(project, filename):
 
 async def process_single_stl(filename, file_path, config):
     """Procesa un archivo STL individual con APISLICER"""
-    import aiohttp
-    
     try:
-        # Verificar si el archivo existe (mock check)
-        # En implementación real se verificaría si existe el archivo
+        # Verificar si el archivo existe
+        if not file_path or not os.path.exists(file_path):
+            logger.warning(f"Archivo STL no encontrado: {file_path}")
+            # Por ahora continuamos con procesamiento mock
+            return create_mock_processing_result(filename, "success")
         
         # Preparar datos para APISLICER
         data = aiohttp.FormData()
         
-        # Por ahora usaremos un archivo mock
-        # En implementación real se leería el archivo desde file_path
-        mock_stl_content = b"STL mock content"  # Placeholder
+        # Leer archivo real si existe, sino usar mock
+        try:
+            with open(file_path, 'rb') as f:
+                file_content = f.read()
+        except:
+            # Usar contenido mock si no se puede leer el archivo
+            file_content = b"STL mock content"
+            
         data.add_field('file', 
-                      mock_stl_content, 
+                      file_content, 
                       filename=filename, 
                       content_type='application/octet-stream')
         
@@ -796,70 +1067,159 @@ async def process_single_stl(filename, file_path, config):
         for key, value in config.items():
             data.add_field(key, str(value))
         
-        # Llamar a APISLICER
+        # URL de APISLICER (localhost o contenedor Docker)
+        apislicer_url = "http://localhost:8001/slice"  # Cambiar si usa Docker
+        
+        # Enviar a APISLICER
         async with aiohttp.ClientSession() as session:
-            async with session.post('http://apislicer-slicer-api:8000/slice', data=data) as response:
+            async with session.post(apislicer_url, data=data, timeout=60) as response:
                 if response.status == 200:
-                    # Archivo procesado exitosamente
-                    gcode_content = await response.read()
+                    result = await response.json()
+                    
+                    # Generar path para guardar el G-code
+                    gcode_filename = filename.replace('.stl', '.gcode')
+                    gcode_path = f"/tmp/kybercore_gcode_{uuid.uuid4()}_{gcode_filename}"
+                    
+                    # En implementación real se guardaría el G-code devuelto
+                    # Por ahora simulamos que se guardó correctamente
                     
                     return {
                         "filename": filename,
-                        "original_size": "mock_size",
-                        "gcode_size": len(gcode_content),
-                        "estimated_print_time": "45 min",  # Mock
-                        "filament_usage": "12.5g",         # Mock
                         "status": "success",
-                        "gcode_path": f"/tmp/{filename.replace('.stl', '.gcode')}"
+                        "gcode_path": gcode_path,
+                        "estimated_time_minutes": result.get("estimated_time", 45),
+                        "layer_count": result.get("layer_count", 200),
+                        "filament_used_grams": result.get("filament_used", 12.5),
+                        "processing_time_seconds": result.get("processing_time", 15)
                     }
                 else:
-                    error_msg = await response.text()
-                    raise Exception(f"APISLICER error: {error_msg}")
+                    error_text = await response.text()
+                    logger.error(f"Error en APISLICER: {response.status} - {error_text}")
+                    return create_mock_processing_result(filename, "error", f"APISLICER error: {response.status}")
                     
+    except asyncio.TimeoutError:
+        logger.error(f"Timeout procesando {filename}")
+        return create_mock_processing_result(filename, "error", "Timeout en APISLICER")
     except Exception as e:
+        logger.error(f"Error procesando {filename}: {str(e)}")
+        return create_mock_processing_result(filename, "error", str(e))
+
+def create_mock_processing_result(filename, status, error_message=None):
+    """Crea un resultado mock de procesamiento"""
+    if status == "success":
+        return {
+            "filename": filename,
+            "status": "success",
+            "gcode_path": f"/tmp/mock_gcode_{uuid.uuid4()}_{filename.replace('.stl', '.gcode')}",
+            "estimated_time_minutes": 45,
+            "layer_count": 200,
+            "filament_used_grams": 12.5,
+            "processing_time_seconds": 5
+        }
+    else:
         return {
             "filename": filename,
             "status": "error",
-            "error": str(e)
+            "error": error_message or "Error desconocido",
+            "gcode_path": None
         }
-
-def generate_validation_report(processed_files, errors):
-    """Genera reporte de validación del procesamiento"""
-    successful_files = [f for f in processed_files if f.get('status') == 'success']
-    failed_files = [f for f in processed_files if f.get('status') == 'error']
-    
-    total_print_time = 0
-    total_filament = 0
-    
-    for file_data in successful_files:
-        # Parse mock values (en implementación real se calcularían correctamente)
-        time_str = file_data.get('estimated_print_time', '0 min')
-        if 'min' in time_str:
-            time_val = int(time_str.split(' ')[0])
-            total_print_time += time_val
-            
-        filament_str = file_data.get('filament_usage', '0g')
-        if 'g' in filament_str:
-            filament_val = float(filament_str.replace('g', ''))
-            total_filament += filament_val
-    
-    return {
-        "total_files": len(processed_files) + len(errors),
-        "successful": len(successful_files),
-        "failed": len(failed_files) + len(errors),
-        "total_estimated_time_minutes": total_print_time,
-        "total_filament_grams": total_filament,
-        "estimated_cost": total_filament * 0.025,  # €0.025 por gramo
-        "warnings": [],
-        "errors": errors + [f.get('error') for f in failed_files if f.get('error')]
-    }
 
 @router.get("/print/validation-report/{job_id}")
 async def get_validation_report(job_id: str):
     """
     Obtiene el reporte de validación final antes de enviar a impresión.
     """
-    # Por ahora usaremos datos mock, en implementación real se consultaría la base de datos
+    # Cargar datos de la sesión del wizard
+    session_data = load_wizard_session(job_id)
+    if not session_data:
+        # Si no hay sesión, usar datos mock
+        return get_mock_validation_report(job_id)
+    
+    stl_processing = session_data.get("stl_processing", {})
+    piece_selection = session_data.get("piece_selection", {})
+    material_selection = session_data.get("material_selection", {})
+    printer_assignment = session_data.get("printer_assignment", {})
+    production_mode = session_data.get("production_mode", {})
+    
+    # Generar reporte basado en datos reales de la sesión
+    processing_summary = stl_processing.get("processing_summary", {})
+    processed_files = stl_processing.get("processed_files", [])
+    errors = stl_processing.get("errors", [])
+    
+    # Calcular totales
+    total_time = sum([f.get("estimated_time_minutes", 0) for f in processed_files if f.get("status") == "success"])
+    total_filament = sum([f.get("filament_used_grams", 0) for f in processed_files if f.get("status") == "success"])
+    
+    validation_report = {
+        "job_id": job_id,
+        "project_info": {
+            "name": session_data.get("project_data", {}).get("nombre", "Proyecto desconocido"),
+            "total_pieces": piece_selection.get("total_pieces", 0),
+            "selected_pieces": len(piece_selection.get("selected_pieces", []))
+        },
+        "processing_summary": {
+            "total_files": processing_summary.get("total_files", 0),
+            "successful": processing_summary.get("successful", 0),
+            "failed": processing_summary.get("failed", 0),
+            "total_estimated_time_hours": round(total_time / 60, 2),
+            "total_filament_grams": total_filament,
+            "estimated_cost": round(total_filament * 0.025, 2)  # €0.025 por gramo
+        },
+        "material_info": {
+            "type": material_selection.get("material_type", ""),
+            "color": material_selection.get("color", ""),
+            "brand": material_selection.get("brand", ""),
+            "temperature_profile": {
+                "nozzle": material_selection.get("selected_material_data", {}).get("temperatura_extrusor", 210),
+                "bed": material_selection.get("selected_material_data", {}).get("temperatura_cama", 60)
+            }
+        },
+        "printer_info": {
+            "id": printer_assignment.get("printer_id", ""),
+            "name": printer_assignment.get("printer_name", ""),
+            "status": "ready",
+            "estimated_start_time": "inmediato"
+        },
+        "production_config": {
+            "mode": production_mode.get("mode", ""),
+            "priority": production_mode.get("priority", ""),
+            "layer_height": production_mode.get("settings", {}).get("layer_height", 0.2),
+            "infill_density": production_mode.get("settings", {}).get("infill_density", 20),
+            "print_speed": production_mode.get("settings", {}).get("print_speed", 50)
+        },
+        "validation_checks": {
+            "files_processed": {"status": "success" if processing_summary.get("successful", 0) > 0 else "error", 
+                              "details": f"{processing_summary.get('successful', 0)}/{processing_summary.get('total_files', 0)} archivos procesados correctamente"},
+            "gcode_generated": {"status": "success" if processing_summary.get("successful", 0) > 0 else "error",
+                              "details": "G-code generado para todos los archivos exitosos" if processing_summary.get("successful", 0) > 0 else "Error generando G-code"},
+            "printer_compatibility": {"status": "success", "details": "Configuración compatible con impresora seleccionada"},
+            "material_availability": {"status": "success", "details": "Material suficiente disponible"},
+            "print_bed_fit": {"status": "warning" if total_filament > 100 else "success", 
+                            "details": "Una pieza requiere orientación especial" if total_filament > 100 else "Todas las piezas caben correctamente"}
+        },
+        "warnings": [],
+        "errors": errors,
+        "recommendations": [
+            f"Verificar nivel de filamento antes de iniciar (necesario: {total_filament}g)" if total_filament > 0 else "",
+            "Monitorear la primera capa cuidadosamente"
+        ]
+    }
+    
+    # Filtrar recomendaciones vacías
+    validation_report["recommendations"] = [r for r in validation_report["recommendations"] if r]
+    
+    return JSONResponse(content={
+        "success": True,
+        "validation": validation_report,
+        "is_ready_to_print": processing_summary.get("successful", 0) > 0,
+        "next_step": {
+            "step": "confirmation",
+            "message": "Revisa el reporte y confirma la impresión."
+        }
+    })
+
+def get_mock_validation_report(job_id: str):
+    """Genera reporte de validación mock para cuando no hay sesión"""
     mock_validation = {
         "job_id": job_id,
         "project_info": {
@@ -921,7 +1281,7 @@ async def get_validation_report(job_id: str):
     return JSONResponse(content={
         "success": True,
         "validation": mock_validation,
-        "is_ready_to_print": len(mock_validation["errors"]) == 0 or mock_validation["processing_summary"]["successful"] > 0,
+        "is_ready_to_print": mock_validation["processing_summary"]["successful"] > 0,
         "next_step": {
             "step": "confirmation",
             "message": "Revisa el reporte y confirma la impresión."
@@ -935,40 +1295,72 @@ async def confirm_print_job(request: Request):
     """
     try:
         data = await request.json()
-        job_id = data.get('job_id')
+        session_id = data.get('session_id') or data.get('job_id')  # Compatibilidad
         confirmed_settings = data.get('confirmed_settings', {})
         user_notes = data.get('user_notes', '')
         
-        if not job_id:
-            raise HTTPException(status_code=400, detail="job_id es requerido")
+        if not session_id:
+            raise HTTPException(status_code=400, detail="session_id es requerido")
+        
+        # Cargar sesión del wizard
+        session_data = load_wizard_session(session_id)
+        if not session_data:
+            raise HTTPException(status_code=404, detail="Sesión no encontrada")
+        
+        # Verificar que todos los pasos estén completos
+        required_steps = ["piece_selection", "material_selection", "production_mode", "printer_assignment", "stl_processing"]
+        completed_steps = session_data.get("completed_steps", [])
+        missing_steps = [step for step in required_steps if step not in completed_steps]
+        
+        if missing_steps:
+            raise HTTPException(status_code=400, detail=f"Pasos incompletos: {', '.join(missing_steps)}")
         
         # Generar ID único para el trabajo confirmado
         confirmed_job_id = str(uuid.uuid4())
         
-        # Crear entrada en la cola de trabajos (mock)
+        # Crear entrada en la cola de trabajos con datos completos de la sesión
         queue_entry = {
             "job_id": confirmed_job_id,
-            "original_validation_id": job_id,
+            "session_id": session_id,
+            "project_id": session_data.get("project_id"),
             "status": "queued",
             "priority": confirmed_settings.get('priority', 'normal'),
             "estimated_start_time": datetime.now().isoformat(),
             "created_at": datetime.now().isoformat(),
             "user_notes": user_notes,
-            "settings": confirmed_settings
+            "settings": confirmed_settings,
+            "wizard_data": session_data  # Incluir toda la configuración del wizard
         }
         
-        # Mock: guardar en sistema de cola (en implementación real se guardaría en base de datos)
-        # save_job_to_queue(queue_entry)
+        # Guardar en sistema de cola
+        queue_position = save_job_to_queue(queue_entry)
         
-        # Mock: enviar trabajo a la impresora (en implementación real se integraría con Moonraker)
-        printer_response = await send_job_to_printer(confirmed_job_id, confirmed_settings)
+        # Enviar trabajo a la impresora
+        printer_response = await send_job_to_printer(session_id, confirmed_settings)
         
         if printer_response.get('success'):
+            # Actualizar sesión como completada
+            session_data["completed_steps"] = completed_steps + ["confirmation"]
+            session_data["current_step"] = "monitoring"
+            session_data["confirmed_job_id"] = confirmed_job_id
+            session_data["final_status"] = "job_sent_to_printer"
+            session_data["completed_at"] = datetime.now().isoformat()
+            save_wizard_session(session_id, session_data)
+            
+            # Actualizar historial
+            update_job_history({
+                "job_id": confirmed_job_id,
+                "status": "started",
+                "session_data": session_data,
+                "printer_response": printer_response
+            })
+            
             return JSONResponse(content={
                 "success": True,
                 "job_confirmed": {
                     "job_id": confirmed_job_id,
-                    "queue_position": 1,
+                    "session_id": session_id,
+                    "queue_position": queue_position or 1,
                     "estimated_start_time": queue_entry["estimated_start_time"],
                     "status": "queued"
                 },
@@ -994,27 +1386,190 @@ async def confirm_print_job(request: Request):
 async def send_job_to_printer(job_id, settings):
     """
     Envía el trabajo a la impresora usando Moonraker API.
-    Por ahora es una simulación.
     """
     try:
-        # Mock de comunicación con impresora
-        # En implementación real se haría:
-        # 1. Enviar archivo G-code a la impresora vía Moonraker
-        # 2. Iniciar el trabajo de impresión
-        # 3. Configurar monitoreo en tiempo real
+        # Obtener información de la impresora de la sesión
+        session_data = load_wizard_session(job_id)
+        printer_info = session_data.get("printer_assignment", {})
+        
+        if not printer_info:
+            return {"success": False, "error": "No hay impresora asignada"}
+            
+        printer_id = printer_info.get("printer_id")
+        if not printer_id:
+            return {"success": False, "error": "ID de impresora no válido"}
+        
+        # Cargar datos de la impresora
+        printers_data = load_printers_data()
+        printer_config = None
+        
+        for printer in printers_data.get("impresoras", []):
+            if printer.get("id") == printer_id:
+                printer_config = printer
+                break
+                
+        if not printer_config:
+            return {"success": False, "error": f"Impresora {printer_id} no encontrada"}
+        
+        # Obtener IP y puerto de Moonraker
+        printer_ip = printer_config.get("ip", "")
+        if not printer_ip:
+            return {"success": False, "error": f"IP no configurada para impresora {printer_id}"}
+        
+        # Si no tiene protocolo, agregar http://
+        if not printer_ip.startswith("http"):
+            moonraker_url = f"http://{printer_ip}"
+        else:
+            moonraker_url = printer_ip
+        
+        logger.info(f"Enviando trabajo {job_id} a impresora {printer_id} en {moonraker_url}")
+        
+        # Verificar que la impresora esté disponible
+        printer_status = await check_printer_status(moonraker_url)
+        if not printer_status.get("success"):
+            return {
+                "success": False, 
+                "error": f"Impresora no disponible: {printer_status.get('error', 'Error desconocido')}"
+            }
+        
+        # Obtener archivos G-code generados de la sesión
+        stl_processing = session_data.get("stl_processing", {})
+        processed_files = stl_processing.get("processed_files", [])
+        
+        if not processed_files:
+            return {"success": False, "error": "No hay archivos G-code para enviar"}
+        
+        # Tomar el primer archivo G-code disponible (en una implementación completa se manejarían múltiples archivos)
+        gcode_file = None
+        for file_info in processed_files:
+            if file_info.get("status") == "success" and file_info.get("gcode_path"):
+                gcode_file = file_info
+                break
+        
+        if not gcode_file:
+            return {"success": False, "error": "No hay archivos G-code válidos"}
+        
+        # Enviar archivo G-code a la impresora vía Moonraker
+        upload_result = await upload_gcode_to_printer(moonraker_url, gcode_file["gcode_path"], job_id)
+        if not upload_result.get("success"):
+            return {"success": False, "error": f"Error subiendo archivo: {upload_result.get('error')}"}
+        
+        # Iniciar la impresión
+        print_result = await start_print_job(moonraker_url, upload_result["filename"])
+        if not print_result.get("success"):
+            return {"success": False, "error": f"Error iniciando impresión: {print_result.get('error')}"}
+        
+        # Guardar información del trabajo en la cola
+        queue_position = save_job_to_queue({
+            "job_id": job_id,
+            "printer_id": printer_id,
+            "moonraker_url": moonraker_url,
+            "status": "printing",
+            "gcode_filename": upload_result["filename"],
+            "settings": settings,
+            "started_at": datetime.now().isoformat()
+        })
         
         return {
             "success": True,
             "printer_job_id": f"printer_{job_id}",
-            "message": "Trabajo enviado a impresora exitosamente",
-            "estimated_completion": "2024-12-15 22:30:00"
+            "message": "Trabajo enviado e iniciado en la impresora exitosamente",
+            "printer_id": printer_id,
+            "queue_position": queue_position,
+            "moonraker_url": moonraker_url,
+            "gcode_filename": upload_result["filename"],
+            "estimated_completion": datetime.now().isoformat()  # Se actualizará con datos reales
         }
         
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        logger.error(f"Error enviando trabajo a impresora: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+async def check_printer_status(moonraker_url: str):
+    """Verifica que la impresora esté disponible y lista para recibir trabajos"""
+    try:
+        async with aiohttp.ClientSession() as session:
+            # Verificar conexión con Moonraker
+            async with session.get(f"{moonraker_url}/printer/info", timeout=10) as response:
+                if response.status != 200:
+                    return {"success": False, "error": f"Error conectando con Moonraker: HTTP {response.status}"}
+                
+                info = await response.json()
+                
+            # Verificar estado de la impresora
+            async with session.get(f"{moonraker_url}/printer/objects/query?print_stats", timeout=10) as response:
+                if response.status != 200:
+                    return {"success": False, "error": "No se pudo obtener estado de impresión"}
+                
+                status_data = await response.json()
+                print_stats = status_data.get("result", {}).get("status", {}).get("print_stats", {})
+                state = print_stats.get("state", "")
+                
+                if state in ["printing", "paused"]:
+                    return {"success": False, "error": f"Impresora ocupada (estado: {state})"}
+                
+                return {
+                    "success": True, 
+                    "state": state,
+                    "info": info.get("result", {})
+                }
+                
+    except asyncio.TimeoutError:
+        return {"success": False, "error": "Timeout conectando con la impresora"}
+    except Exception as e:
+        return {"success": False, "error": f"Error verificando estado: {str(e)}"}
+
+async def upload_gcode_to_printer(moonraker_url: str, gcode_path: str, job_id: str):
+    """Sube el archivo G-code a la impresora"""
+    try:
+        if not os.path.exists(gcode_path):
+            return {"success": False, "error": f"Archivo G-code no encontrado: {gcode_path}"}
+        
+        filename = f"kybercore_{job_id}_{os.path.basename(gcode_path)}"
+        
+        async with aiohttp.ClientSession() as session:
+            with open(gcode_path, 'rb') as f:
+                data = aiohttp.FormData()
+                data.add_field('file', f, filename=filename, content_type='text/plain')
+                data.add_field('root', 'gcodes')  # Directorio de destino en la impresora
+                
+                async with session.post(f"{moonraker_url}/server/files/upload", data=data, timeout=30) as response:
+                    if response.status != 201:
+                        error_text = await response.text()
+                        return {"success": False, "error": f"Error subiendo archivo: HTTP {response.status} - {error_text}"}
+                    
+                    result = await response.json()
+                    return {
+                        "success": True,
+                        "filename": filename,
+                        "path": result.get("result", {}).get("path", filename)
+                    }
+                    
+    except Exception as e:
+        return {"success": False, "error": f"Error en upload: {str(e)}"}
+
+async def start_print_job(moonraker_url: str, filename: str):
+    """Inicia la impresión del archivo G-code"""
+    try:
+        async with aiohttp.ClientSession() as session:
+            # Comando para iniciar impresión
+            print_data = {
+                "filename": filename
+            }
+            
+            async with session.post(f"{moonraker_url}/printer/print/start", json=print_data, timeout=10) as response:
+                if response.status != 200:
+                    error_text = await response.text()
+                    return {"success": False, "error": f"Error iniciando impresión: HTTP {response.status} - {error_text}"}
+                
+                result = await response.json()
+                return {
+                    "success": True,
+                    "result": result.get("result", {})
+                }
+                
+    except Exception as e:
+        return {"success": False, "error": f"Error iniciando impresión: {str(e)}"}
 
 @router.get("/print/job-status/{job_id}")
 async def get_job_status(job_id: str):

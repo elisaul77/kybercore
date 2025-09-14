@@ -294,6 +294,10 @@ function editProject(projectId) {
 function openPrintFlowWizard(flowId, projectId, initialStatus) {
     console.log('🚀 Abriendo wizard de flujo de impresión:', { flowId, projectId, initialStatus });
     
+    // Inicializar una nueva sesión de wizard
+    currentWizardSessionId = generateSessionId();
+    console.log('🎯 Nueva sesión de wizard iniciada:', currentWizardSessionId);
+    
     // Crear el contenedor del wizard si no existe
     let wizardContainer = document.getElementById('print-flow-wizard');
     if (!wizardContainer) {
@@ -322,6 +326,11 @@ function openPrintFlowWizard(flowId, projectId, initialStatus) {
     
     // Cargar el primer paso del flujo
     loadPrintFlowStep(flowId, projectId, currentStep, statusData);
+}
+
+// Función auxiliar para generar ID de sesión
+function generateSessionId() {
+    return 'wizard_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 }
 
 async function loadPrintFlowStep(flowId, projectId, step, status) {
@@ -367,41 +376,41 @@ async function loadPrintFlowStep(flowId, projectId, step, status) {
                 stepContent = generatePlaceholderStep(step);
         }
         
-        // Crear el wrapper del wizard con navegación
+        // Crear el wrapper del wizard con navegación responsiva optimizada
         wizardContainer.innerHTML = `
-            <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl">
+            <div class="bg-white rounded-2xl w-full max-w-4xl h-full max-h-[95vh] sm:max-h-[90vh] flex flex-col shadow-2xl">
                 <!-- Header del wizard -->
-                <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4">
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0">
                     <div class="flex items-center justify-between">
-                        <h2 class="text-xl font-bold text-white">🖨️ Asistente de Impresión</h2>
+                        <h2 class="text-lg sm:text-xl font-bold text-white">🖨️ Asistente de Impresión</h2>
                         <button onclick="closePrintFlowWizard()" class="text-white hover:text-gray-200 transition-colors">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                         </button>
                     </div>
-                    <div class="mt-2 text-blue-100 text-sm">
+                    <div class="mt-2 text-blue-100 text-xs sm:text-sm">
                         Proyecto: ${status.data.project_name} | Paso: ${getStepLabel(step)}
                     </div>
                 </div>
                 
                 <!-- Progreso del wizard -->
-                <div class="px-6 py-3 border-b border-gray-200">
+                <div class="px-4 sm:px-6 py-2 sm:py-3 border-b border-gray-200 flex-shrink-0">
                     ${generateProgressIndicator(step, status.completed_steps)}
                 </div>
                 
-                <!-- Contenido del paso actual -->
-                <div class="p-6 overflow-y-auto max-h-[calc(90vh-160px)]">
+                <!-- Contenido del paso actual - ahora flex-grow para ocupar espacio disponible -->
+                <div class="p-4 sm:p-6 overflow-y-auto flex-grow">
                     ${stepContent}
                 </div>
                 
-                <!-- Footer con navegación -->
-                <div class="border-t border-gray-200 px-6 py-4 bg-gray-50">
-                    <div class="flex justify-between">
-                        <button onclick="previousPrintFlowStep()" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors" ${status.completed_steps.length === 0 ? 'disabled style="opacity: 0.5;"' : ''}>
+                <!-- Footer con navegación - siempre visible -->
+                <div class="border-t border-gray-200 px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 flex-shrink-0">
+                    <div class="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
+                        <button onclick="previousPrintFlowStep()" class="px-3 sm:px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors text-sm sm:text-base order-2 sm:order-1" ${status.completed_steps.length === 0 ? 'disabled style="opacity: 0.5;"' : ''}>
                             ← Anterior
                         </button>
-                        <div id="wizard-actions" class="flex gap-2">
+                        <div id="wizard-actions" class="flex gap-2 flex-wrap justify-center sm:justify-end order-1 sm:order-2">
                             <!-- Los botones se cargan específicamente para cada paso -->
                         </div>
                     </div>
@@ -439,11 +448,11 @@ async function loadPieceSelectionStep(projectId) {
         const actionsContainer = document.getElementById('wizard-actions');
         if (actionsContainer) {
             actionsContainer.innerHTML = `
-                <button onclick="selectAllPieces('${projectId}')" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
-                    📋 Todas las piezas
+                <button onclick="selectAllPieces('${projectId}')" class="bg-blue-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-blue-600 transition-colors whitespace-nowrap">
+                    📋 <span class="hidden sm:inline">Todas las piezas</span><span class="sm:hidden">Todas</span>
                 </button>
-                <button onclick="selectSpecificPieces('${projectId}')" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors">
-                    🎯 Seleccionar específicas
+                <button onclick="selectSpecificPieces('${projectId}')" class="bg-purple-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-purple-600 transition-colors whitespace-nowrap">
+                    🎯 <span class="hidden sm:inline">Seleccionar específicas</span><span class="sm:hidden">Específicas</span>
                 </button>
             `;
         }
@@ -586,6 +595,10 @@ async function confirmPieceSelection(projectId, selectedPieces, selectAll) {
         const result = await response.json();
         
         if (result.success) {
+            // Capturar session_id del backend
+            currentWizardSessionId = result.session_id;
+            console.log('🔑 Session ID capturado:', currentWizardSessionId);
+            
             showToast('Selección Confirmada', `${result.selection_summary.total_pieces} piezas seleccionadas`, 'success');
             
             // Avanzar al siguiente paso
@@ -618,8 +631,8 @@ async function loadMaterialSelectionStep() {
         const actionsContainer = document.getElementById('wizard-actions');
         if (actionsContainer) {
             actionsContainer.innerHTML = `
-                <button onclick="validateSelectedMaterial()" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
-                    ✅ Validar Material
+                <button onclick="validateSelectedMaterial()" class="bg-green-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-green-600 transition-colors whitespace-nowrap">
+                    ✅ <span class="hidden sm:inline">Validar Material</span><span class="sm:hidden">Validar</span>
                 </button>
             `;
         }
@@ -694,8 +707,8 @@ async function loadProductionModeStep() {
         const actionsContainer = document.getElementById('wizard-actions');
         if (actionsContainer) {
             actionsContainer.innerHTML = `
-                <button onclick="confirmProductionMode()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
-                    🏭 Configurar Modo
+                <button onclick="confirmProductionMode()" class="bg-blue-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-blue-600 transition-colors whitespace-nowrap">
+                    🏭 <span class="hidden sm:inline">Configurar Modo</span><span class="sm:hidden">Configurar</span>
                 </button>
             `;
         }
@@ -771,8 +784,8 @@ async function loadPrinterAssignmentStep() {
         const actionsContainer = document.getElementById('wizard-actions');
         if (actionsContainer) {
             actionsContainer.innerHTML = `
-                <button onclick="assignSelectedPrinter()" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
-                    🖨️ Asignar Impresora
+                <button onclick="assignSelectedPrinter()" class="bg-green-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-green-600 transition-colors whitespace-nowrap">
+                    🖨️ <span class="hidden sm:inline">Asignar Impresora</span><span class="sm:hidden">Asignar</span>
                 </button>
             `;
         }
@@ -882,6 +895,7 @@ async function loadPrinterAssignmentStep() {
 }
 
 let selectedMaterialData = null;
+let currentWizardSessionId = null;  // Variable global para el session_id del wizard
 
 function selectMaterial(tipo, color, marca) {
     // Actualizar selección visual
@@ -904,6 +918,11 @@ async function validateSelectedMaterial() {
         return;
     }
     
+    if (!currentWizardSessionId) {
+        showToast('Error', 'Sesión no válida', 'error');
+        return;
+    }
+    
     try {
         showToast('Validando', 'Verificando disponibilidad del material...', 'info');
         
@@ -914,7 +933,8 @@ async function validateSelectedMaterial() {
                 material_type: selectedMaterialData.tipo,
                 color: selectedMaterialData.color,
                 brand: selectedMaterialData.marca,
-                quantity_needed: 150 // Mock quantity - se calculará dinámicamente más adelante
+                quantity_needed: 150, // Mock quantity - se calculará dinámicamente más adelante
+                session_id: currentWizardSessionId  // Incluir session_id
             })
         });
         
@@ -1065,6 +1085,11 @@ async function confirmProductionMode() {
         return;
     }
     
+    if (!currentWizardSessionId) {
+        showToast('Error', 'Sesión no válida', 'error');
+        return;
+    }
+    
     try {
         showToast('Configurando', 'Aplicando configuración de producción...', 'info');
         
@@ -1073,7 +1098,8 @@ async function confirmProductionMode() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 mode: selectedProductionModeData.mode,
-                priority: selectedProductionModeData.priority
+                priority: selectedProductionModeData.priority,
+                session_id: currentWizardSessionId  // Incluir session_id
             })
         });
         
@@ -1129,6 +1155,11 @@ async function assignSelectedPrinter() {
         return;
     }
     
+    if (!currentWizardSessionId) {
+        showToast('Error', 'Sesión no válida', 'error');
+        return;
+    }
+    
     try {
         showToast('Asignando', 'Asignando impresora al trabajo...', 'info');
         
@@ -1138,7 +1169,8 @@ async function assignSelectedPrinter() {
             body: JSON.stringify({
                 project_id: '1', // Mock project ID - se debería pasar dinámicamente
                 printer_id: selectedPrinterData.printer_id,
-                assignment_type: 'manual'
+                assignment_type: 'manual',
+                session_id: currentWizardSessionId  // Incluir session_id
             })
         });
         
@@ -1182,8 +1214,8 @@ async function loadSTLProcessingStep() {
         const actionsContainer = document.getElementById('wizard-actions');
         if (actionsContainer) {
             actionsContainer.innerHTML = `
-                <button onclick="startSTLProcessing()" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
-                    🔄 Procesar Archivos
+                <button onclick="startSTLProcessing()" class="bg-green-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-green-600 transition-colors whitespace-nowrap">
+                    🔄 <span class="hidden sm:inline">Procesar Archivos</span><span class="sm:hidden">Procesar</span>
                 </button>
             `;
         }
@@ -1231,23 +1263,13 @@ async function loadSTLProcessingStep() {
 }
 
 async function startSTLProcessing() {
+    if (!currentWizardSessionId) {
+        showToast('Error', 'Sesión no válida', 'error');
+        return;
+    }
+    
     try {
         showToast('Procesando', 'Iniciando procesamiento de archivos STL...', 'info');
-        
-        // Datos mock para la demostración
-        const mockData = {
-            project_id: '1',
-            selected_pieces: [
-                'Cover_USB.stl', 'back_frame.stl', 'front_cover_volt_amp_adj.stl',
-                'front_cover_volt_ampmeter.stl', 'front_frame.stl', 'front_panel.stl',
-                'handle.stl', 'rail_bottom.stl', 'rail_top.stl'
-            ],
-            material_config: { tipo: 'PLA', color: 'Blanco', marca: 'eSUN' },
-            production_config: { 
-                settings: { layer_height: 0.3, infill_density: 15, print_speed: 80 }
-            },
-            printer_config: { nombre: 'Impresora Prueba' }
-        };
         
         // Actualizar interfaz de procesamiento
         updateProcessingStatus('Procesando archivos...', 'in-progress');
@@ -1255,7 +1277,9 @@ async function startSTLProcessing() {
         const response = await fetch('/api/print/process-stl', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(mockData)
+            body: JSON.stringify({
+                session_id: currentWizardSessionId  // Enviar session_id en lugar de datos mock
+            })
         });
         
         const result = await response.json();
@@ -1263,7 +1287,7 @@ async function startSTLProcessing() {
         if (result.success) {
             updateProcessingStatus('Procesamiento completado', 'success');
             showToast('Procesamiento Completado', 
-                `${result.processed_files.length} archivos procesados`, 'success');
+                `${result.processing_summary.successful}/${result.processing_summary.total_files} archivos procesados`, 'success');
             
             setTimeout(() => {
                 loadPrintFlowStep(null, null, result.next_step.step, { 
@@ -1276,7 +1300,7 @@ async function startSTLProcessing() {
             }, 1500);
         } else {
             updateProcessingStatus('Error en procesamiento', 'error');
-            showToast('Error', 'Error procesando archivos STL', 'error');
+            showToast('Error', result.message || 'Error procesando archivos STL', 'error');
         }
         
     } catch (error) {
@@ -1310,8 +1334,8 @@ async function loadValidationStep() {
         const actionsContainer = document.getElementById('wizard-actions');
         if (actionsContainer) {
             actionsContainer.innerHTML = `
-                <button onclick="proceedToConfirmation()" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
-                    ✅ Validación OK - Continuar
+                <button onclick="proceedToConfirmation()" class="bg-green-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-green-600 transition-colors whitespace-nowrap">
+                    ✅ <span class="hidden sm:inline">Validación OK - Continuar</span><span class="sm:hidden">Continuar</span>
                 </button>
             `;
         }
@@ -1437,8 +1461,8 @@ async function loadConfirmationStep() {
         const actionsContainer = document.getElementById('wizard-actions');
         if (actionsContainer) {
             actionsContainer.innerHTML = `
-                <button onclick="confirmPrintJob()" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
-                    🚀 Confirmar e Iniciar Impresión
+                <button onclick="confirmPrintJob()" class="bg-green-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-green-600 transition-colors whitespace-nowrap">
+                    🚀 <span class="hidden sm:inline">Confirmar e Iniciar Impresión</span><span class="sm:hidden">Confirmar</span>
                 </button>
             `;
         }
@@ -1506,6 +1530,12 @@ async function loadConfirmationStep() {
 }
 
 async function confirmPrintJob() {
+    // Verificar que tengamos una sesión activa
+    if (!currentWizardSessionId) {
+        showToast('Error', 'No hay una sesión activa del wizard', 'error');
+        return;
+    }
+
     // Verificar confirmaciones
     const confirmMaterials = document.getElementById('confirm-materials')?.checked;
     const confirmPrinter = document.getElementById('confirm-printer')?.checked;
@@ -1525,6 +1555,7 @@ async function confirmPrintJob() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                session_id: currentWizardSessionId,
                 job_id: 'validation-mock-job-id',
                 confirmed_settings: {
                     priority: 'normal',
@@ -1569,11 +1600,11 @@ async function loadMonitoringStep() {
         const actionsContainer = document.getElementById('wizard-actions');
         if (actionsContainer) {
             actionsContainer.innerHTML = `
-                <button onclick="refreshJobStatus()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
-                    🔄 Actualizar Estado
+                <button onclick="refreshJobStatus()" class="bg-blue-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-blue-600 transition-colors whitespace-nowrap">
+                    🔄 <span class="hidden sm:inline">Actualizar Estado</span><span class="sm:hidden">Actualizar</span>
                 </button>
-                <button onclick="closePrintFlowWizard()" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors">
-                    ✅ Cerrar Asistente
+                <button onclick="closePrintFlowWizard()" class="bg-gray-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-gray-600 transition-colors whitespace-nowrap">
+                    ✅ <span class="hidden sm:inline">Cerrar Asistente</span><span class="sm:hidden">Cerrar</span>
                 </button>
             `;
         }
@@ -1677,24 +1708,42 @@ function generateProgressIndicator(currentStep, completedSteps) {
         'printer_assignment', 'stl_processing', 'validation', 'confirmation'
     ];
     
+    const stepLabels = {
+        'piece_selection': 'Piezas',
+        'material_selection': 'Material',
+        'production_mode': 'Modo',
+        'printer_assignment': 'Impresora',
+        'stl_processing': 'Proceso',
+        'validation': 'Validar',
+        'confirmation': 'Confirmar'
+    };
+    
     return `
-        <div class="flex items-center space-x-2 overflow-x-auto">
+        <div class="flex items-center justify-between space-x-1 sm:space-x-2 overflow-x-auto pb-2">
             ${steps.map((step, index) => {
                 const isCompleted = completedSteps.includes(step);
                 const isCurrent = step === currentStep;
                 const isUpcoming = !isCompleted && !isCurrent;
                 
                 return `
-                    <div class="flex items-center ${index < steps.length - 1 ? 'flex-1' : ''}">
-                        <div class="flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
+                    <div class="flex flex-col items-center min-w-0 flex-1">
+                        <div class="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-full text-xs sm:text-sm font-medium ${
                             isCompleted ? 'bg-green-500 text-white' :
                             isCurrent ? 'bg-blue-500 text-white' :
                             'bg-gray-300 text-gray-600'
                         }">
                             ${isCompleted ? '✓' : index + 1}
                         </div>
+                        <span class="text-xs mt-1 text-center truncate w-full ${
+                            isCompleted ? 'text-green-600' :
+                            isCurrent ? 'text-blue-600' :
+                            'text-gray-500'
+                        }">
+                            ${stepLabels[step] || step}
+                        </span>
                         ${index < steps.length - 1 ? `
-                            <div class="flex-1 h-0.5 mx-2 ${isCompleted ? 'bg-green-500' : 'bg-gray-300'}"></div>
+                            <div class="hidden sm:block absolute h-0.5 w-8 ${isCompleted ? 'bg-green-500' : 'bg-gray-300'}" 
+                                 style="top: 16px; left: calc(50% + 20px); transform: translateY(-50%);"></div>
                         ` : ''}
                     </div>
                 `;
@@ -1708,6 +1757,11 @@ function closePrintFlowWizard() {
     if (wizardContainer) {
         wizardContainer.classList.add('hidden');
     }
+    
+    // Limpiar la sesión actual del wizard
+    console.log('🧹 Limpiando sesión del wizard:', currentWizardSessionId);
+    currentWizardSessionId = null;
+    
     document.body.style.overflow = ''; // Restaurar scroll
 }
 
