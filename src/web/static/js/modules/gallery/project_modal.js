@@ -1227,53 +1227,116 @@ async function assignSelectedPrinter() {
 // ===============================
 
 async function loadSTLProcessingStep() {
+    // Verificar que tenemos todos los datos necesarios
+    if (!selectedMaterialData || !selectedProductionModeData || !selectedPrinterData) {
+        return `
+            <div class="space-y-6">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold text-red-600 mb-2">⚠️ Configuración Incompleta</h3>
+                    <p class="text-gray-600">Debes completar los pasos anteriores antes de procesar los archivos STL</p>
+                </div>
+                <div class="bg-red-50 rounded-lg p-4">
+                    <p class="text-red-700">Faltan datos de configuración. Regresa a los pasos anteriores.</p>
+                </div>
+            </div>
+        `;
+    }
+
     // Actualizar botones de acción
     setTimeout(() => {
         const actionsContainer = document.getElementById('wizard-actions');
         if (actionsContainer) {
             actionsContainer.innerHTML = `
                 <button onclick="startSTLProcessing()" class="bg-green-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-green-600 transition-colors whitespace-nowrap">
-                    🔄 <span class="hidden sm:inline">Procesar Archivos</span><span class="sm:hidden">Procesar</span>
+                    � <span class="hidden sm:inline">Iniciar Procesamiento</span><span class="sm:hidden">Procesar</span>
                 </button>
             `;
         }
     }, 100);
-    
+
+    // Mostrar configuración seleccionada
+    const materialDisplay = `${selectedMaterialData.tipo} ${selectedMaterialData.color}`;
+    const modeDisplay = selectedProductionModeData.mode === 'prototype' ? '🔬 Prototipo' : '🏭 Producción';
+    const priorityDisplay = selectedProductionModeData.priority === 'speed' ? '⚡ Velocidad' :
+                           selectedProductionModeData.priority === 'quality' ? '✨ Calidad' :
+                           selectedProductionModeData.priority === 'economy' ? '💰 Economía' : '🎯 Consistencia';
+
     return `
         <div class="space-y-6">
             <div class="text-center">
-                <h3 class="text-2xl font-bold text-gray-900 mb-2">🔄 Procesamiento STL</h3>
-                <p class="text-gray-600">Generando G-code para los archivos seleccionados</p>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">🔄 Procesamiento STL Inteligente</h3>
+                <p class="text-gray-600">Generando perfiles optimizados y G-code personalizado</p>
             </div>
-            
-            <!-- Estado del procesamiento -->
+
+            <!-- Configuración seleccionada -->
             <div class="bg-blue-50 rounded-lg p-4">
-                <h4 class="font-medium text-blue-900 mb-3">Estado del Procesamiento:</h4>
-                <div id="processing-status" class="space-y-2">
-                    <div class="text-sm text-blue-700">
-                        ⏳ Listo para procesar archivos STL con APISLICER
+                <h4 class="font-medium text-blue-900 mb-3">📋 Configuración Seleccionada:</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div class="bg-white p-3 rounded-lg">
+                        <div class="font-medium text-gray-900">🧪 Material</div>
+                        <div class="text-blue-700">${materialDisplay}</div>
+                        <div class="text-gray-500 text-xs">${selectedMaterialData.marca}</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg">
+                        <div class="font-medium text-gray-900">🏭 Modo</div>
+                        <div class="text-blue-700">${modeDisplay}</div>
+                        <div class="text-gray-500 text-xs">${priorityDisplay}</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg">
+                        <div class="font-medium text-gray-900">🖨️ Impresora</div>
+                        <div class="text-blue-700">ID: ${selectedPrinterData.printer_id}</div>
+                        <div class="text-gray-500 text-xs">Perfil optimizado</div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Configuración que se aplicará -->
+
+            <!-- Proceso de 3 pasos -->
             <div class="bg-gray-50 rounded-lg p-4">
-                <h4 class="font-medium text-gray-900 mb-3">Configuración de Laminado:</h4>
-                <div class="grid grid-cols-2 gap-4 text-sm text-gray-700">
-                    <div><strong>Material:</strong> PLA Blanco</div>
-                    <div><strong>Temperatura extrusor:</strong> 210°C</div>
-                    <div><strong>Temperatura cama:</strong> 60°C</div>
-                    <div><strong>Altura de capa:</strong> 0.3mm</div>
-                    <div><strong>Relleno:</strong> 15%</div>
-                    <div><strong>Velocidad:</strong> 80mm/s</div>
+                <h4 class="font-medium text-gray-900 mb-3">🔧 Proceso de Optimización (3 pasos):</h4>
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3 p-3 bg-white rounded-lg">
+                        <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm">1</div>
+                        <div>
+                            <div class="font-medium text-gray-900">Generar Perfil Personalizado</div>
+                            <div class="text-sm text-gray-600">Combinar configuración de material, modo y impresora</div>
+                        </div>
+                        <div id="step1-status" class="ml-auto text-gray-400">⏳ Pendiente</div>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 bg-white rounded-lg">
+                        <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm">2</div>
+                        <div>
+                            <div class="font-medium text-gray-900">Enviar Archivos STL</div>
+                            <div class="text-sm text-gray-600">Procesar cada archivo con el perfil optimizado</div>
+                        </div>
+                        <div id="step2-status" class="ml-auto text-gray-400">⏳ Pendiente</div>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 bg-white rounded-lg">
+                        <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm">3</div>
+                        <div>
+                            <div class="font-medium text-gray-900">Generar G-code Optimizado</div>
+                            <div class="text-sm text-gray-600">Crear archivos listos para impresión</div>
+                        </div>
+                        <div id="step3-status" class="ml-auto text-gray-400">⏳ Pendiente</div>
+                    </div>
                 </div>
             </div>
-            
+
+            <!-- Información del perfil que se creará -->
+            <div class="bg-green-50 rounded-lg p-4">
+                <h4 class="font-medium text-green-900 mb-2">🎯 Perfil que se generará:</h4>
+                <div class="text-sm text-green-700">
+                    <strong>ID único:</strong> Se generará automáticamente<br>
+                    <strong>Base:</strong> ${selectedPrinterData.printer_id}<br>
+                    <strong>Optimizaciones:</strong> ${materialDisplay} + ${priorityDisplay.toLowerCase()}<br>
+                    <strong>Resultado:</strong> Perfil personalizado para máxima calidad
+                </div>
+            </div>
+
             <!-- Lista de archivos a procesar -->
             <div class="space-y-2">
-                <h4 class="font-medium text-gray-900">Archivos a procesar:</h4>
+                <h4 class="font-medium text-gray-900">📁 Archivos a procesar:</h4>
                 <div id="files-to-process" class="space-y-2">
-                    <!-- Se cargarán dinámicamente -->
+                    <div class="text-sm text-gray-600 italic">Los archivos se cargarán al iniciar el procesamiento...</div>
                 </div>
             </div>
         </div>
@@ -1285,56 +1348,202 @@ async function startSTLProcessing() {
         showToast('Error', 'Sesión no válida', 'error');
         return;
     }
-    
+
+    // Verificar que tenemos todos los datos necesarios
+    if (!selectedMaterialData || !selectedProductionModeData || !selectedPrinterData) {
+        showToast('Error', 'Configuración incompleta', 'error');
+        return;
+    }
+
     try {
-        showToast('Procesando', 'Iniciando procesamiento de archivos STL...', 'info');
-        
-        // Actualizar interfaz de procesamiento
-        updateProcessingStatus('Procesando archivos...', 'in-progress');
-        
-        const response = await fetch('/api/print/process-stl', {
+        showToast('Iniciando', 'Comenzando procesamiento inteligente...', 'info');
+
+        // Paso 1: Generar perfil personalizado
+        updateStepStatus(1, 'in-progress', 'Generando perfil personalizado...');
+        showToast('Paso 1', 'Generando perfil personalizado...', 'info');
+
+        // Preparar datos para la generación del perfil
+        const profileRequest = {
+            job_id: `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            printer_model: mapPrinterIdToModel(selectedPrinterData.printer_id),
+            material_config: {
+                type: selectedMaterialData.tipo,
+                color: selectedMaterialData.color,
+                brand: selectedMaterialData.marca
+            },
+            production_config: {
+                mode: selectedProductionModeData.mode,
+                priority: selectedProductionModeData.priority
+            },
+            printer_config: {
+                printer_name: selectedPrinterData.printer_id,
+                printer_model: mapPrinterIdToModel(selectedPrinterData.printer_id),
+                bed_adhesion: true  // Por defecto activado
+            }
+        };
+
+        // Llamar al endpoint de generación de perfil
+        const profileResponse = await fetch('/api/slicer/generate-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(profileRequest)
+        });
+
+        if (!profileResponse.ok) {
+            throw new Error(`Error generando perfil: ${profileResponse.status}`);
+        }
+
+        const profileResult = await profileResponse.json();
+        updateStepStatus(1, 'completed', `Perfil generado: ${profileResult.profile_name}`);
+
+        // Mostrar información del perfil generado
+        showProfileInfo(profileResult);
+
+        // Paso 2: Enviar archivos STL para procesamiento
+        updateStepStatus(2, 'in-progress', 'Enviando archivos STL...');
+        showToast('Paso 2', 'Procesando archivos STL...', 'info');
+
+        // Enviar al backend con el perfil personalizado
+        const processingResponse = await fetch('/api/print/process-stl', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                session_id: currentWizardSessionId  // Enviar session_id en lugar de datos mock
+                session_id: currentWizardSessionId,
+                profile_job_id: profileResult.job_id,
+                profile_request: profileRequest
             })
         });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            updateProcessingStatus('Procesamiento completado', 'success');
-            showToast('Procesamiento Completado', 
-                `${result.processing_summary.successful}/${result.processing_summary.total_files} archivos procesados`, 'success');
-            
-            setTimeout(() => {
-                loadPrintFlowStep(null, null, result.next_step.step, { 
-                    completed_steps: ['piece_selection', 'material_selection', 'production_mode', 'printer_assignment', 'stl_processing'],
-                    data: { 
-                        processing_result: result,
-                        project_name: 'Proyecto'
-                    }
-                });
-            }, 1500);
-        } else {
-            updateProcessingStatus('Error en procesamiento', 'error');
-            showToast('Error', result.message || 'Error procesando archivos STL', 'error');
+
+        const processingResult = await processingResponse.json();
+
+        if (!processingResult.success) {
+            throw new Error(processingResult.message || 'Error procesando archivos STL');
         }
-        
+
+        updateStepStatus(2, 'completed', `${processingResult.processing_summary.successful} archivos procesados`);
+
+        // Paso 3: Completar procesamiento
+        updateStepStatus(3, 'completed', 'G-code generado exitosamente');
+        showToast('Completado', 'Procesamiento finalizado con perfiles optimizados', 'success');
+
+        // Avanzar al siguiente paso después de un delay
+        setTimeout(() => {
+            loadPrintFlowStep(null, null, processingResult.next_step.step, {
+                completed_steps: ['piece_selection', 'material_selection', 'production_mode', 'printer_assignment', 'stl_processing'],
+                data: {
+                    processing_result: processingResult,
+                    profile_info: profileResult,
+                    project_name: 'Proyecto Optimizado'
+                }
+            });
+        }, 2000);
+
     } catch (error) {
-        console.error('Error procesando STL:', error);
-        updateProcessingStatus('Error de conexión', 'error');
-        showToast('Error', 'Error de conexión con el servidor', 'error');
+        console.error('Error en procesamiento STL:', error);
+
+        // Marcar el paso que falló como error
+        const currentStep = getCurrentFailedStep();
+        updateStepStatus(currentStep, 'error', error.message);
+
+        showToast('Error', error.message, 'error');
     }
 }
 
+function updateStepStatus(stepNumber, status, message) {
+    const statusElement = document.getElementById(`step${stepNumber}-status`);
+    if (!statusElement) return;
+
+    let statusIcon, statusClass, statusText;
+
+    switch (status) {
+        case 'in-progress':
+            statusIcon = '🔄';
+            statusClass = 'text-blue-600';
+            statusText = message;
+            break;
+        case 'completed':
+            statusIcon = '✅';
+            statusClass = 'text-green-600';
+            statusText = message;
+            break;
+        case 'error':
+            statusIcon = '❌';
+            statusClass = 'text-red-600';
+            statusText = message;
+            break;
+        default:
+            statusIcon = '⏳';
+            statusClass = 'text-gray-400';
+            statusText = message || 'Pendiente';
+    }
+
+    statusElement.innerHTML = `${statusIcon} ${statusText}`;
+    statusElement.className = `ml-auto text-sm ${statusClass}`;
+}
+
+function showProfileInfo(profileResult) {
+    const profileInfo = document.createElement('div');
+    profileInfo.className = 'mt-4 p-3 bg-green-50 border border-green-200 rounded-lg';
+    profileInfo.innerHTML = `
+        <h5 class="font-medium text-green-900 mb-2">🎯 Perfil Generado:</h5>
+        <div class="text-sm text-green-700 space-y-1">
+            <div><strong>ID:</strong> ${profileResult.job_id}</div>
+            <div><strong>Archivo:</strong> ${profileResult.profile_name}</div>
+            <div><strong>Material:</strong> ${profileResult.material}</div>
+            <div><strong>Modo:</strong> ${profileResult.production_mode}</div>
+            <div><strong>Impresora base:</strong> ${profileResult.base_printer}</div>
+            <div><strong>Generado:</strong> ${new Date(profileResult.generated_at).toLocaleString()}</div>
+        </div>
+    `;
+
+    // Insertar después del contenedor de pasos
+    const stepsContainer = document.querySelector('.bg-gray-50.rounded-lg.p-4');
+    if (stepsContainer) {
+        stepsContainer.appendChild(profileInfo);
+    }
+}
+
+function mapPrinterIdToModel(printerId) {
+    // Mapear IDs de impresora a modelos de APISLICER
+    const printerMappings = {
+        'ender3_001': 'ender3',
+        'ender3_pro_001': 'ender3_pro',
+        'prusa_i3mk3s_001': 'prusa_mk3',
+        'ender5_001': 'ender5'
+    };
+
+    // Buscar coincidencias parciales
+    for (const [id, model] of Object.entries(printerMappings)) {
+        if (printerId.includes(id.replace('_001', ''))) {
+            return model;
+        }
+    }
+
+    // Default fallback
+    return 'ender3';
+}
+
+function getCurrentFailedStep() {
+    // Determinar qué paso falló basado en el estado actual
+    const step1Status = document.getElementById('step1-status')?.textContent || '';
+    const step2Status = document.getElementById('step2-status')?.textContent || '';
+    const step3Status = document.getElementById('step3-status')?.textContent || '';
+
+    if (step1Status.includes('❌') || step1Status.includes('Error')) return 1;
+    if (step2Status.includes('❌') || step2Status.includes('Error')) return 2;
+    if (step3Status.includes('❌') || step3Status.includes('Error')) return 3;
+
+    return 1; // Default
+}
+
 function updateProcessingStatus(message, status) {
+    // Esta función se mantiene por compatibilidad pero ahora usamos updateStepStatus
     const statusContainer = document.getElementById('processing-status');
     if (!statusContainer) return;
-    
+
     const statusIcon = status === 'success' ? '✅' : status === 'error' ? '❌' : '⏳';
     const statusClass = status === 'success' ? 'text-green-700' : status === 'error' ? 'text-red-700' : 'text-blue-700';
-    
+
     statusContainer.innerHTML = `
         <div class="text-sm ${statusClass}">
             ${statusIcon} ${message}

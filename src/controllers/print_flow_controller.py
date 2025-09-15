@@ -913,41 +913,54 @@ async def assign_printer_manually(assignment: PrinterAssignment):
 @router.post("/print/process-stl")
 async def process_stl_files(request: Request):
     """
-    Procesa archivos STL y genera G-code usando APISLICER.
-    Integra con el servicio de slicer externo.
+    Procesa archivos STL y genera G-code usando APISLICER con perfiles personalizados.
+    Integra con el servicio de slicer externo y perfiles dinámicos.
     """
     try:
         # Obtener datos del request
         data = await request.json()
         session_id = data.get('session_id')
-        
+        profile_job_id = data.get('profile_job_id')  # Nuevo: ID del perfil personalizado
+        profile_request = data.get('profile_request')  # Nuevo: Datos del perfil generado
+
         if not session_id:
             raise HTTPException(status_code=400, detail="session_id es requerido")
-        
+
         # Cargar datos de la sesión
         session_data = load_wizard_session(session_id)
         if not session_data:
             raise HTTPException(status_code=404, detail="Sesión no encontrada")
-        
+
         # Obtener configuración de la sesión
         project_id = session_data.get("project_id")
         piece_selection = session_data.get("piece_selection", {})
         material_selection = session_data.get("material_selection", {})
         production_mode = session_data.get("production_mode", {})
         printer_assignment = session_data.get("printer_assignment", {})
-        
+
         if not all([piece_selection, material_selection, production_mode, printer_assignment]):
             raise HTTPException(status_code=400, detail="Configuración incompleta en la sesión")
-        
+
         # Cargar datos del proyecto
         project = load_project_data(project_id)
-        
+
         # Preparar configuración para el slicer
-        slicer_config = prepare_slicer_config(
-            material_selection.get("selected_material_data", {}),
-            production_mode.get("settings", {}),
-            printer_assignment
-        )
+        if profile_job_id and profile_request:
+            # Usar perfil personalizado generado desde el frontend
+            logger.info(f"Usando perfil personalizado: {profile_job_id}")
+            slicer_config = {
+                "profile_job_id": profile_job_id,
+                "profile_request": profile_request,
+                "printer_profile": profile_request.get("printer_model", "ender3")
+            }
+        else:
+            # Fallback: generar configuración desde datos de sesión (comportamiento anterior)
+            logger.warning("No se recibió perfil personalizado, usando configuración de sesión")
+            slicer_config = prepare_slicer_config(
+                material_selection.get("selected_material_data", {}),
+                production_mode.get("settings", {}),
+                printer_assignment
+            )
         
         # Procesar cada archivo STL seleccionado
         processed_files = []

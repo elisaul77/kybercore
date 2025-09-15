@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
+import aiohttp
 from contextlib import asynccontextmanager
 from src.controllers import fleet_controller, recommender_controller, analysis_controller, dashboard_controller, new_job_controller, settings_controller, websocket_controller, consumable_controller, gallery_controller, print_flow_controller
 
@@ -91,3 +92,35 @@ async def health_check():
         "version": "0.1.0",
         "message": "API funcionando correctamente"
     }
+
+# Proxy endpoint para APISLICER
+@app.api_route("/api/slicer/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+async def proxy_to_slicer(request: Request, path: str):
+    """Proxy para redirigir llamadas a APISLICER"""
+
+    apislicer_url = f"http://apislicer:8000/{path}"
+
+    # Preparar headers
+    headers = dict(request.headers)
+    # Remover headers que no deben ser forwarded
+    headers.pop('host', None)
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            # Forward the request
+            async with session.request(
+                method=request.method,
+                url=apislicer_url,
+                headers=headers,
+                data=await request.body(),
+                params=request.query_params
+            ) as response:
+                # Get response content
+                content = await response.read()
+                return Response(
+                    content=content,
+                    status_code=response.status,
+                    headers=dict(response.headers)
+                )
+    except Exception as e:
+        return {"error": f"Error connecting to APISLICER: {str(e)}"}
