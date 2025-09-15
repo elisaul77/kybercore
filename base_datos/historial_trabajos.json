@@ -823,6 +823,153 @@
         "estimated_completion": "2025-09-14T18:46:18.031743"
       },
       "completed_at": "2025-09-14T18:46:18.036269"
+    },
+    {
+      "job_id": "65a91701-cb58-498b-b67c-6c5dcd756a5f",
+      "status": "started",
+      "session_data": {
+        "project_id": "10",
+        "current_step": "monitoring",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing",
+          "confirmation"
+        ],
+        "created_at": "2025-09-15T00:03:38.087582",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "UpperFloor.stl"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-09-15T00:03:38.087595"
+        },
+        "updated_at": "2025-09-15T00:03:56.730007",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-09-15T00:03:42.191236"
+        },
+        "production_mode": {
+          "mode": "prototype",
+          "priority": "economy",
+          "settings": {
+            "layer_height": 0.2,
+            "infill_density": 10,
+            "print_speed": 60,
+            "quality_preset": "normal"
+          },
+          "estimated_impact": {
+            "time_factor": 1.0,
+            "quality_level": "estándar",
+            "material_usage": "optimizado"
+          },
+          "completed_at": "2025-09-15T00:03:46.092701"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Impresora Prueba",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-09-15T00:03:51.363961"
+        },
+        "stl_processing": {
+          "processed_files": [
+            {
+              "filename": "UpperFloor.stl",
+              "status": "success",
+              "gcode_path": "/tmp/kybercore_gcode_1141a266-9246-42a5-8fee-9bc140669bfa_UpperFloor.gcode",
+              "gcode_size_bytes": 6633230,
+              "estimated_time_minutes": 799,
+              "layer_count": 660,
+              "filament_used_grams": 12.5,
+              "processing_time_seconds": 15,
+              "profile_used": "job_18a3fd64437f4c28"
+            }
+          ],
+          "errors": [],
+          "slicer_config": {
+            "profile_job_id": "job_18a3fd64437f4c28",
+            "profile_request": {
+              "job_id": "job_18a3fd64437f4c28",
+              "printer_model": "generic",
+              "material_config": {
+                "type": "PLA",
+                "temperature": 200,
+                "bed_temperature": 60
+              },
+              "production_config": {
+                "mode": "prototype",
+                "priority": "speed",
+                "layer_height": 0.2,
+                "fill_density": 10,
+                "print_speed": 60,
+                "quality_preset": "normal"
+              },
+              "printer_config": {
+                "printer_name": "Impresora Prueba",
+                "printer_model": "generic"
+              }
+            },
+            "printer_profile": "generic"
+          },
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-09-15T00:03:56.729267"
+        },
+        "confirmed_job_id": "65a91701-cb58-498b-b67c-6c5dcd756a5f",
+        "final_status": "job_sent_to_printer",
+        "completed_at": "2025-09-15T00:04:23.440536"
+      },
+      "printer_response": {
+        "success": true,
+        "printer_job_id": "printer_temp_10_20250915_000338",
+        "message": "Trabajo enviado e iniciado en la impresora exitosamente",
+        "printer_id": "printer-test-1",
+        "queue_position": 18,
+        "moonraker_url": "http://10.10.10.71:7126",
+        "gcode_filename": "kybercore_temp_10_20250915_000338_kybercore_gcode_1141a266-9246-42a5-8fee-9bc140669bfa_UpperFloor.gcode",
+        "estimated_completion": "2025-09-15T00:04:23.440512"
+      },
+      "completed_at": "2025-09-15T00:04:23.445061"
     }
   ],
   "estadisticas": {

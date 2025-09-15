@@ -942,12 +942,11 @@ async def process_stl_files(request: Request):
         # Cargar datos del proyecto
         project = load_project_data(project_id)
         
-        # Preparar configuración para el slicer (ahora dinámico)
-        slicer_config = await prepare_slicer_config(
+        # Preparar configuración para el slicer
+        slicer_config = prepare_slicer_config(
             material_selection.get("selected_material_data", {}),
             production_mode.get("settings", {}),
-            printer_assignment,
-            session_id  # Usar session_id como job_id
+            printer_assignment
         )
         
         # Procesar cada archivo STL seleccionado
@@ -1007,98 +1006,68 @@ async def process_stl_files(request: Request):
         logger.error(f"Error procesando STL: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
 
-async def prepare_slicer_config(material_data, production_settings, printer_assignment, job_id):
-    """
-    Genera un perfil personalizado llamando a APISLICER y retorna la configuración 
-    para usar el perfil dinámico generado
-    """
-    try:
-        # Mapear nombre de impresora a modelo
-        printer_model = map_printer_to_profile(printer_assignment.get('printer_name', 'Generic'))
-        
-        # Preparar datos para APISLICER
-        profile_request = {
-            "job_id": job_id,
-            "printer_model": printer_model,
-            "material_config": {
-                "material_type": material_data.get('tipo', 'PLA'),
-                "color": material_data.get('color', ''),
-                "brand": material_data.get('marca', '')
-            },
-            "production_config": {
-                "mode": production_settings.get('mode', 'prototype'),
-                "priority": production_settings.get('priority', 'speed'), 
-                "settings": production_settings
-            }
-        }
-        
-        logger.info(f"Generando perfil personalizado para job_id: {job_id}")
-        logger.info(f"Configuración enviada: {profile_request}")
-        
-        # Llamar a APISLICER para generar perfil personalizado
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                "http://172.21.0.2:8000/generate-profile",
-                json=profile_request,
-                headers={"Content-Type": "application/json"}
-            ) as response:
-                if response.status == 200:
-                    result = await response.json()
-                    logger.info(f"Perfil personalizado generado: {result.get('profile_filename')}")
-                    
-                    # Retornar configuración que usa el perfil personalizado
-                    return {
-                        "use_custom_profile": True,
-                        "custom_profile": job_id,
-                        "printer_profile": printer_model,
-                        "profile_summary": result.get('profile_summary', {}),
-                        "configurations_applied": result.get('configurations_applied', {})
-                    }
-                else:
-                    error_text = await response.text()
-                    logger.error(f"Error generando perfil personalizado: {response.status} - {error_text}")
-                    
-                    # Fallback al sistema tradicional
-                    return prepare_traditional_slicer_config(material_data, production_settings, printer_assignment)
-                    
-    except Exception as e:
-        logger.error(f"Excepción generando perfil personalizado: {str(e)}")
-        
-        # Fallback al sistema tradicional
-        return prepare_traditional_slicer_config(material_data, production_settings, printer_assignment)
-
-def prepare_traditional_slicer_config(material_data, production_settings, printer_assignment):
-    """Configuración tradicional como fallback"""
+def prepare_slicer_config(material_data, production_settings, printer_assignment):
+    """Prepara la configuración para enviar al slicer generando un perfil personalizado"""
     
-    # Configuración base por material
-    material_settings = {
-        "PLA": {"nozzle_temp": 210, "bed_temp": 60},
-        "PETG": {"nozzle_temp": 235, "bed_temp": 85},
-        "ABS": {"nozzle_temp": 245, "bed_temp": 100}
+    # Extraer información necesaria para generar el perfil
+    material_config = {
+        "type": material_data.get('tipo', 'PLA'),
+        "temperature": material_data.get('temperatura_extrusor', 210),
+        "bed_temperature": material_data.get('temperatura_cama', 60)
     }
     
-    # Obtener configuración del material
-    material_type = material_data.get('tipo', 'PLA')
-    temps = material_settings.get(material_type, material_settings["PLA"])
-    
-    return {
-        "use_custom_profile": False,
+    production_config = {
+        "mode": production_settings.get('mode', 'prototype'),
+        "priority": production_settings.get('priority', 'speed'),
         "layer_height": production_settings.get('layer_height', 0.2),
         "fill_density": production_settings.get('infill_density', 20),
         "print_speed": production_settings.get('print_speed', 50),
-        "nozzle_temp": temps["nozzle_temp"],
-        "bed_temp": temps["bed_temp"],
-        "printer_profile": map_printer_to_profile(printer_assignment.get('printer_name', 'Generic'))
+        "quality_preset": production_settings.get('quality_preset', 'normal')
+    }
+    
+    # Mapear nombre de impresora a modelo base
+    printer_name = printer_assignment.get('printer_name', 'Generic')
+    printer_model = map_printer_to_profile(printer_name)
+    
+    printer_config = {
+        "printer_name": printer_name,
+        "printer_model": printer_model
+    }
+    
+    # Generar job_id único para el perfil
+    job_id = f"job_{uuid.uuid4().hex[:16]}"
+    
+    # Preparar datos para el endpoint de generación de perfil
+    profile_request = {
+        "job_id": job_id,
+        "printer_model": printer_model,
+        "material_config": material_config,
+        "production_config": production_config,
+        "printer_config": printer_config
+    }
+    
+    return {
+        "profile_job_id": job_id,
+        "profile_request": profile_request,
+        "printer_profile": printer_model  # Para fallback si falla la generación
     }
 
 def map_printer_to_profile(printer_name):
     """Mapea el nombre de impresora a un perfil de APISLICER"""
-    if 'ender' in printer_name.lower():
+    printer_lower = printer_name.lower()
+    
+    if 'ender5' in printer_lower:
+        return 'ender5'
+    elif 'ender3' in printer_lower and 'pro' in printer_lower:
+        return 'ender3_pro'
+    elif 'ender3' in printer_lower:
         return 'ender3'
-    elif 'prusa' in printer_name.lower():
+    elif 'prusa' in printer_lower and 'mk3' in printer_lower:
+        return 'prusa_mk3'
+    elif 'prusa' in printer_lower:
         return 'prusa_mk3'
     else:
-        return 'ender3'  # Por defecto
+        return 'generic'  # Por defecto
 
 def create_sample_stl_content():
     """Crea contenido STL de ejemplo válido para PrusaSlicer"""
@@ -1199,8 +1168,31 @@ def find_stl_file_path(project, filename):
     return None
 
 async def process_single_stl(filename, file_path, config):
-    """Procesa un archivo STL individual con APISLICER usando perfil personalizado o tradicional"""
+    """Procesa un archivo STL individual con APISLICER usando perfil personalizado"""
     try:
+        # Verificar si tenemos configuración de perfil personalizado
+        profile_job_id = config.get('profile_job_id')
+        profile_request = config.get('profile_request')
+        
+        if profile_job_id and profile_request:
+            # Generar perfil personalizado primero
+            logger.info(f"Generando perfil personalizado para job_id: {profile_job_id}")
+            
+            apislicer_url = "http://apislicer:8000/generate-profile"
+            
+            async with aiohttp.ClientSession() as session:
+                async with session.post(apislicer_url, json=profile_request, timeout=30) as response:
+                    if response.status == 200:
+                        profile_result = await response.json()
+                        if profile_result.get('success'):
+                            logger.info(f"Perfil personalizado generado: {profile_result['profile_name']}")
+                        else:
+                            logger.warning(f"Error generando perfil personalizado: {profile_result}")
+                            # Continuar con perfil base
+                    else:
+                        logger.error(f"Error en generación de perfil: {response.status}")
+                        # Continuar con perfil base
+        
         # Preparar datos para APISLICER
         data = aiohttp.FormData()
         
@@ -1224,22 +1216,18 @@ async def process_single_stl(filename, file_path, config):
                       filename=filename, 
                       content_type='application/octet-stream')
         
-        # URL de APISLICER (comunicación entre contenedores Docker)
-        apislicer_url = "http://172.21.0.2:8000/slice"
-        
-        # Configurar parámetros según tipo de perfil
-        if config.get('use_custom_profile', False):
-            # Usar perfil personalizado
-            data.add_field('custom_profile', config['custom_profile'])
-            data.add_field('printer_profile', config['printer_profile'])
-            logger.info(f"Usando perfil personalizado: {config['custom_profile']}.ini")
+        # Usar perfil personalizado si está disponible
+        if profile_job_id:
+            data.add_field('custom_profile', profile_job_id)
+            logger.info(f"Usando perfil personalizado: {profile_job_id}")
         else:
-            # Usar método tradicional con parámetros individuales
-            traditional_params = ['layer_height', 'fill_density', 'nozzle_temp', 'bed_temp', 'printer_profile']
-            for param in traditional_params:
-                if param in config:
-                    data.add_field(param, str(config[param]))
-            logger.info(f"Usando método tradicional con perfil: {config.get('printer_profile', 'ender3')}")
+            # Fallback a perfil base
+            printer_profile = config.get('printer_profile', 'ender3')
+            data.add_field('printer_profile', printer_profile)
+            logger.info(f"Usando perfil base: {printer_profile}")
+        
+        # URL de APISLICER (comunicación entre contenedores Docker)
+        apislicer_url = "http://apislicer:8000/slice"
         
         # Enviar a APISLICER
         async with aiohttp.ClientSession() as session:
@@ -1272,7 +1260,8 @@ async def process_single_stl(filename, file_path, config):
                         "estimated_time_minutes": estimated_stats.get("time_minutes", 45),
                         "layer_count": estimated_stats.get("layers", 200),
                         "filament_used_grams": estimated_stats.get("filament_grams", 12.5),
-                        "processing_time_seconds": 15  # Tiempo real de procesamiento
+                        "processing_time_seconds": 15,  # Tiempo real de procesamiento
+                        "profile_used": profile_job_id if profile_job_id else config.get('printer_profile', 'ender3')
                     }
                 else:
                     error_text = await response.text()
