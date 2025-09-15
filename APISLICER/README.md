@@ -7,6 +7,9 @@
 - [🎯 Características Principales](#-características-principales)
 - [🏗️ Arquitectura del Sistema](#️-arquitectura-del-sistema)
 - [🔄 Flujo de Procesamiento](#-flujo-de-procesamiento)
+  - [1. Flujo Principal de Laminado](#1-flujo-principal-de-laminado)
+  - [2. Generación Dinámica de Perfiles](#2-generación-dinámica-de-perfiles)
+  - [3. Flujo Completo: Configuración → Perfil → Laminado](#3-flujo-completo-configuración--perfil--laminado)
 - [🚀 Inicio Rápido](#-inicio-rápido)
 - [📡 API Reference](#-api-reference)
 - [⚙️ Generación Dinámica de Perfiles](#️-generación-dinámica-de-perfiles)
@@ -161,6 +164,80 @@ flowchart TD
     style ABS fill:#f44336
     style PROTO fill:#2196f3
     style FACTORY fill:#9c27b0
+```
+
+### 3. Flujo Completo: Configuración → Perfil → Laminado
+
+```mermaid
+sequenceDiagram
+    participant UI as Web Interface
+    participant KC as KyberCore API
+    participant API as APISLICER
+    participant PS as PrusaSlicer
+    participant FS as File System
+    
+    Note over UI: Usuario configura en wizard
+    UI->>KC: POST /api/slicer/generate-profile
+    Note right of UI: Paso 1: Generar perfil personalizado
+    
+    KC->>API: Forward profile generation request
+    API->>API: Validate & load base profile
+    API->>API: Apply material/production configs
+    API->>FS: Save custom profile to printer_stl_config/
+    API->>KC: Return profile info (job_id, profile_name)
+    KC->>UI: Profile generated successfully
+    
+    Note over UI: Perfil personalizado creado
+    UI->>KC: POST /api/print/process-stl
+    Note right of UI: Paso 2: Laminar con perfil personalizado
+    
+    KC->>API: POST /slice with custom_profile=job_id
+    API->>FS: Load custom profile from printer_stl_config/
+    API->>FS: Save STL to uploads/
+    API->>PS: Execute slicer with custom profile
+    PS->>FS: Generate G-code to output/
+    PS->>API: Return success
+    
+    API->>KC: Return FileResponse with G-code
+    KC->>UI: Forward G-code file
+    
+    Note over API: Cleanup temporary files
+    API->>FS: Remove STL from uploads/
+    
+    UI->>UI: Show success & next steps
+```
+
+#### Flujo del Wizard de Impresión
+
+El proceso completo desde la configuración del usuario hasta la generación del G-code optimizado sigue estos pasos:
+
+1. **Configuración del Usuario**: El usuario selecciona material, modo de producción y impresora en el wizard
+2. **Generación del Perfil**: Se crea un perfil INI personalizado combinando todas las configuraciones
+3. **Laminado Inteligente**: Los archivos STL se procesan usando el perfil personalizado generado
+4. **Resultado Optimizado**: Se obtiene G-code optimizado para las condiciones específicas
+
+**Ejemplo de flujo en código JavaScript:**
+```javascript
+// Paso 1: Generar perfil personalizado
+const profileResult = await fetch('/api/slicer/generate-profile', {
+  method: 'POST',
+  body: JSON.stringify({
+    job_id: "job_123456789",
+    printer_model: "ender3",
+    material_config: { type: "PLA" },
+    production_config: { mode: "prototype", priority: "speed" },
+    printer_config: { bed_adhesion: true }
+  })
+});
+
+// Paso 2: Usar perfil para laminar
+const processingResult = await fetch('/api/print/process-stl', {
+  method: 'POST', 
+  body: JSON.stringify({
+    session_id: "wizard_session_123",
+    profile_job_id: profileResult.job_id  // Usar el perfil generado
+  })
+});
 ```
 
 ---
