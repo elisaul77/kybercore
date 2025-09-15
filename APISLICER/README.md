@@ -386,9 +386,9 @@ graph TB
             PS[PrusaSlicer CLI]
             
             subgraph "Volumes"
-                CONF[/app/config]
-                UP[/app/uploads]
-                OUT[/app/output]
+                CONF["/app/config"]
+                UP["/app/uploads"]
+                OUT["/app/output"]
             end
         end
     end
@@ -609,7 +609,7 @@ docker exec apislicer netstat -tulpn | grep :8000
 ```mermaid
 graph LR
     subgraph "Health Monitoring"
-        HC[/health endpoint]
+        HC[health endpoint]
         PS[PrusaSlicer Status]
         FS[File System Check]
         CONF[Config Validation]
