@@ -1,6 +1,7 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import os
 import subprocess
@@ -536,6 +537,149 @@ async def get_printer_profiles():
             "generic"
         ]
     }
+
+# Montar directorio de uploads como archivos estáticos
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+
+@app.get("/test", response_class=HTMLResponse)
+async def test_page():
+    """Página de prueba simple"""
+    return HTMLResponse(content="<h1>Test</h1><p>Funciona!</p>")
+
+@app.get("/test_auto_rotate.html", response_class=HTMLResponse)
+async def get_test_page():
+    """Sirve la página de pruebas de auto-rotación"""
+    return """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prueba Auto-Rotación STL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-8">
+    <h1 class="text-3xl mb-8">🔄 Prueba Auto-Rotación STL</h1>
+    
+    <form id="uploadForm" enctype="multipart/form-data" class="mb-6">
+        <input type="file" id="stlFile" accept=".stl" class="border p-2">
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 ml-2">Subir y Analizar</button>
+    </form>
+    
+    <div id="results" class="hidden">
+        <div class="grid grid-cols-3 gap-4">
+            <div class="border p-4">
+                <h3>🔍 Grid Search</h3>
+                <div id="gridResult">-</div>
+            </div>
+            <div class="border p-4">
+                <h3>🔥 Gradient</h3>
+                <div id="gradientResult">-</div>
+            </div>
+            <div class="border p-4">
+                <h3>🤖 Auto</h3>
+                <div id="autoResult">-</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="log" class="mt-4 p-4 bg-gray-100 font-mono text-sm"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('stlFile');
+            if (!fileInput.files[0]) return alert('Selecciona un archivo');
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            log('Subiendo archivo...');
+            
+            try {
+                const uploadResponse = await fetch('/upload', { method: 'POST', body: formData });
+                const uploadData = await uploadResponse.json();
+                const stlPath = uploadData.file_path;
+                
+                log('Archivo subido: ' + stlPath);
+                
+                // Grid
+                log('Probando Grid...');
+                const gridRes = await fetch('/auto-rotate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({stl_path: stlPath, method: 'grid'})
+                });
+                const gridData = await gridRes.json();
+                document.getElementById('gridResult').textContent = gridData.improvement_percentage.toFixed(2) + '%';
+                
+                // Gradient
+                log('Probando Gradient...');
+                const gradRes = await fetch('/auto-rotate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({stl_path: stlPath, method: 'gradient'})
+                });
+                const gradData = await gradRes.json();
+                document.getElementById('gradientResult').textContent = gradData.improvement_percentage.toFixed(2) + '%';
+                
+                // Auto
+                log('Probando Auto...');
+                const autoRes = await fetch('/auto-rotate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({stl_path: stlPath, method: 'auto'})
+                });
+                const autoData = await autoRes.json();
+                document.getElementById('autoResult').textContent = autoData.improvement_percentage.toFixed(2) + '%';
+                
+                document.getElementById('results').classList.remove('hidden');
+                log('¡Completado!');
+                
+            } catch (error) {
+                log('Error: ' + error.message);
+            }
+        });
+        
+        function log(msg) {
+            document.getElementById('log').innerHTML += new Date().toLocaleTimeString() + ' - ' + msg + '<br>';
+        }
+    </script>
+</body>
+</html>
+    """
+
+@app.post("/upload")
+async def upload_stl(file: UploadFile = File(...)):
+    """
+    Sube un archivo STL y devuelve la ruta para análisis.
+    """
+    try:
+        # Validar que sea un archivo STL
+        if not file.filename.lower().endswith('.stl'):
+            raise HTTPException(status_code=400, detail="El archivo debe ser .stl")
+
+        # Generar nombre único para el archivo
+        job_id = str(uuid.uuid4())
+        stl_filename = f"{job_id}.stl"
+        stl_path = f"{UPLOAD_DIR}/{stl_filename}"
+
+        # Guardar el archivo
+        with open(stl_path, "wb") as buffer:
+            content = await file.read()
+            buffer.write(content)
+
+        logger.info(f"Archivo STL subido: {stl_path}")
+
+        return {
+            "success": True,
+            "file_path": stl_path,
+            "file_name": stl_filename,
+            "job_id": job_id
+        }
+
+    except Exception as e:
+        logger.error(f"Error subiendo archivo: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/auto-rotate")
 async def auto_rotate_stl(request: AutoRotateRequest):

@@ -88,4 +88,5 @@ logs/
 src/proyect
 src/project
 APISLICER/output
+APISLICER/uploads
 src/web/static/img/job_results/*
