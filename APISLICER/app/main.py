@@ -109,17 +109,12 @@ def calculate_contact_area(mesh: trimesh.Trimesh, rotation_matrix: np.ndarray) -
 
 def find_optimal_rotation_gradient(stl_path: str, max_iterations: int = 50, learning_rate: float = 0.1) -> Tuple[np.ndarray, float, Dict]:
     """
-    Encuentra la rotación óptima usando descenso del gradiente.
-    Más eficiente y preciso que búsqueda por grilla.
+    Encuentra la rotación óptima usando descenso del gradiente con múltiples puntos de inicio aleatorios.
+    Aplica 10 giros aleatorios iniciales y luego optimiza desde el mejor punto encontrado.
     """
     try:
         # Cargar el mesh STL
         mesh = trimesh.load(stl_path)
-
-        # NO normalizar el mesh para preservar dimensiones reales de impresión
-        # mesh.apply_translation(-mesh.centroid)
-        # scale_factor = 1.0 / mesh.scale
-        # mesh.apply_scale(scale_factor)
 
         # Función objetivo: área de contacto (a maximizar)
         def objective_function(rotation_angles):
@@ -147,28 +142,60 @@ def find_optimal_rotation_gradient(stl_path: str, max_iterations: int = 50, lear
                 grad[i] = (f(x_plus) - f(x_minus)) / (2 * h)
             return grad
 
-        # Descenso del gradiente con momentum
-        current_angles = np.array([0.0, 0.0, 0.0])  # [rot_x, rot_y, rot_z] en grados
+        # FASE 1: Exploración inicial con puntos aleatorios y estratégicos
+        print("FASE 1: Explorando puntos de inicio aleatorios y estratégicos...")
+        random_starts = []
+        
+        # Agregar puntos estratégicos importantes (rotaciones comunes)
+        strategic_points = [
+            [0, 0, 0],      # Sin rotación
+            [90, 0, 0],     # 90° X
+            [180, 0, 0],    # 180° X (invertir)
+            [0, 90, 0],     # 90° Y  
+            [0, 180, 0],    # 180° Y (invertir)
+            [0, 0, 90],     # 90° Z
+            [90, 90, 0],    # Combinación 90° X+Y
+            [180, 90, 0],   # Combinación 180° X + 90° Y
+        ]
+        
+        print("  Probando puntos estratégicos:")
+        for i, angles in enumerate(strategic_points):
+            angles_array = np.array(angles, dtype=float)
+            area = objective_function(angles_array)
+            random_starts.append((angles_array, area))
+            print(f"    Estratégico {i+1}: [{angles[0]}, {angles[1]}, {angles[2]}] → Área: {area:.3f}")
+        
+        # Generar puntos aleatorios adicionales
+        print("  Probando puntos aleatorios:")
+        np.random.seed(42)  # Para reproducibilidad
+        for i in range(7):  # 7 aleatorios + 8 estratégicos = 15 total
+            random_angles = np.random.uniform(0, 360, 3)
+            area = objective_function(random_angles)
+            random_starts.append((random_angles.copy(), area))
+            print(f"    Aleatorio {i+1}: [{random_angles[0]:.1f}, {random_angles[1]:.1f}, {random_angles[2]:.1f}] → Área: {area:.3f}")
+
+        # Encontrar el mejor punto de inicio
+        best_start = max(random_starts, key=lambda x: x[1])
+        start_angles, start_area = best_start
+        print(f"Mejor punto de inicio: [{start_angles[0]:.1f}, {start_angles[1]:.1f}, {start_angles[2]:.1f}] → Área: {start_area:.3f}")
+
+        # FASE 2: Optimización por gradiente desde el mejor punto
+        print("FASE 2: Optimizando por gradiente desde el mejor punto...")
+        
+        current_angles = start_angles.copy()
         velocity = np.zeros(3)
         beta = 0.9  # Factor de momentum
 
         best_angles = current_angles.copy()
-        best_area = objective_function(current_angles)
+        best_area = start_area
+
+        # Calcular área original (sin rotación) para comparación
+        original_area = objective_function(np.array([0.0, 0.0, 0.0]))
 
         # Inicializar variables de seguimiento
         iterations = 0
         converged = False
         gradient_norm_history = []
-
-        rotation_info = {
-            "method": "gradient_descent",
-            "iterations": iterations,
-            "converged": converged,
-            "best_rotation_degrees": [float(x) for x in best_angles],
-            "contact_area_improvement": 0,
-            "original_area": float(best_area),
-            "gradient_norm_history": gradient_norm_history
-        }
 
         # Algoritmo de descenso del gradiente
         for iteration in range(max_iterations):
@@ -181,6 +208,7 @@ def find_optimal_rotation_gradient(stl_path: str, max_iterations: int = 50, lear
 
             if grad_norm < 1e-4:  # Convergencia
                 converged = True
+                print(f"  Convergencia alcanzada en iteración {iteration}")
                 break
 
             # Actualizar velocity (momentum) - ASCENDENTE para maximizar
@@ -199,37 +227,37 @@ def find_optimal_rotation_gradient(stl_path: str, max_iterations: int = 50, lear
             if current_area > best_area:
                 best_area = current_area
                 best_angles = current_angles.copy()
+                print(f"  Iteración {iteration}: Nueva mejor área {best_area:.3f} en [{best_angles[0]:.1f}, {best_angles[1]:.1f}, {best_angles[2]:.1f}]")
 
             iterations += 1
 
-        print(f"DEBUG: Finalizando optimización. Mejor área: {best_area}, Ángulos: {best_angles.tolist() if hasattr(best_angles, 'tolist') else best_angles}")
+        print(f"Optimización finalizada después de {iterations} iteraciones")
+        print(f"Mejor área encontrada: {best_area:.3f}")
+        print(f"Mejor rotación: [{best_angles[0]:.1f}, {best_angles[1]:.1f}, {best_angles[2]:.1f}]")
+
         # Crear matriz de rotación final
-        try:
-            best_rot_x, best_rot_y, best_rot_z = best_angles
-            rot_x_matrix = trimesh.transformations.rotation_matrix(np.radians(best_rot_x), [1, 0, 0])
-            rot_y_matrix = trimesh.transformations.rotation_matrix(np.radians(best_rot_y), [0, 1, 0])
-            rot_z_matrix = trimesh.transformations.rotation_matrix(np.radians(best_rot_z), [0, 0, 1])
+        best_rot_x, best_rot_y, best_rot_z = best_angles
+        rot_x_matrix = trimesh.transformations.rotation_matrix(np.radians(best_rot_x), [1, 0, 0])
+        rot_y_matrix = trimesh.transformations.rotation_matrix(np.radians(best_rot_y), [0, 1, 0])
+        rot_z_matrix = trimesh.transformations.rotation_matrix(np.radians(best_rot_z), [0, 0, 1])
 
-            best_rotation = rot_z_matrix @ rot_y_matrix @ rot_x_matrix
-            
-            improvement = ((best_area - rotation_info["original_area"]) / rotation_info["original_area"]) * 100 if rotation_info["original_area"] > 0 else 0
+        best_rotation = rot_z_matrix @ rot_y_matrix @ rot_x_matrix
+        
+        improvement = ((best_area - original_area) / original_area) * 100 if original_area > 0 else 0
 
-            rotation_info = {
-                "method": "gradient_descent",
-                "iterations": int(iterations),
-                "converged": converged,
-                "best_rotation_degrees": [float(best_rot_x), float(best_rot_y), float(best_rot_z)],
-                "contact_area_improvement": float(improvement),
-                "original_area": float(rotation_info["original_area"]),
-                "gradient_norm_history": [float(x) for x in gradient_norm_history]
-            }
+        rotation_info = {
+            "method": "gradient_descent_multistart",
+            "iterations": int(iterations),
+            "converged": converged,
+            "best_rotation_degrees": [float(best_rot_x), float(best_rot_y), float(best_rot_z)],
+            "contact_area_improvement": float(improvement),
+            "original_area": float(original_area),
+            "gradient_norm_history": [float(x) for x in gradient_norm_history],
+            "random_starts_tested": 15,
+            "best_start_area": float(start_area)
+        }
 
-            return best_rotation, best_area, rotation_info
-        except Exception as e:
-            print(f"DEBUG: Error en cálculo final: {str(e)}")
-            import traceback
-            traceback.print_exc()
-            raise
+        return best_rotation, best_area, rotation_info
 
     except Exception as e:
         logger.error(f"Error en optimización por gradiente: {str(e)}")
