@@ -548,114 +548,27 @@ async def test_page():
 
 @app.get("/test_auto_rotate.html", response_class=HTMLResponse)
 async def get_test_page():
-    """Sirve la página de pruebas de auto-rotación"""
-    return """
+    """Sirve la página de pruebas de auto-rotación con visor 3D"""
+    try:
+        # Leer el archivo HTML completo desde la carpeta app (volumen mapeado)
+        html_file_path = "/app/app/test_auto_rotate.html"
+        with open(html_file_path, 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        return HTMLResponse(content=html_content)
+    except FileNotFoundError:
+        # Fallback si no encuentra el archivo
+        return HTMLResponse(content="""
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Prueba Auto-Rotación STL</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Error - Archivo no encontrado</title>
 </head>
-<body class="p-8">
-    <h1 class="text-3xl mb-8">🔄 Prueba Auto-Rotación STL</h1>
-    
-    <form id="uploadForm" enctype="multipart/form-data" class="mb-6">
-        <input type="file" id="stlFile" accept=".stl" class="border p-2">
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 ml-2">Subir y Analizar</button>
-    </form>
-    
-    <div id="results" class="hidden">
-        <div class="grid grid-cols-3 gap-4">
-            <div class="border p-4">
-                <h3>🔍 Grid Search</h3>
-                <div id="gridResult">-</div>
-            </div>
-            <div class="border p-4">
-                <h3>🔥 Gradient</h3>
-                <div id="gradientResult">-</div>
-            </div>
-            <div class="border p-4">
-                <h3>🤖 Auto</h3>
-                <div id="autoResult">-</div>
-            </div>
-        </div>
-    </div>
-    
-    <div id="log" class="mt-4 p-4 bg-gray-100 font-mono text-sm"></div>
-
-    <script>
-        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const fileInput = document.getElementById('stlFile');
-            if (!fileInput.files[0]) return alert('Selecciona un archivo');
-            
-            const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
-            
-            log('Subiendo archivo...');
-            
-            try {
-                const uploadResponse = await fetch('/upload', { method: 'POST', body: formData });
-                const uploadData = await uploadResponse.json();
-                const stlPath = uploadData.file_path;
-                
-                log('Archivo subido: ' + stlPath);
-                
-                // Grid
-                log('Probando Grid...');
-                const gridRes = await fetch('/auto-rotate', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({stl_path: stlPath, method: 'grid'})
-                });
-                const gridData = await gridRes.json();
-                log('Grid respuesta: ' + JSON.stringify(gridData));
-                const gridImprovement = gridData.improvement_percentage || 0;
-                document.getElementById('gridResult').textContent = gridImprovement.toFixed(2) + '%';
-                log('Grid resultado mostrado: ' + gridImprovement.toFixed(2) + '%');
-                
-                // Gradient
-                log('Probando Gradient...');
-                const gradRes = await fetch('/auto-rotate', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({stl_path: stlPath, method: 'gradient'})
-                });
-                const gradData = await gradRes.json();
-                log('Gradient respuesta: ' + JSON.stringify(gradData));
-                const gradImprovement = gradData.improvement_percentage || 0;
-                document.getElementById('gradientResult').textContent = gradImprovement.toFixed(2) + '%';
-                log('Gradient resultado mostrado: ' + gradImprovement.toFixed(2) + '%');
-                
-                // Auto
-                log('Probando Auto...');
-                const autoRes = await fetch('/auto-rotate', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({stl_path: stlPath, method: 'auto'})
-                });
-                const autoData = await autoRes.json();
-                log('Auto respuesta: ' + JSON.stringify(autoData));
-                const autoImprovement = autoData.improvement_percentage || 0;
-                document.getElementById('autoResult').textContent = autoImprovement.toFixed(2) + '%';
-                log('Auto resultado mostrado: ' + autoImprovement.toFixed(2) + '%');
-                
-                document.getElementById('results').classList.remove('hidden');
-                log('¡Completado!');
-                
-            } catch (error) {
-                log('Error: ' + error.message);
-            }
-        });
-        
-        function log(msg) {
-            document.getElementById('log').innerHTML += new Date().toLocaleTimeString() + ' - ' + msg + '<br>';
-        }
-    </script>
+<body>
+    <h1>Error: No se encontró el archivo test_auto_rotate.html</h1>
+    <p>Verifica que el archivo esté en el directorio correcto (/app/app/).</p>
 </body>
 </html>
-    """
+        """)
 
 @app.post("/upload")
 async def upload_stl(file: UploadFile = File(...)):
@@ -688,6 +601,60 @@ async def upload_stl(file: UploadFile = File(...)):
 
     except Exception as e:
         logger.error(f"Error subiendo archivo: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/model-info/{filename}")
+async def get_model_info(filename: str):
+    """
+    Obtiene información detallada de un modelo STL.
+    """
+    try:
+        stl_path = f"{UPLOAD_DIR}/{filename}"
+        if not os.path.exists(stl_path):
+            raise HTTPException(status_code=404, detail="Archivo STL no encontrado")
+
+        # Cargar el mesh STL
+        mesh = trimesh.load(stl_path)
+
+        # Calcular estadísticas
+        num_faces = len(mesh.faces)
+        num_vertices = len(mesh.vertices)
+        volume = mesh.volume if hasattr(mesh, 'volume') and mesh.volume > 0 else 0
+
+        # Estimar complejidad
+        if num_faces < 10000:
+            complexity = "Simple"
+        elif num_faces < 50000:
+            complexity = "Complejo"
+        else:
+            complexity = "Muy Complejo"
+
+        # Calcular área de superficie
+        surface_area = mesh.area
+
+        # Calcular bounding box
+        bounds = mesh.bounds
+        dimensions = bounds[1] - bounds[0]  # [width, depth, height]
+
+        return {
+            "success": True,
+            "filename": filename,
+            "faces": num_faces,
+            "vertices": num_vertices,
+            "volume": round(volume, 2) if volume > 0 else 0,
+            "surface_area": round(surface_area, 2),
+            "dimensions": {
+                "width": round(dimensions[0], 2),
+                "depth": round(dimensions[1], 2),
+                "height": round(dimensions[2], 2)
+            },
+            "complexity": complexity,
+            "is_watertight": mesh.is_watertight,
+            "is_convex": mesh.is_convex
+        }
+
+    except Exception as e:
+        logger.error(f"Error obteniendo info del modelo: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/auto-rotate")

@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/loaders/STLLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body class="bg-gray-100 p-8">
     <div class="max-w-6xl mx-auto">
@@ -177,41 +178,120 @@
 
         const viewers = init3DViewers();
 
-        // Función para cargar y mostrar STL
-        function loadSTL(url, scene, isOriginal = true) {
-            const loader = new THREE.STLLoader();
-            loader.load(url, function(geometry) {
-                const material = new THREE.MeshLambertMaterial({ color: isOriginal ? 0x888888 : 0x4CAF50 });
-                const mesh = new THREE.Mesh(geometry, material);
-                scene.add(mesh);
+        // Función para cargar y mostrar STL desde File input
+        function loadSTLFromFile(file, scene, isOriginal = true) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const loader = new THREE.STLLoader();
+                    const geometry = loader.parse(event.target.result);
 
-                // Ajustar cámara para ver el objeto completo
-                const box = new THREE.Box3().setFromObject(mesh);
-                const center = box.getCenter(new THREE.Vector3());
-                const size = box.getSize(new THREE.Vector3());
-                const maxDim = Math.max(size.x, size.y, size.z);
-                const distance = maxDim * 1.5;
+                    const material = new THREE.MeshLambertMaterial({
+                        color: isOriginal ? 0x888888 : 0x4CAF50,
+                        transparent: true,
+                        opacity: 0.8
+                    });
+                    const mesh = new THREE.Mesh(geometry, material);
+                    scene.add(mesh);
 
-                if (isOriginal) {
-                    viewers.originalCamera.position.set(center.x + distance, center.y + distance, center.z + distance);
-                    viewers.originalCamera.lookAt(center);
-                } else {
-                    viewers.optimizedCamera.position.set(center.x + distance, center.y + distance, center.z + distance);
-                    viewers.optimizedCamera.lookAt(center);
-                }
+                    // Ajustar cámara para ver el objeto completo
+                    const box = new THREE.Box3().setFromObject(mesh);
+                    const center = box.getCenter(new THREE.Vector3());
+                    const size = box.getSize(new THREE.Vector3());
+                    const maxDim = Math.max(size.x, size.y, size.z);
+                    const distance = maxDim * 1.5;
 
-                // Animar
-                function animate() {
-                    requestAnimationFrame(animate);
-                    mesh.rotation.y += 0.005;
                     if (isOriginal) {
-                        viewers.originalRenderer.render(viewers.originalScene, viewers.originalCamera);
+                        viewers.originalCamera.position.set(center.x + distance, center.y + distance, center.z + distance);
+                        viewers.originalCamera.lookAt(center);
+                        originalGeometry = geometry.clone();
                     } else {
-                        viewers.optimizedRenderer.render(viewers.optimizedScene, viewers.optimizedCamera);
+                        viewers.optimizedCamera.position.set(center.x + distance, center.y + distance, center.z + distance);
+                        viewers.optimizedCamera.lookAt(center);
+                        optimizedGeometry = geometry.clone();
+                    }
+
+                    // Agregar controles de órbita
+                    if (isOriginal && !viewers.originalControls) {
+                        viewers.originalControls = new THREE.OrbitControls(viewers.originalCamera, viewers.originalRenderer.domElement);
+                        viewers.originalControls.enableDamping = true;
+                        viewers.originalControls.dampingFactor = 0.05;
+                    }
+                    if (!isOriginal && !viewers.optimizedControls) {
+                        viewers.optimizedControls = new THREE.OrbitControls(viewers.optimizedCamera, viewers.optimizedRenderer.domElement);
+                        viewers.optimizedControls.enableDamping = true;
+                        viewers.optimizedControls.dampingFactor = 0.05;
+                    }
+
+                    // Animar
+                    function animate() {
+                        requestAnimationFrame(animate);
+                        if (isOriginal) {
+                            viewers.originalControls.update();
+                            viewers.originalRenderer.render(viewers.originalScene, viewers.originalCamera);
+                        } else {
+                            viewers.optimizedControls.update();
+                            viewers.optimizedRenderer.render(viewers.optimizedScene, viewers.optimizedCamera);
+                        }
+                    }
+                    animate();
+
+                    resolve(geometry);
+                };
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        // Mostrar modelo optimizado
+        async function showOptimizedModel() {
+            if (!originalGeometry) return;
+
+            // Encontrar la mejor rotación entre los tres métodos
+            const methods = ['grid', 'gradient', 'auto'];
+            let bestMethod = 'grid';
+            let bestImprovement = 0;
+            let bestRotation = [0, 0, 0];
+
+            methods.forEach(method => {
+                const improvement = parseFloat(document.getElementById(method + 'Improvement').textContent) || 0;
+                if (improvement > bestImprovement) {
+                    bestImprovement = improvement;
+                    bestMethod = method;
+                    const rotationText = document.getElementById(method + 'Rotation').textContent;
+                    const match = rotationText.match(/\[([^\]]+)\]/);
+                    if (match) {
+                        bestRotation = match[1].split(',').map(x => parseFloat(x.trim()));
                     }
                 }
-                animate();
             });
+
+            log(`Aplicando mejor rotación (${bestMethod}): [${bestRotation.join(', ')}]`);
+
+            // Limpiar escena optimizada
+            while(viewers.optimizedScene.children.length > 2) {
+                viewers.optimizedScene.remove(viewers.optimizedScene.children[2]);
+            }
+
+            // Aplicar rotación y mostrar
+            const rotatedGeometry = applyRotationToGeometry(originalGeometry, bestRotation);
+            const material = new THREE.MeshLambertMaterial({
+                color: 0x4CAF50,
+                transparent: true,
+                opacity: 0.8
+            });
+            const mesh = new THREE.Mesh(rotatedGeometry, material);
+            viewers.optimizedScene.add(mesh);
+
+            // Ajustar cámara
+            const box = new THREE.Box3().setFromObject(mesh);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const distance = maxDim * 1.5;
+
+            viewers.optimizedCamera.position.set(center.x + distance, center.y + distance, center.z + distance);
+            viewers.optimizedCamera.lookAt(center);
         }
 
         // Función para subir archivo
@@ -224,14 +304,27 @@
                 return;
             }
 
-            const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
-
+            const file = fileInput.files[0];
             document.getElementById('loading').classList.remove('hidden');
             document.getElementById('results').classList.add('hidden');
 
             try {
-                // Subir archivo
+                // Limpiar escenas anteriores
+                while(viewers.originalScene.children.length > 2) {
+                    viewers.originalScene.remove(viewers.originalScene.children[2]);
+                }
+                while(viewers.optimizedScene.children.length > 2) {
+                    viewers.optimizedScene.remove(viewers.optimizedScene.children[2]);
+                }
+
+                // Cargar STL en el visor original
+                log('Cargando modelo 3D...');
+                await loadSTLFromFile(file, viewers.originalScene, true);
+
+                // Subir archivo al servidor
+                const formData = new FormData();
+                formData.append('file', file);
+
                 const uploadResponse = await fetch('http://localhost:8001/upload', {
                     method: 'POST',
                     body: formData
@@ -342,9 +435,9 @@
                 // Mostrar resultados
                 document.getElementById('results').classList.remove('hidden');
 
-                // Cargar visualización 3D
-                loadSTL('http://localhost:8001/uploads/' + uploadedFilePath.split('/').pop(), viewers.originalScene, true);
-                // Para la versión optimizada, necesitaríamos el archivo rotado
+                // Mostrar versión optimizada en el visor 3D
+                await showOptimizedModel();
+
                 log('Análisis completado exitosamente!');
 
             } catch (error) {
@@ -369,6 +462,71 @@
             } else if (method === 'auto') {
                 document.getElementById('autoMethod').textContent = 'Grid (Complejo)';
             }
+        }
+
+        // Función para aplicar rotación a geometría
+        function applyRotationToGeometry(geometry, rotationDegrees) {
+            const rotatedGeometry = geometry.clone();
+            const euler = new THREE.Euler(
+                THREE.MathUtils.degToRad(rotationDegrees[0]),
+                THREE.MathUtils.degToRad(rotationDegrees[1]),
+                THREE.MathUtils.degToRad(rotationDegrees[2])
+            );
+            rotatedGeometry.rotateX(euler.x);
+            rotatedGeometry.rotateY(euler.y);
+            rotatedGeometry.rotateZ(euler.z);
+            return rotatedGeometry;
+        }
+
+        // Mostrar modelo optimizado
+        async function showOptimizedModel() {
+            if (!originalGeometry) return;
+
+            // Encontrar la mejor rotación entre los tres métodos
+            const methods = ['grid', 'gradient', 'auto'];
+            let bestMethod = 'grid';
+            let bestImprovement = 0;
+            let bestRotation = [0, 0, 0];
+
+            methods.forEach(method => {
+                const improvement = parseFloat(document.getElementById(method + 'Improvement').textContent) || 0;
+                if (improvement > bestImprovement) {
+                    bestImprovement = improvement;
+                    bestMethod = method;
+                    const rotationText = document.getElementById(method + 'Rotation').textContent;
+                    const match = rotationText.match(/\[([^\]]+)\]/);
+                    if (match) {
+                        bestRotation = match[1].split(',').map(x => parseFloat(x.trim()));
+                    }
+                }
+            });
+
+            log(`Aplicando mejor rotación (${bestMethod}): [${bestRotation.join(', ')}]`);
+
+            // Limpiar escena optimizada
+            while(viewers.optimizedScene.children.length > 2) {
+                viewers.optimizedScene.remove(viewers.optimizedScene.children[2]);
+            }
+
+            // Aplicar rotación y mostrar
+            const rotatedGeometry = applyRotationToGeometry(originalGeometry, bestRotation);
+            const material = new THREE.MeshLambertMaterial({
+                color: 0x4CAF50,
+                transparent: true,
+                opacity: 0.8
+            });
+            const mesh = new THREE.Mesh(rotatedGeometry, material);
+            viewers.optimizedScene.add(mesh);
+
+            // Ajustar cámara
+            const box = new THREE.Box3().setFromObject(mesh);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const distance = maxDim * 1.5;
+
+            viewers.optimizedCamera.position.set(center.x + distance, center.y + distance, center.z + distance);
+            viewers.optimizedCamera.lookAt(center);
         }
 
         // Función de logging
