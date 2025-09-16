@@ -34,6 +34,10 @@ RUN apt-get update && apt-get install -y \
     libgdk-pixbuf-2.0-0 \
     libnotify4 \
     libsecret-1-0 \
+    # Dependencias para análisis geométrico STL
+    python3-numpy \
+    python3-scipy \
+    python3-shapely \
     && rm -rf /var/lib/apt/lists/*
 
 # Crear directorio de trabajo
@@ -44,7 +48,7 @@ COPY requirements.txt .
 RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt
 
 # Descargar e instalar PrusaSlicer AppImage y extraer su contenido para evitar FUSE
-RUN wget -O /opt/PrusaSlicer.AppImage \
+RUN curl -L -o /opt/PrusaSlicer.AppImage \
     "https://github.com/prusa3d/PrusaSlicer/releases/download/version_2.8.1/PrusaSlicer-2.8.1+linux-x64-newer-distros-GTK3-202409181416.AppImage" \
     && chmod +x /opt/PrusaSlicer.AppImage \
     # Extraer AppImage (evita dependencia de /dev/fuse en tiempo de ejecución)

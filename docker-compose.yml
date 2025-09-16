@@ -57,6 +57,7 @@ services:
       - ./APISLICER/uploads:/app/uploads
       - ./APISLICER/output:/app/output
       - ./APISLICER/config:/app/config
+      - ./APISLICER/app:/app/app
     environment:
       - PYTHONUNBUFFERED=1
       - DISPLAY=:99
