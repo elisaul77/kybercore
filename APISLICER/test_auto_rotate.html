@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Auto-Rotación STL - KyberCore APISLICER</title>
+    <!-- Tailwind CSS - Para desarrollo/testing usamos CDN, en producción usar CLI -->
+    <!-- Nota: Para producción, instalar Tailwind CLI: npm install -D tailwindcss -->
+    <!-- y usar: npx tailwindcss -i ./src/input.css -o ./dist/output.css --watch -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js - Usando versión moderna -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r159/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r159/examples/js/loaders/STLLoader.js"></script>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">🔄 Prueba Auto-Rotación STL</h1>
+
+        <!-- Formulario de subida -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">📤 Subir Archivo STL</h2>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Archivo STL</label>
+                    <input type="file" id="stlFile" accept=".stl" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    🚀 Subir y Analizar
+                </button>
+            </form>
+        </div>
+
+        <!-- Resultados -->
+        <div id="results" class="hidden">
+            <h2 class="text-2xl font-semibold mb-6">📊 Resultados de Auto-Rotación</h2>
+
+            <!-- Información del modelo -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h3 class="text-lg font-semibold mb-4">📋 Información del Modelo</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600" id="modelFaces">-</div>
+                        <div class="text-sm text-gray-600">Caras</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-600" id="modelVertices">-</div>
+                        <div class="text-sm text-gray-600">Vértices</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-purple-600" id="modelVolume">-</div>
+                        <div class="text-sm text-gray-600">Volumen (cm³)</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-orange-600" id="modelComplexity">-</div>
+                        <div class="text-sm text-gray-600">Complejidad</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparación de métodos -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <!-- Grid Search -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4 text-center">🔍 Grid Search</h3>
+                    <div id="gridResults" class="space-y-3">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-gray-600" id="gridImprovement">-</div>
+                            <div class="text-sm text-gray-600">Mejora (%)</div>
+                        </div>
+                        <div class="text-sm">
+                            <strong>Área Original:</strong> <span id="gridOriginalArea">-</span><br>
+                            <strong>Área Óptima:</strong> <span id="gridOptimalArea">-</span><br>
+                            <strong>Rotación:</strong> <span id="gridRotation">-</span><br>
+                            <strong>Rotaciones Probadas:</strong> <span id="gridTested">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gradient Hybrid -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4 text-center">🔥 Gradient Híbrido</h3>
+                    <div id="gradientResults" class="space-y-3">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-green-600" id="gradientImprovement">-</div>
+                            <div class="text-sm text-gray-600">Mejora (%)</div>
+                        </div>
+                        <div class="text-sm">
+                            <strong>Área Original:</strong> <span id="gradientOriginalArea">-</span><br>
+                            <strong>Área Óptima:</strong> <span id="gradientOptimalArea">-</span><br>
+                            <strong>Rotación:</strong> <span id="gradientRotation">-</span><br>
+                            <strong>Iteraciones:</strong> <span id="gradientIterations">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auto (Adaptive) -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4 text-center">🤖 Auto (Adaptativo)</h3>
+                    <div id="autoResults" class="space-y-3">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-blue-600" id="autoImprovement">-</div>
+                            <div class="text-sm text-gray-600">Mejora (%)</div>
+                        </div>
+                        <div class="text-sm">
+                            <strong>Área Original:</strong> <span id="autoOriginalArea">-</span><br>
+                            <strong>Área Óptima:</strong> <span id="autoOptimalArea">-</span><br>
+                            <strong>Rotación:</strong> <span id="autoRotation">-</span><br>
+                            <strong>Método Usado:</strong> <span id="autoMethod">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualización 3D -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h3 class="text-lg font-semibold mb-4">👁️ Visualización 3D</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-medium mb-2">Posición Original</h4>
+                        <div id="originalViewer" class="w-full h-64 bg-gray-200 rounded"></div>
+                    </div>
+                    <div>
+                        <h4 class="font-medium mb-2">Posición Optimizada</h4>
+                        <div id="optimizedViewer" class="w-full h-64 bg-gray-200 rounded"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Log de procesamiento -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">📋 Log de Procesamiento</h3>
+                <div id="logArea" class="bg-gray-900 text-green-400 p-4 rounded font-mono text-sm max-h-64 overflow-y-auto">
+                    Cargando Three.js...<br>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado de carga -->
+        <div id="loading" class="hidden bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p class="text-gray-600">Analizando rotación óptima...</p>
+        </div>
+    </div>
+
+    <script>
+        let uploadedFilePath = null;
+        let originalGeometry = null;
+        let optimizedGeometry = null;
+        let viewers = null; // Variable global para los viewers 3D
+
+        // Inicializar viewers 3D
+        function init3DViewers() {
+            // Original viewer
+            const originalScene = new THREE.Scene();
+            const originalCamera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            const originalRenderer = new THREE.WebGLRenderer();
+            originalRenderer.setSize(400, 256);
+            document.getElementById('originalViewer').appendChild(originalRenderer.domElement);
+
+            // Optimized viewer
+            const optimizedScene = new THREE.Scene();
+            const optimizedCamera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            const optimizedRenderer = new THREE.WebGLRenderer();
+            optimizedRenderer.setSize(400, 256);
+            document.getElementById('optimizedViewer').appendChild(optimizedRenderer.domElement);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+
+            originalScene.add(ambientLight.clone());
+            originalScene.add(directionalLight.clone());
+            optimizedScene.add(ambientLight.clone());
+            optimizedScene.add(directionalLight.clone());
+
+            // Camera positions
+            originalCamera.position.set(50, 50, 50);
+            optimizedCamera.position.set(50, 50, 50);
+
+            return { originalScene, originalCamera, originalRenderer, optimizedScene, optimizedCamera, optimizedRenderer };
+        }
+
+        // Esperar a que Three.js esté cargado antes de inicializar
+        function waitForThreeJS() {
+            return new Promise((resolve) => {
+                if (typeof THREE !== 'undefined') {
+                    resolve();
+                } else {
+                    const checkThree = () => {
+                        if (typeof THREE !== 'undefined') {
+                            resolve();
+                        } else {
+                            setTimeout(checkThree, 100);
+                        }
+                    };
+                    checkThree();
+                }
+            });
+        }
+
+        // Esperar a que los viewers 3D estén inicializados
+        function waitForViewers() {
+            return new Promise((resolve) => {
+                if (viewers !== null) {
+                    resolve();
+                } else {
+                    const checkViewers = () => {
+                        if (viewers !== null) {
+                            resolve();
+                        } else {
+                            setTimeout(checkViewers, 100);
+                        }
+                    };
+                    checkViewers();
+                }
+            });
+        }
+
+        // Inicializar viewers 3D después de que Three.js esté cargado
+        waitForThreeJS().then(() => {
+            viewers = init3DViewers();
+            console.log('Three.js cargado correctamente, viewers 3D inicializados');
+        }).catch((error) => {
+            console.error('Error al cargar Three.js:', error);
+            document.getElementById('logArea').innerHTML += '<p class="text-red-600">❌ Error: No se pudo cargar Three.js. Verifica tu conexión a internet.</p>';
+        });
+
+        // Función para cargar y mostrar STL
+        function loadSTL(url, scene, isOriginal = true) {
+            const loader = new THREE.STLLoader();
+            loader.load(url, function(geometry) {
+                const material = new THREE.MeshLambertMaterial({ color: isOriginal ? 0x888888 : 0x4CAF50 });
+                const mesh = new THREE.Mesh(geometry, material);
+                scene.add(mesh);
+
+                // Ajustar cámara para ver el objeto completo
+                const box = new THREE.Box3().setFromObject(mesh);
+                const center = box.getCenter(new THREE.Vector3());
+                const size = box.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const distance = maxDim * 1.5;
+
+                if (isOriginal) {
+                    viewers.originalCamera.position.set(center.x + distance, center.y + distance, center.z + distance);
+                    viewers.originalCamera.lookAt(center);
+                } else {
+                    viewers.optimizedCamera.position.set(center.x + distance, center.y + distance, center.z + distance);
+                    viewers.optimizedCamera.lookAt(center);
+                }
+
+                // Animar
+                function animate() {
+                    requestAnimationFrame(animate);
+                    mesh.rotation.y += 0.005;
+                    if (isOriginal) {
+                        viewers.originalRenderer.render(viewers.originalScene, viewers.originalCamera);
+                    } else {
+                        viewers.optimizedRenderer.render(viewers.optimizedScene, viewers.optimizedCamera);
+                    }
+                }
+                animate();
+            });
+        }
+
+        // Función para subir archivo
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('stlFile');
+            if (!fileInput.files[0]) {
+                alert('Por favor selecciona un archivo STL');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+
+            // Timeout de seguridad para ocultar loading después de 2 minutos máximo
+            const safetyTimeout = setTimeout(() => {
+                log('Timeout de seguridad activado - ocultando loading');
+                try {
+                    const loadingElement = document.getElementById('loading');
+                    if (loadingElement && !loadingElement.classList.contains('hidden')) {
+                        loadingElement.classList.add('hidden');
+                        log('Loading ocultado por timeout de seguridad');
+                    }
+                } catch (e) {
+                    console.error('Error en timeout de seguridad:', e);
+                }
+            }, 120000); // 2 minutos
+
+            try {
+                // Subir archivo
+                log('Iniciando subida de archivo...');
+                const uploadResponse = await fetch('http://localhost:8001/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!uploadResponse.ok) {
+                    throw new Error(`Error al subir archivo: ${uploadResponse.status}`);
+                }
+
+                const uploadData = await uploadResponse.json();
+                uploadedFilePath = uploadData.file_path;
+
+                log('Archivo subido exitosamente: ' + uploadedFilePath);
+
+                // Cargar información del modelo
+                log('Cargando información del modelo...');
+                await loadModelInfo(uploadedFilePath);
+
+                // Ejecutar análisis de rotación
+                log('Iniciando análisis de rotación...');
+                await runRotationAnalysis();
+
+                log('Proceso completado exitosamente');
+
+            } catch (error) {
+                log('Error en el proceso: ' + error.message);
+                console.error('Error detallado:', error);
+                alert('Error al procesar el archivo: ' + error.message);
+            } finally {
+                // Limpiar timeout de seguridad
+                if (typeof safetyTimeout !== 'undefined') {
+                    clearTimeout(safetyTimeout);
+                    log('Timeout de seguridad limpiado');
+                }
+
+                log('Ocultando indicador de carga...');
+                try {
+                    const loadingElement = document.getElementById('loading');
+                    if (loadingElement) {
+                        loadingElement.classList.add('hidden');
+                        log('Indicador de carga ocultado correctamente');
+                    } else {
+                        log('Error: Elemento loading no encontrado');
+                    }
+                } catch (domError) {
+                    log('Error al manipular DOM: ' + domError.message);
+                    console.error('DOM Error:', domError);
+                }
+            }
+        });
+
+        // Cargar información del modelo
+        async function loadModelInfo(filePath) {
+            try {
+                // Extraer el nombre del archivo de la ruta
+                const filename = filePath.split('/').pop();
+
+                // Llamar al endpoint de información del modelo
+                const response = await fetch(`http://localhost:8001/model-info/${filename}`);
+                if (!response.ok) {
+                    throw new Error(`Error obteniendo info del modelo: ${response.status}`);
+                }
+
+                const modelData = await response.json();
+
+                // Actualizar la UI con datos reales
+                document.getElementById('modelFaces').textContent = modelData.faces.toLocaleString();
+                document.getElementById('modelVertices').textContent = modelData.vertices.toLocaleString();
+                document.getElementById('modelVolume').textContent = parseFloat(modelData.volume).toFixed(2);
+                document.getElementById('modelComplexity').textContent = modelData.complexity;
+
+                log(`Modelo analizado: ${modelData.faces} caras, ${modelData.vertices} vértices, volumen ${modelData.volume} cm³`);
+
+            } catch (error) {
+                log('Error al cargar info del modelo: ' + error.message);
+                // Fallback a datos simulados
+                document.getElementById('modelFaces').textContent = '~Desconocido';
+                document.getElementById('modelVertices').textContent = '~Desconocido';
+                document.getElementById('modelVolume').textContent = 'N/A';
+                document.getElementById('modelComplexity').textContent = 'Desconocido';
+            }
+        }
+
+        // Ejecutar análisis de rotación
+        async function runRotationAnalysis() {
+            log('Iniciando análisis de auto-rotación...');
+
+            try {
+                // Grid Search
+                log('Probando método Grid Search...');
+                const gridResponse = await fetch('http://localhost:8001/auto-rotate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        stl_path: uploadedFilePath,
+                        method: 'grid',
+                        rotation_step: 15,
+                        max_rotations: 24
+                    })
+                });
+
+                if (gridResponse.ok) {
+                    const gridData = await gridResponse.json();
+                    updateResults('grid', gridData);
+                    log('Grid Search completado - Mejora: ' + gridData.improvement_percentage.toFixed(2) + '%');
+                }
+
+                // Gradient Hybrid
+                log('Probando método Gradient Híbrido...');
+                const gradientResponse = await fetch('http://localhost:8001/auto-rotate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        stl_path: uploadedFilePath,
+                        method: 'gradient',
+                        max_iterations: 50,
+                        learning_rate: 0.1
+                    })
+                });
+
+                if (gradientResponse.ok) {
+                    const gradientData = await gradientResponse.json();
+                    updateResults('gradient', gradientData);
+                    log('Gradient Híbrido completado - Mejora: ' + gradientData.improvement_percentage.toFixed(2) + '%');
+                }
+
+                // Auto (Adaptive)
+                log('Probando método Auto (Adaptativo)...');
+                const autoResponse = await fetch('http://localhost:8001/auto-rotate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        stl_path: uploadedFilePath,
+                        method: 'auto'
+                    })
+                });
+
+                if (autoResponse.ok) {
+                    const autoData = await autoResponse.json();
+                    updateResults('auto', autoData);
+                    log('Auto (Adaptativo) completado - Mejora: ' + autoData.improvement_percentage.toFixed(2) + '%');
+                }
+
+                // Mostrar resultados
+                document.getElementById('results').classList.remove('hidden');
+
+                // Esperar a que los viewers estén disponibles antes de cargar STL
+                await waitForViewers();
+                loadSTL('http://localhost:8001/uploads/' + uploadedFilePath.split('/').pop(), viewers.originalScene, true);
+                // Para la versión optimizada, necesitaríamos el archivo rotado
+                log('Análisis completado exitosamente!');
+
+            } catch (error) {
+                log('Error en análisis: ' + error.message);
+            }
+        }
+
+        // Actualizar resultados en la UI
+        function updateResults(method, data) {
+            const prefix = method;
+
+            document.getElementById(prefix + 'Improvement').textContent = data.improvement_percentage.toFixed(2);
+            document.getElementById(prefix + 'OriginalArea').textContent = data.original_area.toFixed(3);
+            document.getElementById(prefix + 'OptimalArea').textContent = data.contact_area.toFixed(3);
+            document.getElementById(prefix + 'Rotation').textContent =
+                `[${data.optimal_rotation_degrees.map(x => x.toFixed(1)).join(', ')}]`;
+
+            if (method === 'grid') {
+                document.getElementById('gridTested').textContent = data.rotations_tested || 'N/A';
+            } else if (method === 'gradient') {
+                document.getElementById('gradientIterations').textContent = data.rotations_tested || 'N/A';
+            } else if (method === 'auto') {
+                document.getElementById('autoMethod').textContent = 'Grid (Complejo)';
+            }
+        }
+
+        // Función de logging
+        function log(message) {
+            const logArea = document.getElementById('logArea');
+            const timestamp = new Date().toLocaleTimeString();
+            logArea.innerHTML += timestamp + ' - ' + message + '<br>';
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        // Inicializar
+        log('Interfaz de prueba inicializada. Sube un archivo STL para comenzar.');
+    </script>
+</body>
+</html>
