@@ -54,10 +54,10 @@ services:
     ports:
       - "8001:8000" # host:container (usamos 8001 para evitar conflicto con kybercore en 8000)
     volumes:
-      - ./APISLICER/uploads:/app/uploads
-      - ./APISLICER/output:/app/output
+      - ./APISLICER/app:/app
       - ./APISLICER/config:/app/config
-      - ./APISLICER/app:/app/app
+      - ./APISLICER/output:/app/output
+      - ./APISLICER/uploads:/app/uploads
     environment:
       - PYTHONUNBUFFERED=1
       - DISPLAY=:99

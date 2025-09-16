@@ -551,7 +551,7 @@ async def get_test_page():
     """Sirve la página de pruebas de auto-rotación con visor 3D"""
     try:
         # Leer el archivo HTML completo desde la carpeta app (volumen mapeado)
-        html_file_path = "/app/app/test_auto_rotate.html"
+        html_file_path = "/app/test_auto_rotate.html"
         with open(html_file_path, 'r', encoding='utf-8') as f:
             html_content = f.read()
         return HTMLResponse(content=html_content)
