@@ -610,7 +610,10 @@ async def get_test_page():
                     body: JSON.stringify({stl_path: stlPath, method: 'grid'})
                 });
                 const gridData = await gridRes.json();
-                document.getElementById('gridResult').textContent = gridData.improvement_percentage.toFixed(2) + '%';
+                log('Grid respuesta: ' + JSON.stringify(gridData));
+                const gridImprovement = gridData.improvement_percentage || 0;
+                document.getElementById('gridResult').textContent = gridImprovement.toFixed(2) + '%';
+                log('Grid resultado mostrado: ' + gridImprovement.toFixed(2) + '%');
                 
                 // Gradient
                 log('Probando Gradient...');
@@ -620,7 +623,10 @@ async def get_test_page():
                     body: JSON.stringify({stl_path: stlPath, method: 'gradient'})
                 });
                 const gradData = await gradRes.json();
-                document.getElementById('gradientResult').textContent = gradData.improvement_percentage.toFixed(2) + '%';
+                log('Gradient respuesta: ' + JSON.stringify(gradData));
+                const gradImprovement = gradData.improvement_percentage || 0;
+                document.getElementById('gradientResult').textContent = gradImprovement.toFixed(2) + '%';
+                log('Gradient resultado mostrado: ' + gradImprovement.toFixed(2) + '%');
                 
                 // Auto
                 log('Probando Auto...');
@@ -630,7 +636,10 @@ async def get_test_page():
                     body: JSON.stringify({stl_path: stlPath, method: 'auto'})
                 });
                 const autoData = await autoRes.json();
-                document.getElementById('autoResult').textContent = autoData.improvement_percentage.toFixed(2) + '%';
+                log('Auto respuesta: ' + JSON.stringify(autoData));
+                const autoImprovement = autoData.improvement_percentage || 0;
+                document.getElementById('autoResult').textContent = autoImprovement.toFixed(2) + '%';
+                log('Auto resultado mostrado: ' + autoImprovement.toFixed(2) + '%');
                 
                 document.getElementById('results').classList.remove('hidden');
                 log('¡Completado!');
