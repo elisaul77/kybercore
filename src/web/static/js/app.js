@@ -28,7 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const targetId = link.getAttribute('data-module');
-                navigateTo(targetId);
+                // Actualizar el hash de la URL
+                window.location.hash = targetId;
                 
                 // Cerrar sidebar en móviles después de navegación
                 if (isMobile) {
@@ -37,13 +38,40 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Load initial module (e.g., dashboard)
-        const initialModule = 'dashboard';
-        sidebarLinks[0].classList.add('active');
-        navigateTo(initialModule);
+        // Escuchar cambios en el hash de la URL
+        window.addEventListener('hashchange', handleHashChange);
+        
+        // Cargar el módulo inicial desde el hash o dashboard por defecto
+        handleHashChange();
         
         // Listen for resize events
         window.addEventListener('resize', handleResize);
+    }
+    
+    // --- HASH CHANGE HANDLER ---
+    function handleHashChange() {
+        // Obtener el módulo desde el hash (sin el #)
+        let moduleId = window.location.hash.substring(1);
+        
+        // Si no hay hash, cargar dashboard por defecto
+        if (!moduleId) {
+            moduleId = 'dashboard';
+            // Actualizar el hash sin recargar
+            window.location.hash = moduleId;
+            return; // El evento hashchange se disparará de nuevo
+        }
+        
+        // Validar que el módulo existe
+        const validModules = ['dashboard', 'new-job', 'recommender', 'analysis', 'fleet', 'consumables', 'gallery', 'settings'];
+        if (!validModules.includes(moduleId)) {
+            console.warn(`Módulo desconocido: ${moduleId}, cargando dashboard`);
+            moduleId = 'dashboard';
+            window.location.hash = moduleId;
+            return;
+        }
+        
+        // Navegar al módulo
+        navigateTo(moduleId);
     }
 
     // --- SIDEBAR FUNCTIONALITY ---

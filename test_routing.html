@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Routing - KyberCore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-gray-800">🧪 Test de Routing - KyberCore</h1>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">Enlaces Directos a Módulos</h2>
+            <p class="text-gray-600 mb-4">Haz clic en cualquier enlace para abrir el módulo directamente:</p>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <a href="http://localhost:8000/#dashboard" target="_blank" 
+                   class="block p-4 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors">
+                    <div class="text-2xl mb-2">📊</div>
+                    <div class="font-semibold text-blue-800">Dashboard</div>
+                    <div class="text-xs text-blue-600">/#dashboard</div>
+                </a>
+                
+                <a href="http://localhost:8000/#new-job" target="_blank" 
+                   class="block p-4 bg-green-50 hover:bg-green-100 rounded-lg border border-green-200 transition-colors">
+                    <div class="text-2xl mb-2">🚀</div>
+                    <div class="font-semibold text-green-800">Nuevo Trabajo IA</div>
+                    <div class="text-xs text-green-600">/#new-job</div>
+                </a>
+                
+                <a href="http://localhost:8000/#recommender" target="_blank" 
+                   class="block p-4 bg-purple-50 hover:bg-purple-100 rounded-lg border border-purple-200 transition-colors">
+                    <div class="text-2xl mb-2">🤖</div>
+                    <div class="font-semibold text-purple-800">Perfiles IA</div>
+                    <div class="text-xs text-purple-600">/#recommender</div>
+                </a>
+                
+                <a href="http://localhost:8000/#analysis" target="_blank" 
+                   class="block p-4 bg-yellow-50 hover:bg-yellow-100 rounded-lg border border-yellow-200 transition-colors">
+                    <div class="text-2xl mb-2">🔍</div>
+                    <div class="font-semibold text-yellow-800">Análisis de Fallos</div>
+                    <div class="text-xs text-yellow-600">/#analysis</div>
+                </a>
+                
+                <a href="http://localhost:8000/#fleet" target="_blank" 
+                   class="block p-4 bg-red-50 hover:bg-red-100 rounded-lg border border-red-200 transition-colors">
+                    <div class="text-2xl mb-2">🏭</div>
+                    <div class="font-semibold text-red-800">Gestión de Flota</div>
+                    <div class="text-xs text-red-600">/#fleet</div>
+                </a>
+                
+                <a href="http://localhost:8000/#consumables" target="_blank" 
+                   class="block p-4 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors">
+                    <div class="text-2xl mb-2">🧵</div>
+                    <div class="font-semibold text-indigo-800">Consumibles</div>
+                    <div class="text-xs text-indigo-600">/#consumables</div>
+                </a>
+                
+                <a href="http://localhost:8000/#gallery" target="_blank" 
+                   class="block p-4 bg-pink-50 hover:bg-pink-100 rounded-lg border border-pink-200 transition-colors">
+                    <div class="text-2xl mb-2">📁</div>
+                    <div class="font-semibold text-pink-800">Galería de Proyectos</div>
+                    <div class="text-xs text-pink-600">/#gallery</div>
+                </a>
+                
+                <a href="http://localhost:8000/#settings" target="_blank" 
+                   class="block p-4 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors">
+                    <div class="text-2xl mb-2">⚙️</div>
+                    <div class="font-semibold text-gray-800">Ajustes</div>
+                    <div class="text-xs text-gray-600">/#settings</div>
+                </a>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">🧪 Test de Validación</h2>
+            <p class="text-gray-600 mb-4">Prueba con un módulo inválido (debería redirigir a dashboard):</p>
+            
+            <a href="http://localhost:8000/#modulo-inexistente" target="_blank" 
+               class="inline-block px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors">
+                Probar Módulo Inválido
+            </a>
+            
+            <p class="text-sm text-gray-500 mt-2">
+                Abre la consola del navegador para ver el warning de validación
+            </p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">✅ Lista de Verificación</h2>
+            
+            <div class="space-y-3">
+                <div class="flex items-start">
+                    <input type="checkbox" id="test1" class="mt-1 mr-3">
+                    <label for="test1" class="text-gray-700">
+                        <strong>Test 1:</strong> Abre cualquier módulo desde aquí y verifica que la URL tiene el formato <code class="bg-gray-100 px-2 py-1 rounded">/#modulo-nombre</code>
+                    </label>
+                </div>
+                
+                <div class="flex items-start">
+                    <input type="checkbox" id="test2" class="mt-1 mr-3">
+                    <label for="test2" class="text-gray-700">
+                        <strong>Test 2:</strong> Una vez en un módulo, presiona F5 para recargar. La página debe mantener el módulo actual (no volver a dashboard)
+                    </label>
+                </div>
+                
+                <div class="flex items-start">
+                    <input type="checkbox" id="test3" class="mt-1 mr-3">
+                    <label for="test3" class="text-gray-700">
+                        <strong>Test 3:</strong> Copia la URL de cualquier módulo, pégala en una nueva pestaña. Debe abrir directamente ese módulo
+                    </label>
+                </div>
+                
+                <div class="flex items-start">
+                    <input type="checkbox" id="test4" class="mt-1 mr-3">
+                    <label for="test4" class="text-gray-700">
+                        <strong>Test 4:</strong> Navega por varios módulos, luego usa los botones atrás/adelante del navegador. Debe funcionar correctamente
+                    </label>
+                </div>
+                
+                <div class="flex items-start">
+                    <input type="checkbox" id="test5" class="mt-1 mr-3">
+                    <label for="test5" class="text-gray-700">
+                        <strong>Test 5:</strong> Prueba el enlace de "Módulo Inválido". Debe redirigir a dashboard y mostrar warning en consola
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+            <div class="flex items-start">
+                <div class="text-blue-500 text-xl mr-3">ℹ️</div>
+                <div>
+                    <h3 class="font-semibold text-blue-800 mb-2">Información Técnica</h3>
+                    <p class="text-blue-700 text-sm">
+                        El sistema de routing utiliza <code>window.location.hash</code> para mantener el estado de navegación sin recargar la página completa. 
+                        Esto permite una experiencia SPA (Single Page Application) con URLs compartibles y navegación persistente.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-6 text-center text-gray-500 text-sm">
+            <p>KyberCore v0.1.0 - Sistema de Routing Hash-based</p>
+            <p class="mt-1">Última actualización: 30 de septiembre de 2025</p>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-check de tests cuando se marcan
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const allChecked = Array.from(document.querySelectorAll('input[type="checkbox"]')).every(cb => cb.checked);
+                if (allChecked) {
+                    alert('✅ ¡Excelente! Has completado todos los tests. El sistema de routing funciona correctamente.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
