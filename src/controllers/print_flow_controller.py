@@ -5,7 +5,7 @@ desde la selección inicial de piezas hasta el monitoreo del trabajo en progreso
 """
 
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import json
@@ -2076,4 +2076,139 @@ async def generate_custom_profile(request: Request):
         raise HTTPException(
             status_code=500,
             detail=f"Error interno generando perfil: {str(e)}"
+        )
+
+
+# ===============================
+# ENDPOINTS PARA VISOR DE G-CODE
+# ===============================
+
+@router.get("/print/gcode-files/{session_id}")
+async def get_gcode_files(session_id: str):
+    """
+    Obtiene la lista de archivos G-code generados para una sesión del wizard.
+    
+    Args:
+        session_id: ID de la sesión del wizard
+        
+    Returns:
+        Lista de archivos G-code con información básica
+    """
+    try:
+        logger.info(f"🔍 Obteniendo archivos G-code para sesión: {session_id}")
+        
+        # Directorio donde APISLICER guarda los archivos G-code
+        output_dir = Path("/app/APISLICER/output")
+        
+        if not output_dir.exists():
+            logger.warning(f"Directorio de salida no existe: {output_dir}")
+            return JSONResponse(content={
+                "success": True,
+                "files": [],
+                "message": "No hay archivos G-code disponibles aún"
+            })
+        
+        gcode_files = []
+        
+        # Buscar archivos .gcode en el directorio de salida
+        for gcode_file in output_dir.glob("*.gcode"):
+            try:
+                # Leer el archivo para obtener información básica
+                with open(gcode_file, 'r') as f:
+                    lines = f.readlines()
+                    
+                    # Contar capas (buscar comentarios ;LAYER:)
+                    layer_count = sum(1 for line in lines if line.strip().startswith(';LAYER:'))
+                    
+                    # Si no hay comentarios de capas, contar cambios de Z
+                    if layer_count == 0:
+                        z_values = set()
+                        for line in lines:
+                            if line.strip().startswith('G1') or line.strip().startswith('G0'):
+                                if 'Z' in line:
+                                    z_match = line.split('Z')[1].split()[0]
+                                    try:
+                                        z_values.add(float(z_match))
+                                    except:
+                                        pass
+                        layer_count = len(z_values)
+                
+                file_info = {
+                    "filename": gcode_file.name,
+                    "path": str(gcode_file),
+                    "size_kb": round(gcode_file.stat().st_size / 1024, 2),
+                    "layers": layer_count,
+                    "modified": datetime.fromtimestamp(gcode_file.stat().st_mtime).isoformat()
+                }
+                
+                gcode_files.append(file_info)
+                
+            except Exception as e:
+                logger.error(f"Error leyendo archivo {gcode_file.name}: {str(e)}")
+                continue
+        
+        # Ordenar por fecha de modificación (más reciente primero)
+        gcode_files.sort(key=lambda x: x['modified'], reverse=True)
+        
+        logger.info(f"✅ Encontrados {len(gcode_files)} archivos G-code")
+        
+        return JSONResponse(content={
+            "success": True,
+            "files": gcode_files,
+            "total": len(gcode_files)
+        })
+        
+    except Exception as e:
+        logger.error(f"Error obteniendo archivos G-code: {str(e)}")
+        return JSONResponse(content={
+            "success": False,
+            "files": [],
+            "message": str(e)
+        })
+
+
+@router.get("/print/gcode-content")
+async def get_gcode_content(file: str):
+    """
+    Obtiene el contenido de un archivo G-code específico.
+    
+    Args:
+        file: Ruta del archivo G-code
+        
+    Returns:
+        Contenido del archivo G-code como texto plano
+    """
+    try:
+        logger.info(f"📄 Cargando contenido de G-code: {file}")
+        
+        file_path = Path(file)
+        
+        # Validar que el archivo existe y es .gcode
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="Archivo no encontrado")
+        
+        if file_path.suffix != '.gcode':
+            raise HTTPException(status_code=400, detail="El archivo no es un G-code válido")
+        
+        # Validar que el archivo está en el directorio permitido
+        output_dir = Path("/app/APISLICER/output").resolve()
+        if not str(file_path.resolve()).startswith(str(output_dir)):
+            raise HTTPException(status_code=403, detail="Acceso denegado al archivo")
+        
+        # Leer el archivo
+        with open(file_path, 'r') as f:
+            content = f.read()
+        
+        logger.info(f"✅ Archivo cargado: {len(content)} caracteres, {len(content.splitlines())} líneas")
+        
+        # Devolver como texto plano con el tipo de contenido correcto
+        return Response(content=content, media_type="text/plain; charset=utf-8")
+        
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Error leyendo contenido de G-code: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error leyendo archivo: {str(e)}"
         )

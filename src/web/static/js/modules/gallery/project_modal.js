@@ -1647,6 +1647,103 @@ async function loadValidationStep() {
                     </ul>
                 </div>
             ` : ''}
+            
+            <!-- Visor de G-code Interactivo -->
+            <div class="bg-gray-50 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="font-medium text-gray-900">🔍 Vista Previa de Laminación</h4>
+                    <button onclick="toggleGcodeViewer()" id="toggle-gcode-btn" class="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors">
+                        👁️ Mostrar Visor
+                    </button>
+                </div>
+                
+                <div id="gcode-viewer-container" class="hidden space-y-4">
+                    <!-- Selector de archivo -->
+                    <div class="bg-white rounded-lg p-3 border">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Archivo G-code:</label>
+                        <select id="gcode-file-selector" onchange="loadGcodeFile(this.value)" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Selecciona un archivo...</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Canvas de visualización -->
+                    <div class="bg-white rounded-lg border overflow-hidden">
+                        <div class="relative" style="height: 400px;">
+                            <canvas id="gcode-canvas" class="w-full h-full"></canvas>
+                            <div id="gcode-loading" class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90 hidden">
+                                <div class="text-center">
+                                    <div class="animate-spin text-4xl mb-2">⚙️</div>
+                                    <div class="text-sm text-gray-600">Cargando G-code...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Controles de navegación por capas -->
+                    <div class="bg-white rounded-lg p-4 border space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-gray-700">Capa: <span id="current-layer-display">0</span> / <span id="total-layers-display">0</span></span>
+                            <span class="text-xs text-gray-500">Altura: <span id="layer-height-display">0.00</span> mm</span>
+                        </div>
+                        
+                        <!-- Slider de capas -->
+                        <input type="range" id="layer-slider" min="0" max="0" value="0" 
+                               oninput="updateGcodeLayer(this.value)" 
+                               class="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                        
+                        <!-- Botones de navegación -->
+                        <div class="flex items-center justify-center space-x-2">
+                            <button onclick="previousLayer()" class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded transition-colors">
+                                ⏮️ Anterior
+                            </button>
+                            <button onclick="toggleLayerAnimation()" id="play-pause-btn" class="px-4 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors">
+                                ▶️ Reproducir
+                            </button>
+                            <button onclick="nextLayer()" class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded transition-colors">
+                                Siguiente ⏭️
+                            </button>
+                        </div>
+                        
+                        <!-- Información de la capa actual -->
+                        <div class="grid grid-cols-3 gap-2 text-xs text-gray-600 bg-gray-50 p-2 rounded">
+                            <div class="text-center">
+                                <div class="font-medium text-gray-900" id="layer-time">0 min</div>
+                                <div class="text-gray-500">Tiempo capa</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="font-medium text-gray-900" id="layer-filament">0.0 g</div>
+                                <div class="text-gray-500">Filamento</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="font-medium text-gray-900" id="layer-moves">0</div>
+                                <div class="text-gray-500">Movimientos</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Opciones de visualización -->
+                    <div class="bg-white rounded-lg p-3 border">
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="flex items-center space-x-2 text-sm">
+                                <input type="checkbox" id="show-travels" onchange="updateGcodeVisualization()" checked class="w-4 h-4 text-blue-600 rounded">
+                                <span>Mostrar desplazamientos</span>
+                            </label>
+                            <label class="flex items-center space-x-2 text-sm">
+                                <input type="checkbox" id="show-retractions" onchange="updateGcodeVisualization()" checked class="w-4 h-4 text-blue-600 rounded">
+                                <span>Mostrar retracciones</span>
+                            </label>
+                            <label class="flex items-center space-x-2 text-sm">
+                                <input type="checkbox" id="color-by-speed" onchange="updateGcodeVisualization()" class="w-4 h-4 text-blue-600 rounded">
+                                <span>Colorear por velocidad</span>
+                            </label>
+                            <label class="flex items-center space-x-2 text-sm">
+                                <input type="checkbox" id="show-grid" onchange="updateGcodeVisualization()" checked class="w-4 h-4 text-blue-600 rounded">
+                                <span>Mostrar grid</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     `;
 }
@@ -1656,6 +1753,542 @@ function proceedToConfirmation() {
         completed_steps: ['piece_selection', 'material_selection', 'production_mode', 'printer_assignment', 'stl_processing', 'validation'],
         data: { project_name: 'Proyecto' }
     });
+}
+
+// ===============================
+// FUNCIONES PARA VISOR DE G-CODE
+// ===============================
+
+let gcodeData = {
+    layers: [],
+    currentLayer: 0,
+    isAnimating: false,
+    animationInterval: null,
+    canvas: null,
+    ctx: null,
+    bounds: { minX: 0, maxX: 200, minY: 0, maxY: 200, minZ: 0, maxZ: 100 }
+};
+
+function toggleGcodeViewer() {
+    const container = document.getElementById('gcode-viewer-container');
+    const btn = document.getElementById('toggle-gcode-btn');
+    
+    if (!container || !btn) return;
+    
+    if (container.classList.contains('hidden')) {
+        container.classList.remove('hidden');
+        btn.textContent = '👁️ Ocultar Visor';
+        
+        // Inicializar canvas y cargar archivos disponibles
+        setTimeout(() => {
+            initializeGcodeCanvas();
+            loadAvailableGcodeFiles();
+            // Cargar demo automáticamente si no hay archivos
+            setTimeout(() => {
+                const selector = document.getElementById('gcode-file-selector');
+                if (selector && selector.options.length <= 2) {
+                    // Si solo hay la opción vacía y demo, cargar demo automáticamente
+                    loadGcodeFile('demo');
+                }
+            }, 500);
+        }, 100);
+    } else {
+        container.classList.add('hidden');
+        btn.textContent = '👁️ Mostrar Visor';
+        
+        // Detener animación si está activa
+        if (gcodeData.isAnimating) {
+            toggleLayerAnimation();
+        }
+    }
+}
+
+function initializeGcodeCanvas() {
+    const canvas = document.getElementById('gcode-canvas');
+    if (!canvas) return;
+    
+    gcodeData.canvas = canvas;
+    
+    // Ajustar tamaño del canvas al contenedor
+    const container = canvas.parentElement;
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+    
+    gcodeData.ctx = canvas.getContext('2d');
+    
+    // Dibujar grid inicial
+    drawGrid();
+}
+
+async function loadAvailableGcodeFiles() {
+    try {
+        // Obtener lista de archivos G-code procesados de la sesión actual
+        const response = await fetch(`/api/print/gcode-files/${currentWizardSessionId}`);
+        const data = await response.json();
+        
+        if (!data.success || !data.files) {
+            console.warn('No se pudieron cargar archivos G-code');
+            return;
+        }
+        
+        const selector = document.getElementById('gcode-file-selector');
+        if (!selector) return;
+        
+        // Limpiar opciones existentes
+        selector.innerHTML = '<option value="">Selecciona un archivo...</option>';
+        
+        // Agregar opciones de archivos disponibles
+        data.files.forEach(file => {
+            const option = document.createElement('option');
+            option.value = file.path;
+            option.textContent = `${file.filename} (${file.layers} capas)`;
+            selector.appendChild(option);
+        });
+        
+    } catch (error) {
+        console.error('Error cargando lista de archivos G-code:', error);
+        
+        // Agregar archivos de ejemplo para pruebas
+        const selector = document.getElementById('gcode-file-selector');
+        if (selector) {
+            selector.innerHTML = `
+                <option value="">Selecciona un archivo...</option>
+                <option value="demo">📄 Archivo Demo (simulado)</option>
+            `;
+        }
+    }
+}
+
+async function loadGcodeFile(filePath) {
+    if (!filePath) return;
+    
+    const loadingEl = document.getElementById('gcode-loading');
+    if (loadingEl) loadingEl.classList.remove('hidden');
+    
+    try {
+        if (filePath === 'demo') {
+            // Cargar datos de demostración
+            console.log('🎨 Cargando G-code de demostración...');
+            loadDemoGcode();
+        } else {
+            // Cargar archivo G-code real
+            console.log('📄 Cargando archivo G-code:', filePath);
+            const response = await fetch(`/api/print/gcode-content?file=${encodeURIComponent(filePath)}`);
+            const gcodeContent = await response.text();
+            parseGcode(gcodeContent);
+        }
+        
+        // Actualizar slider máximo
+        const slider = document.getElementById('layer-slider');
+        if (slider && gcodeData.layers.length > 0) {
+            slider.max = gcodeData.layers.length - 1;
+            slider.value = 0;
+            console.log(`✅ Cargadas ${gcodeData.layers.length} capas`);
+        }
+        
+        // Resetear a primera capa
+        gcodeData.currentLayer = 0;
+        
+        // Actualizar UI
+        updateLayerInfo();
+        renderCurrentLayer();
+        
+        console.log('✨ Visor de G-code listo');
+        
+    } catch (error) {
+        console.error('❌ Error cargando G-code:', error);
+        showToast('Error', 'No se pudo cargar el archivo G-code', 'error');
+    } finally {
+        if (loadingEl) loadingEl.classList.add('hidden');
+    }
+}
+
+function parseGcode(gcodeContent) {
+    console.log('🔍 Iniciando parseo de G-code...');
+    const lines = gcodeContent.split('\n');
+    console.log(`📊 Total de líneas a procesar: ${lines.length}`);
+    
+    let currentLayer = [];
+    let currentZ = null;
+    let lastZ = null;
+    let currentX = 0, currentY = 0;
+    let layerCount = 0;
+    
+    gcodeData.layers = [];
+    gcodeData.bounds = { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity, minZ: Infinity, maxZ: -Infinity };
+    
+    lines.forEach((line, index) => {
+        line = line.trim();
+        
+        // Detectar comentarios de capa (;LAYER:, ;LAYER_CHANGE, etc.)
+        if (line.startsWith(';LAYER:') || line.startsWith(';LAYER_CHANGE') || line.includes('layer') && line.startsWith(';')) {
+            if (currentLayer.length > 0 && lastZ !== null) {
+                gcodeData.layers.push({ 
+                    z: lastZ, 
+                    moves: currentLayer, 
+                    height: lastZ,
+                    layerNumber: layerCount
+                });
+                console.log(`✅ Capa ${layerCount} guardada (Z=${lastZ.toFixed(2)}mm, ${currentLayer.length} movimientos)`);
+                layerCount++;
+                currentLayer = [];
+            }
+        }
+        
+        // Parsear movimientos G1 (extrusión) y G0 (desplazamiento)
+        if (line.startsWith('G1 ') || line.startsWith('G0 ')) {
+            const move = {
+                type: line.startsWith('G1') ? 'extrude' : 'travel',
+                x: currentX,
+                y: currentY,
+                z: currentZ !== null ? currentZ : 0,
+                e: 0,
+                f: 0
+            };
+            
+            // Extraer coordenadas X, Y, Z
+            const xMatch = line.match(/X([-\d.]+)/);
+            const yMatch = line.match(/Y([-\d.]+)/);
+            const zMatch = line.match(/Z([-\d.]+)/);
+            const eMatch = line.match(/E([-\d.]+)/);
+            const fMatch = line.match(/F([-\d.]+)/);
+            
+            // Detectar cambio de Z (nueva capa)
+            if (zMatch) {
+                const newZ = parseFloat(zMatch[1]);
+                if (currentZ !== null && newZ !== currentZ && currentLayer.length > 0) {
+                    // Guardar capa anterior antes de cambiar Z
+                    gcodeData.layers.push({ 
+                        z: currentZ, 
+                        moves: currentLayer, 
+                        height: currentZ,
+                        layerNumber: layerCount
+                    });
+                    console.log(`✅ Capa ${layerCount} guardada por cambio Z (Z=${currentZ.toFixed(2)}mm, ${currentLayer.length} movimientos)`);
+                    layerCount++;
+                    currentLayer = [];
+                }
+                currentZ = newZ;
+                lastZ = newZ;
+                move.z = currentZ;
+                
+                // Actualizar bounds Z
+                gcodeData.bounds.minZ = Math.min(gcodeData.bounds.minZ, currentZ);
+                gcodeData.bounds.maxZ = Math.max(gcodeData.bounds.maxZ, currentZ);
+            }
+            
+            if (xMatch) move.toX = parseFloat(xMatch[1]);
+            if (yMatch) move.toY = parseFloat(yMatch[1]);
+            if (eMatch) move.e = parseFloat(eMatch[1]);
+            if (fMatch) move.f = parseFloat(fMatch[1]);
+            
+            // Actualizar posición actual
+            if (move.toX !== undefined) {
+                move.x = currentX;
+                currentX = move.toX;
+                gcodeData.bounds.minX = Math.min(gcodeData.bounds.minX, currentX);
+                gcodeData.bounds.maxX = Math.max(gcodeData.bounds.maxX, currentX);
+            }
+            if (move.toY !== undefined) {
+                move.y = currentY;
+                currentY = move.toY;
+                gcodeData.bounds.minY = Math.min(gcodeData.bounds.minY, currentY);
+                gcodeData.bounds.maxY = Math.max(gcodeData.bounds.maxY, currentY);
+            }
+            
+            // Solo agregar movimientos con coordenadas válidas
+            if (move.toX !== undefined || move.toY !== undefined) {
+                currentLayer.push(move);
+            }
+        }
+    });
+    
+    // Agregar última capa
+    if (currentLayer.length > 0 && lastZ !== null) {
+        gcodeData.layers.push({ 
+            z: lastZ, 
+            moves: currentLayer, 
+            height: lastZ,
+            layerNumber: layerCount
+        });
+        console.log(`✅ Última capa ${layerCount} guardada (Z=${lastZ.toFixed(2)}mm, ${currentLayer.length} movimientos)`);
+    }
+    
+    console.log(`🎯 Parseo completo: ${gcodeData.layers.length} capas detectadas`);
+    console.log(`📐 Bounds: X[${gcodeData.bounds.minX.toFixed(1)}, ${gcodeData.bounds.maxX.toFixed(1)}] Y[${gcodeData.bounds.minY.toFixed(1)}, ${gcodeData.bounds.maxY.toFixed(1)}] Z[${gcodeData.bounds.minZ.toFixed(1)}, ${gcodeData.bounds.maxZ.toFixed(1)}]`);
+    
+    // Actualizar slider
+    const slider = document.getElementById('layer-slider');
+    if (slider && gcodeData.layers.length > 0) {
+        slider.max = gcodeData.layers.length - 1;
+        slider.value = 0;
+        console.log(`🎚️ Slider configurado: max=${slider.max}, value=${slider.value}`);
+    } else if (gcodeData.layers.length === 0) {
+        console.warn('⚠️ No se detectaron capas en el archivo G-code');
+    }
+    
+    gcodeData.currentLayer = 0;
+}
+
+function loadDemoGcode() {
+    console.log('🎨 Generando G-code de demostración...');
+    
+    // Generar datos de demostración (cubo de 50x50mm con 20 capas)
+    gcodeData.layers = [];
+    gcodeData.bounds = { minX: 75, maxX: 125, minY: 75, maxY: 125, minZ: 0, maxZ: 4 };
+    
+    for (let layer = 0; layer < 20; layer++) {
+        const z = layer * 0.2;
+        const moves = [];
+        
+        // Perímetro exterior (cuadrado)
+        const size = 50;
+        const centerX = 100;
+        const centerY = 100;
+        
+        moves.push({ type: 'travel', x: centerX - size/2, y: centerY - size/2, toX: centerX - size/2, toY: centerY - size/2, z, e: 0, f: 3000 });
+        moves.push({ type: 'extrude', x: centerX - size/2, y: centerY - size/2, toX: centerX + size/2, toY: centerY - size/2, z, e: 2, f: 1500 });
+        moves.push({ type: 'extrude', x: centerX + size/2, y: centerY - size/2, toX: centerX + size/2, toY: centerY + size/2, z, e: 2, f: 1500 });
+        moves.push({ type: 'extrude', x: centerX + size/2, y: centerY + size/2, toX: centerX - size/2, toY: centerY + size/2, z, e: 2, f: 1500 });
+        moves.push({ type: 'extrude', x: centerX - size/2, y: centerY + size/2, toX: centerX - size/2, toY: centerY - size/2, z, e: 2, f: 1500 });
+        
+        // Relleno (líneas en zigzag)
+        for (let i = 0; i < 8; i++) {
+            const offset = (i + 1) * 5.5;
+            moves.push({ type: 'travel', x: centerX - size/2 + offset, y: centerY - size/2 + 5, toX: centerX - size/2 + offset, toY: centerY - size/2 + 5, z, e: 0, f: 3000 });
+            moves.push({ type: 'extrude', x: centerX - size/2 + offset, y: centerY - size/2 + 5, toX: centerX - size/2 + offset, toY: centerY + size/2 - 5, z, e: 1.5, f: 2000 });
+        }
+        
+        gcodeData.layers.push({ z, moves, height: z });
+    }
+    
+    console.log(`✅ Generadas ${gcodeData.layers.length} capas de demostración`);
+    
+    // Actualizar slider
+    const slider = document.getElementById('layer-slider');
+    if (slider) {
+        slider.max = gcodeData.layers.length - 1;
+        slider.value = 0;
+        console.log('🎚️ Slider configurado: max =', slider.max);
+    }
+    
+    gcodeData.currentLayer = 0;
+}
+
+function updateGcodeLayer(layerIndex) {
+    gcodeData.currentLayer = parseInt(layerIndex);
+    updateLayerInfo();
+    renderCurrentLayer();
+}
+
+function updateLayerInfo() {
+    const currentLayerEl = document.getElementById('current-layer-display');
+    const totalLayersEl = document.getElementById('total-layers-display');
+    const layerHeightEl = document.getElementById('layer-height-display');
+    const layerTimeEl = document.getElementById('layer-time');
+    const layerFilamentEl = document.getElementById('layer-filament');
+    const layerMovesEl = document.getElementById('layer-moves');
+    
+    if (gcodeData.layers.length === 0) {
+        if (currentLayerEl) currentLayerEl.textContent = '0';
+        if (totalLayersEl) totalLayersEl.textContent = '0';
+        if (layerHeightEl) layerHeightEl.textContent = '0.00';
+        if (layerTimeEl) layerTimeEl.textContent = '0 min';
+        if (layerFilamentEl) layerFilamentEl.textContent = '0 g';
+        if (layerMovesEl) layerMovesEl.textContent = '0';
+        console.warn('⚠️ No hay capas para mostrar en updateLayerInfo');
+        return;
+    }
+    
+    const layer = gcodeData.layers[gcodeData.currentLayer];
+    
+    if (currentLayerEl) currentLayerEl.textContent = gcodeData.currentLayer + 1;
+    if (totalLayersEl) totalLayersEl.textContent = gcodeData.layers.length;
+    if (layerHeightEl) layerHeightEl.textContent = layer.height.toFixed(2);
+    
+    // Calcular estadísticas de la capa
+    const extrudeMoves = layer.moves.filter(m => m.type === 'extrude').length;
+    const totalFilament = layer.moves.reduce((sum, m) => sum + (m.e || 0), 0);
+    const estimatedTime = (extrudeMoves * 0.5).toFixed(1); // Estimación simple
+    
+    if (layerTimeEl) layerTimeEl.textContent = `${estimatedTime} min`;
+    if (layerFilamentEl) layerFilamentEl.textContent = `${totalFilament.toFixed(1)} g`;
+    if (layerMovesEl) layerMovesEl.textContent = layer.moves.length;
+    
+    console.log(`📊 Capa ${gcodeData.currentLayer + 1}/${gcodeData.layers.length} - Altura: ${layer.height.toFixed(2)}mm, Movimientos: ${layer.moves.length}`);
+}
+
+function renderCurrentLayer() {
+    if (!gcodeData.ctx || !gcodeData.canvas || gcodeData.layers.length === 0) return;
+    
+    const ctx = gcodeData.ctx;
+    const canvas = gcodeData.canvas;
+    
+    // Limpiar canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Dibujar grid
+    const showGrid = document.getElementById('show-grid')?.checked;
+    if (showGrid) {
+        drawGrid();
+    }
+    
+    // Configurar transformación para centrar y escalar el dibujo
+    const bounds = gcodeData.bounds;
+    const padding = 40;
+    const scaleX = (canvas.width - padding * 2) / (bounds.maxX - bounds.minX);
+    const scaleY = (canvas.height - padding * 2) / (bounds.maxY - bounds.minY);
+    const scale = Math.min(scaleX, scaleY);
+    
+    const offsetX = padding - bounds.minX * scale;
+    const offsetY = padding - bounds.minY * scale;
+    
+    // Dibujar todas las capas hasta la actual (con opacidad)
+    const showTravels = document.getElementById('show-travels')?.checked;
+    const colorBySpeed = document.getElementById('color-by-speed')?.checked;
+    
+    for (let i = 0; i <= gcodeData.currentLayer; i++) {
+        const layer = gcodeData.layers[i];
+        const opacity = i === gcodeData.currentLayer ? 1.0 : 0.3;
+        
+        layer.moves.forEach(move => {
+            if (move.toX === undefined || move.toY === undefined) return;
+            
+            // Saltar desplazamientos si está deshabilitado
+            if (move.type === 'travel' && !showTravels) return;
+            
+            ctx.beginPath();
+            ctx.moveTo(move.x * scale + offsetX, move.y * scale + offsetY);
+            ctx.lineTo(move.toX * scale + offsetX, move.toY * scale + offsetY);
+            
+            if (move.type === 'extrude') {
+                // Color por velocidad o color sólido
+                if (colorBySpeed && move.f) {
+                    const speedRatio = Math.min(move.f / 3000, 1);
+                    const hue = speedRatio * 120; // De rojo (0) a verde (120)
+                    ctx.strokeStyle = `hsla(${hue}, 80%, 50%, ${opacity})`;
+                } else {
+                    ctx.strokeStyle = `rgba(37, 99, 235, ${opacity})`; // Azul
+                }
+                ctx.lineWidth = 2;
+            } else {
+                ctx.strokeStyle = `rgba(156, 163, 175, ${opacity * 0.5})`; // Gris claro
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 3]);
+            }
+            
+            ctx.stroke();
+            ctx.setLineDash([]);
+        });
+    }
+    
+    // Dibujar indicador de posición actual
+    const currentLayer = gcodeData.layers[gcodeData.currentLayer];
+    if (currentLayer.moves.length > 0) {
+        const lastMove = currentLayer.moves[currentLayer.moves.length - 1];
+        if (lastMove.toX !== undefined && lastMove.toY !== undefined) {
+            ctx.beginPath();
+            ctx.arc(lastMove.toX * scale + offsetX, lastMove.toY * scale + offsetY, 5, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.8)'; // Rojo
+            ctx.fill();
+        }
+    }
+}
+
+function drawGrid() {
+    if (!gcodeData.ctx || !gcodeData.canvas) return;
+    
+    const ctx = gcodeData.ctx;
+    const canvas = gcodeData.canvas;
+    
+    ctx.strokeStyle = 'rgba(229, 231, 235, 0.5)';
+    ctx.lineWidth = 1;
+    
+    // Líneas verticales
+    for (let x = 0; x <= canvas.width; x += 20) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+    }
+    
+    // Líneas horizontales
+    for (let y = 0; y <= canvas.height; y += 20) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+    
+    // Ejes principales
+    ctx.strokeStyle = 'rgba(156, 163, 175, 0.8)';
+    ctx.lineWidth = 2;
+    
+    // Eje X
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height / 2);
+    ctx.lineTo(canvas.width, canvas.height / 2);
+    ctx.stroke();
+    
+    // Eje Y
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 2, 0);
+    ctx.lineTo(canvas.width / 2, canvas.height);
+    ctx.stroke();
+}
+
+function previousLayer() {
+    if (gcodeData.currentLayer > 0) {
+        gcodeData.currentLayer--;
+        const slider = document.getElementById('layer-slider');
+        if (slider) slider.value = gcodeData.currentLayer;
+        updateLayerInfo();
+        renderCurrentLayer();
+    }
+}
+
+function nextLayer() {
+    if (gcodeData.currentLayer < gcodeData.layers.length - 1) {
+        gcodeData.currentLayer++;
+        const slider = document.getElementById('layer-slider');
+        if (slider) slider.value = gcodeData.currentLayer;
+        updateLayerInfo();
+        renderCurrentLayer();
+    }
+}
+
+function toggleLayerAnimation() {
+    const btn = document.getElementById('play-pause-btn');
+    if (!btn) return;
+    
+    if (gcodeData.isAnimating) {
+        // Detener animación
+        clearInterval(gcodeData.animationInterval);
+        gcodeData.isAnimating = false;
+        btn.innerHTML = '▶️ Reproducir';
+    } else {
+        // Iniciar animación
+        gcodeData.isAnimating = true;
+        btn.innerHTML = '⏸️ Pausar';
+        
+        gcodeData.animationInterval = setInterval(() => {
+            if (gcodeData.currentLayer < gcodeData.layers.length - 1) {
+                nextLayer();
+            } else {
+                // Reiniciar al llegar al final
+                gcodeData.currentLayer = 0;
+                const slider = document.getElementById('layer-slider');
+                if (slider) slider.value = 0;
+                updateLayerInfo();
+                renderCurrentLayer();
+            }
+        }, 500); // 500ms por capa
+    }
+}
+
+function updateGcodeVisualization() {
+    // Redibujar con las nuevas opciones
+    renderCurrentLayer();
 }
 
 // ===============================
