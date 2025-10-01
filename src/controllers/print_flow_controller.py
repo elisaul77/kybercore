@@ -1963,3 +1963,117 @@ async def get_session_state(session_id: str):
             "error": "server_error",
             "message": "Error interno del servidor"
         }, status_code=500)
+
+# ===============================
+# ENDPOINT: GENERAR PERFIL PERSONALIZADO
+# ===============================
+
+@router.post("/slicer/generate-profile")
+async def generate_custom_profile(request: Request):
+    """
+    Genera un perfil personalizado para el slicer basado en la configuración
+    de material, modo de producción e impresora seleccionados.
+    
+    Este endpoint procesa la solicitud y devuelve un perfil listo para usar
+    en el procesamiento STL con APISLICER.
+    """
+    try:
+        data = await request.json()
+        
+        # Validar datos recibidos
+        job_id = data.get('job_id')
+        printer_model = data.get('printer_model')
+        material_config = data.get('material_config', {})
+        production_config = data.get('production_config', {})
+        printer_config = data.get('printer_config', {})
+        
+        if not all([job_id, printer_model, material_config, production_config]):
+            raise HTTPException(
+                status_code=400, 
+                detail="Faltan datos requeridos: job_id, printer_model, material_config, production_config"
+            )
+        
+        logger.info(f"Generando perfil personalizado para job_id: {job_id}")
+        logger.info(f"  Impresora: {printer_model}")
+        logger.info(f"  Material: {material_config.get('type')} {material_config.get('color')}")
+        logger.info(f"  Modo: {production_config.get('mode')} - Prioridad: {production_config.get('priority')}")
+        
+        # Determinar configuraciones según el modo de producción y prioridad
+        layer_heights = {
+            "prototype": {"speed": 0.3, "quality": 0.2, "economy": 0.28, "consistency": 0.25},
+            "factory": {"speed": 0.25, "quality": 0.15, "economy": 0.25, "consistency": 0.2}
+        }
+        
+        infill_densities = {
+            "prototype": {"speed": 15, "quality": 25, "economy": 10, "consistency": 20},
+            "factory": {"speed": 20, "quality": 35, "economy": 15, "consistency": 25}
+        }
+        
+        print_speeds = {
+            "prototype": {"speed": 80, "quality": 50, "economy": 60, "consistency": 60},
+            "factory": {"speed": 70, "quality": 40, "economy": 55, "consistency": 50}
+        }
+        
+        # Obtener configuraciones específicas
+        mode = production_config.get('mode', 'prototype')
+        priority = production_config.get('priority', 'speed')
+        
+        layer_height = layer_heights.get(mode, {}).get(priority, 0.2)
+        infill_density = infill_densities.get(mode, {}).get(priority, 20)
+        print_speed = print_speeds.get(mode, {}).get(priority, 60)
+        
+        # Configuración de temperaturas según el material
+        material_temperatures = {
+            "PLA": {"nozzle": 210, "bed": 60},
+            "PETG": {"nozzle": 240, "bed": 80},
+            "ABS": {"nozzle": 250, "bed": 100},
+            "TPU": {"nozzle": 220, "bed": 50},
+            "Nylon": {"nozzle": 260, "bed": 85}
+        }
+        
+        material_type = material_config.get('type', 'PLA')
+        temps = material_temperatures.get(material_type, {"nozzle": 210, "bed": 60})
+        
+        # Crear el perfil personalizado
+        profile_data = {
+            "job_id": job_id,
+            "profile_name": f"custom_{job_id}.ini",
+            "printer_model": printer_model,
+            "material": f"{material_type} {material_config.get('color', '')}",
+            "production_mode": mode,
+            "priority": priority,
+            "base_printer": printer_config.get('printer_name', printer_model),
+            "settings": {
+                "layer_height": layer_height,
+                "fill_density": infill_density,
+                "print_speed": print_speed,
+                "nozzle_temperature": temps["nozzle"],
+                "bed_temperature": temps["bed"],
+                "material_type": material_type,
+                "material_color": material_config.get('color', 'white'),
+                "material_brand": material_config.get('brand', 'Generic'),
+                "bed_adhesion": printer_config.get('bed_adhesion', True),
+                "supports": production_config.get('supports', 'auto'),
+                "brim": production_config.get('brim', True) if mode == 'factory' else False
+            },
+            "generated_at": datetime.now().isoformat(),
+            "status": "ready"
+        }
+        
+        logger.info(f"Perfil generado exitosamente: {profile_data['profile_name']}")
+        logger.info(f"  Layer Height: {layer_height}mm | Infill: {infill_density}% | Speed: {print_speed}mm/s")
+        logger.info(f"  Nozzle: {temps['nozzle']}°C | Bed: {temps['bed']}°C")
+        
+        return JSONResponse(content={
+            "success": True,
+            **profile_data
+        })
+        
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Error generando perfil personalizado: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error interno generando perfil: {str(e)}"
+        )

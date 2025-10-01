@@ -466,11 +466,8 @@ async function loadPieceSelectionStep(projectId) {
         const actionsContainer = document.getElementById('wizard-actions');
         if (actionsContainer) {
             actionsContainer.innerHTML = `
-                <button onclick="selectAllPieces('${projectId}')" class="bg-blue-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-blue-600 transition-colors whitespace-nowrap">
-                    📋 <span class="hidden sm:inline">Todas las piezas</span><span class="sm:hidden">Todas</span>
-                </button>
-                <button onclick="selectSpecificPieces('${projectId}')" class="bg-purple-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-purple-600 transition-colors whitespace-nowrap">
-                    🎯 <span class="hidden sm:inline">Seleccionar específicas</span><span class="sm:hidden">Específicas</span>
+                <button onclick="confirmPieceSelectionFromCheckboxes('${projectId}')" class="bg-blue-600 text-white px-4 sm:px-6 py-2 text-sm sm:text-base rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                    Continuar →
                 </button>
             `;
         }
@@ -480,7 +477,7 @@ async function loadPieceSelectionStep(projectId) {
         <div class="space-y-6">
             <div class="text-center">
                 <h3 class="text-2xl font-bold text-gray-900 mb-2">📦 Seleccionar Piezas</h3>
-                <p class="text-gray-600">Elige qué piezas del proyecto quieres imprimir</p>
+                <p class="text-gray-600">Marca las piezas que quieres imprimir</p>
             </div>
             
             <!-- Resumen del proyecto -->
@@ -505,35 +502,21 @@ async function loadPieceSelectionStep(projectId) {
                 </div>
             </div>
             
-            <!-- Opciones de selección -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="border-2 border-blue-200 rounded-lg p-4 hover:border-blue-400 cursor-pointer transition-colors" onclick="selectAllPieces('${projectId}')">
-                    <div class="text-center">
-                        <div class="text-3xl mb-2">📋</div>
-                        <h4 class="font-bold text-gray-900 mb-2">${data.selection_options.all_pieces.label}</h4>
-                        <p class="text-gray-600 text-sm">${data.selection_options.all_pieces.description}</p>
-                    </div>
-                </div>
-                
-                <div class="border-2 border-purple-200 rounded-lg p-4 hover:border-purple-400 cursor-pointer transition-colors" onclick="selectSpecificPieces('${projectId}')">
-                    <div class="text-center">
-                        <div class="text-3xl mb-2">🎯</div>
-                        <h4 class="font-bold text-gray-900 mb-2">${data.selection_options.specific_pieces.label}</h4>
-                        <p class="text-gray-600 text-sm">${data.selection_options.specific_pieces.description}</p>
-                    </div>
-                </div>
-            </div>
-            
             <!-- Lista de piezas -->
-            <div class="space-y-2">
-                <h4 class="font-medium text-gray-900">Piezas disponibles:</h4>
-                <div class="max-h-64 overflow-y-auto space-y-2">
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <h4 class="font-medium text-gray-900">Piezas disponibles:</h4>
+                    <button onclick="toggleAllPieces()" class="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors">
+                        ☑️ Seleccionar todas
+                    </button>
+                </div>
+                <div class="max-h-64 overflow-y-auto space-y-2" id="pieces-list">
                     ${data.pieces.map(piece => `
-                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer" onclick="document.getElementById('piece_${piece.filename}').click()">
                             <div class="flex items-center space-x-3">
                                 <input type="checkbox" id="piece_${piece.filename}" name="selected_pieces" value="${piece.filename}" 
-                                       class="w-4 h-4 text-blue-600 rounded">
-                                <label for="piece_${piece.filename}" class="font-medium text-gray-900">${piece.filename}</label>
+                                       class="w-4 h-4 text-blue-600 rounded cursor-pointer" onclick="event.stopPropagation(); updateSelectionSummary()">
+                                <label for="piece_${piece.filename}" class="font-medium text-gray-900 cursor-pointer">${piece.filename}</label>
                             </div>
                             <div class="text-sm text-gray-600">
                                 ${piece.estimated_time_minutes}min | ${piece.estimated_filament_grams}g
@@ -541,58 +524,55 @@ async function loadPieceSelectionStep(projectId) {
                         </div>
                     `).join('')}
                 </div>
+                <!-- Contador de selección -->
+                <div id="selection-summary" class="text-sm text-gray-600 text-center bg-gray-50 p-2 rounded-lg">
+                    0 piezas seleccionadas
+                </div>
             </div>
         </div>
     `;
 }
 
-async function selectAllPieces(projectId) {
-    try {
-        showToast('Procesando', 'Seleccionando todas las piezas...', 'info');
-        
-        const response = await fetch('/api/print/select-pieces', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                project_id: projectId,
-                selected_pieces: [],
-                select_all: true
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            showToast('Selección Confirmada', `${result.selection_summary.total_pieces} piezas seleccionadas`, 'success');
-            
-            // Avanzar al siguiente paso
-            setTimeout(() => {
-                loadPrintFlowStep(null, projectId, result.next_step.step, { 
-                    completed_steps: ['piece_selection'],
-                    data: { project_name: 'Proyecto', ...result.selection_summary }
-                });
-            }, 1000);
+// Función para alternar todas las piezas (seleccionar/deseleccionar)
+function toggleAllPieces() {
+    const checkboxes = document.querySelectorAll('input[name="selected_pieces"]');
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    
+    checkboxes.forEach(cb => {
+        cb.checked = !allChecked;
+    });
+    
+    updateSelectionSummary();
+}
+
+// Actualizar el contador de piezas seleccionadas
+function updateSelectionSummary() {
+    const selectedCheckboxes = document.querySelectorAll('input[name="selected_pieces"]:checked');
+    const count = selectedCheckboxes.length;
+    const summaryEl = document.getElementById('selection-summary');
+    
+    if (summaryEl) {
+        if (count === 0) {
+            summaryEl.textContent = '0 piezas seleccionadas';
+            summaryEl.className = 'text-sm text-gray-600 text-center bg-gray-50 p-2 rounded-lg';
         } else {
-            showToast('Error', result.message || 'Error en la selección', 'error');
+            summaryEl.textContent = `${count} pieza${count > 1 ? 's' : ''} seleccionada${count > 1 ? 's' : ''}`;
+            summaryEl.className = 'text-sm text-blue-700 font-medium text-center bg-blue-50 p-2 rounded-lg';
         }
-        
-    } catch (error) {
-        console.error('Error seleccionando piezas:', error);
-        showToast('Error', 'Error de conexión', 'error');
     }
 }
 
-function selectSpecificPieces(projectId) {
-    // Obtener piezas seleccionadas de los checkboxes
+// Confirmar selección de piezas desde los checkboxes
+function confirmPieceSelectionFromCheckboxes(projectId) {
     const selectedCheckboxes = document.querySelectorAll('input[name="selected_pieces"]:checked');
     const selectedPieces = Array.from(selectedCheckboxes).map(cb => cb.value);
     
     if (selectedPieces.length === 0) {
-        showToast('Atención', 'Selecciona al menos una pieza', 'warning');
+        showToast('Atención', 'Selecciona al menos una pieza para continuar', 'warning');
         return;
     }
     
-    // Llamar al endpoint con la selección específica
+    // Llamar al endpoint con la selección
     confirmPieceSelection(projectId, selectedPieces, false);
 }
 
