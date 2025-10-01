@@ -90,3 +90,59 @@ src/project
 APISLICER/output
 APISLICER/uploads
 src/web/static/img/job_results/*
+# ============================================
+# Refactorización 2025-09-30
+# ============================================
+
+# Tests locales
+tests/html/local_*.html
+tests/html/debug_*.html
+
+# Archivos temporales
+*.tmp
+*.bak
+*~
+.DS_Store
+
+# Uploads y outputs (excepto ejemplos)
+APISLICER/uploads/*.stl
+APISLICER/output/*.gcode
+!APISLICER/uploads/example.stl
+
+# Logs detallados
+*.log
+logs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+ENV/
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+
+# Backups
+*.bak
+*.backup
+.archive*/
+
+# OS
+Thumbs.db
+.DS_Store

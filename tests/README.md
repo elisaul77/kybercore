@@ -1,101 +1,69 @@
-# Test Configuration for KyberCore
+# Tests de KyberCore
 
-## Estructura de Pruebas
+## 📂 Estructura
 
-### Archivos principales:
-- `test_endpoints.py` - Pruebas completas de endpoints y casos edge
-- `test_controllers.py` - Pruebas específicas para cada controlador
-- `test_docker.py` - Pruebas específicas para entorno Docker
-- `conftest.py` - Configuración y fixtures compartidas
-- `../run_tests.sh` - Script para ejecutar pruebas con Docker Compose
+- **`unit/`** - Tests unitarios Python (pytest)
+- **`integration/`** - Tests de integración Docker  
+- **`html/`** - Interfaces de test interactivas (navegador)
 
-### Tipos de pruebas incluidas:
+## 🧪 Ejecutar Tests
 
-#### 1. Pruebas básicas de endpoints
-- Verificación de códigos de estado HTTP
-- Validación de estructura de respuestas JSON
-- Tiempo de respuesta
-
-#### 2. Pruebas de validación de datos
-- Estructura de datos de flota
-- Consistencia del recomendador IA
-- Campos requeridos en respuestas
-
-#### 3. Pruebas de manejo de errores
-- Endpoints inexistentes (404)
-- Parámetros malformados (400/422)
-- Casos edge y valores inválidos
-
-#### 4. Pruebas de integración
-- Consistencia entre módulos
-- Flujo completo de datos
-
-#### 5. Pruebas de rendimiento
-- Tiempo de respuesta de endpoints
-- Detección de endpoints lentos
-
-## Cómo ejecutar las pruebas
-
-### Con Docker Compose (Recomendado)
-
+### Tests Python
 ```bash
-# Ejecutar todas las pruebas
-./run_tests.sh
+# Todos los tests
+./scripts/run_tests.sh
 
-# Ejecutar con verbose output
-./run_tests.sh -v
+# Solo tests unitarios
+pytest tests/unit/
 
-# Ejecutar con coverage
-./run_tests.sh --coverage
+# Solo tests de integración
+pytest tests/integration/
+
+# Test específico
+pytest tests/unit/test_controllers.py -v
 ```
 
-### Localmente (desarrollo)
+### Tests HTML Interactivos
+Los tests HTML son interfaces web para probar funcionalidades manualmente:
 
-```bash
-# Instalar dependencias de testing
-pip install -r requirements.txt
+1. Inicia los servicios:
+   ```bash
+   docker compose up -d
+   ```
 
-# Ejecutar todas las pruebas
-pytest tests/
+2. Abre en tu navegador:
+   - `tests/html/test_simple.html` - Test básico de funcionalidad
+   - `tests/html/test_wizard.html` - Test del wizard de configuración
+   - `tests/html/test_print_flow.html` - Test del flujo completo de impresión
+   - `tests/html/test_integrated_flow.html` - Test de integración E2E
 
-# Ejecutar con verbose output
-pytest tests/ -v
+## 📝 Añadir Nuevos Tests
 
-# Ejecutar un archivo específico
-pytest tests/test_endpoints.py -v
+### Test Unitario
+```python
+# tests/unit/test_mi_modulo.py
+import pytest
+from src.mi_modulo import mi_funcion
 
-# Ejecutar con coverage
-pytest tests/ --cov=src --cov-report=html
+def test_mi_funcion():
+    resultado = mi_funcion(parametro="test")
+    assert resultado == "esperado"
 ```
 
-## Configuración adicional recomendada
+### Test de Integración
+```python
+# tests/integration/test_mi_integracion.py
+import pytest
+from docker import DockerClient
 
-Para mayor cobertura, considera instalar:
-```bash
-pip install pytest-cov pytest-mock coverage
+def test_contenedor_funcionando():
+    client = DockerClient.from_env()
+    container = client.containers.get("kybercore")
+    assert container.status == "running"
 ```
 
-## Estructura de archivos de test
+## 🐛 Troubleshooting
 
-```
-tests/
-├── conftest.py              # Configuración y fixtures
-├── test_endpoints.py        # Pruebas de endpoints principales
-├── test_controllers.py      # Pruebas de controladores específicos
-├── test_docker.py           # Pruebas específicas para Docker
-├── README.md               # Esta documentación
-└── ../run_tests.sh          # Script de ejecución con Docker
-```
-
-## Próximos pasos
-
-- Agregar pruebas para nuevos endpoints de análisis IA
-- Implementar pruebas de carga con pytest-benchmark
-- Agregar pruebas de seguridad y autenticación
-- Configurar CI/CD para ejecutar pruebas automáticamente
-
-Organiza aquí los tests por dominio, por ejemplo:
-- test_api.py
-- test_jobs.py
-- test_printers.py
-- ...
+- Si los tests fallan, verifica que los contenedores estén corriendo: `docker compose ps`
+- Para ver logs: `docker compose logs -f`
+- Para reiniciar: `docker compose restart`
