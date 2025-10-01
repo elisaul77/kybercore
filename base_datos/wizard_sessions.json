@@ -3509,6 +3509,29 @@
         "printer_ip": "10.10.10.71:7126",
         "confirmed_at": "2025-09-16T07:59:47.243651"
       }
+    },
+    "temp_10_20251001_040534": {
+      "project_id": "10",
+      "current_step": "material_selection",
+      "completed_steps": [
+        "piece_selection"
+      ],
+      "created_at": "2025-10-01T04:05:34.648767",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "all_pieces",
+        "selected_pieces": [
+          "Body.stl",
+          "UpperFloor.stl",
+          "Roof.stl",
+          "Columns.stl"
+        ],
+        "total_pieces": 4,
+        "total_estimated_filament_grams": 49.2,
+        "total_estimated_time_hours": 3.0,
+        "completed_at": "2025-10-01T04:05:34.648781"
+      },
+      "updated_at": "2025-10-01T04:05:34.649478"
     }
   },
   "metadata": {
