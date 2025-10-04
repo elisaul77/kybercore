@@ -1658,16 +1658,26 @@ async function loadValidationStep() {
                 </div>
                 
                 <div id="gcode-viewer-container" class="hidden space-y-4">
-                    <!-- Selector de archivo -->
+                    <!-- Selector de archivo y toggle 2D/3D -->
                     <div class="bg-white rounded-lg p-3 border">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Archivo G-code:</label>
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="block text-sm font-medium text-gray-700">Archivo G-code:</label>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="switchViewMode('2d')" id="btn-2d-view" class="px-3 py-1 text-sm bg-blue-500 text-white rounded transition-colors">
+                                    📐 Vista 2D
+                                </button>
+                                <button onclick="switchViewMode('3d')" id="btn-3d-view" class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded transition-colors">
+                                    🧊 Vista 3D
+                                </button>
+                            </div>
+                        </div>
                         <select id="gcode-file-selector" onchange="loadGcodeFile(this.value)" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                             <option value="">Selecciona un archivo...</option>
                         </select>
                     </div>
                     
-                    <!-- Canvas de visualización -->
-                    <div class="bg-white rounded-lg border overflow-hidden">
+                    <!-- Canvas de visualización 2D -->
+                    <div id="canvas-2d-container" class="bg-white rounded-lg border overflow-hidden">
                         <div class="relative" style="height: 400px;">
                             <canvas id="gcode-canvas" class="w-full h-full"></canvas>
                             <div id="gcode-loading" class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90 hidden">
@@ -1675,6 +1685,19 @@ async function loadValidationStep() {
                                     <div class="animate-spin text-4xl mb-2">⚙️</div>
                                     <div class="text-sm text-gray-600">Cargando G-code...</div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Canvas de visualización 3D -->
+                    <div id="canvas-3d-container" class="hidden bg-white rounded-lg border overflow-hidden">
+                        <div class="relative" style="height: 500px;">
+                            <div id="gcode-3d-canvas"></div>
+                            <div class="absolute top-3 right-3 bg-white bg-opacity-90 rounded-lg p-2 text-xs space-y-1 shadow-lg">
+                                <div class="font-medium text-gray-700">Controles 3D:</div>
+                                <div class="text-gray-600">🖱️ Clic izq: Rotar</div>
+                                <div class="text-gray-600">🖱️ Scroll: Zoom</div>
+                                <div class="text-gray-600">🖱️ Clic der: Pan</div>
                             </div>
                         </div>
                     </div>
@@ -1766,7 +1789,15 @@ let gcodeData = {
     animationInterval: null,
     canvas: null,
     ctx: null,
-    bounds: { minX: 0, maxX: 200, minY: 0, maxY: 200, minZ: 0, maxZ: 100 }
+    bounds: { minX: 0, maxX: 200, minY: 0, maxY: 200, minZ: 0, maxZ: 100 },
+    // Variables 3D
+    viewMode: '2d',
+    scene: null,
+    camera: null,
+    renderer: null,
+    controls: null,
+    lines3D: [],
+    buildPlate: null
 };
 
 function toggleGcodeViewer() {
@@ -2078,7 +2109,7 @@ function loadDemoGcode() {
 function updateGcodeLayer(layerIndex) {
     gcodeData.currentLayer = parseInt(layerIndex);
     updateLayerInfo();
-    renderCurrentLayer();
+    updateGcodeVisualization();
 }
 
 function updateLayerInfo() {
@@ -2243,7 +2274,7 @@ function previousLayer() {
         const slider = document.getElementById('layer-slider');
         if (slider) slider.value = gcodeData.currentLayer;
         updateLayerInfo();
-        renderCurrentLayer();
+        updateGcodeVisualization();
     }
 }
 
@@ -2253,7 +2284,7 @@ function nextLayer() {
         const slider = document.getElementById('layer-slider');
         if (slider) slider.value = gcodeData.currentLayer;
         updateLayerInfo();
-        renderCurrentLayer();
+        updateGcodeVisualization();
     }
 }
 
@@ -2288,7 +2319,60 @@ function toggleLayerAnimation() {
 
 function updateGcodeVisualization() {
     // Redibujar con las nuevas opciones
-    renderCurrentLayer();
+    if (gcodeData.viewMode === '2d') {
+        renderCurrentLayer();
+    } else {
+        if (typeof window.render3DLayer === 'function') {
+            window.render3DLayer();
+        }
+    }
+}
+
+// ===============================
+// FUNCIONES PARA VISOR 3D
+// ===============================
+
+function switchViewMode(mode) {
+    console.log(`🔄 Cambiando modo de vista a: ${mode}`);
+    gcodeData.viewMode = mode;
+    
+    const canvas2D = document.getElementById('canvas-2d-container');
+    const canvas3D = document.getElementById('canvas-3d-container');
+    const btn2D = document.getElementById('btn-2d-view');
+    const btn3D = document.getElementById('btn-3d-view');
+    
+    if (mode === '2d') {
+        canvas2D?.classList.remove('hidden');
+        canvas3D?.classList.add('hidden');
+        btn2D?.classList.remove('bg-gray-200', 'hover:bg-gray-300');
+        btn2D?.classList.add('bg-blue-500', 'text-white');
+        btn3D?.classList.remove('bg-blue-500', 'text-white');
+        btn3D?.classList.add('bg-gray-200', 'hover:bg-gray-300');
+        renderCurrentLayer();
+    } else {
+        canvas2D?.classList.add('hidden');
+        canvas3D?.classList.remove('hidden');
+        btn2D?.classList.remove('bg-blue-500', 'text-white');
+        btn2D?.classList.add('bg-gray-200', 'hover:bg-gray-300');
+        btn3D?.classList.remove('bg-gray-200', 'hover:bg-gray-300');
+        btn3D?.classList.add('bg-blue-500', 'text-white');
+        
+        // Inicializar visor 3D si no existe
+        if (!gcodeData.scene) {
+            if (typeof window.initialize3DViewer === 'function') {
+                window.initialize3DViewer();
+            } else {
+                console.error('❌ Módulo de visor 3D no cargado');
+                showToast('Error', 'No se pudo cargar el visor 3D', 'error');
+                return;
+            }
+        }
+        
+        // Renderizar capa actual
+        if (typeof window.render3DLayer === 'function') {
+            window.render3DLayer();
+        }
+    }
 }
 
 // ===============================

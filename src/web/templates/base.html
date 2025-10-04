@@ -11,6 +11,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/gcode-viewer.css') }}">
+    <!-- Three.js para visualización 3D -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
 </head>
 <body class="bg-gray-100">
 
@@ -109,6 +118,9 @@
 <script src="{{ url_for('static', path='/js/fleet.js') }}"></script>
 <script src="{{ url_for('static', path='/js/project_management.js') }}"></script>
 <script src="{{ url_for('static', path='/js/consumables.js') }}"></script>
+
+<!-- G-code 3D Viewer (módulo ES6) -->
+<script type="module" src="{{ url_for('static', path='/js/gcode-viewer-3d.js') }}"></script>
 <script src="{{ url_for('static', path='/js/gallery.js') }}"></script>
 {% block scripts %}{% endblock %}
 </body>

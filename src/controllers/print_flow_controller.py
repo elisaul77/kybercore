@@ -975,8 +975,8 @@ async def process_stl_files(request: Request):
                     errors.append(f"Archivo {piece_filename} no encontrado")
                     continue
                 
-                # Procesar archivo con APISLICER
-                result = await process_single_stl(piece_filename, piece_path, slicer_config)
+                # Procesar archivo con APISLICER (pasar session_id)
+                result = await process_single_stl(piece_filename, piece_path, slicer_config, session_id)
                 processed_files.append(result)
                 
             except Exception as e:
@@ -1180,7 +1180,7 @@ def find_stl_file_path(project, filename):
         return f"/app/{project_folder}/files/{filename}"
     return None
 
-async def process_single_stl(filename, file_path, config):
+async def process_single_stl(filename, file_path, config, session_id=None):
     """Procesa un archivo STL individual con APISLICER usando perfil personalizado"""
     try:
         # Verificar si tenemos configuración de perfil personalizado
@@ -1249,9 +1249,12 @@ async def process_single_stl(filename, file_path, config):
                     # APISLICER devuelve directamente el archivo G-code
                     gcode_content = await response.read()
                     
-                    # Generar path para guardar el G-code
+                    # Generar path para guardar el G-code (incluir session_id para filtrado)
                     gcode_filename = filename.replace('.stl', '.gcode')
-                    gcode_path = f"/tmp/kybercore_gcode_{uuid.uuid4()}_{gcode_filename}"
+                    if session_id:
+                        gcode_path = f"/tmp/kybercore_gcode_{session_id}_{gcode_filename}"
+                    else:
+                        gcode_path = f"/tmp/kybercore_gcode_{uuid.uuid4()}_{gcode_filename}"
                     
                     # Guardar el G-code devuelto
                     try:
@@ -2087,6 +2090,7 @@ async def generate_custom_profile(request: Request):
 async def get_gcode_files(session_id: str):
     """
     Obtiene la lista de archivos G-code generados para una sesión del wizard.
+    Filtra solo los archivos que pertenecen a la sesión actual.
     
     Args:
         session_id: ID de la sesión del wizard
@@ -2097,21 +2101,14 @@ async def get_gcode_files(session_id: str):
     try:
         logger.info(f"🔍 Obteniendo archivos G-code para sesión: {session_id}")
         
-        # Directorio donde APISLICER guarda los archivos G-code
-        output_dir = Path("/app/APISLICER/output")
-        
-        if not output_dir.exists():
-            logger.warning(f"Directorio de salida no existe: {output_dir}")
-            return JSONResponse(content={
-                "success": True,
-                "files": [],
-                "message": "No hay archivos G-code disponibles aún"
-            })
+        # Buscar en /tmp donde se guardan los archivos temporales
+        tmp_dir = Path("/tmp")
         
         gcode_files = []
         
-        # Buscar archivos .gcode en el directorio de salida
-        for gcode_file in output_dir.glob("*.gcode"):
+        # Buscar archivos .gcode que contengan el session_id en su nombre
+        pattern = f"kybercore_gcode_{session_id}_*.gcode"
+        for gcode_file in tmp_dir.glob(pattern):
             try:
                 # Leer el archivo para obtener información básica
                 with open(gcode_file, 'r') as f:
