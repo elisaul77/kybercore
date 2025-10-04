@@ -714,6 +714,122 @@ async def auto_rotate_stl(request: AutoRotateRequest):
     except Exception as e:
         logger.error(f"Error en auto-rotación: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/auto-rotate-upload")
+async def auto_rotate_stl_upload(
+    file: UploadFile = File(...),
+    method: str = "auto",
+    rotation_step: int = 15,
+    max_rotations: int = 24,
+    max_iterations: int = 50,
+    learning_rate: float = 0.1
+):
+    """
+    Recibe un archivo STL, lo analiza, encuentra la rotación óptima y devuelve el archivo rotado.
+    
+    Args:
+        file: Archivo STL a rotar
+        method: Método de optimización ('auto', 'gradient', 'grid')
+        rotation_step: Paso de rotación para método grid
+        max_rotations: Máximo de rotaciones para método grid
+        max_iterations: Máximas iteraciones para método gradient
+        learning_rate: Tasa de aprendizaje para método gradient
+    
+    Returns:
+        Archivo STL rotado si la mejora es > 5%, o el original si no
+    """
+    temp_input_path = None
+    temp_output_path = None
+    
+    try:
+        # Guardar archivo temporal de entrada
+        job_id = str(uuid.uuid4())
+        temp_input_path = f"{UPLOAD_DIR}/{job_id}_input.stl"
+        
+        with open(temp_input_path, "wb") as buffer:
+            content = await file.read()
+            buffer.write(content)
+        
+        logger.info(f"Archivo STL recibido: {file.filename} ({len(content)} bytes)")
+        logger.info(f"Analizando rotación óptima con método: {method}")
+
+        # Encontrar rotación óptima
+        result = find_optimal_rotation_adaptive(
+            temp_input_path,
+            method=method,
+            rotation_step=rotation_step,
+            max_rotations=max_rotations,
+            max_iterations=max_iterations,
+            learning_rate=learning_rate
+        )
+        
+        if result is None:
+            raise HTTPException(status_code=500, detail="Error interno en optimización")
+            
+        best_rotation, contact_area, rotation_info = result
+        improvement = rotation_info.get("contact_area_improvement", 0)
+
+        logger.info(f"Rotación óptima encontrada: {rotation_info.get('best_rotation_degrees')} (mejora: {improvement:.2f}%)")
+
+        # Si la mejora es significativa (>5%), aplicar rotación
+        if improvement > 5:
+            temp_output_path = f"{UPLOAD_DIR}/{job_id}_rotated.stl"
+            
+            if apply_rotation_to_stl(temp_input_path, temp_output_path, best_rotation):
+                logger.info(f"Rotación aplicada exitosamente: {temp_output_path}")
+                
+                # Devolver el archivo rotado
+                return FileResponse(
+                    path=temp_output_path,
+                    media_type="application/octet-stream",
+                    filename=f"rotated_{file.filename}",
+                    headers={
+                        "X-Rotation-Applied": "true",
+                        "X-Rotation-Degrees": str(rotation_info.get('best_rotation_degrees', [0, 0, 0])),
+                        "X-Improvement-Percentage": str(improvement),
+                        "X-Contact-Area": str(contact_area),
+                        "X-Original-Area": str(rotation_info.get('original_area', 0))
+                    }
+                )
+            else:
+                raise HTTPException(status_code=500, detail="Error aplicando rotación al archivo")
+        else:
+            # La mejora no es significativa, devolver el archivo original
+            logger.info(f"Mejora insuficiente ({improvement:.2f}%), devolviendo archivo original")
+            
+            return FileResponse(
+                path=temp_input_path,
+                media_type="application/octet-stream",
+                filename=file.filename,
+                headers={
+                    "X-Rotation-Applied": "false",
+                    "X-Rotation-Degrees": str(rotation_info.get('best_rotation_degrees', [0, 0, 0])),
+                    "X-Improvement-Percentage": str(improvement),
+                    "X-Reason": "Improvement below threshold (5%)"
+                }
+            )
+
+    except Exception as e:
+        logger.error(f"Error en auto-rotación con upload: {str(e)}")
+        
+        # Limpiar archivos temporales en caso de error
+        if temp_input_path and os.path.exists(temp_input_path):
+            try:
+                os.remove(temp_input_path)
+            except:
+                pass
+        if temp_output_path and os.path.exists(temp_output_path):
+            try:
+                os.remove(temp_output_path)
+            except:
+                pass
+        
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/generate-profile")
+async def generate_profile(request: ProfileGenerationRequest):
     """
     Genera un perfil personalizado de impresión basado en las configuraciones del wizard.
     Combina el perfil base de la impresora con configuraciones específicas de material y producción.

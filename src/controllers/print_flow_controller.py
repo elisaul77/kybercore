@@ -1967,6 +1967,33 @@ async def get_session_state(session_id: str):
             "message": "Error interno del servidor"
         }, status_code=500)
 
+
+@router.get("/print/wizard-session/{session_id}")
+async def get_wizard_session(session_id: str):
+    """
+    Obtiene los datos completos de una sesión del wizard.
+    Alias de /print/session-state pero devuelve directamente los datos de la sesión.
+    """
+    try:
+        session_data = load_wizard_session(session_id)
+        
+        if not session_data:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Sesión del wizard no encontrada: {session_id}"
+            )
+        
+        return session_data
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error obteniendo sesión del wizard {session_id}: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error interno del servidor: {str(e)}"
+        )
+
 # ===============================
 # ENDPOINT: GENERAR PERFIL PERSONALIZADO
 # ===============================

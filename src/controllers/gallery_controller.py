@@ -162,6 +162,31 @@ async def get_project_file(project_slug: str, filename: str):
 
     return FileResponse(file_path, filename=filename)
 
+@router.get("/projects/files/{project_id}/{filename}")
+async def get_project_file_by_id(project_id: int, filename: str):
+    """Sirve archivos STL de proyectos por ID del proyecto"""
+    data = load_projects_data()
+    project = next((p for p in data['proyectos'] if p.get('id') == project_id), None)
+
+    if not project:
+        raise HTTPException(status_code=404, detail=f"Proyecto no encontrado: {project_id}")
+
+    folder_name = project.get('carpeta') or f"{project.get('nombre')} - {project.get('id')}"
+
+    # Normalizar base del directorio del proyecto
+    if folder_name.startswith("src" + os.sep) or folder_name.startswith("src/"):
+        base_folder = folder_name
+    else:
+        base_folder = os.path.join("src", "proyect", folder_name)
+
+    # Construir ruta al archivo
+    file_path = os.path.join(base_folder, "files", filename)
+
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail=f"Archivo no encontrado: {filename}")
+
+    return FileResponse(file_path, filename=filename, media_type="application/octet-stream")
+
 @router.post("/projects/{project_id}/favorite")
 async def toggle_favorite(project_id: int):
     """Cambiar estado de favorito de un proyecto"""

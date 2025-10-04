@@ -1238,6 +1238,20 @@ async function loadSTLProcessingStep() {
                 </button>
             `;
         }
+        
+        // Configurar evento para el checkbox de auto-rotación
+        const autoRotationCheckbox = document.getElementById('enable-auto-rotation');
+        const rotationMethodConfig = document.getElementById('rotation-method-config');
+        
+        if (autoRotationCheckbox && rotationMethodConfig) {
+            // Configurar estado inicial
+            rotationMethodConfig.style.display = autoRotationCheckbox.checked ? 'block' : 'none';
+            
+            // Agregar evento de cambio
+            autoRotationCheckbox.addEventListener('change', function() {
+                rotationMethodConfig.style.display = this.checked ? 'block' : 'none';
+            });
+        }
     }, 100);
 
     // Mostrar configuración seleccionada
@@ -1318,6 +1332,35 @@ async function loadSTLProcessingStep() {
                 </div>
             </div>
 
+            <!-- Configuración de Auto-Rotación -->
+            <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                <h4 class="font-medium text-purple-900 mb-3">🔄 Optimización de Orientación STL</h4>
+                <div class="space-y-3">
+                    <label class="flex items-start space-x-3 cursor-pointer">
+                        <input type="checkbox" id="enable-auto-rotation" class="mt-1 w-5 h-5 text-purple-600 border-gray-300 rounded focus:ring-purple-500" checked>
+                        <div class="flex-1">
+                            <div class="font-medium text-gray-900">Activar Auto-Rotación Inteligente</div>
+                            <div class="text-sm text-gray-600">Analiza y rota automáticamente cada pieza STL para maximizar el área de contacto con la cama, mejorando la adhesión y reduciendo soportes necesarios.</div>
+                        </div>
+                    </label>
+                    <div id="rotation-method-config" class="ml-8 space-y-2">
+                        <label class="text-sm text-gray-700">
+                            <span class="font-medium">Método de optimización:</span>
+                            <select id="rotation-method" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500">
+                                <option value="auto" selected>Automático (Inteligente)</option>
+                                <option value="gradient">Descenso de Gradiente</option>
+                                <option value="grid">Búsqueda en Rejilla</option>
+                            </select>
+                        </label>
+                        <div class="text-xs text-gray-500 bg-white p-2 rounded">
+                            <strong>Automático:</strong> Combina exploración estratégica con optimización por gradiente (recomendado)<br>
+                            <strong>Gradiente:</strong> Optimización rápida pero puede quedarse en óptimos locales<br>
+                            <strong>Rejilla:</strong> Prueba sistemática de rotaciones (más lento pero exhaustivo)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Lista de archivos a procesar -->
             <div class="space-y-2">
                 <h4 class="font-medium text-gray-900">📁 Archivos a procesar:</h4>
@@ -1388,6 +1431,19 @@ async function startSTLProcessing() {
         // Paso 2: Enviar archivos STL para procesamiento
         updateStepStatus(2, 'in-progress', 'Enviando archivos STL...');
         showToast('Paso 2', 'Procesando archivos STL...', 'info');
+
+        // Verificar si se debe aplicar auto-rotación
+        const enableAutoRotation = document.getElementById('enable-auto-rotation')?.checked || false;
+        const rotationMethod = document.getElementById('rotation-method')?.value || 'auto';
+        
+        let rotationResults = null;
+        if (enableAutoRotation) {
+            showToast('Auto-Rotación', 'Analizando orientación óptima de archivos STL...', 'info');
+            rotationResults = await applyAutoRotationToSTLs(rotationMethod);
+            if (rotationResults && rotationResults.success) {
+                showToast('Auto-Rotación Completada', `${rotationResults.rotated_count} archivos optimizados`, 'success');
+            }
+        }
 
         // Enviar al backend con el perfil personalizado
         const processingResponse = await fetch('/api/print/process-stl', {
@@ -1486,6 +1542,194 @@ function showProfileInfo(profileResult) {
     const stepsContainer = document.querySelector('.bg-gray-50.rounded-lg.p-4');
     if (stepsContainer) {
         stepsContainer.appendChild(profileInfo);
+    }
+}
+
+/**
+ * Aplica auto-rotación a los archivos STL del proyecto usando la API de APISLICER
+ * @param {string} method - Método de optimización: 'auto', 'gradient', 'grid'
+ * @returns {Promise<Object>} Resultado con información de archivos rotados
+ */
+async function applyAutoRotationToSTLs(method = 'auto') {
+    try {
+        // Obtener el session_id del wizard actual
+        const sessionId = currentWizardSessionId;
+        if (!sessionId) {
+            console.error('No hay sesión activa del wizard');
+            return { success: false, error: 'No hay sesión activa del wizard' };
+        }
+
+        // Obtener los datos de la sesión del wizard desde el backend
+        const sessionResponse = await fetch(`/api/print/wizard-session/${sessionId}`);
+        if (!sessionResponse.ok) {
+            throw new Error('Error obteniendo datos de la sesión del wizard');
+        }
+        
+        const sessionData = await sessionResponse.json();
+        
+        // Obtener el project_id de la sesión
+        const projectId = sessionData.project_id;
+        if (!projectId) {
+            console.error('No hay project_id en la sesión');
+            return { success: false, error: 'No hay project_id en la sesión' };
+        }
+
+        // Obtener las piezas seleccionadas de la sesión
+        const selectedPieces = sessionData.piece_selection?.selected_pieces || [];
+        if (selectedPieces.length === 0) {
+            console.warn('No hay piezas seleccionadas en la sesión');
+            return { success: true, rotated_count: 0, files: [] };
+        }
+
+        // Obtener la información completa del proyecto para obtener las rutas de los archivos
+        const projectResponse = await fetch(`/api/gallery/projects/${projectId}`);
+        if (!projectResponse.ok) {
+            throw new Error('Error obteniendo datos del proyecto');
+        }
+        
+        const projectData = await projectResponse.json();
+        const allFiles = projectData.archivos || [];
+        const projectFolder = projectData.carpeta || `src/proyect/${projectData.nombre} - ${projectData.id}`;
+        
+        // Filtrar solo los archivos seleccionados y construir rutas completas
+        const stlFiles = allFiles
+            .filter(file => 
+                selectedPieces.includes(file.nombre) && 
+                file.nombre.toLowerCase().endsWith('.stl')
+            )
+            .map(file => ({
+                ...file,
+                ruta: `${projectFolder}/files/${file.nombre}`
+            }));
+        
+        if (stlFiles.length === 0) {
+            console.warn('No hay archivos STL seleccionados para rotar');
+            return { success: true, rotated_count: 0, files: [] };
+        }
+
+        console.log(`Aplicando auto-rotación a ${stlFiles.length} archivo(s) STL con método: ${method}`);
+        
+        const rotationResults = [];
+        let rotatedCount = 0;
+        
+        // Procesar cada archivo STL
+        for (const stlFile of stlFiles) {
+            try {
+                const stlPath = stlFile.ruta;
+                if (!stlPath) {
+                    console.warn('Archivo STL sin ruta:', stlFile);
+                    continue;
+                }
+
+                console.log(`Analizando rotación para: ${stlFile.nombre}`);
+                
+                // Leer el archivo STL desde el servidor
+                const fileResponse = await fetch(`/api/gallery/projects/files/${projectId}/${stlFile.nombre}`);
+                if (!fileResponse.ok) {
+                    throw new Error(`No se pudo leer el archivo: ${stlFile.nombre}`);
+                }
+                
+                const fileBlob = await fileResponse.blob();
+                
+                // Crear FormData para enviar el archivo
+                const formData = new FormData();
+                formData.append('file', fileBlob, stlFile.nombre);
+                
+                // Construir URL con parámetros
+                const params = new URLSearchParams({
+                    method: method,
+                    rotation_step: '15',
+                    max_rotations: '24',
+                    max_iterations: '50',
+                    learning_rate: '0.1'
+                });
+                
+                // Llamar a la API de auto-rotación de APISLICER
+                const rotationResponse = await fetch(`http://localhost:8001/auto-rotate-upload?${params}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!rotationResponse.ok) {
+                    console.error(`Error en auto-rotación para ${stlFile.nombre}:`, rotationResponse.statusText);
+                    rotationResults.push({
+                        file: stlFile.nombre,
+                        success: false,
+                        error: rotationResponse.statusText
+                    });
+                    continue;
+                }
+
+                // Leer headers de respuesta
+                const rotationApplied = rotationResponse.headers.get('X-Rotation-Applied') === 'true';
+                const rotationDegrees = JSON.parse(rotationResponse.headers.get('X-Rotation-Degrees') || '[0, 0, 0]');
+                const improvement = parseFloat(rotationResponse.headers.get('X-Improvement-Percentage') || '0');
+                const contactArea = parseFloat(rotationResponse.headers.get('X-Contact-Area') || '0');
+                const originalArea = parseFloat(rotationResponse.headers.get('X-Original-Area') || '0');
+                
+                // Obtener el archivo rotado (o el original si no se rotó)
+                const rotatedBlob = await rotationResponse.blob();
+                
+                if (rotationApplied) {
+                    console.log(`✓ Auto-rotación aplicada a ${stlFile.nombre}:`, {
+                        rotation: rotationDegrees,
+                        improvement: improvement,
+                        contactArea: contactArea
+                    });
+                    
+                    // Guardar el archivo rotado (esto se hará en el procesamiento de STL)
+                    rotatedCount++;
+                    rotationResults.push({
+                        file: stlFile.nombre,
+                        success: true,
+                        rotated: true,
+                        rotation: rotationDegrees,
+                        improvement: improvement,
+                        contact_area: contactArea,
+                        original_area: originalArea,
+                        rotated_blob: rotatedBlob  // Guardar el blob para uso posterior
+                    });
+                } else {
+                    console.log(`○ No se requiere rotación para ${stlFile.nombre} (mejora < 5%)`);
+                    rotationResults.push({
+                        file: stlFile.nombre,
+                        success: true,
+                        rotated: false,
+                        rotation: rotationDegrees,
+                        improvement: improvement,
+                        skipped: true,
+                        reason: 'Mejora insuficiente',
+                        original_blob: rotatedBlob  // Es el archivo original
+                    });
+                }
+
+            } catch (fileError) {
+                console.error(`Error procesando ${stlFile.nombre}:`, fileError);
+                rotationResults.push({
+                    file: stlFile.nombre,
+                    success: false,
+                    error: fileError.message
+                });
+            }
+        }
+
+        console.log(`Auto-rotación completada: ${rotatedCount}/${stlFiles.length} archivos rotados`);
+        
+        return {
+            success: true,
+            rotated_count: rotatedCount,
+            total_files: stlFiles.length,
+            files: rotationResults,
+            method: method
+        };
+
+    } catch (error) {
+        console.error('Error en applyAutoRotationToSTLs:', error);
+        return {
+            success: false,
+            error: error.message,
+            rotated_count: 0
+        };
     }
 }
 
