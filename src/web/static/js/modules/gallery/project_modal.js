@@ -1658,10 +1658,16 @@ async function loadValidationStep() {
                 </div>
                 
                 <div id="gcode-viewer-container" class="hidden space-y-4">
-                    <!-- Selector de archivo y toggle 2D/3D -->
+                    <!-- Navegación de archivos y toggle 2D/3D -->
                     <div class="bg-white rounded-lg p-3 border">
                         <div class="flex items-center justify-between mb-3">
-                            <label class="block text-sm font-medium text-gray-700">Archivo G-code:</label>
+                            <!-- Información del archivo actual y navegación -->
+                            <div class="flex items-center space-x-3 flex-1">
+                                <span class="text-sm font-medium text-gray-700">📄 Archivo:</span>
+                                <span id="current-gcode-filename" class="text-sm text-blue-600 font-medium">Cargando...</span>
+                                <span id="gcode-file-counter" class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">0/0</span>
+                            </div>
+                            <!-- Toggle 2D/3D -->
                             <div class="flex items-center space-x-2">
                                 <button onclick="switchViewMode('2d')" id="btn-2d-view" class="px-3 py-1 text-sm bg-blue-500 text-white rounded transition-colors">
                                     📐 Vista 2D
@@ -1671,9 +1677,16 @@ async function loadValidationStep() {
                                 </button>
                             </div>
                         </div>
-                        <select id="gcode-file-selector" onchange="loadGcodeFile(this.value)" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                            <option value="">Selecciona un archivo...</option>
-                        </select>
+                        
+                        <!-- Navegación entre archivos (solo visible si hay múltiples archivos) -->
+                        <div id="file-navigation" class="hidden flex items-center justify-center space-x-2 mt-2 pt-2 border-t">
+                            <button onclick="previousGcodeFile()" id="btn-prev-file" class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                ⏮️ Archivo Anterior
+                            </button>
+                            <button onclick="nextGcodeFile()" id="btn-next-file" class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                Siguiente Archivo ⏭️
+                            </button>
+                        </div>
                     </div>
                     
                     <!-- Canvas de visualización 2D -->
@@ -1797,7 +1810,10 @@ let gcodeData = {
     renderer: null,
     controls: null,
     lines3D: [],
-    buildPlate: null
+    buildPlate: null,
+    // Variables para navegación de archivos
+    availableFiles: [],
+    currentFileIndex: 0
 };
 
 function toggleGcodeViewer() {
@@ -1813,15 +1829,7 @@ function toggleGcodeViewer() {
         // Inicializar canvas y cargar archivos disponibles
         setTimeout(() => {
             initializeGcodeCanvas();
-            loadAvailableGcodeFiles();
-            // Cargar demo automáticamente si no hay archivos
-            setTimeout(() => {
-                const selector = document.getElementById('gcode-file-selector');
-                if (selector && selector.options.length <= 2) {
-                    // Si solo hay la opción vacía y demo, cargar demo automáticamente
-                    loadGcodeFile('demo');
-                }
-            }, 500);
+            loadAvailableGcodeFiles();  // Esto ahora cargará automáticamente el primer archivo
         }, 100);
     } else {
         container.classList.add('hidden');
@@ -1830,6 +1838,11 @@ function toggleGcodeViewer() {
         // Detener animación si está activa
         if (gcodeData.isAnimating) {
             toggleLayerAnimation();
+        }
+        
+        // Limpiar visor 3D si está activo
+        if (gcodeData.viewMode === '3d' && typeof window.cleanup3DViewer === 'function') {
+            window.cleanup3DViewer();
         }
     }
 }
@@ -1853,45 +1866,49 @@ function initializeGcodeCanvas() {
 
 async function loadAvailableGcodeFiles() {
     try {
+        console.log('🔍 Cargando archivos G-code de la sesión:', currentWizardSessionId);
+        
         // Obtener lista de archivos G-code procesados de la sesión actual
         const response = await fetch(`/api/print/gcode-files/${currentWizardSessionId}`);
         const data = await response.json();
         
-        if (!data.success || !data.files) {
-            console.warn('No se pudieron cargar archivos G-code');
+        if (!data.success || !data.files || data.files.length === 0) {
+            console.warn('No hay archivos G-code disponibles para esta sesión');
+            updateFileNavigationUI('Sin archivos', 0, 0);
+            showToast('Info', 'No hay archivos G-code disponibles para previsualizar', 'info');
             return;
         }
         
-        const selector = document.getElementById('gcode-file-selector');
-        if (!selector) return;
+        // Guardar archivos disponibles
+        gcodeData.availableFiles = data.files;
+        gcodeData.currentFileIndex = 0;
         
-        // Limpiar opciones existentes
-        selector.innerHTML = '<option value="">Selecciona un archivo...</option>';
+        console.log(`✅ Encontrados ${data.files.length} archivos G-code`);
         
-        // Agregar opciones de archivos disponibles
-        data.files.forEach(file => {
-            const option = document.createElement('option');
-            option.value = file.path;
-            option.textContent = `${file.filename} (${file.layers} capas)`;
-            selector.appendChild(option);
-        });
+        // Cargar automáticamente el primer archivo
+        await loadGcodeFileByIndex(0);
+        
+        // Actualizar UI de navegación
+        updateFileNavigationUI();
         
     } catch (error) {
         console.error('Error cargando lista de archivos G-code:', error);
+        updateFileNavigationUI('Error al cargar', 0, 0);
         
-        // Agregar archivos de ejemplo para pruebas
-        const selector = document.getElementById('gcode-file-selector');
-        if (selector) {
-            selector.innerHTML = `
-                <option value="">Selecciona un archivo...</option>
-                <option value="demo">📄 Archivo Demo (simulado)</option>
-            `;
-        }
+        // Fallback: cargar demo
+        console.log('📄 Cargando demo como fallback');
+        loadGcodeFile('demo');
     }
 }
 
 async function loadGcodeFile(filePath) {
-    if (!filePath) return;
+    if (!filePath) {
+        console.warn('⚠️ loadGcodeFile llamado sin filePath');
+        return;
+    }
+    
+    console.log(`📂 loadGcodeFile iniciado: ${filePath}`);
+    console.log(`📊 Modo actual: ${gcodeData.viewMode || '2d (default)'}`);
     
     const loadingEl = document.getElementById('gcode-loading');
     if (loadingEl) loadingEl.classList.remove('hidden');
@@ -1905,7 +1922,13 @@ async function loadGcodeFile(filePath) {
             // Cargar archivo G-code real
             console.log('📄 Cargando archivo G-code:', filePath);
             const response = await fetch(`/api/print/gcode-content?file=${encodeURIComponent(filePath)}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
             const gcodeContent = await response.text();
+            console.log(`📏 Contenido recibido: ${gcodeContent.length} caracteres`);
             parseGcode(gcodeContent);
         }
         
@@ -1915,6 +1938,8 @@ async function loadGcodeFile(filePath) {
             slider.max = gcodeData.layers.length - 1;
             slider.value = 0;
             console.log(`✅ Cargadas ${gcodeData.layers.length} capas`);
+        } else {
+            console.warn(`⚠️ No se detectaron capas o slider no encontrado. Capas: ${gcodeData.layers.length}`);
         }
         
         // Resetear a primera capa
@@ -1922,7 +1947,11 @@ async function loadGcodeFile(filePath) {
         
         // Actualizar UI
         updateLayerInfo();
-        renderCurrentLayer();
+        
+        console.log(`🎨 Llamando updateGcodeVisualization() en modo: ${gcodeData.viewMode}`);
+        
+        // Renderizar según el modo actual (2D o 3D)
+        updateGcodeVisualization();
         
         console.log('✨ Visor de G-code listo');
         
@@ -1931,6 +1960,111 @@ async function loadGcodeFile(filePath) {
         showToast('Error', 'No se pudo cargar el archivo G-code', 'error');
     } finally {
         if (loadingEl) loadingEl.classList.add('hidden');
+    }
+}
+
+// Nuevas funciones para navegación entre archivos
+async function loadGcodeFileByIndex(index) {
+    if (index < 0 || index >= gcodeData.availableFiles.length) {
+        console.warn('Índice de archivo fuera de rango:', index);
+        return;
+    }
+    
+    gcodeData.currentFileIndex = index;
+    const file = gcodeData.availableFiles[index];
+    
+    console.log(`📄 Cargando archivo ${index + 1}/${gcodeData.availableFiles.length}: ${file.filename}`);
+    
+    // Si estamos en modo 3D, limpiar el visor antes de cargar nuevo archivo
+    if (gcodeData.viewMode === '3d' && typeof window.cleanup3DViewer === 'function') {
+        console.log('🧹 Limpiando visor 3D antes de cargar nuevo archivo...');
+        window.cleanup3DViewer();
+    }
+    
+    // Actualizar UI
+    updateFileNavigationUI();
+    
+    // Cargar el archivo
+    await loadGcodeFile(file.path);
+    
+    // Si estamos en modo 3D, reinicializar el visor después de cargar
+    if (gcodeData.viewMode === '3d' && gcodeData.layers.length > 0) {
+        console.log('🎬 Reinicializando visor 3D con nuevo archivo...');
+        if (typeof window.initialize3DViewer === 'function') {
+            window.initialize3DViewer();
+        }
+        if (typeof window.render3DLayer === 'function') {
+            window.render3DLayer();
+        }
+    }
+}
+
+function updateFileNavigationUI(customFilename = null, customIndex = null, customTotal = null) {
+    const filenameEl = document.getElementById('current-gcode-filename');
+    const counterEl = document.getElementById('gcode-file-counter');
+    const navigationEl = document.getElementById('file-navigation');
+    const prevBtn = document.getElementById('btn-prev-file');
+    const nextBtn = document.getElementById('btn-next-file');
+    
+    if (customFilename !== null) {
+        // Modo manual (para mostrar mensajes de error)
+        if (filenameEl) filenameEl.textContent = customFilename;
+        if (counterEl) counterEl.textContent = `${customIndex}/${customTotal}`;
+        if (navigationEl) navigationEl.classList.add('hidden');
+        return;
+    }
+    
+    // Modo normal (con archivos cargados)
+    const totalFiles = gcodeData.availableFiles.length;
+    const currentIndex = gcodeData.currentFileIndex;
+    
+    if (totalFiles === 0) {
+        if (filenameEl) filenameEl.textContent = 'Sin archivos';
+        if (counterEl) counterEl.textContent = '0/0';
+        if (navigationEl) navigationEl.classList.add('hidden');
+        return;
+    }
+    
+    const currentFile = gcodeData.availableFiles[currentIndex];
+    
+    // Actualizar nombre del archivo (sin el prefijo kybercore_gcode_sessionid_)
+    if (filenameEl && currentFile) {
+        const cleanFilename = currentFile.filename.replace(/^kybercore_gcode_[a-f0-9-]+_/, '');
+        filenameEl.textContent = cleanFilename;
+    }
+    
+    // Actualizar contador
+    if (counterEl) {
+        counterEl.textContent = `${currentIndex + 1}/${totalFiles}`;
+    }
+    
+    // Mostrar/ocultar navegación según cantidad de archivos
+    if (navigationEl) {
+        if (totalFiles > 1) {
+            navigationEl.classList.remove('hidden');
+            
+            // Actualizar estado de botones
+            if (prevBtn) {
+                prevBtn.disabled = currentIndex === 0;
+            }
+            if (nextBtn) {
+                nextBtn.disabled = currentIndex === totalFiles - 1;
+            }
+        } else {
+            navigationEl.classList.add('hidden');
+        }
+    }
+}
+
+function previousGcodeFile() {
+    if (gcodeData.currentFileIndex > 0) {
+        loadGcodeFileByIndex(gcodeData.currentFileIndex - 1);
+    }
+}
+
+function nextGcodeFile() {
+    if (gcodeData.currentFileIndex < gcodeData.availableFiles.length - 1) {
+        loadGcodeFileByIndex(gcodeData.currentFileIndex + 1);
     }
 }
 
@@ -1943,6 +2077,7 @@ function parseGcode(gcodeContent) {
     let currentZ = null;
     let lastZ = null;
     let currentX = 0, currentY = 0;
+    let currentE = 0; // Para detectar retracciones
     let layerCount = 0;
     
     gcodeData.layers = [];
@@ -1969,7 +2104,7 @@ function parseGcode(gcodeContent) {
         // Parsear movimientos G1 (extrusión) y G0 (desplazamiento)
         if (line.startsWith('G1 ') || line.startsWith('G0 ')) {
             const move = {
-                type: line.startsWith('G1') ? 'extrude' : 'travel',
+                type: 'travel', // Se determinará después según valor E
                 x: currentX,
                 y: currentY,
                 z: currentZ !== null ? currentZ : 0,
@@ -1983,6 +2118,27 @@ function parseGcode(gcodeContent) {
             const zMatch = line.match(/Z([-\d.]+)/);
             const eMatch = line.match(/E([-\d.]+)/);
             const fMatch = line.match(/F([-\d.]+)/);
+            
+            // Extraer valor E y determinar tipo de movimiento
+            let newE = currentE;
+            if (eMatch) {
+                newE = parseFloat(eMatch[1]);
+                move.e = newE;
+                
+                // Determinar tipo basado en cambio de E
+                const deltaE = newE - currentE;
+                if (deltaE < -0.001) {
+                    move.type = 'retract'; // Retracción
+                } else if (deltaE > 0.001) {
+                    move.type = 'extrude'; // Extrusión
+                } else {
+                    move.type = 'travel'; // Sin extrusión
+                }
+            } else if (line.startsWith('G0')) {
+                move.type = 'travel'; // G0 siempre es travel
+            }
+            
+            if (fMatch) move.f = parseFloat(fMatch[1]);
             
             // Detectar cambio de Z (nueva capa)
             if (zMatch) {
@@ -2025,6 +2181,11 @@ function parseGcode(gcodeContent) {
                 currentY = move.toY;
                 gcodeData.bounds.minY = Math.min(gcodeData.bounds.minY, currentY);
                 gcodeData.bounds.maxY = Math.max(gcodeData.bounds.maxY, currentY);
+            }
+            
+            // Actualizar E actual para detectar retracciones en próximo movimiento
+            if (eMatch) {
+                currentE = newE;
             }
             
             // Solo agregar movimientos con coordenadas válidas
@@ -2318,12 +2479,39 @@ function toggleLayerAnimation() {
 }
 
 function updateGcodeVisualization() {
+    console.log(`🔄 Actualizando visualización en modo: ${gcodeData.viewMode}`);
+    
     // Redibujar con las nuevas opciones
     if (gcodeData.viewMode === '2d') {
         renderCurrentLayer();
-    } else {
-        if (typeof window.render3DLayer === 'function') {
-            window.render3DLayer();
+    } else if (gcodeData.viewMode === '3d') {
+        // Asegurarse de que el visor 3D esté inicializado
+        if (!gcodeData.scene && typeof window.initialize3DViewer === 'function') {
+            console.log('🎬 Inicializando visor 3D...');
+            window.initialize3DViewer();
+        }
+        
+        // Detectar si es archivo grande y usar renderizado apropiado
+        const totalMoves = gcodeData.layers.reduce((acc, layer) => acc + layer.moves.length, 0);
+        const isLargeFile = totalMoves > 30000; // Más de 30k movimientos = archivo grande
+        
+        if (isLargeFile) {
+            console.log(`📦 Archivo grande detectado (${totalMoves} movimientos), usando renderizado progresivo`);
+            showToast('Info', 'Archivo grande detectado. Renderizando de forma optimizada...', 'info');
+            
+            if (typeof window.render3DLayerProgressive === 'function') {
+                window.render3DLayerProgressive();
+            } else {
+                console.warn('⚠️ Renderizado progresivo no disponible, usando estándar');
+                window.render3DLayer();
+            }
+        } else {
+            console.log(`📦 Archivo estándar (${totalMoves} movimientos), usando renderizado optimizado`);
+            if (typeof window.render3DLayer === 'function') {
+                window.render3DLayer();
+            } else {
+                console.error('❌ Función render3DLayer no disponible');
+            }
         }
     }
 }

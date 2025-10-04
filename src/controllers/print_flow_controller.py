@@ -2187,10 +2187,24 @@ async def get_gcode_content(file: str):
         if file_path.suffix != '.gcode':
             raise HTTPException(status_code=400, detail="El archivo no es un G-code válido")
         
-        # Validar que el archivo está en el directorio permitido
-        output_dir = Path("/app/APISLICER/output").resolve()
-        if not str(file_path.resolve()).startswith(str(output_dir)):
+        # Validar que el archivo está en directorios permitidos
+        allowed_dirs = [
+            Path("/app/APISLICER/output").resolve(),
+            Path("/tmp").resolve()  # Permitir archivos temporales de KyberCore
+        ]
+        
+        file_resolved = file_path.resolve()
+        is_allowed = any(str(file_resolved).startswith(str(allowed_dir)) for allowed_dir in allowed_dirs)
+        
+        if not is_allowed:
+            logger.warning(f"❌ Acceso denegado a archivo fuera de directorios permitidos: {file_path}")
             raise HTTPException(status_code=403, detail="Acceso denegado al archivo")
+        
+        # Validación adicional: solo archivos de KyberCore en /tmp
+        if str(file_resolved).startswith("/tmp/"):
+            if not file_path.name.startswith("kybercore_gcode_"):
+                logger.warning(f"❌ Archivo /tmp no es de KyberCore: {file_path}")
+                raise HTTPException(status_code=403, detail="Acceso denegado al archivo")
         
         # Leer el archivo
         with open(file_path, 'r') as f:

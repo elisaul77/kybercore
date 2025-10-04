@@ -6,9 +6,13 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+// Variables para optimización de renderizado
+let renderingInProgress = false;
+let currentRenderFrame = 0;
+
 // Exportar funciones para uso global
 window.initialize3DViewer = function() {
-    console.log('🎬 Inicializando visor 3D...');
+    console.log('🎬 Inicializando visor 3D (modo optimizado)...');
     
     const container = document.getElementById('gcode-3d-canvas');
     if (!container) return;
@@ -131,10 +135,15 @@ function create3DBuildPlate() {
 window.render3DLayer = function() {
     if (!gcodeData.scene || gcodeData.layers.length === 0) return;
     
-    console.log(`🎨 Renderizando capa ${gcodeData.currentLayer + 1} en 3D`);
+    const startTime = performance.now();
+    console.log(`🎨 Renderizando capa ${gcodeData.currentLayer + 1} en 3D (optimizado)`);
     
     // Limpiar geometrías anteriores
-    gcodeData.lines3D.forEach(obj => gcodeData.scene.remove(obj));
+    gcodeData.lines3D.forEach(obj => {
+        if (obj.geometry) obj.geometry.dispose();
+        if (obj.material) obj.material.dispose();
+        gcodeData.scene.remove(obj);
+    });
     gcodeData.lines3D = [];
     
     const showTravels = document.getElementById('show-travels')?.checked;
@@ -144,16 +153,33 @@ window.render3DLayer = function() {
     const bounds = gcodeData.bounds;
     const offsetX = -(bounds.minX + bounds.maxX) / 2;
     const offsetY = -(bounds.minY + bounds.maxY) / 2;
-    const offsetZ = -bounds.minZ; // El Z mínimo debe estar en 0 (sobre la plataforma)
+    const offsetZ = -bounds.minZ;
+    
+    // ===== OPTIMIZACIÓN: Usar geometrías fusionadas =====
+    // Arrays para acumular puntos de todas las extrusiones
+    const extrusionPoints = [];
+    const extrusionColors = [];
+    
+    // Arrays para líneas de travel (si están habilitadas)
+    const travelPoints = [];
+    
+    // Arrays para retracciones (si están habilitadas)
+    const retractionPoints = [];
+    
+    let segmentCount = 0;
+    const maxSegmentsPerFrame = 50000; // Límite de segmentos para evitar colapso
     
     // Renderizar todas las capas hasta la actual
     for (let i = 0; i <= gcodeData.currentLayer; i++) {
         const layer = gcodeData.layers[i];
-        const opacity = i === gcodeData.currentLayer ? 1.0 : 0.4;
+        const opacity = i === gcodeData.currentLayer ? 1.0 : 0.6;
+        
+        // Color base para esta capa (más oscuras las anteriores)
+        const layerBrightness = i === gcodeData.currentLayer ? 1.0 : 0.7;
         
         layer.moves.forEach(move => {
             if (move.toX === undefined || move.toY === undefined) return;
-            if (move.type === 'travel' && !showTravels) return;
+            if (segmentCount >= maxSegmentsPerFrame) return; // Límite de seguridad
             
             // Coordenadas con offset (centradas en origen)
             const start = new THREE.Vector3(
@@ -168,73 +194,240 @@ window.render3DLayer = function() {
             );
             
             if (move.type === 'extrude') {
-                // EXTRUSIONES: Crear cilindros/tubos gruesos (cordones de filamento)
-                const extrusionWidth = 0.4; // Ancho de extrusión típico (mm)
-                const radius = extrusionWidth / 2;
-                
-                // Calcular dirección y longitud
-                const direction = new THREE.Vector3().subVectors(end, start);
-                const length = direction.length();
-                
-                if (length < 0.001) return; // Evitar segmentos de longitud cero
-                
-                // Crear geometría de cilindro
-                const geometry = new THREE.CylinderGeometry(radius, radius, length, 8);
+                // Agregar puntos a la geometría fusionada de extrusiones
+                extrusionPoints.push(start, end);
                 
                 // Determinar color
                 let color;
                 if (colorBySpeed && move.f) {
                     const speedRatio = Math.min(move.f / 3000, 1);
-                    const hue = speedRatio * 0.33; // 0 (rojo) a 0.33 (verde)
-                    color = new THREE.Color().setHSL(hue, 0.8, 0.5);
+                    const hue = speedRatio * 0.33;
+                    color = new THREE.Color().setHSL(hue, 0.8, 0.5 * layerBrightness);
                 } else {
-                    color = new THREE.Color(0xff8c42); // Naranja brillante para buen contraste
+                    color = new THREE.Color(0xff8c42); // Naranja
+                    color.multiplyScalar(layerBrightness);
                 }
                 
-                // Material para extrusión (cordón)
-                const material = new THREE.MeshStandardMaterial({ 
-                    color: color,
-                    transparent: true,
-                    opacity: opacity,
-                    metalness: 0.1,
-                    roughness: 0.8
-                });
+                // Agregar color para cada vértice (inicio y fin)
+                extrusionColors.push(color.r, color.g, color.b);
+                extrusionColors.push(color.r, color.g, color.b);
                 
-                const cylinder = new THREE.Mesh(geometry, material);
+                segmentCount++;
                 
-                // Posicionar y orientar el cilindro
-                const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
-                cylinder.position.copy(midpoint);
+            } else if (move.type === 'retract' && showRetractions) {
+                // Agregar puntos a la geometría de retracciones (blanco)
+                retractionPoints.push(start, end);
+                segmentCount++;
                 
-                // Orientar el cilindro en la dirección correcta
-                cylinder.quaternion.setFromUnitVectors(
-                    new THREE.Vector3(0, 1, 0),
-                    direction.normalize()
-                );
-                
-                gcodeData.scene.add(cylinder);
-                gcodeData.lines3D.push(cylinder);
-                
-            } else {
-                // DESPLAZAMIENTOS: Líneas finas y semi-transparentes
-                const points = [start, end];
-                const geometry = new THREE.BufferGeometry().setFromPoints(points);
-                
-                const material = new THREE.LineBasicMaterial({ 
-                    color: 0xd1d5db, // Gris muy claro
-                    transparent: true,
-                    opacity: opacity * 0.3, // Muy transparente
-                    linewidth: 1
-                });
-                
-                const line = new THREE.Line(geometry, material);
-                gcodeData.scene.add(line);
-                gcodeData.lines3D.push(line);
+            } else if (move.type === 'travel' && showTravels) {
+                // Agregar puntos a la geometría fusionada de travels
+                travelPoints.push(start, end);
+                segmentCount++;
             }
         });
     }
     
-    console.log(`✅ Renderizadas ${gcodeData.lines3D.length} geometrías (cordones y travels) centradas en origen`);
+    // Crear geometría fusionada de extrusiones (líneas gruesas)
+    if (extrusionPoints.length > 0) {
+        const extrusionGeometry = new THREE.BufferGeometry().setFromPoints(extrusionPoints);
+        extrusionGeometry.setAttribute('color', new THREE.Float32BufferAttribute(extrusionColors, 3));
+        
+        const extrusionMaterial = new THREE.LineBasicMaterial({ 
+            vertexColors: true,
+            linewidth: 3, // Líneas más gruesas para extrusiones
+            transparent: false
+        });
+        
+        const extrusionLines = new THREE.LineSegments(extrusionGeometry, extrusionMaterial);
+        gcodeData.scene.add(extrusionLines);
+        gcodeData.lines3D.push(extrusionLines);
+    }
+    
+    // Crear geometría fusionada de retracciones (líneas blancas)
+    if (retractionPoints.length > 0 && showRetractions) {
+        const retractionGeometry = new THREE.BufferGeometry().setFromPoints(retractionPoints);
+        
+        const retractionMaterial = new THREE.LineBasicMaterial({ 
+            color: 0xffffff, // Blanco
+            transparent: true,
+            opacity: 0.8,
+            linewidth: 2
+        });
+        
+        const retractionLines = new THREE.LineSegments(retractionGeometry, retractionMaterial);
+        gcodeData.scene.add(retractionLines);
+        gcodeData.lines3D.push(retractionLines);
+    }
+    
+    // Crear geometría fusionada de travels (líneas finas en azul oscuro)
+    if (travelPoints.length > 0 && showTravels) {
+        const travelGeometry = new THREE.BufferGeometry().setFromPoints(travelPoints);
+        
+        const travelMaterial = new THREE.LineBasicMaterial({ 
+            color: 0x1e3a8a, // Azul oscuro
+            transparent: true,
+            opacity: 0.4, // Más visible que antes
+            linewidth: 1
+        });
+        
+        const travelLines = new THREE.LineSegments(travelGeometry, travelMaterial);
+        gcodeData.scene.add(travelLines);
+        gcodeData.lines3D.push(travelLines);
+    }
+    
+    const elapsed = performance.now() - startTime;
+    console.log(`✅ Renderizado optimizado: ${segmentCount} segmentos en ${elapsed.toFixed(1)}ms (${gcodeData.lines3D.length} objetos)`);
+    
+    if (segmentCount >= maxSegmentsPerFrame) {
+        console.warn(`⚠️ Límite de segmentos alcanzado (${maxSegmentsPerFrame}). Algunos segmentos no se renderizaron.`);
+    }
+};
+
+// Función alternativa para renderizado progresivo (archivos muy grandes)
+window.render3DLayerProgressive = async function() {
+    if (!gcodeData.scene || gcodeData.layers.length === 0) return;
+    
+    if (renderingInProgress) {
+        console.log('⏳ Renderizado en progreso, cancelando solicitud duplicada');
+        return;
+    }
+    
+    renderingInProgress = true;
+    const startTime = performance.now();
+    console.log(`🎨 Renderizando capa ${gcodeData.currentLayer + 1} en 3D (modo progresivo)`);
+    
+    // Limpiar geometrías anteriores
+    gcodeData.lines3D.forEach(obj => {
+        if (obj.geometry) obj.geometry.dispose();
+        if (obj.material) obj.material.dispose();
+        gcodeData.scene.remove(obj);
+    });
+    gcodeData.lines3D = [];
+    
+    const showTravels = document.getElementById('show-travels')?.checked;
+    const showRetractions = document.getElementById('show-retractions')?.checked;
+    const colorBySpeed = document.getElementById('color-by-speed')?.checked;
+    
+    const bounds = gcodeData.bounds;
+    const offsetX = -(bounds.minX + bounds.maxX) / 2;
+    const offsetY = -(bounds.minY + bounds.maxY) / 2;
+    const offsetZ = -bounds.minZ;
+    
+    const extrusionPoints = [];
+    const extrusionColors = [];
+    const travelPoints = [];
+    const retractionPoints = [];
+    
+    const CHUNK_SIZE = 10000; // Procesar 10k segmentos a la vez
+    let segmentCount = 0;
+    let totalSegments = 0;
+    
+    // Contar total de segmentos
+    for (let i = 0; i <= gcodeData.currentLayer; i++) {
+        totalSegments += gcodeData.layers[i].moves.length;
+    }
+    
+    console.log(`📊 Total de segmentos a procesar: ${totalSegments}`);
+    
+    // Procesar en chunks para no congelar el navegador
+    for (let i = 0; i <= gcodeData.currentLayer; i++) {
+        const layer = gcodeData.layers[i];
+        const layerBrightness = i === gcodeData.currentLayer ? 1.0 : 0.7;
+        
+        for (let j = 0; j < layer.moves.length; j++) {
+            const move = layer.moves[j];
+            
+            if (move.toX === undefined || move.toY === undefined) continue;
+            
+            const start = new THREE.Vector3(
+                move.x + offsetX,
+                move.z + offsetZ,
+                move.y + offsetY
+            );
+            const end = new THREE.Vector3(
+                move.toX + offsetX,
+                move.z + offsetZ,
+                move.toY + offsetY
+            );
+            
+            if (move.type === 'extrude') {
+                extrusionPoints.push(start, end);
+                
+                let color;
+                if (colorBySpeed && move.f) {
+                    const speedRatio = Math.min(move.f / 3000, 1);
+                    color = new THREE.Color().setHSL(speedRatio * 0.33, 0.8, 0.5 * layerBrightness);
+                } else {
+                    color = new THREE.Color(0xff8c42);
+                    color.multiplyScalar(layerBrightness);
+                }
+                
+                extrusionColors.push(color.r, color.g, color.b);
+                extrusionColors.push(color.r, color.g, color.b);
+                
+            } else if (move.type === 'retract' && showRetractions) {
+                retractionPoints.push(start, end);
+                
+            } else if (move.type === 'travel' && showTravels) {
+                travelPoints.push(start, end);
+            }
+            
+            segmentCount++;
+            
+            // Yield al navegador cada CHUNK_SIZE segmentos
+            if (segmentCount % CHUNK_SIZE === 0) {
+                await new Promise(resolve => setTimeout(resolve, 0));
+                console.log(`⏳ Progreso: ${segmentCount}/${totalSegments} (${(segmentCount/totalSegments*100).toFixed(1)}%)`);
+            }
+        }
+    }
+    
+    // Crear geometrías finales
+    if (extrusionPoints.length > 0) {
+        const extrusionGeometry = new THREE.BufferGeometry().setFromPoints(extrusionPoints);
+        extrusionGeometry.setAttribute('color', new THREE.Float32BufferAttribute(extrusionColors, 3));
+        
+        const extrusionMaterial = new THREE.LineBasicMaterial({ 
+            vertexColors: true,
+            linewidth: 3
+        });
+        
+        const extrusionLines = new THREE.LineSegments(extrusionGeometry, extrusionMaterial);
+        gcodeData.scene.add(extrusionLines);
+        gcodeData.lines3D.push(extrusionLines);
+    }
+    
+    if (retractionPoints.length > 0 && showRetractions) {
+        const retractionGeometry = new THREE.BufferGeometry().setFromPoints(retractionPoints);
+        const retractionMaterial = new THREE.LineBasicMaterial({ 
+            color: 0xffffff, // Blanco
+            transparent: true,
+            opacity: 0.8,
+            linewidth: 2
+        });
+        
+        const retractionLines = new THREE.LineSegments(retractionGeometry, retractionMaterial);
+        gcodeData.scene.add(retractionLines);
+        gcodeData.lines3D.push(retractionLines);
+    }
+    
+    if (travelPoints.length > 0 && showTravels) {
+        const travelGeometry = new THREE.BufferGeometry().setFromPoints(travelPoints);
+        const travelMaterial = new THREE.LineBasicMaterial({ 
+            color: 0x1e3a8a, // Azul oscuro
+            transparent: true,
+            opacity: 0.4
+        });
+        
+        const travelLines = new THREE.LineSegments(travelGeometry, travelMaterial);
+        gcodeData.scene.add(travelLines);
+        gcodeData.lines3D.push(travelLines);
+    }
+    
+    const elapsed = performance.now() - startTime;
+    console.log(`✅ Renderizado progresivo completado: ${segmentCount} segmentos en ${elapsed.toFixed(1)}ms`);
+    
+    renderingInProgress = false;
 };
 
 function animate3DScene() {
