@@ -394,9 +394,15 @@ async function loadPrintFlowStep(flowId, projectId, step, status) {
                 stepContent = generatePlaceholderStep(step);
         }
         
+        // Determinar si usar pantalla completa (para el paso de validación con visor 3D)
+        const isFullscreenStep = step === 'validation';
+        const modalSizeClasses = isFullscreenStep 
+            ? 'w-full h-full max-w-full max-h-full rounded-none' 
+            : 'w-full max-w-4xl h-full max-h-[95vh] sm:max-h-[90vh] rounded-2xl';
+        
         // Crear el wrapper del wizard con navegación responsiva optimizada
         wizardContainer.innerHTML = `
-            <div class="bg-white rounded-2xl w-full max-w-4xl h-full max-h-[95vh] sm:max-h-[90vh] flex flex-col shadow-2xl">
+            <div class="bg-white ${modalSizeClasses} flex flex-col shadow-2xl">
                 <!-- Header del wizard -->
                 <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0">
                     <div class="flex items-center justify-between">
