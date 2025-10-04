@@ -1252,6 +1252,17 @@ async function loadSTLProcessingStep() {
                 rotationMethodConfig.style.display = this.checked ? 'block' : 'none';
             });
         }
+        
+        // Configurar slider de umbral de mejora
+        const thresholdSlider = document.getElementById('improvement-threshold');
+        const thresholdValue = document.getElementById('improvement-threshold-value');
+        
+        if (thresholdSlider && thresholdValue) {
+            // Actualizar valor mostrado cuando cambia el slider
+            thresholdSlider.addEventListener('input', function() {
+                thresholdValue.textContent = `${this.value}%`;
+            });
+        }
     }, 100);
 
     // Mostrar configuración seleccionada
@@ -1357,6 +1368,38 @@ async function loadSTLProcessingStep() {
                             <strong>Gradiente:</strong> Optimización rápida pero puede quedarse en óptimos locales<br>
                             <strong>Rejilla:</strong> Prueba sistemática de rotaciones (más lento pero exhaustivo)
                         </div>
+                        
+                        <!-- Control de Umbral de Mejora -->
+                        <div class="mt-4 pt-4 border-t border-purple-200">
+                            <label class="text-sm text-gray-700">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium">Umbral de mejora mínimo:</span>
+                                    <span id="improvement-threshold-value" class="text-purple-600 font-bold text-lg">5%</span>
+                                </div>
+                                <input 
+                                    type="range" 
+                                    id="improvement-threshold" 
+                                    min="0" 
+                                    max="20" 
+                                    step="0.5" 
+                                    value="5" 
+                                    class="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer slider-purple"
+                                >
+                                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>0% (Siempre rotar)</span>
+                                    <span>10%</span>
+                                    <span>20% (Solo grandes mejoras)</span>
+                                </div>
+                            </label>
+                            <div class="text-xs text-gray-600 bg-white p-2 rounded mt-2">
+                                <strong>ℹ️ Explicación:</strong> Solo se aplicará la rotación si la mejora en el área de contacto supera este porcentaje.
+                                <ul class="list-disc list-inside mt-1 space-y-1">
+                                    <li><strong>0-2%:</strong> Rotará casi siempre (muy sensible)</li>
+                                    <li><strong>3-7%:</strong> Balance entre optimización y practicidad</li>
+                                    <li><strong>8-20%:</strong> Solo rotaciones significativas</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1435,13 +1478,17 @@ async function startSTLProcessing() {
         // Verificar si se debe aplicar auto-rotación
         const enableAutoRotation = document.getElementById('enable-auto-rotation')?.checked || false;
         const rotationMethod = document.getElementById('rotation-method')?.value || 'auto';
+        const improvementThreshold = parseFloat(document.getElementById('improvement-threshold')?.value || 5.0);
         
         let rotationResults = null;
         if (enableAutoRotation) {
-            showToast('Auto-Rotación', 'Analizando orientación óptima de archivos STL...', 'info');
-            rotationResults = await applyAutoRotationToSTLs(rotationMethod);
+            showToast('Auto-Rotación', `Analizando orientación óptima (umbral: ${improvementThreshold}%)...`, 'info');
+            rotationResults = await applyAutoRotationToSTLs(rotationMethod, improvementThreshold);
             if (rotationResults && rotationResults.success) {
                 showToast('Auto-Rotación Completada', `${rotationResults.rotated_count} archivos optimizados`, 'success');
+                
+                // Guardar archivos rotados en el servidor para que el backend los use
+                await saveRotatedFilesToServer(rotationResults);
             }
         }
 
@@ -1452,7 +1499,8 @@ async function startSTLProcessing() {
             body: JSON.stringify({
                 session_id: currentWizardSessionId,
                 profile_job_id: profileResult.job_id,
-                profile_request: profileRequest
+                profile_request: profileRequest,
+                rotated_files: rotationResults  // Incluir información de archivos rotados
             })
         });
 
@@ -1548,9 +1596,10 @@ function showProfileInfo(profileResult) {
 /**
  * Aplica auto-rotación a los archivos STL del proyecto usando la API de APISLICER
  * @param {string} method - Método de optimización: 'auto', 'gradient', 'grid'
+ * @param {number} improvementThreshold - Umbral mínimo de mejora en porcentaje para aplicar rotación
  * @returns {Promise<Object>} Resultado con información de archivos rotados
  */
-async function applyAutoRotationToSTLs(method = 'auto') {
+async function applyAutoRotationToSTLs(method = 'auto', improvementThreshold = 5.0) {
     try {
         // Obtener el session_id del wizard actual
         const sessionId = currentWizardSessionId;
@@ -1641,7 +1690,8 @@ async function applyAutoRotationToSTLs(method = 'auto') {
                     rotation_step: '15',
                     max_rotations: '24',
                     max_iterations: '50',
-                    learning_rate: '0.1'
+                    learning_rate: '0.1',
+                    improvement_threshold: improvementThreshold.toString()
                 });
                 
                 // Llamar a la API de auto-rotación de APISLICER
@@ -1690,7 +1740,7 @@ async function applyAutoRotationToSTLs(method = 'auto') {
                         rotated_blob: rotatedBlob  // Guardar el blob para uso posterior
                     });
                 } else {
-                    console.log(`○ No se requiere rotación para ${stlFile.nombre} (mejora < 5%)`);
+                    console.log(`○ No se requiere rotación para ${stlFile.nombre} (mejora ${improvement}% < umbral ${improvementThreshold}%)`);
                     rotationResults.push({
                         file: stlFile.nombre,
                         success: true,
@@ -1698,7 +1748,7 @@ async function applyAutoRotationToSTLs(method = 'auto') {
                         rotation: rotationDegrees,
                         improvement: improvement,
                         skipped: true,
-                        reason: 'Mejora insuficiente',
+                        reason: `Mejora insuficiente (${improvement}% < ${improvementThreshold}%)`,
                         original_blob: rotatedBlob  // Es el archivo original
                     });
                 }
@@ -1729,6 +1779,77 @@ async function applyAutoRotationToSTLs(method = 'auto') {
             success: false,
             error: error.message,
             rotated_count: 0
+        };
+    }
+}
+
+/**
+ * Guarda los archivos rotados en el servidor para que el backend los use en el laminado
+ * @param {Object} rotationResults - Resultados de applyAutoRotationToSTLs
+ * @returns {Promise<Object>} Resultado de la operación
+ */
+async function saveRotatedFilesToServer(rotationResults) {
+    if (!rotationResults || !rotationResults.files) {
+        return { success: false, error: 'No hay archivos rotados para guardar' };
+    }
+
+    try {
+        const savedFiles = [];
+        
+        for (const fileResult of rotationResults.files) {
+            // Solo guardar archivos que fueron rotados exitosamente
+            if (!fileResult.success) continue;
+            
+            const blobToSave = fileResult.rotated ? fileResult.rotated_blob : fileResult.original_blob;
+            
+            if (!blobToSave) {
+                console.warn(`No se encontró blob para ${fileResult.file}`);
+                continue;
+            }
+
+            // Crear FormData para enviar el archivo
+            const formData = new FormData();
+            formData.append('file', blobToSave, fileResult.file);
+            formData.append('session_id', currentWizardSessionId);
+            formData.append('is_rotated', fileResult.rotated.toString());
+            
+            if (fileResult.rotated) {
+                formData.append('rotation_info', JSON.stringify({
+                    rotation: fileResult.rotation,
+                    improvement: fileResult.improvement,
+                    contact_area: fileResult.contact_area
+                }));
+            }
+
+            // Enviar al servidor para guardar temporalmente
+            const response = await fetch('/api/print/save-rotated-stl', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                savedFiles.push({
+                    original_filename: fileResult.file,
+                    server_path: result.path,
+                    rotated: fileResult.rotated
+                });
+                console.log(`✓ Archivo guardado en servidor: ${fileResult.file} → ${result.path}`);
+            } else {
+                console.error(`Error guardando ${fileResult.file}:`, response.statusText);
+            }
+        }
+
+        return {
+            success: true,
+            saved_files: savedFiles
+        };
+
+    } catch (error) {
+        console.error('Error guardando archivos rotados:', error);
+        return {
+            success: false,
+            error: error.message
         };
     }
 }

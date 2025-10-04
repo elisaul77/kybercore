@@ -4,7 +4,7 @@ Maneja todos los endpoints relacionados con el flujo de impresión 3D,
 desde la selección inicial de piezas hasta el monitoreo del trabajo en progreso.
 """
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, File, Form, UploadFile
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
@@ -910,6 +910,63 @@ async def assign_printer_manually(assignment: PrinterAssignment):
 
 # Placeholder para los siguientes endpoints (se implementarán en las siguientes iteraciones)
 
+@router.post("/print/save-rotated-stl")
+async def save_rotated_stl(
+    file: UploadFile = File(...),
+    session_id: str = Form(...),
+    is_rotated: str = Form("false"),
+    rotation_info: str = Form(None)
+):
+    """
+    Guarda un archivo STL rotado temporalmente para su posterior procesamiento.
+    Los archivos se guardan con el session_id para poder ser usados en el laminado.
+    """
+    try:
+        import json
+        
+        # Crear directorio temporal para archivos rotados de esta sesión
+        session_dir = f"/tmp/kybercore_rotated_{session_id}"
+        os.makedirs(session_dir, exist_ok=True)
+        
+        # Generar nombre de archivo único
+        rotated_suffix = "_rotated" if is_rotated.lower() == "true" else ""
+        safe_filename = file.filename.replace(" ", "_")
+        file_path = os.path.join(session_dir, f"{safe_filename}{rotated_suffix}")
+        
+        # Guardar archivo
+        content = await file.read()
+        with open(file_path, "wb") as f:
+            f.write(content)
+        
+        logger.info(f"Archivo guardado: {file_path} ({len(content)} bytes, rotado: {is_rotated})")
+        
+        # Actualizar la sesión con la nueva ruta del archivo
+        session_data = load_wizard_session(session_id)
+        if session_data:
+            if "rotated_files_map" not in session_data:
+                session_data["rotated_files_map"] = {}
+            
+            session_data["rotated_files_map"][file.filename] = {
+                "server_path": file_path,
+                "is_rotated": is_rotated.lower() == "true",
+                "rotation_info": json.loads(rotation_info) if rotation_info else None,
+                "saved_at": datetime.now().isoformat()
+            }
+            save_wizard_session(session_id, session_data)
+            logger.info(f"Sesión actualizada con ruta de archivo rotado: {file.filename}")
+        
+        return JSONResponse(content={
+            "success": True,
+            "path": file_path,
+            "filename": file.filename,
+            "is_rotated": is_rotated.lower() == "true"
+        })
+        
+    except Exception as e:
+        logger.error(f"Error guardando archivo rotado: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error guardando archivo: {str(e)}")
+
+
 @router.post("/print/process-stl")
 async def process_stl_files(request: Request):
     """
@@ -967,10 +1024,21 @@ async def process_stl_files(request: Request):
         errors = []
         selected_pieces = piece_selection.get("selected_pieces", [])
         
+        # Obtener mapa de archivos rotados si existe
+        rotated_files_map = session_data.get("rotated_files_map", {})
+        
         for piece_filename in selected_pieces:
             try:
-                # Buscar el archivo en el proyecto
-                piece_path = find_stl_file_path(project, piece_filename)
+                # Verificar si hay versión rotada de este archivo
+                if piece_filename in rotated_files_map:
+                    rotated_info = rotated_files_map[piece_filename]
+                    piece_path = rotated_info["server_path"]
+                    logger.info(f"Usando archivo rotado para {piece_filename}: {piece_path}")
+                else:
+                    # Buscar el archivo original en el proyecto
+                    piece_path = find_stl_file_path(project, piece_filename)
+                    logger.info(f"Usando archivo original para {piece_filename}: {piece_path}")
+
                 if not piece_path:
                     errors.append(f"Archivo {piece_filename} no encontrado")
                     continue

@@ -29,6 +29,14 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=[
+        "X-Rotation-Applied",
+        "X-Rotation-Degrees",
+        "X-Improvement-Percentage",
+        "X-Contact-Area",
+        "X-Original-Area",
+        "X-Improvement-Threshold"
+    ]
 )
 
 UPLOAD_DIR = "/app/uploads"
@@ -723,7 +731,8 @@ async def auto_rotate_stl_upload(
     rotation_step: int = 15,
     max_rotations: int = 24,
     max_iterations: int = 50,
-    learning_rate: float = 0.1
+    learning_rate: float = 0.1,
+    improvement_threshold: float = 5.0
 ):
     """
     Recibe un archivo STL, lo analiza, encuentra la rotación óptima y devuelve el archivo rotado.
@@ -735,9 +744,10 @@ async def auto_rotate_stl_upload(
         max_rotations: Máximo de rotaciones para método grid
         max_iterations: Máximas iteraciones para método gradient
         learning_rate: Tasa de aprendizaje para método gradient
+        improvement_threshold: Umbral mínimo de mejora (%) para aplicar rotación
     
     Returns:
-        Archivo STL rotado si la mejora es > 5%, o el original si no
+        Archivo STL rotado si la mejora es > improvement_threshold%, o el original si no
     """
     temp_input_path = None
     temp_output_path = None
@@ -770,10 +780,10 @@ async def auto_rotate_stl_upload(
         best_rotation, contact_area, rotation_info = result
         improvement = rotation_info.get("contact_area_improvement", 0)
 
-        logger.info(f"Rotación óptima encontrada: {rotation_info.get('best_rotation_degrees')} (mejora: {improvement:.2f}%)")
+        logger.info(f"Rotación óptima encontrada: {rotation_info.get('best_rotation_degrees')} (mejora: {improvement:.2f}%, umbral: {improvement_threshold}%)")
 
-        # Si la mejora es significativa (>5%), aplicar rotación
-        if improvement > 5:
+        # Si la mejora es significativa (> improvement_threshold%), aplicar rotación
+        if improvement > improvement_threshold:
             temp_output_path = f"{UPLOAD_DIR}/{job_id}_rotated.stl"
             
             if apply_rotation_to_stl(temp_input_path, temp_output_path, best_rotation):
@@ -789,14 +799,15 @@ async def auto_rotate_stl_upload(
                         "X-Rotation-Degrees": str(rotation_info.get('best_rotation_degrees', [0, 0, 0])),
                         "X-Improvement-Percentage": str(improvement),
                         "X-Contact-Area": str(contact_area),
-                        "X-Original-Area": str(rotation_info.get('original_area', 0))
+                        "X-Original-Area": str(rotation_info.get('original_area', 0)),
+                        "X-Improvement-Threshold": str(improvement_threshold)
                     }
                 )
             else:
                 raise HTTPException(status_code=500, detail="Error aplicando rotación al archivo")
         else:
             # La mejora no es significativa, devolver el archivo original
-            logger.info(f"Mejora insuficiente ({improvement:.2f}%), devolviendo archivo original")
+            logger.info(f"Mejora insuficiente ({improvement:.2f}% < {improvement_threshold}%), devolviendo archivo original")
             
             return FileResponse(
                 path=temp_input_path,
