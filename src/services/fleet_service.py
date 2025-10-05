@@ -809,5 +809,155 @@ class FleetService:
             logger.error(f"Error descargando archivo {filename} desde {printer.name}: {e}")
             raise
 
+    async def get_detailed_printer_status(self, printer_id: str):
+        """
+        Obtiene el estado detallado de una impresora consultando directamente Moonraker.
+        Devuelve información completa sobre disponibilidad, estado, errores y capacidades.
+        """
+        printer = self.printers.get(printer_id)
+        if not printer:
+            raise ValueError(f"Impresora {printer_id} no encontrada")
+        
+        try:
+            ip, port = self._parse_ip_port(printer.ip)
+            session = await self._get_session()
+            client = MoonrakerClient(ip, port, session)
+            
+            # Intentar obtener información básica con timeout
+            try:
+                printer_info = await asyncio.wait_for(
+                    client.get_printer_info(),
+                    timeout=5.0
+                )
+                
+                if not printer_info or 'result' not in printer_info:
+                    return {
+                        "printer_id": printer_id,
+                        "printer_name": printer.name,
+                        "reachable": False,
+                        "status": "offline",
+                        "state_message": "No se pudo conectar con la impresora",
+                        "can_print": False,
+                        "errors": ["Impresora no alcanzable o Moonraker no responde"],
+                        "recommendation": "Verifica que la impresora esté encendida y conectada a la red"
+                    }
+                
+                result = printer_info['result']
+                state = result.get('state', 'unknown')
+                state_message = result.get('state_message', '')
+                
+                # Determinar si puede imprimir
+                can_print = state == 'ready'
+                is_error = state == 'error' or state == 'shutdown'
+                is_printing = state == 'printing'
+                
+                # Obtener temperaturas
+                temperatures = {}
+                try:
+                    temp_data = await asyncio.wait_for(
+                        client.get_temperatures(),
+                        timeout=3.0
+                    )
+                    if temp_data and 'result' in temp_data and 'status' in temp_data['result']:
+                        status = temp_data['result']['status']
+                        temperatures = {
+                            "extruder": {
+                                "current": status.get('extruder', {}).get('temperature', 0),
+                                "target": status.get('extruder', {}).get('target', 0)
+                            },
+                            "bed": {
+                                "current": status.get('heater_bed', {}).get('temperature', 0),
+                                "target": status.get('heater_bed', {}).get('target', 0)
+                            }
+                        }
+                except Exception as e:
+                    logger.warning(f"No se pudieron obtener temperaturas: {e}")
+                
+                # Obtener estadísticas de impresión
+                print_stats = {}
+                current_file = None
+                progress = 0
+                try:
+                    stats_data = await asyncio.wait_for(
+                        client.get_print_stats(),
+                        timeout=3.0
+                    )
+                    if stats_data and 'result' in stats_data and 'status' in stats_data['result']:
+                        status = stats_data['result']['status']
+                        print_stats_obj = status.get('print_stats', {})
+                        virtual_sdcard = status.get('virtual_sdcard', {})
+                        
+                        current_file = print_stats_obj.get('filename', None)
+                        progress = virtual_sdcard.get('progress', 0) * 100
+                        print_stats = {
+                            "state": print_stats_obj.get('state', 'unknown'),
+                            "filename": current_file,
+                            "progress": round(progress, 2)
+                        }
+                except Exception as e:
+                    logger.warning(f"No se pudieron obtener estadísticas de impresión: {e}")
+                
+                # Construir lista de errores si los hay
+                errors = []
+                if is_error:
+                    if state_message:
+                        errors.append(state_message)
+                    else:
+                        errors.append("La impresora reporta un estado de error")
+                
+                # Generar recomendación
+                recommendation = None
+                if not can_print:
+                    if is_error:
+                        recommendation = "Se detectó un error. Se intentará recuperación automática mediante reinicio de firmware y homing."
+                    elif is_printing:
+                        recommendation = "La impresora está actualmente imprimiendo. Puedes pausar o cancelar el trabajo actual, o elegir otra impresora."
+                    elif state == 'paused':
+                        recommendation = "La impresora está en pausa. Puedes reanudar o cancelar el trabajo actual."
+                    else:
+                        recommendation = f"Estado actual: {state}. Verifica el estado de la impresora antes de continuar."
+                
+                return {
+                    "printer_id": printer_id,
+                    "printer_name": printer.name,
+                    "reachable": True,
+                    "status": state,
+                    "state_message": state_message,
+                    "can_print": can_print,
+                    "is_printing": is_printing,
+                    "is_error": is_error,
+                    "errors": errors,
+                    "recommendation": recommendation,
+                    "temperatures": temperatures,
+                    "print_stats": print_stats,
+                    "capabilities": printer.capabilities or [],
+                    "location": printer.location
+                }
+                
+            except asyncio.TimeoutError:
+                return {
+                    "printer_id": printer_id,
+                    "printer_name": printer.name,
+                    "reachable": False,
+                    "status": "timeout",
+                    "state_message": "Timeout conectando con la impresora",
+                    "can_print": False,
+                    "errors": ["Timeout: La impresora no respondió a tiempo"],
+                    "recommendation": "Verifica la conexión de red y que Moonraker esté ejecutándose"
+                }
+                
+        except Exception as e:
+            logger.error(f"Error obteniendo estado detallado de {printer.name}: {e}")
+            return {
+                "printer_id": printer_id,
+                "printer_name": printer.name,
+                "reachable": False,
+                "status": "error",
+                "state_message": str(e),
+                "can_print": False,
+                "errors": [f"Error: {str(e)}"],
+                "recommendation": "Verifica la configuración de la impresora y la conectividad"
+            }
+
 # Instancia global del servicio
 fleet_service = FleetService()

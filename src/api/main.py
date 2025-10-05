@@ -74,6 +74,8 @@ templates = Jinja2Templates(directory="src/web/templates")
 
 # Incluir los routers de los controladores
 app.include_router(fleet_controller.router, prefix="/api/fleet", tags=["Fleet"])
+# 🆕 Router adicional para endpoints de impresoras directamente bajo /api/printers
+app.include_router(fleet_controller.router, prefix="/api/printers", tags=["Printers"])
 app.include_router(websocket_controller.router, prefix="/api", tags=["WebSocket"])
 app.include_router(recommender_controller.router, prefix="/api/recommender", tags=["Recommender"])
 app.include_router(analysis_controller.router, prefix="/api/analysis", tags=["Analysis"])

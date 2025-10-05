@@ -415,6 +415,25 @@ async def download_gcode_file(printer_id: str, filename: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error descargando archivo: {str(e)}")
 
+# 🆕 FASE 1: Endpoint para validar estado detallado de impresora
+@router.get("/{printer_id}/status")
+async def get_printer_detailed_status(printer_id: str):
+    """
+    Obtiene el estado detallado de una impresora consultando Moonraker.
+    Este endpoint es usado por el Paso 7 para validar si la impresora está lista para imprimir.
+    
+    Accesible en:
+    - /api/printers/{printer_id}/status
+    - /api/fleet/printers/{printer_id}/status
+    """
+    try:
+        status = await fleet_service.get_detailed_printer_status(printer_id)
+        return status
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error obteniendo estado de impresora: {str(e)}")
+
 # Endpoint para renderizar el módulo de gestión de flota como HTML
 @router.get("/fleet", response_class=HTMLResponse)
 def fleet_view(request: Request):

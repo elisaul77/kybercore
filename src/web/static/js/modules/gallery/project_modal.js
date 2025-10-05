@@ -2872,6 +2872,63 @@ async function confirmPrintJob() {
     }
     
     try {
+        // 🆕 FASE 1: Validar estado de la impresora antes de confirmar
+        showToast('Validando', 'Verificando estado de la impresora...', 'info');
+        
+        // Obtener printer_id de la variable global selectedPrinterData
+        const printerId = selectedPrinterData?.printer_id;
+        if (!printerId) {
+            showToast('Error', 'No se ha seleccionado una impresora', 'error');
+            return;
+        }
+        
+        // Consultar estado detallado de la impresora
+        const statusResult = await validatePrinterStatus(printerId);
+        
+        if (!statusResult.reachable) {
+            // Impresora no alcanzable
+            showToast('Impresora No Disponible', statusResult.recommendation || 'La impresora no está alcanzable', 'error');
+            
+            // TODO FASE 3: Ofrecer guardar trabajo
+            // await saveJobAndNotify(currentWizardSessionId, statusResult);
+            return;
+        }
+        
+        if (statusResult.is_error) {
+            // Impresora en estado de error
+            showToast('Error Detectado', 'La impresora reporta un error. Intentando recuperación...', 'warning');
+            
+            // TODO FASE 2: Intentar recuperación automática
+            // const recoverySuccess = await attemptRecoveryFlow(printerId);
+            // if (!recoverySuccess) {
+            //     showToast('Recuperación Fallida', 'No se pudo recuperar la impresora automáticamente', 'error');
+            //     return;
+            // }
+            
+            // Por ahora, solo informamos
+            showToast('Error', `La impresora está en error: ${statusResult.state_message}`, 'error');
+            return;
+        }
+        
+        if (statusResult.is_printing) {
+            // Impresora ocupada imprimiendo
+            showToast('Impresora Ocupada', 'La impresora está actualmente imprimiendo', 'warning');
+            
+            // TODO FASE 4: Ofrecer cambiar de impresora
+            // const switchPrinter = await switchToAnotherPrinter(currentWizardSessionId);
+            // if (!switchPrinter) return;
+            
+            showToast('Impresora Ocupada', statusResult.recommendation || 'La impresora está actualmente imprimiendo otro trabajo', 'warning');
+            return;
+        }
+        
+        if (!statusResult.can_print) {
+            // Impresora no lista (paused, standby, etc.)
+            showToast('Impresora No Lista', `Estado actual: ${statusResult.status}. ${statusResult.recommendation || ''}`, 'warning');
+            return;
+        }
+        
+        // ✅ Impresora lista, proceder con confirmación
         showToast('Confirmando', 'Enviando trabajo a impresora...', 'info');
         
         const userNotes = document.getElementById('user-notes')?.value || '';
@@ -2912,6 +2969,37 @@ async function confirmPrintJob() {
     } catch (error) {
         console.error('Error confirmando trabajo:', error);
         showToast('Error', 'Error de conexión', 'error');
+    }
+}
+
+// 🆕 FASE 1: Función para validar el estado detallado de una impresora
+async function validatePrinterStatus(printerId) {
+    try {
+        const response = await fetch(`/api/printers/${printerId}/status`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const status = await response.json();
+        
+        console.log('📊 Estado de impresora:', status);
+        
+        return status;
+        
+    } catch (error) {
+        console.error('❌ Error validando estado de impresora:', error);
+        
+        return {
+            printer_id: printerId,
+            printer_name: 'Desconocida',
+            reachable: false,
+            status: 'error',
+            state_message: error.message,
+            can_print: false,
+            errors: [`Error de conexión: ${error.message}`],
+            recommendation: 'Verifica la conexión con el servidor KyberCore'
+        };
     }
 }
 
