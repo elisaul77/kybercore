@@ -403,6 +403,59 @@ class MoonrakerClient:
             logger.error(f"❌ Error descargando archivo {filename}: {e}")
             return None
 
+    # === RECUPERACIÓN Y MANTENIMIENTO ===
+    
+    async def restart_firmware(self):
+        """Reinicia el firmware de Klipper."""
+        try:
+            async with self._session.post(f"{self.base_url}/printer/firmware_restart") as response:
+                response.raise_for_status()
+                result = await response.json()
+                logger.info("✅ Reinicio de firmware iniciado")
+                return {"success": True, "message": "Firmware restart initiated"}
+        except aiohttp.ClientError as e:
+            logger.error(f"❌ Error reiniciando firmware: {e}")
+            return {"success": False, "error": str(e)}
+    
+    async def restart_klipper(self):
+        """Reinicia el servicio de Klipper."""
+        try:
+            async with self._session.post(f"{self.base_url}/machine/services/restart?service=klipper") as response:
+                response.raise_for_status()
+                result = await response.json()
+                logger.info("✅ Klipper restart iniciado")
+                return {"success": True, "message": "Klipper restart initiated"}
+        except aiohttp.ClientError as e:
+            logger.error(f"❌ Error reiniciando Klipper: {e}")
+            return {"success": False, "error": str(e)}
+    
+    async def home_axes(self, axes="XYZ"):
+        """Ejecuta el comando de home para los ejes especificados.
+        
+        Args:
+            axes: String con los ejes a hacer home (ej: "XYZ", "X", "Y", "Z", "XY")
+        """
+        try:
+            gcode_command = f"G28 {axes}" if axes != "XYZ" else "G28"
+            result = await self.post_gcode_script(gcode_command)
+            if result:
+                logger.info(f"✅ Home ejecutado para ejes: {axes}")
+                return {"success": True, "message": f"Homed axes: {axes}"}
+            return {"success": False, "error": "No response from printer"}
+        except Exception as e:
+            logger.error(f"❌ Error ejecutando home: {e}")
+            return {"success": False, "error": str(e)}
+    
+    async def emergency_stop(self):
+        """Ejecuta parada de emergencia (M112)."""
+        try:
+            result = await self.post_gcode_script("M112")
+            logger.info("🚨 Parada de emergencia ejecutada")
+            return {"success": True, "message": "Emergency stop executed"}
+        except Exception as e:
+            logger.error(f"❌ Error ejecutando parada de emergencia: {e}")
+            return {"success": False, "error": str(e)}
+
 # Ejemplo de uso (para pruebas)
 async def example_callback(data):
     logger.info(f"Datos recibidos: {json.dumps(data, indent=2)}")

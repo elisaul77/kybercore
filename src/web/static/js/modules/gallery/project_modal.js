@@ -2780,6 +2780,205 @@ function switchViewMode(mode) {
 // FUNCIONES PARA CONFIRMACIÓN
 // ===============================
 
+// 🆕 Función para generar HTML del estado de la impresora con validación automática
+async function generatePrinterStatusHTML() {
+    const printerId = selectedPrinterData?.printer_id;
+    
+    if (!printerId) {
+        return `
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-yellow-800">⚠️ Sin Impresora Seleccionada</h3>
+                        <p class="mt-1 text-sm text-yellow-700">No se ha seleccionado una impresora para este trabajo.</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Validar estado de la impresora
+    try {
+        const status = await validatePrinterStatus(printerId);
+        
+        // Guardar el estado en una variable global para usarlo en confirmPrintJob
+        window.currentPrinterStatus = status;
+        
+        // Determinar colores y iconos según el estado
+        let bgColor, borderColor, iconColor, icon, statusBadge, actionButtons;
+        
+        if (!status.reachable) {
+            // Impresora no alcanzable
+            bgColor = 'bg-red-50';
+            borderColor = 'border-red-400';
+            iconColor = 'text-red-400';
+            icon = '🔴';
+            statusBadge = '<span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-200 rounded-full">OFFLINE</span>';
+            actionButtons = `
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <button onclick="retryPrinterConnection('${printerId}')" class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700">
+                        🔄 Reintentar Conexión
+                    </button>
+                    <button onclick="saveJobForLater()" class="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700">
+                        💾 Guardar Trabajo
+                    </button>
+                    <button onclick="switchPrinterDialog()" class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                        🔄 Cambiar Impresora
+                    </button>
+                </div>
+            `;
+        } else if (status.is_error) {
+            // Impresora en error
+            bgColor = 'bg-orange-50';
+            borderColor = 'border-orange-400';
+            iconColor = 'text-orange-400';
+            icon = '⚠️';
+            statusBadge = '<span class="px-2 py-1 text-xs font-semibold text-orange-800 bg-orange-200 rounded-full">ERROR</span>';
+            actionButtons = `
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <button onclick="attemptAutomaticRecovery('${printerId}')" class="px-3 py-1 text-sm bg-orange-600 text-white rounded hover:bg-orange-700">
+                        🔧 Recuperación Automática
+                    </button>
+                    <button onclick="switchPrinterDialog()" class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                        🔄 Cambiar Impresora
+                    </button>
+                </div>
+            `;
+        } else if (status.is_printing) {
+            // Impresora ocupada
+            bgColor = 'bg-yellow-50';
+            borderColor = 'border-yellow-400';
+            iconColor = 'text-yellow-400';
+            icon = '🖨️';
+            statusBadge = '<span class="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-200 rounded-full">OCUPADA</span>';
+            
+            const progress = status.print_stats?.progress || 0;
+            const currentFile = status.print_stats?.filename || 'Archivo desconocido';
+            
+            actionButtons = `
+                <div class="mt-3 mb-4">
+                    <div class="flex justify-between text-xs text-gray-600 mb-1">
+                        <span>Imprimiendo: ${currentFile}</span>
+                        <span>${progress.toFixed(1)}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-yellow-600 h-2 rounded-full" style="width: ${progress}%"></div>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="switchPrinterDialog()" class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                        🔄 Cambiar Impresora
+                    </button>
+                    <button onclick="saveJobForLater()" class="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700">
+                        💾 Guardar Trabajo
+                    </button>
+                </div>
+            `;
+        } else if (status.can_print) {
+            // Impresora lista ✅
+            bgColor = 'bg-green-50';
+            borderColor = 'border-green-400';
+            iconColor = 'text-green-400';
+            icon = '✅';
+            statusBadge = '<span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-200 rounded-full">LISTA</span>';
+            
+            // Mostrar temperaturas si están disponibles
+            let tempInfo = '';
+            if (status.temperatures?.extruder) {
+                const extruder = status.temperatures.extruder;
+                const bed = status.temperatures.bed;
+                tempInfo = `
+                    <div class="mt-3 grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-white p-2 rounded">
+                            <span class="text-gray-600">🔥 Hotend:</span> 
+                            <span class="font-semibold">${extruder.current.toFixed(1)}°C / ${extruder.target.toFixed(1)}°C</span>
+                        </div>
+                        <div class="bg-white p-2 rounded">
+                            <span class="text-gray-600">🛏️ Cama:</span> 
+                            <span class="font-semibold">${bed.current.toFixed(1)}°C / ${bed.target.toFixed(1)}°C</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            actionButtons = tempInfo + `
+                <div class="mt-3 text-center">
+                    <p class="text-sm text-green-700">✅ La impresora está lista para comenzar a imprimir</p>
+                </div>
+            `;
+        } else {
+            // Estado no determinado
+            bgColor = 'bg-gray-50';
+            borderColor = 'border-gray-400';
+            iconColor = 'text-gray-400';
+            icon = '❓';
+            statusBadge = `<span class="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-200 rounded-full">${status.status.toUpperCase()}</span>`;
+            actionButtons = `
+                <div class="mt-4">
+                    <button onclick="retryPrinterConnection('${printerId}')" class="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700">
+                        🔄 Actualizar Estado
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Construir HTML final
+        return `
+            <div class="${bgColor} border-l-4 ${borderColor} p-4 rounded-lg">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-start flex-1">
+                        <div class="flex-shrink-0 text-2xl">
+                            ${icon}
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-sm font-medium text-gray-900">
+                                    🖨️ Estado: ${status.printer_name}
+                                </h3>
+                                ${statusBadge}
+                            </div>
+                            <p class="text-sm text-gray-700">${status.state_message || status.recommendation || 'Estado verificado'}</p>
+                            
+                            ${status.errors && status.errors.length > 0 ? `
+                                <div class="mt-2 text-xs text-red-700">
+                                    <strong>Errores detectados:</strong>
+                                    <ul class="list-disc list-inside mt-1">
+                                        ${status.errors.map(err => `<li>${err}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                            
+                            ${actionButtons}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+    } catch (error) {
+        console.error('❌ Error generando estado de impresora:', error);
+        return `
+            <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 text-2xl">❌</div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">Error de Validación</h3>
+                        <p class="mt-1 text-sm text-red-700">No se pudo validar el estado de la impresora: ${error.message}</p>
+                        <button onclick="retryPrinterConnection('${printerId}')" class="mt-3 px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700">
+                            🔄 Reintentar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+}
+
 async function loadConfirmationStep() {
     // Actualizar botones de acción
     setTimeout(() => {
@@ -2793,12 +2992,18 @@ async function loadConfirmationStep() {
         }
     }, 100);
     
+    // 🆕 Validar automáticamente el estado de la impresora al cargar el paso
+    const printerStatusHTML = await generatePrinterStatusHTML();
+    
     return `
         <div class="space-y-6">
             <div class="text-center">
                 <h3 class="text-2xl font-bold text-gray-900 mb-2">👤 Confirmación Final</h3>
                 <p class="text-gray-600">Última revisión antes de enviar a impresión</p>
             </div>
+            
+            <!-- 🆕 Estado de la Impresora (Validación Automática) -->
+            ${printerStatusHTML}
             
             <!-- Resumen final -->
             <div class="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg p-6">
@@ -2808,7 +3013,7 @@ async function loadConfirmationStep() {
                         <div><strong>Proyecto:</strong> ATX Power Supply</div>
                         <div><strong>Piezas:</strong> 8 de 9 archivos</div>
                         <div><strong>Material:</strong> PLA Blanco (eSUN)</div>
-                        <div><strong>Impresora:</strong> Impresora Prueba</div>
+                        <div><strong>Impresora:</strong> ${selectedPrinterData?.printer_id || 'No seleccionada'}</div>
                     </div>
                     <div class="space-y-2">
                         <div><strong>Tiempo estimado:</strong> 6.5 horas</div>
@@ -2871,63 +3076,24 @@ async function confirmPrintJob() {
         return;
     }
     
+    // 🆕 Verificar que la impresora esté lista usando el estado ya validado
+    const statusResult = window.currentPrinterStatus;
+    
+    if (!statusResult) {
+        showToast('Error', 'No se pudo obtener el estado de la impresora', 'error');
+        return;
+    }
+    
+    if (!statusResult.can_print) {
+        showToast('Impresora No Lista', 
+            `La impresora no está lista para imprimir. Estado: ${statusResult.status}. ` +
+            `${statusResult.recommendation || 'Por favor, verifica el estado de la impresora.'}`, 
+            'warning'
+        );
+        return;
+    }
+    
     try {
-        // 🆕 FASE 1: Validar estado de la impresora antes de confirmar
-        showToast('Validando', 'Verificando estado de la impresora...', 'info');
-        
-        // Obtener printer_id de la variable global selectedPrinterData
-        const printerId = selectedPrinterData?.printer_id;
-        if (!printerId) {
-            showToast('Error', 'No se ha seleccionado una impresora', 'error');
-            return;
-        }
-        
-        // Consultar estado detallado de la impresora
-        const statusResult = await validatePrinterStatus(printerId);
-        
-        if (!statusResult.reachable) {
-            // Impresora no alcanzable
-            showToast('Impresora No Disponible', statusResult.recommendation || 'La impresora no está alcanzable', 'error');
-            
-            // TODO FASE 3: Ofrecer guardar trabajo
-            // await saveJobAndNotify(currentWizardSessionId, statusResult);
-            return;
-        }
-        
-        if (statusResult.is_error) {
-            // Impresora en estado de error
-            showToast('Error Detectado', 'La impresora reporta un error. Intentando recuperación...', 'warning');
-            
-            // TODO FASE 2: Intentar recuperación automática
-            // const recoverySuccess = await attemptRecoveryFlow(printerId);
-            // if (!recoverySuccess) {
-            //     showToast('Recuperación Fallida', 'No se pudo recuperar la impresora automáticamente', 'error');
-            //     return;
-            // }
-            
-            // Por ahora, solo informamos
-            showToast('Error', `La impresora está en error: ${statusResult.state_message}`, 'error');
-            return;
-        }
-        
-        if (statusResult.is_printing) {
-            // Impresora ocupada imprimiendo
-            showToast('Impresora Ocupada', 'La impresora está actualmente imprimiendo', 'warning');
-            
-            // TODO FASE 4: Ofrecer cambiar de impresora
-            // const switchPrinter = await switchToAnotherPrinter(currentWizardSessionId);
-            // if (!switchPrinter) return;
-            
-            showToast('Impresora Ocupada', statusResult.recommendation || 'La impresora está actualmente imprimiendo otro trabajo', 'warning');
-            return;
-        }
-        
-        if (!statusResult.can_print) {
-            // Impresora no lista (paused, standby, etc.)
-            showToast('Impresora No Lista', `Estado actual: ${statusResult.status}. ${statusResult.recommendation || ''}`, 'warning');
-            return;
-        }
-        
         // ✅ Impresora lista, proceder con confirmación
         showToast('Confirmando', 'Enviando trabajo a impresora...', 'info');
         
@@ -3001,6 +3167,190 @@ async function validatePrinterStatus(printerId) {
             recommendation: 'Verifica la conexión con el servidor KyberCore'
         };
     }
+}
+
+// 🆕 FASE 2: Función para intentar recuperación automática de impresora
+async function attemptRecoveryFlow(printerId, statusResult) {
+    try {
+        // Mostrar diálogo de progreso
+        const recoveryDialog = document.createElement('div');
+        recoveryDialog.id = 'recovery-dialog';
+        recoveryDialog.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        recoveryDialog.innerHTML = `
+            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                <div class="text-center mb-4">
+                    <div class="text-4xl mb-2">🔧</div>
+                    <h3 class="text-xl font-bold text-gray-900">Recuperando Impresora</h3>
+                    <p class="text-sm text-gray-600 mt-2">${statusResult.printer_name}</p>
+                </div>
+                
+                <div id="recovery-steps" class="space-y-3 mb-4">
+                    <!-- Los pasos se añadirán dinámicamente -->
+                </div>
+                
+                <div class="flex gap-2">
+                    <button id="cancel-recovery-btn" class="flex-1 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors">
+                        Cancelar
+                    </button>
+                    <button id="retry-recovery-btn" class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors hidden">
+                        Reintentar
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(recoveryDialog);
+        
+        const stepsContainer = document.getElementById('recovery-steps');
+        const cancelBtn = document.getElementById('cancel-recovery-btn');
+        const retryBtn = document.getElementById('retry-recovery-btn');
+        
+        let cancelled = false;
+        
+        cancelBtn.addEventListener('click', () => {
+            cancelled = true;
+            document.body.removeChild(recoveryDialog);
+        });
+        
+        // Función para añadir/actualizar paso
+        function updateStep(stepId, icon, message, status) {
+            let stepEl = document.getElementById(`step-${stepId}`);
+            if (!stepEl) {
+                stepEl = document.createElement('div');
+                stepEl.id = `step-${stepId}`;
+                stepEl.className = 'flex items-center gap-2 p-2 rounded';
+                stepsContainer.appendChild(stepEl);
+            }
+            
+            const statusColors = {
+                'in_progress': 'bg-blue-50 text-blue-700',
+                'completed': 'bg-green-50 text-green-700',
+                'failed': 'bg-red-50 text-red-700',
+                'warning': 'bg-yellow-50 text-yellow-700'
+            };
+            
+            stepEl.className = `flex items-center gap-2 p-2 rounded ${statusColors[status] || 'bg-gray-50'}`;
+            stepEl.innerHTML = `
+                <span class="text-xl">${icon}</span>
+                <span class="text-sm flex-1">${message}</span>
+            `;
+        }
+        
+        // Iniciar recuperación
+        updateStep('init', '🔄', 'Iniciando proceso de recuperación...', 'in_progress');
+        
+        try {
+            const response = await fetch(`/api/printers/${printerId}/recover?recovery_method=full`, {
+                method: 'POST'
+            });
+            
+            if (cancelled) return false;
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const result = await response.json();
+            
+            console.log('🔧 Resultado de recuperación:', result);
+            
+            // Mostrar pasos
+            if (result.steps && result.steps.length > 0) {
+                result.steps.forEach(step => {
+                    const icons = {
+                        'restart_firmware': '🔧',
+                        'wait_ready': '⏳',
+                        'home_axes': '🏠',
+                        'verification': '✅'
+                    };
+                    updateStep(step.step, icons[step.step] || '📋', step.message, step.status);
+                });
+            }
+            
+            if (result.success) {
+                updateStep('final', '✅', '¡Recuperación exitosa!', 'completed');
+                showToast('Recuperación Exitosa', 'La impresora está lista para imprimir', 'success');
+                
+                // Esperar un momento y cerrar
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                if (!cancelled) {
+                    document.body.removeChild(recoveryDialog);
+                }
+                
+                return true;
+            } else {
+                updateStep('final', '❌', result.message || 'Recuperación fallida', 'failed');
+                
+                // Mostrar botón de reintentar
+                retryBtn.classList.remove('hidden');
+                retryBtn.addEventListener('click', async () => {
+                    document.body.removeChild(recoveryDialog);
+                    return await attemptRecoveryFlow(printerId, statusResult);
+                });
+                
+                showToast('Recuperación Fallida', result.message || 'No se pudo recuperar la impresora', 'error');
+                return false;
+            }
+            
+        } catch (error) {
+            console.error('❌ Error en recuperación:', error);
+            updateStep('error', '❌', `Error: ${error.message}`, 'failed');
+            
+            retryBtn.classList.remove('hidden');
+            retryBtn.addEventListener('click', async () => {
+                document.body.removeChild(recoveryDialog);
+                return await attemptRecoveryFlow(printerId, statusResult);
+            });
+            
+            showToast('Error', 'Error durante la recuperación', 'error');
+            return false;
+        }
+        
+    } catch (error) {
+        console.error('❌ Error en attemptRecoveryFlow:', error);
+        showToast('Error', 'Error en el flujo de recuperación', 'error');
+        return false;
+    }
+}
+
+// 🆕 Funciones auxiliares para el Paso 7
+async function retryPrinterConnection(printerId) {
+    console.log('🔄 Reintentando conexión con impresora:', printerId);
+    
+    // Recargar el paso de confirmación para actualizar el estado
+    const wizardContent = document.getElementById('wizard-content');
+    if (wizardContent) {
+        wizardContent.innerHTML = '<div class="flex items-center justify-center p-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div><span class="ml-3 text-gray-600">Verificando estado...</span></div>';
+        
+        setTimeout(async () => {
+            const html = await loadConfirmationStep();
+            wizardContent.innerHTML = html;
+        }, 500);
+    }
+}
+
+async function attemptAutomaticRecovery(printerId) {
+    console.log('🔧 Intentando recuperación automática para:', printerId);
+    
+    const success = await attemptRecoveryFlow(printerId, window.currentPrinterStatus);
+    
+    if (success) {
+        // Si la recuperación fue exitosa, recargar el paso
+        await retryPrinterConnection(printerId);
+    }
+}
+
+async function saveJobForLater() {
+    console.log('💾 Guardando trabajo para más tarde');
+    
+    // TODO FASE 3: Implementar guardado de trabajo
+    showToast('Info', 'Función de guardado de trabajos en desarrollo (Fase 3)', 'info');
+}
+
+async function switchPrinterDialog() {
+    console.log('🔄 Abriendo diálogo para cambiar de impresora');
+    
+    // TODO FASE 4: Implementar cambio de impresora
+    showToast('Info', 'Función de cambio de impresora en desarrollo (Fase 4)', 'info');
 }
 
 // ===============================

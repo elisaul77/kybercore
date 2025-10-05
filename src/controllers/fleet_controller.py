@@ -434,6 +434,34 @@ async def get_printer_detailed_status(printer_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error obteniendo estado de impresora: {str(e)}")
 
+# 🆕 FASE 2: Endpoint para recuperación automática de impresora
+@router.post("/{printer_id}/recover")
+async def recover_printer(printer_id: str, recovery_method: str = "full"):
+    """
+    Intenta recuperar una impresora que está en estado de error.
+    
+    Args:
+        printer_id: ID de la impresora
+        recovery_method: Método de recuperación ("restart_firmware", "home_all", "full")
+    
+    Accesible en:
+    - /api/printers/{printer_id}/recover
+    - /api/fleet/printers/{printer_id}/recover
+    """
+    try:
+        if recovery_method not in ["restart_firmware", "home_all", "full"]:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Método de recuperación inválido: {recovery_method}. Use 'restart_firmware', 'home_all' o 'full'"
+            )
+        
+        result = await fleet_service.recover_printer(printer_id, recovery_method)
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error recuperando impresora: {str(e)}")
+
 # Endpoint para renderizar el módulo de gestión de flota como HTML
 @router.get("/fleet", response_class=HTMLResponse)
 def fleet_view(request: Request):

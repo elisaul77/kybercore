@@ -959,5 +959,186 @@ class FleetService:
                 "recommendation": "Verifica la configuración de la impresora y la conectividad"
             }
 
+    async def recover_printer(self, printer_id: str, recovery_method: str = "full"):
+        """
+        Intenta recuperar una impresora que está en estado de error.
+        
+        Args:
+            printer_id: ID de la impresora a recuperar
+            recovery_method: Método de recuperación ("restart_firmware", "home_all", "full")
+                - "restart_firmware": Solo reinicia el firmware
+                - "home_all": Solo ejecuta G28
+                - "full": Reinicia firmware y luego ejecuta G28
+        
+        Returns:
+            dict con información del proceso de recuperación
+        """
+        printer = self.printers.get(printer_id)
+        if not printer:
+            raise ValueError(f"Impresora {printer_id} no encontrada")
+        
+        try:
+            ip, port = self._parse_ip_port(printer.ip)
+            session = await self._get_session()
+            client = MoonrakerClient(ip, port, session)
+            
+            recovery_steps = []
+            success = False
+            
+            # Paso 1: Reiniciar firmware si se requiere
+            if recovery_method in ["restart_firmware", "full"]:
+                logger.info(f"🔧 Reiniciando firmware de {printer.name}...")
+                recovery_steps.append({
+                    "step": "restart_firmware",
+                    "status": "in_progress",
+                    "message": "Reiniciando firmware de Klipper..."
+                })
+                
+                restart_result = await client.restart_firmware()
+                
+                if restart_result.get("success"):
+                    recovery_steps[-1]["status"] = "completed"
+                    recovery_steps[-1]["message"] = "Firmware reiniciado exitosamente"
+                    logger.info(f"✅ Firmware reiniciado para {printer.name}")
+                    
+                    # Esperar a que la impresora se reinicie (max 30s)
+                    recovery_steps.append({
+                        "step": "wait_ready",
+                        "status": "in_progress",
+                        "message": "Esperando a que la impresora esté lista..."
+                    })
+                    
+                    ready = await self._wait_printer_ready(printer_id, timeout=30)
+                    
+                    if ready:
+                        recovery_steps[-1]["status"] = "completed"
+                        recovery_steps[-1]["message"] = "Impresora lista"
+                        success = True
+                    else:
+                        recovery_steps[-1]["status"] = "failed"
+                        recovery_steps[-1]["message"] = "Timeout esperando respuesta de impresora"
+                        return {
+                            "success": False,
+                            "printer_id": printer_id,
+                            "printer_name": printer.name,
+                            "recovery_method": recovery_method,
+                            "steps": recovery_steps,
+                            "message": "La impresora no respondió después del reinicio de firmware"
+                        }
+                else:
+                    recovery_steps[-1]["status"] = "failed"
+                    recovery_steps[-1]["message"] = f"Error: {restart_result.get('error', 'Unknown error')}"
+                    return {
+                        "success": False,
+                        "printer_id": printer_id,
+                        "printer_name": printer.name,
+                        "recovery_method": recovery_method,
+                        "steps": recovery_steps,
+                        "message": "No se pudo reiniciar el firmware"
+                    }
+            
+            # Paso 2: Ejecutar home si se requiere
+            if recovery_method in ["home_all", "full"]:
+                logger.info(f"🏠 Ejecutando home para {printer.name}...")
+                recovery_steps.append({
+                    "step": "home_axes",
+                    "status": "in_progress",
+                    "message": "Ejecutando G28 (home all axes)..."
+                })
+                
+                home_result = await client.home_axes("XYZ")
+                
+                if home_result.get("success"):
+                    recovery_steps[-1]["status"] = "completed"
+                    recovery_steps[-1]["message"] = "Home ejecutado exitosamente"
+                    logger.info(f"✅ Home completado para {printer.name}")
+                    
+                    # Esperar un poco para que se estabilice
+                    await asyncio.sleep(2)
+                    
+                    # Verificar estado final
+                    final_status = await self.get_detailed_printer_status(printer_id)
+                    
+                    if final_status.get("can_print"):
+                        success = True
+                        recovery_steps.append({
+                            "step": "verification",
+                            "status": "completed",
+                            "message": "Impresora lista para imprimir"
+                        })
+                    else:
+                        recovery_steps.append({
+                            "step": "verification",
+                            "status": "warning",
+                            "message": f"Impresora en estado {final_status.get('status')} pero no lista para imprimir"
+                        })
+                else:
+                    recovery_steps[-1]["status"] = "failed"
+                    recovery_steps[-1]["message"] = f"Error: {home_result.get('error', 'Unknown error')}"
+                    return {
+                        "success": False,
+                        "printer_id": printer_id,
+                        "printer_name": printer.name,
+                        "recovery_method": recovery_method,
+                        "steps": recovery_steps,
+                        "message": "No se pudo ejecutar el home"
+                    }
+            
+            return {
+                "success": success,
+                "printer_id": printer_id,
+                "printer_name": printer.name,
+                "recovery_method": recovery_method,
+                "steps": recovery_steps,
+                "message": "Recuperación completada exitosamente" if success else "Recuperación parcial"
+            }
+            
+        except Exception as e:
+            logger.error(f"Error recuperando impresora {printer.name}: {e}")
+            return {
+                "success": False,
+                "printer_id": printer_id,
+                "printer_name": printer.name,
+                "recovery_method": recovery_method,
+                "steps": recovery_steps if 'recovery_steps' in locals() else [],
+                "message": f"Error durante recuperación: {str(e)}"
+            }
+    
+    async def _wait_printer_ready(self, printer_id: str, timeout: int = 30):
+        """Espera a que una impresora esté lista después de un reinicio.
+        
+        Args:
+            printer_id: ID de la impresora
+            timeout: Tiempo máximo de espera en segundos
+            
+        Returns:
+            bool: True si la impresora está lista, False si timeout
+        """
+        start_time = asyncio.get_event_loop().time()
+        poll_interval = 2  # segundos
+        
+        while asyncio.get_event_loop().time() - start_time < timeout:
+            try:
+                status = await self.get_detailed_printer_status(printer_id)
+                
+                if status.get("reachable") and status.get("status") == "ready":
+                    return True
+                
+                # Si está en error o shutdown, esperar más
+                if status.get("status") in ["error", "shutdown"]:
+                    await asyncio.sleep(poll_interval)
+                    continue
+                
+                # Si está en otro estado estable, considerar como "ready enough"
+                if status.get("reachable"):
+                    return True
+                    
+            except Exception as e:
+                logger.debug(f"Error verificando estado durante espera: {e}")
+            
+            await asyncio.sleep(poll_interval)
+        
+        return False
+
 # Instancia global del servicio
 fleet_service = FleetService()
