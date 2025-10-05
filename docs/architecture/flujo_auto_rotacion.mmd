@@ -1,0 +1,120 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#87CEEB','primaryTextColor':'#000','primaryBorderColor':'#7C0000','lineColor':'#F8B229','secondaryColor':'#006100','tertiaryColor':'#fff'}}}%%
+
+sequenceDiagram
+    autonumber
+    actor Usuario
+    participant UI as Wizard UI<br/>(Step 5)
+    participant JS as Frontend<br/>JavaScript
+    participant API as KyberCore<br/>Backend
+    participant APIS as APISLICER<br/>Service
+    participant FS as File System<br/>(/tmp/)
+    participant Session as Session<br/>Store
+
+    rect rgb(200, 230, 255)
+        Note over Usuario,UI: FASE 1: Configuración
+        Usuario->>UI: Activar Auto-Rotación
+        Usuario->>UI: Ajustar Umbral (3%)
+        Usuario->>UI: Click "Iniciar Procesamiento"
+    end
+
+    rect rgb(255, 240, 200)
+        Note over UI,API: FASE 2: Generación de Perfil
+        UI->>JS: startSTLProcessing()
+        JS->>API: POST /api/slicer/generate-profile
+        API-->>JS: {profile_job_id, profile_name}
+    end
+
+    rect rgb(200, 255, 200)
+        Note over JS,APIS: FASE 3: Auto-Rotación de Archivos
+        JS->>JS: applyAutoRotationToSTLs(method='auto', threshold=3.0)
+        
+        loop Para cada archivo STL
+            JS->>API: GET /api/gallery/projects/files/{id}/{filename}
+            API->>FS: Leer STL original
+            FS-->>API: Blob del archivo
+            API-->>JS: STL Blob
+            
+            Note over JS: Crear FormData con blob
+            
+            JS->>APIS: POST /auto-rotate-upload<br/>FormData + params<br/>(improvement_threshold=3.0)
+            
+            rect rgb(220, 240, 255)
+                Note over APIS: Fase 1: Exploración Estratégica
+                APIS->>APIS: Probar 8 rotaciones estratégicas<br/>[0°,0°,0°], [90°,0°,0°], [180°,0°,0°]...
+                APIS->>APIS: Probar 7 rotaciones aleatorias
+                APIS->>APIS: Seleccionar mejor punto inicial
+            end
+            
+            rect rgb(255, 220, 240)
+                Note over APIS: Fase 2: Optimización Gradient
+                APIS->>APIS: Descenso del gradiente<br/>(max 50 iteraciones)
+                loop Hasta convergencia
+                    APIS->>APIS: Calcular área de contacto
+                    APIS->>APIS: Actualizar con momentum
+                end
+                APIS->>APIS: Calcular mejora (%)
+            end
+            
+            alt Mejora > Umbral (3%)
+                APIS->>APIS: Aplicar rotación a STL
+                APIS-->>JS: Blob rotado +<br/>X-Rotation-Applied: true<br/>X-Improvement-Percentage: 22.76
+                Note over JS: ✅ Archivo ROTADO
+            else Mejora <= Umbral
+                APIS-->>JS: Blob original +<br/>X-Rotation-Applied: false<br/>X-Improvement-Percentage: 2.5
+                Note over JS: ⚪ Archivo SIN ROTAR
+            end
+        end
+    end
+
+    rect rgb(255, 220, 220)
+        Note over JS,Session: FASE 4: Guardar Archivos Rotados
+        JS->>JS: saveRotatedFilesToServer(results)
+        
+        loop Para cada archivo procesado
+            Note over JS: Crear FormData con blob
+            JS->>API: POST /api/print/save-rotated-stl<br/>file + session_id + rotation_info
+            
+            API->>FS: Guardar en /tmp/kybercore_rotated_stls/<br/>{session_id}/rotated_{timestamp}_{filename}
+            FS-->>API: file_path
+            
+            API->>Session: Actualizar session_data<br/>rotated_files_map[filename] = {...}
+            Session-->>API: OK
+            
+            API-->>JS: {success: true, path: "/tmp/..."}
+        end
+    end
+
+    rect rgb(240, 220, 255)
+        Note over JS,Session: FASE 5: Procesar STL con Laminado
+        JS->>API: POST /api/print/process-stl<br/>{session_id, profile_job_id}
+        
+        API->>Session: load_wizard_session(session_id)
+        Session-->>API: session_data (con rotated_files_map)
+        
+        loop Para cada pieza seleccionada
+            alt Existe en rotated_files_map
+                Note over API: ✅ Usar archivo ROTADO
+                API->>FS: Leer /tmp/.../rotated_..._file.stl
+            else Archivo no rotado
+                Note over API: ⚪ Usar archivo ORIGINAL
+                API->>FS: Leer src/proyect/{id}/files/file.stl
+            end
+            
+            FS-->>API: file_content (bytes)
+            
+            API->>APIS: POST /slice<br/>FormData(file) + custom_profile
+            APIS->>APIS: Laminar con PrusaSlicer
+            APIS-->>API: gcode_content
+            
+            API->>FS: Guardar G-code<br/>/tmp/kybercore_gcode_{session}_{file}.gcode
+            FS-->>API: OK
+        end
+        
+        API-->>JS: {success: true, processed_files: [...]}
+    end
+
+    rect rgb(200, 255, 200)
+        Note over JS,Usuario: FASE 6: Completar y Mostrar Resultados
+        JS->>UI: Actualizar UI con resultados
+        UI->>Usuario: ✅ Procesamiento completado<br/>2/2 archivos rotados
+    end
