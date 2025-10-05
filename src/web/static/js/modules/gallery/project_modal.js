@@ -1230,11 +1230,18 @@ async function loadSTLProcessingStep() {
 
     // Actualizar botones de acción
     setTimeout(() => {
+        // Feature flag: Detectar versión de procesamiento
+        const useBackendRotation = localStorage.getItem('use_backend_rotation') !== 'false';
+        const processingFunction = useBackendRotation ? 'startSTLProcessingV2' : 'startSTLProcessing';
+        const versionLabel = useBackendRotation ? 'V2' : 'V1';
+        
+        console.log(`🔧 Modo de procesamiento: ${versionLabel} (Backend-Centric: ${useBackendRotation})`);
+        
         const actionsContainer = document.getElementById('wizard-actions');
         if (actionsContainer) {
             actionsContainer.innerHTML = `
-                <button onclick="startSTLProcessing()" class="bg-green-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-green-600 transition-colors whitespace-nowrap">
-                    � <span class="hidden sm:inline">Iniciar Procesamiento</span><span class="sm:hidden">Procesar</span>
+                <button onclick="${processingFunction}()" class="bg-green-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-green-600 transition-colors whitespace-nowrap" title="Usando procesamiento ${versionLabel}">
+                    ⚙️ <span class="hidden sm:inline">Iniciar Procesamiento (${versionLabel})</span><span class="sm:hidden">Procesar</span>
                 </button>
             `;
         }
@@ -1536,6 +1543,233 @@ async function startSTLProcessing() {
         updateStepStatus(currentStep, 'error', error.message);
 
         showToast('Error', error.message, 'error');
+    }
+}
+
+/**
+ * ✨ NUEVA VERSION V2 - Backend-Centric Architecture
+ * 
+ * Procesa STL con auto-rotación y laminado completamente en el backend.
+ * El frontend solo envía configuración y hace polling del progreso.
+ * 
+ * Ventajas sobre V1:
+ * - Un solo HTTP request inicial (vs ~30 en V1)
+ * - Procesamiento paralelo de archivos en el backend
+ * - Retry automático en caso de errores
+ * - Mejor rendimiento y escalabilidad
+ * - Frontend más simple y responsivo
+ */
+async function startSTLProcessingV2() {
+    if (!currentWizardSessionId) {
+        showToast('Error', 'Sesión no válida', 'error');
+        return;
+    }
+
+    // Verificar configuración
+    if (!selectedMaterialData || !selectedProductionModeData || !selectedPrinterData) {
+        showToast('Error', 'Configuración incompleta', 'error');
+        return;
+    }
+
+    try {
+        console.log('🚀 Iniciando procesamiento V2 (Backend-Centric)');
+        showToast('Iniciando', 'Procesamiento inteligente V2...', 'info');
+
+        // Paso 1: Generar perfil personalizado (igual que V1)
+        updateStepStatus(1, 'in-progress', 'Generando perfil personalizado...');
+        
+        const profileRequest = {
+            job_id: `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            printer_model: mapPrinterIdToModel(selectedPrinterData.printer_id),
+            material_config: {
+                type: selectedMaterialData.tipo,
+                color: selectedMaterialData.color,
+                brand: selectedMaterialData.marca
+            },
+            production_config: {
+                mode: selectedProductionModeData.mode,
+                priority: selectedProductionModeData.priority
+            },
+            printer_config: {
+                printer_name: selectedPrinterData.printer_id,
+                printer_model: mapPrinterIdToModel(selectedPrinterData.printer_id),
+                bed_adhesion: true
+            }
+        };
+
+        const profileResponse = await fetch('/api/slicer/generate-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(profileRequest)
+        });
+
+        if (!profileResponse.ok) {
+            throw new Error(`Error generando perfil: ${profileResponse.status}`);
+        }
+
+        const profileResult = await profileResponse.json();
+        updateStepStatus(1, 'completed', `Perfil: ${profileResult.profile_name}`);
+        showProfileInfo(profileResult);
+
+        // Paso 2: Enviar todo al backend (✨ DIFERENCIA CLAVE CON V1)
+        updateStepStatus(2, 'in-progress', 'Enviando al backend...');
+        
+        const enableAutoRotation = document.getElementById('enable-auto-rotation')?.checked || false;
+        const rotationMethod = document.getElementById('rotation-method')?.value || 'auto';
+        const improvementThreshold = parseFloat(document.getElementById('improvement-threshold')?.value || 5.0);
+        
+        console.log('📤 Enviando configuración al backend:', {
+            session_id: currentWizardSessionId,
+            rotation_enabled: enableAutoRotation,
+            threshold: improvementThreshold
+        });
+
+        // ✨ NUEVO: Un solo request con toda la configuración
+        const response = await fetch('/api/print/process-with-rotation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                session_id: currentWizardSessionId,
+                rotation_config: {
+                    enabled: enableAutoRotation,
+                    method: rotationMethod,
+                    improvement_threshold: improvementThreshold,
+                    max_iterations: 50,
+                    learning_rate: 0.1,
+                    rotation_step: 15,
+                    max_rotations: 24
+                },
+                profile_config: {
+                    job_id: profileResult.job_id,
+                    printer_model: profileRequest.printer_model
+                }
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || `Error HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.message || 'Error iniciando procesamiento');
+        }
+
+        console.log('✅ Tarea iniciada:', result.task_id);
+        updateStepStatus(2, 'in-progress', `Procesando ${result.files_count} archivo(s)...`);
+        
+        // Paso 3: Polling del progreso (✨ NUEVO)
+        await pollTaskProgress(result.task_id);
+
+    } catch (error) {
+        console.error('Error en procesamiento V2:', error);
+        const currentStep = getCurrentFailedStep();
+        updateStepStatus(currentStep, 'error', error.message);
+        showToast('Error', error.message, 'error');
+    }
+}
+
+/**
+ * Hace polling del progreso de una tarea asíncrona en el backend
+ * @param {string} taskId - ID de la tarea retornado por /process-with-rotation
+ */
+async function pollTaskProgress(taskId) {
+    const pollInterval = 2000; // 2 segundos
+    const maxAttempts = 300; // 10 minutos máximo (300 * 2s)
+    let attempts = 0;
+
+    console.log(`🔄 Iniciando polling para tarea: ${taskId}`);
+
+    while (attempts < maxAttempts) {
+        try {
+            const response = await fetch(`/api/print/task-status/${taskId}`);
+            
+            if (!response.ok) {
+                throw new Error(`Error consultando estado: ${response.status}`);
+            }
+
+            const status = await response.json();
+            
+            console.log(`📊 Progreso: ${status.progress.percentage.toFixed(1)}% (${status.progress.completed}/${status.progress.total})`);
+
+            // Actualizar UI con progreso
+            updateStepStatus(
+                2, 
+                'in-progress', 
+                `Procesando... ${status.progress.completed}/${status.progress.total} (${status.progress.percentage.toFixed(0)}%)`
+            );
+
+            // Verificar si terminó
+            if (status.status === 'completed') {
+                console.log('✅ Procesamiento completado');
+                
+                const successCount = status.results ? status.results.filter(r => r.success).length : 0;
+                const rotatedCount = status.results ? status.results.filter(r => r.rotated).length : 0;
+                
+                updateStepStatus(2, 'completed', `${successCount} archivo(s) procesados`);
+                updateStepStatus(3, 'completed', `G-code generado (${rotatedCount} rotados)`);
+                
+                showToast(
+                    'Completado', 
+                    `✅ ${successCount} archivos, ${rotatedCount} rotados optimizados`, 
+                    'success'
+                );
+
+                // Avanzar al siguiente paso
+                setTimeout(() => {
+                    loadPrintFlowStep(null, null, 'validation', {
+                        completed_steps: ['piece_selection', 'material_selection', 'production_mode', 'printer_assignment', 'stl_processing'],
+                        data: {
+                            task_id: taskId,
+                            processing_result: status,
+                            project_name: 'Proyecto Optimizado'
+                        }
+                    });
+                }, 2000);
+                
+                break;
+                
+            } else if (status.status === 'failed') {
+                console.error('❌ Procesamiento falló:', status.error_message);
+                
+                updateStepStatus(2, 'error', status.error_message || 'Error en procesamiento');
+                showToast('Error', status.error_message || 'Procesamiento falló', 'error');
+                break;
+                
+            } else if (status.status === 'cancelled') {
+                console.warn('⚠️ Procesamiento cancelado');
+                
+                updateStepStatus(2, 'error', 'Procesamiento cancelado');
+                showToast('Cancelado', 'Procesamiento cancelado', 'warning');
+                break;
+            }
+
+            // Esperar antes del próximo poll
+            await new Promise(resolve => setTimeout(resolve, pollInterval));
+            attempts++;
+
+        } catch (error) {
+            console.error('Error en polling:', error);
+            
+            // Reintentar en caso de error de red temporal
+            if (attempts < 3) {
+                console.warn(`Reintentando polling... (${attempts + 1}/3)`);
+                await new Promise(resolve => setTimeout(resolve, pollInterval));
+                attempts++;
+            } else {
+                updateStepStatus(2, 'error', `Error consultando progreso: ${error.message}`);
+                showToast('Error', 'Error consultando progreso', 'error');
+                break;
+            }
+        }
+    }
+
+    if (attempts >= maxAttempts) {
+        console.error('⏱️ Timeout: se superó el tiempo máximo de polling');
+        updateStepStatus(2, 'error', 'Timeout: procesamiento tomó demasiado tiempo');
+        showToast('Timeout', 'El procesamiento tomó demasiado tiempo', 'error');
     }
 }
 

@@ -5,7 +5,19 @@ from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 import aiohttp
 from contextlib import asynccontextmanager
+import os
+from pathlib import Path
+from dotenv import load_dotenv
 from src.controllers import fleet_controller, recommender_controller, analysis_controller, dashboard_controller, new_job_controller, settings_controller, websocket_controller, consumable_controller, gallery_controller, print_flow_controller
+
+# Cargar variables de entorno desde .env
+env_path = Path(__file__).parent.parent.parent / '.env'
+if env_path.exists():
+    load_dotenv(env_path)
+    print(f"✅ Variables de entorno cargadas desde: {env_path}")
+else:
+    print(f"⚠️  Archivo .env no encontrado en: {env_path}")
+    print("⚠️  Usando valores por defecto de las variables de entorno")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

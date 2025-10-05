@@ -4,7 +4,7 @@ Maneja todos los endpoints relacionados con el flujo de impresión 3D,
 desde la selección inicial de piezas hasta el monitoreo del trabajo en progreso.
 """
 
-from fastapi import APIRouter, HTTPException, Request, File, Form, UploadFile
+from fastapi import APIRouter, HTTPException, Request, File, Form, UploadFile, BackgroundTasks
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
@@ -965,6 +965,120 @@ async def save_rotated_stl(
     except Exception as e:
         logger.error(f"Error guardando archivo rotado: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error guardando archivo: {str(e)}")
+
+
+@router.post("/print/process-with-rotation")
+async def process_with_rotation(
+    request: Request,
+    background_tasks: BackgroundTasks
+):
+    """
+    ✨ NUEVO ENDPOINT UNIFICADO (V2)
+    
+    Procesa archivos STL con rotación automática y laminado de forma asíncrona.
+    El frontend solo envía la configuración y hace polling del progreso.
+    
+    Este es el endpoint recomendado que maneja todo el flujo en el backend.
+    Reemplaza el flujo anterior de múltiples calls desde el frontend.
+    
+    Returns:
+        202 Accepted con task_id para polling
+    """
+    try:
+        from src.services.rotation_worker import rotation_worker
+        from src.models.task_models import ProcessWithRotationRequest
+        
+        # Parsear request body
+        data = await request.json()
+        req = ProcessWithRotationRequest(**data)
+        
+        logger.info(f"🚀 Nueva solicitud de procesamiento unificado: session={req.session_id}")
+        
+        # Validar sesión
+        session_data = load_wizard_session(req.session_id)
+        if not session_data:
+            raise HTTPException(status_code=404, detail="Sesión no encontrada")
+        
+        # Obtener archivos a procesar
+        piece_selection = session_data.get("piece_selection", {})
+        selected_pieces = piece_selection.get("selected_pieces", [])
+        
+        if not selected_pieces:
+            raise HTTPException(status_code=400, detail="No hay archivos seleccionados")
+        
+        # Generar task_id único
+        task_id = f"task_{uuid.uuid4()}"
+        
+        logger.info(
+            f"📦 Iniciando tarea: task_id={task_id}, "
+            f"archivos={len(selected_pieces)}, "
+            f"rotación={'habilitada' if req.rotation_config.get('enabled') else 'deshabilitada'}"
+        )
+        
+        # Debug: ver qué tipos de datos estamos pasando
+        logger.debug(f"   rotation_config type: {type(req.rotation_config)}")
+        logger.debug(f"   rotation_config value: {req.rotation_config}")
+        logger.debug(f"   profile_config type: {type(req.profile_config)}")
+        
+        # Iniciar procesamiento en background
+        background_tasks.add_task(
+            rotation_worker.process_batch,
+            task_id=task_id,
+            session_id=req.session_id,
+            files=selected_pieces,
+            rotation_config=req.rotation_config,
+            profile_config=req.profile_config
+        )
+        
+        return JSONResponse(
+            content={
+                "success": True,
+                "task_id": task_id,
+                "status": "processing",
+                "message": f"Procesamiento iniciado para {len(selected_pieces)} archivo(s)",
+                "poll_url": f"/api/print/task-status/{task_id}",
+                "files_count": len(selected_pieces)
+            },
+            status_code=202  # Accepted - procesamiento asíncrono iniciado
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error iniciando procesamiento: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
+
+
+@router.get("/print/task-status/{task_id}")
+async def get_task_status(task_id: str):
+    """
+    Obtiene el estado actual de una tarea de procesamiento asíncrono.
+    El frontend hace polling a este endpoint cada 2 segundos.
+    
+    Args:
+        task_id: ID de la tarea retornado por /process-with-rotation
+        
+    Returns:
+        Estado actual con progreso y resultados si está completo
+    """
+    try:
+        from src.services.rotation_worker import rotation_worker
+        
+        task = rotation_worker.get_task_status(task_id)
+        
+        if not task:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"Tarea no encontrada: {task_id}"
+            )
+        
+        return JSONResponse(content=task.to_dict())
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error obteniendo estado de tarea: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/print/process-stl")
@@ -2196,67 +2310,79 @@ async def get_gcode_files(session_id: str):
     try:
         logger.info(f"🔍 Obteniendo archivos G-code para sesión: {session_id}")
         
-        # Buscar en /tmp donde se guardan los archivos temporales
-        tmp_dir = Path("/tmp")
-        
         gcode_files = []
         
-        # Buscar archivos .gcode que contengan el session_id en su nombre
-        pattern = f"kybercore_gcode_{session_id}_*.gcode"
-        for gcode_file in tmp_dir.glob(pattern):
-            try:
-                # Leer el archivo para obtener información básica
-                with open(gcode_file, 'r') as f:
-                    lines = f.readlines()
-                    
-                    # Contar capas (buscar comentarios ;LAYER:)
-                    layer_count = sum(1 for line in lines if line.strip().startswith(';LAYER:'))
-                    
-                    # Si no hay comentarios de capas, contar cambios de Z
-                    if layer_count == 0:
-                        z_values = set()
-                        for line in lines:
-                            if line.strip().startswith('G1') or line.strip().startswith('G0'):
-                                if 'Z' in line:
-                                    z_match = line.split('Z')[1].split()[0]
-                                    try:
-                                        z_values.add(float(z_match))
-                                    except:
-                                        pass
-                        layer_count = len(z_values)
-                
-                file_info = {
-                    "filename": gcode_file.name,
-                    "path": str(gcode_file),
-                    "size_kb": round(gcode_file.stat().st_size / 1024, 2),
-                    "layers": layer_count,
-                    "modified": datetime.fromtimestamp(gcode_file.stat().st_mtime).isoformat()
-                }
-                
+        # Opción 1: Buscar en /tmp (V1 - legacy)
+        tmp_dir = Path("/tmp")
+        pattern_v1 = f"kybercore_gcode_{session_id}_*.gcode"
+        for gcode_file in tmp_dir.glob(pattern_v1):
+            file_info = _extract_gcode_info(gcode_file)
+            if file_info:
                 gcode_files.append(file_info)
-                
-            except Exception as e:
-                logger.error(f"Error leyendo archivo {gcode_file.name}: {str(e)}")
-                continue
         
-        # Ordenar por fecha de modificación (más reciente primero)
-        gcode_files.sort(key=lambda x: x['modified'], reverse=True)
+        # Opción 2: Buscar en /tmp/kybercore_processing/{session_id}/ (V2 - backend-centric)
+        v2_dir = Path(f"/tmp/kybercore_processing/{session_id}")
+        if v2_dir.exists():
+            pattern_v2 = f"gcode_{session_id}_*.gcode"
+            for gcode_file in v2_dir.glob(pattern_v2):
+                file_info = _extract_gcode_info(gcode_file)
+                if file_info:
+                    gcode_files.append(file_info)
         
         logger.info(f"✅ Encontrados {len(gcode_files)} archivos G-code")
         
-        return JSONResponse(content={
+        return {
             "success": True,
+            "session_id": session_id,
             "files": gcode_files,
-            "total": len(gcode_files)
-        })
+            "count": len(gcode_files)
+        }
         
     except Exception as e:
         logger.error(f"Error obteniendo archivos G-code: {str(e)}")
-        return JSONResponse(content={
+        return {
             "success": False,
+            "session_id": session_id,
             "files": [],
-            "message": str(e)
-        })
+            "count": 0,
+            "error": str(e)
+        }
+
+
+def _extract_gcode_info(gcode_file: Path) -> dict:
+    """Extrae información básica de un archivo G-code"""
+    try:
+        # Leer el archivo para obtener información básica
+        with open(gcode_file, 'r') as f:
+            lines = f.readlines()
+            
+            # Contar capas (buscar comentarios ;LAYER:)
+            layer_count = sum(1 for line in lines if line.strip().startswith(';LAYER:'))
+            
+            # Si no hay comentarios de capas, contar cambios de Z
+            if layer_count == 0:
+                z_values = set()
+                for line in lines:
+                    if line.strip().startswith('G1') or line.strip().startswith('G0'):
+                        if 'Z' in line:
+                            z_match = line.split('Z')[1].split()[0]
+                            try:
+                                z_values.add(float(z_match))
+                            except:
+                                pass
+                layer_count = len(z_values)
+        
+        return {
+            "filename": gcode_file.name,
+            "path": str(gcode_file),
+            "size_kb": round(gcode_file.stat().st_size / 1024, 2),
+            "layers": layer_count,
+            "modified": datetime.fromtimestamp(gcode_file.stat().st_mtime).isoformat()
+        }
+                
+    except Exception as e:
+        logger.error(f"Error leyendo archivo {gcode_file.name}: {str(e)}")
+        return None
 
 
 @router.get("/print/gcode-content")
@@ -2285,7 +2411,8 @@ async def get_gcode_content(file: str):
         # Validar que el archivo está en directorios permitidos
         allowed_dirs = [
             Path("/app/APISLICER/output").resolve(),
-            Path("/tmp").resolve()  # Permitir archivos temporales de KyberCore
+            Path("/tmp").resolve(),  # Permitir archivos temporales de KyberCore (V1)
+            Path("/tmp/kybercore_processing").resolve()  # Permitir archivos V2
         ]
         
         file_resolved = file_path.resolve()
@@ -2297,8 +2424,13 @@ async def get_gcode_content(file: str):
         
         # Validación adicional: solo archivos de KyberCore en /tmp
         if str(file_resolved).startswith("/tmp/"):
-            if not file_path.name.startswith("kybercore_gcode_"):
-                logger.warning(f"❌ Archivo /tmp no es de KyberCore: {file_path}")
+            # V1: kybercore_gcode_*
+            # V2: /tmp/kybercore_processing/*/gcode_*
+            is_v1_format = file_path.name.startswith("kybercore_gcode_")
+            is_v2_format = "/kybercore_processing/" in str(file_resolved) and file_path.name.startswith("gcode_")
+            
+            if not (is_v1_format or is_v2_format):
+                logger.warning(f"❌ Archivo /tmp no es de KyberCore (V1 o V2): {file_path}")
                 raise HTTPException(status_code=403, detail="Acceso denegado al archivo")
         
         # Leer el archivo

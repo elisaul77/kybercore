@@ -1,0 +1,114 @@
+# .dockerignore - Archivos que NO deben copiarse al contenedor Docker
+# ======================================================================
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.pyc
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Jupyter
+.ipynb_checkpoints
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+*~
+
+# Documentation (no necesaria en runtime)
+docs/*.md
+CONTRIBUTING.md
+README.md
+LICENSE
+
+# Community files (no necesarios en runtime)
+community/
+
+# Infografía (no necesaria en runtime)
+infografia/
+
+# Docker files themselves
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# CI/CD
+.github/
+
+# Scripts de desarrollo
+scripts/
+
+# Test files
+tests/
+test_*.py
+*_test.py
+test_*.html
+debug_*.html
+
+# N8N propuesta
+n8n_propuesta/
+
+# Base de datos backup (solo usar los archivos principales)
+base_datos/*.backup
+
+# IMPORTANT: NO ignorar el .env - debe copiarse al contenedor
+# El .env contiene las configuraciones necesarias para el runtime
+# !.env  <-- Esto asegura que .env SÍ se copie
+
+# APISLICER (tiene su propio contenedor)
+APISLICER/
+
+# Archivos temporales de procesamiento
+/tmp/
+*.gcode
+uploads/
+output/
