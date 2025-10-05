@@ -1230,18 +1230,13 @@ async function loadSTLProcessingStep() {
 
     // Actualizar botones de acción
     setTimeout(() => {
-        // Feature flag: Detectar versión de procesamiento
-        const useBackendRotation = localStorage.getItem('use_backend_rotation') !== 'false';
-        const processingFunction = useBackendRotation ? 'startSTLProcessingV2' : 'startSTLProcessing';
-        const versionLabel = useBackendRotation ? 'V2' : 'V1';
-        
-        console.log(`🔧 Modo de procesamiento: ${versionLabel} (Backend-Centric: ${useBackendRotation})`);
+        console.log('🔧 Modo de procesamiento: Backend-Centric (Arquitectura Definitiva)');
         
         const actionsContainer = document.getElementById('wizard-actions');
         if (actionsContainer) {
             actionsContainer.innerHTML = `
-                <button onclick="${processingFunction}()" class="bg-green-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-green-600 transition-colors whitespace-nowrap" title="Usando procesamiento ${versionLabel}">
-                    ⚙️ <span class="hidden sm:inline">Iniciar Procesamiento (${versionLabel})</span><span class="sm:hidden">Procesar</span>
+                <button onclick="startSTLProcessing()" class="bg-green-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-green-600 transition-colors whitespace-nowrap" title="Procesamiento inteligente backend">
+                    ⚙️ <span class="hidden sm:inline">Iniciar Procesamiento</span><span class="sm:hidden">Procesar</span>
                 </button>
             `;
         }
@@ -1422,144 +1417,18 @@ async function loadSTLProcessingStep() {
     `;
 }
 
-async function startSTLProcessing() {
-    if (!currentWizardSessionId) {
-        showToast('Error', 'Sesión no válida', 'error');
-        return;
-    }
-
-    // Verificar que tenemos todos los datos necesarios
-    if (!selectedMaterialData || !selectedProductionModeData || !selectedPrinterData) {
-        showToast('Error', 'Configuración incompleta', 'error');
-        return;
-    }
-
-    try {
-        showToast('Iniciando', 'Comenzando procesamiento inteligente...', 'info');
-
-        // Paso 1: Generar perfil personalizado
-        updateStepStatus(1, 'in-progress', 'Generando perfil personalizado...');
-        showToast('Paso 1', 'Generando perfil personalizado...', 'info');
-
-        // Preparar datos para la generación del perfil
-        const profileRequest = {
-            job_id: `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            printer_model: mapPrinterIdToModel(selectedPrinterData.printer_id),
-            material_config: {
-                type: selectedMaterialData.tipo,
-                color: selectedMaterialData.color,
-                brand: selectedMaterialData.marca
-            },
-            production_config: {
-                mode: selectedProductionModeData.mode,
-                priority: selectedProductionModeData.priority
-            },
-            printer_config: {
-                printer_name: selectedPrinterData.printer_id,
-                printer_model: mapPrinterIdToModel(selectedPrinterData.printer_id),
-                bed_adhesion: true  // Por defecto activado
-            }
-        };
-
-        // Llamar al endpoint de generación de perfil
-        const profileResponse = await fetch('/api/slicer/generate-profile', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(profileRequest)
-        });
-
-        if (!profileResponse.ok) {
-            throw new Error(`Error generando perfil: ${profileResponse.status}`);
-        }
-
-        const profileResult = await profileResponse.json();
-        updateStepStatus(1, 'completed', `Perfil generado: ${profileResult.profile_name}`);
-
-        // Mostrar información del perfil generado
-        showProfileInfo(profileResult);
-
-        // Paso 2: Enviar archivos STL para procesamiento
-        updateStepStatus(2, 'in-progress', 'Enviando archivos STL...');
-        showToast('Paso 2', 'Procesando archivos STL...', 'info');
-
-        // Verificar si se debe aplicar auto-rotación
-        const enableAutoRotation = document.getElementById('enable-auto-rotation')?.checked || false;
-        const rotationMethod = document.getElementById('rotation-method')?.value || 'auto';
-        const improvementThreshold = parseFloat(document.getElementById('improvement-threshold')?.value || 5.0);
-        
-        let rotationResults = null;
-        if (enableAutoRotation) {
-            showToast('Auto-Rotación', `Analizando orientación óptima (umbral: ${improvementThreshold}%)...`, 'info');
-            rotationResults = await applyAutoRotationToSTLs(rotationMethod, improvementThreshold);
-            if (rotationResults && rotationResults.success) {
-                showToast('Auto-Rotación Completada', `${rotationResults.rotated_count} archivos optimizados`, 'success');
-                
-                // Guardar archivos rotados en el servidor para que el backend los use
-                await saveRotatedFilesToServer(rotationResults);
-            }
-        }
-
-        // Enviar al backend con el perfil personalizado
-        const processingResponse = await fetch('/api/print/process-stl', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                session_id: currentWizardSessionId,
-                profile_job_id: profileResult.job_id,
-                profile_request: profileRequest,
-                rotated_files: rotationResults  // Incluir información de archivos rotados
-            })
-        });
-
-        const processingResult = await processingResponse.json();
-
-        if (!processingResult.success) {
-            throw new Error(processingResult.message || 'Error procesando archivos STL');
-        }
-
-        updateStepStatus(2, 'completed', `${processingResult.processing_summary.successful} archivos procesados`);
-
-        // Paso 3: Completar procesamiento
-        updateStepStatus(3, 'completed', 'G-code generado exitosamente');
-        showToast('Completado', 'Procesamiento finalizado con perfiles optimizados', 'success');
-
-        // Avanzar al siguiente paso después de un delay
-        setTimeout(() => {
-            loadPrintFlowStep(null, null, processingResult.next_step.step, {
-                completed_steps: ['piece_selection', 'material_selection', 'production_mode', 'printer_assignment', 'stl_processing'],
-                data: {
-                    processing_result: processingResult,
-                    profile_info: profileResult,
-                    project_name: 'Proyecto Optimizado'
-                }
-            });
-        }, 2000);
-
-    } catch (error) {
-        console.error('Error en procesamiento STL:', error);
-
-        // Marcar el paso que falló como error
-        const currentStep = getCurrentFailedStep();
-        updateStepStatus(currentStep, 'error', error.message);
-
-        showToast('Error', error.message, 'error');
-    }
-}
-
 /**
- * ✨ NUEVA VERSION V2 - Backend-Centric Architecture
- * 
  * Procesa STL con auto-rotación y laminado completamente en el backend.
  * El frontend solo envía configuración y hace polling del progreso.
  * 
- * Ventajas sobre V1:
- * - Un solo HTTP request inicial (vs ~30 en V1)
- * - Procesamiento paralelo de archivos en el backend
- * - Retry automático en caso de errores
- * - Mejor rendimiento y escalabilidad
- * - Frontend más simple y responsivo
+ * Arquitectura Backend-Centric:
+ * - Un solo HTTP request inicial
+ * - Procesamiento paralelo de 3 archivos simultáneos en el backend
+ * - Retry automático (3 intentos) en caso de errores
+ * - Progress tracking en tiempo real
+ * - Frontend simple y responsivo
  */
-async function startSTLProcessingV2() {
+async function startSTLProcessing() {
     if (!currentWizardSessionId) {
         showToast('Error', 'Sesión no válida', 'error');
         return;
@@ -1572,10 +1441,10 @@ async function startSTLProcessingV2() {
     }
 
     try {
-        console.log('🚀 Iniciando procesamiento V2 (Backend-Centric)');
-        showToast('Iniciando', 'Procesamiento inteligente V2...', 'info');
+        console.log('🚀 Iniciando procesamiento Backend-Centric');
+        showToast('Iniciando', 'Procesamiento inteligente...', 'info');
 
-        // Paso 1: Generar perfil personalizado (igual que V1)
+        // Paso 1: Generar perfil personalizado
         updateStepStatus(1, 'in-progress', 'Generando perfil personalizado...');
         
         const profileRequest = {
@@ -1611,7 +1480,7 @@ async function startSTLProcessingV2() {
         updateStepStatus(1, 'completed', `Perfil: ${profileResult.profile_name}`);
         showProfileInfo(profileResult);
 
-        // Paso 2: Enviar todo al backend (✨ DIFERENCIA CLAVE CON V1)
+        // Paso 2: Enviar todo al backend para procesamiento asíncrono
         updateStepStatus(2, 'in-progress', 'Enviando al backend...');
         
         const enableAutoRotation = document.getElementById('enable-auto-rotation')?.checked || false;
@@ -1664,7 +1533,7 @@ async function startSTLProcessingV2() {
         await pollTaskProgress(result.task_id);
 
     } catch (error) {
-        console.error('Error en procesamiento V2:', error);
+        console.error('Error en procesamiento:', error);
         const currentStep = getCurrentFailedStep();
         updateStepStatus(currentStep, 'error', error.message);
         showToast('Error', error.message, 'error');
@@ -1824,267 +1693,6 @@ function showProfileInfo(profileResult) {
     const stepsContainer = document.querySelector('.bg-gray-50.rounded-lg.p-4');
     if (stepsContainer) {
         stepsContainer.appendChild(profileInfo);
-    }
-}
-
-/**
- * Aplica auto-rotación a los archivos STL del proyecto usando la API de APISLICER
- * @param {string} method - Método de optimización: 'auto', 'gradient', 'grid'
- * @param {number} improvementThreshold - Umbral mínimo de mejora en porcentaje para aplicar rotación
- * @returns {Promise<Object>} Resultado con información de archivos rotados
- */
-async function applyAutoRotationToSTLs(method = 'auto', improvementThreshold = 5.0) {
-    try {
-        // Obtener el session_id del wizard actual
-        const sessionId = currentWizardSessionId;
-        if (!sessionId) {
-            console.error('No hay sesión activa del wizard');
-            return { success: false, error: 'No hay sesión activa del wizard' };
-        }
-
-        // Obtener los datos de la sesión del wizard desde el backend
-        const sessionResponse = await fetch(`/api/print/wizard-session/${sessionId}`);
-        if (!sessionResponse.ok) {
-            throw new Error('Error obteniendo datos de la sesión del wizard');
-        }
-        
-        const sessionData = await sessionResponse.json();
-        
-        // Obtener el project_id de la sesión
-        const projectId = sessionData.project_id;
-        if (!projectId) {
-            console.error('No hay project_id en la sesión');
-            return { success: false, error: 'No hay project_id en la sesión' };
-        }
-
-        // Obtener las piezas seleccionadas de la sesión
-        const selectedPieces = sessionData.piece_selection?.selected_pieces || [];
-        if (selectedPieces.length === 0) {
-            console.warn('No hay piezas seleccionadas en la sesión');
-            return { success: true, rotated_count: 0, files: [] };
-        }
-
-        // Obtener la información completa del proyecto para obtener las rutas de los archivos
-        const projectResponse = await fetch(`/api/gallery/projects/${projectId}`);
-        if (!projectResponse.ok) {
-            throw new Error('Error obteniendo datos del proyecto');
-        }
-        
-        const projectData = await projectResponse.json();
-        const allFiles = projectData.archivos || [];
-        const projectFolder = projectData.carpeta || `src/proyect/${projectData.nombre} - ${projectData.id}`;
-        
-        // Filtrar solo los archivos seleccionados y construir rutas completas
-        const stlFiles = allFiles
-            .filter(file => 
-                selectedPieces.includes(file.nombre) && 
-                file.nombre.toLowerCase().endsWith('.stl')
-            )
-            .map(file => ({
-                ...file,
-                ruta: `${projectFolder}/files/${file.nombre}`
-            }));
-        
-        if (stlFiles.length === 0) {
-            console.warn('No hay archivos STL seleccionados para rotar');
-            return { success: true, rotated_count: 0, files: [] };
-        }
-
-        console.log(`Aplicando auto-rotación a ${stlFiles.length} archivo(s) STL con método: ${method}`);
-        
-        const rotationResults = [];
-        let rotatedCount = 0;
-        
-        // Procesar cada archivo STL
-        for (const stlFile of stlFiles) {
-            try {
-                const stlPath = stlFile.ruta;
-                if (!stlPath) {
-                    console.warn('Archivo STL sin ruta:', stlFile);
-                    continue;
-                }
-
-                console.log(`Analizando rotación para: ${stlFile.nombre}`);
-                
-                // Leer el archivo STL desde el servidor
-                const fileResponse = await fetch(`/api/gallery/projects/files/${projectId}/${stlFile.nombre}`);
-                if (!fileResponse.ok) {
-                    throw new Error(`No se pudo leer el archivo: ${stlFile.nombre}`);
-                }
-                
-                const fileBlob = await fileResponse.blob();
-                
-                // Crear FormData para enviar el archivo
-                const formData = new FormData();
-                formData.append('file', fileBlob, stlFile.nombre);
-                
-                // Construir URL con parámetros
-                const params = new URLSearchParams({
-                    method: method,
-                    rotation_step: '15',
-                    max_rotations: '24',
-                    max_iterations: '50',
-                    learning_rate: '0.1',
-                    improvement_threshold: improvementThreshold.toString()
-                });
-                
-                // Llamar a la API de auto-rotación de APISLICER
-                const rotationResponse = await fetch(`http://localhost:8001/auto-rotate-upload?${params}`, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!rotationResponse.ok) {
-                    console.error(`Error en auto-rotación para ${stlFile.nombre}:`, rotationResponse.statusText);
-                    rotationResults.push({
-                        file: stlFile.nombre,
-                        success: false,
-                        error: rotationResponse.statusText
-                    });
-                    continue;
-                }
-
-                // Leer headers de respuesta
-                const rotationApplied = rotationResponse.headers.get('X-Rotation-Applied') === 'true';
-                const rotationDegrees = JSON.parse(rotationResponse.headers.get('X-Rotation-Degrees') || '[0, 0, 0]');
-                const improvement = parseFloat(rotationResponse.headers.get('X-Improvement-Percentage') || '0');
-                const contactArea = parseFloat(rotationResponse.headers.get('X-Contact-Area') || '0');
-                const originalArea = parseFloat(rotationResponse.headers.get('X-Original-Area') || '0');
-                
-                // Obtener el archivo rotado (o el original si no se rotó)
-                const rotatedBlob = await rotationResponse.blob();
-                
-                if (rotationApplied) {
-                    console.log(`✓ Auto-rotación aplicada a ${stlFile.nombre}:`, {
-                        rotation: rotationDegrees,
-                        improvement: improvement,
-                        contactArea: contactArea
-                    });
-                    
-                    // Guardar el archivo rotado (esto se hará en el procesamiento de STL)
-                    rotatedCount++;
-                    rotationResults.push({
-                        file: stlFile.nombre,
-                        success: true,
-                        rotated: true,
-                        rotation: rotationDegrees,
-                        improvement: improvement,
-                        contact_area: contactArea,
-                        original_area: originalArea,
-                        rotated_blob: rotatedBlob  // Guardar el blob para uso posterior
-                    });
-                } else {
-                    console.log(`○ No se requiere rotación para ${stlFile.nombre} (mejora ${improvement}% < umbral ${improvementThreshold}%)`);
-                    rotationResults.push({
-                        file: stlFile.nombre,
-                        success: true,
-                        rotated: false,
-                        rotation: rotationDegrees,
-                        improvement: improvement,
-                        skipped: true,
-                        reason: `Mejora insuficiente (${improvement}% < ${improvementThreshold}%)`,
-                        original_blob: rotatedBlob  // Es el archivo original
-                    });
-                }
-
-            } catch (fileError) {
-                console.error(`Error procesando ${stlFile.nombre}:`, fileError);
-                rotationResults.push({
-                    file: stlFile.nombre,
-                    success: false,
-                    error: fileError.message
-                });
-            }
-        }
-
-        console.log(`Auto-rotación completada: ${rotatedCount}/${stlFiles.length} archivos rotados`);
-        
-        return {
-            success: true,
-            rotated_count: rotatedCount,
-            total_files: stlFiles.length,
-            files: rotationResults,
-            method: method
-        };
-
-    } catch (error) {
-        console.error('Error en applyAutoRotationToSTLs:', error);
-        return {
-            success: false,
-            error: error.message,
-            rotated_count: 0
-        };
-    }
-}
-
-/**
- * Guarda los archivos rotados en el servidor para que el backend los use en el laminado
- * @param {Object} rotationResults - Resultados de applyAutoRotationToSTLs
- * @returns {Promise<Object>} Resultado de la operación
- */
-async function saveRotatedFilesToServer(rotationResults) {
-    if (!rotationResults || !rotationResults.files) {
-        return { success: false, error: 'No hay archivos rotados para guardar' };
-    }
-
-    try {
-        const savedFiles = [];
-        
-        for (const fileResult of rotationResults.files) {
-            // Solo guardar archivos que fueron rotados exitosamente
-            if (!fileResult.success) continue;
-            
-            const blobToSave = fileResult.rotated ? fileResult.rotated_blob : fileResult.original_blob;
-            
-            if (!blobToSave) {
-                console.warn(`No se encontró blob para ${fileResult.file}`);
-                continue;
-            }
-
-            // Crear FormData para enviar el archivo
-            const formData = new FormData();
-            formData.append('file', blobToSave, fileResult.file);
-            formData.append('session_id', currentWizardSessionId);
-            formData.append('is_rotated', fileResult.rotated.toString());
-            
-            if (fileResult.rotated) {
-                formData.append('rotation_info', JSON.stringify({
-                    rotation: fileResult.rotation,
-                    improvement: fileResult.improvement,
-                    contact_area: fileResult.contact_area
-                }));
-            }
-
-            // Enviar al servidor para guardar temporalmente
-            const response = await fetch('/api/print/save-rotated-stl', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                savedFiles.push({
-                    original_filename: fileResult.file,
-                    server_path: result.path,
-                    rotated: fileResult.rotated
-                });
-                console.log(`✓ Archivo guardado en servidor: ${fileResult.file} → ${result.path}`);
-            } else {
-                console.error(`Error guardando ${fileResult.file}:`, response.statusText);
-            }
-        }
-
-        return {
-            success: true,
-            saved_files: savedFiles
-        };
-
-    } catch (error) {
-        console.error('Error guardando archivos rotados:', error);
-        return {
-            success: false,
-            error: error.message
-        };
     }
 }
 

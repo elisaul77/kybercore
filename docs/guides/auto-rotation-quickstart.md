@@ -1,4 +1,4 @@
-# Guía Rápida: Sistema de Auto-Rotación
+# Guía Rápida: Sistema de Auto-Rotación Backend-Centric
 
 ## 🚀 Inicio Rápido
 
@@ -10,10 +10,11 @@
 4. **En Step 5 (STL Processing)**:
    - ✅ Activar checkbox "Habilitar Auto-Rotación"
    - 🎚️ Ajustar umbral con el slider (0-20%)
-   - 🔘 Seleccionar método (dejar en "auto")
+   - 🔘 Seleccionar método (dejar en "auto" o "gradient_descent")
 5. **Click "Iniciar Procesamiento"**
-6. **Esperar** mientras se rotan y laminan los archivos
-7. **Revisar resultados** en Step 6 (Validación)
+6. **Ver progreso en tiempo real** (0% → 100%)
+7. **Sistema procesa automáticamente** (paralelo, con retry)
+8. **Revisar resultados** cuando completa
 
 ### Para Desarrolladores
 
@@ -21,20 +22,34 @@
 # 1. Verificar servicios activos
 docker ps | grep -E "kybercore|apislicer"
 
-# 2. Ver logs en tiempo real
-docker logs -f apislicer-slicer-api
-docker logs -f kybercore
+# 2. Ver logs del worker en tiempo real
+docker logs -f kybercore | grep RotationWorker
 
-# 3. Probar endpoint de rotación
-curl -X POST http://localhost:8001/auto-rotate-upload \
-  -F "file=@test.stl" \
-  -F "method=auto" \
-  -F "improvement_threshold=5.0"
+# 3. Ver logs generales
+docker compose logs -f kybercore
 
-# 4. Verificar archivos temporales
-ls -lh /tmp/kybercore_rotated_stls/
+# 4. Probar endpoint de procesamiento
+curl -X POST http://localhost:8000/api/print/process-with-rotation \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rotation_config": {
+      "enabled": true,
+      "method": "gradient_descent",
+      "threshold": 5.0
+    },
+    "profile_config": {
+      "filament_type": "PLA",
+      "nozzle_temp": 210
+    }
+  }'
 
-# 5. Ver sesiones activas
+# 5. Consultar estado de tarea
+curl http://localhost:8000/api/print/task-status/{task_id}
+
+# 6. Verificar archivos procesados
+ls -lh /tmp/kybercore_processing/temp_*/
+
+# 7. Ver sesiones activas
 cat base_datos/wizard_sessions.json | jq
 ```
 
@@ -42,314 +57,434 @@ cat base_datos/wizard_sessions.json | jq
 
 ## 📂 Archivos Clave
 
-### Frontend
+### Backend (Python)
+```
+src/
+├── services/
+│   └── rotation_worker.py                # Worker principal (573 líneas)
+│       ├── RotationWorker class
+│       ├── process_batch()               # Orquestador principal
+│       ├── _process_single_file()        # Pipeline: rotate → slice → save
+│       ├── _rotate_file_with_retry()     # Retry automático (3x)
+│       └── _slice_file_with_retry()      # Retry automático (3x)
+│
+├── models/
+│   └── task_models.py                    # Modelos de tracking (115 líneas)
+│       ├── TaskStatusEnum
+│       ├── TaskProgress
+│       ├── FileProcessingResult
+│       └── TaskStatus
+│
+├── controllers/
+│   └── print_flow_controller.py
+│       ├── process_with_rotation()       # Línea 970 - Inicia procesamiento
+│       ├── get_task_status()             # Línea 1052 - Polling endpoint
+│       ├── get_gcode_files()             # Línea 2298 - Lista G-code
+│       └── get_gcode_content()           # Línea 2390 - Content viewer
+│
+└── api/
+    └── main.py
+        └── load_dotenv()                 # Carga .env
+
+### Frontend (JavaScript)
 ```
 src/web/static/js/modules/gallery/
-├── project_modal.js
-│   ├── applyAutoRotationToSTLs()         # Línea 1603
-│   ├── saveRotatedFilesToServer()        # Línea 1792
-│   └── startSTLProcessing()              # Línea 1419
-```
+└── project_modal.js
+    ├── startSTLProcessingV2()            # Línea 1562 - Función principal V2
+    ├── pollTaskProgress()                # Línea 1722 - Polling cada 2s
+    └── updateProgressUI()                # Actualización de UI
 
-### Backend
-```
-src/controllers/
-├── print_flow_controller.py
-│   ├── save_rotated_stl()                # Línea 915
-│   ├── process_stl_files()               # Línea 969
-│   └── process_single_stl()              # Línea 1240
-```
-
-### APISLICER
+### APISLICER (Servicio Externo)
 ```
 APISLICER/app/
-├── main.py
-│   ├── auto_rotate_stl_upload()          # Línea 719
-│   ├── find_optimal_rotation_gradient()  # Línea 166
-│   ├── calculate_contact_area()          # Línea 77
-│   └── apply_rotation_to_stl()           # Línea 711
+└── main.py
+    ├── auto_rotate_stl_upload()          # Rotación con algoritmos
+    ├── slice()                           # Generación de G-code
+    ├── find_optimal_rotation_gradient()  # Gradient Descent
+    └── calculate_contact_area()          # Cálculo de área
+
+### Configuración
 ```
+.env                                      # Variables de entorno
+.env.example                              # Template
+docker-compose.yml                        # Docker config
+requirements.txt                          # Dependencias Python
 
 ---
 
 ## 🔧 Configuración
 
-### Variables de Entorno
+### Variables de Entorno (.env)
 
 ```bash
-# En docker-compose.yml
+# ===== ROTATION WORKER CONFIGURATION =====
+ROTATION_WORKER_POOL_SIZE=3        # Archivos simultáneos (default: 3)
+ROTATION_MAX_RETRIES=3             # Reintentos por archivo (default: 3)
+ROTATION_RETRY_DELAY=2             # Segundos entre reintentos (default: 2)
+ENABLE_BACKEND_ROTATION=true       # Habilitar V2 (default: true)
+
+# ===== APISLICER CONFIGURATION =====
+APISLICER_BASE_URL=http://apislicer:8000
+APISLICER_TIMEOUT=60               # Timeout en segundos
+```
+
+### Docker Compose
+
+```yaml
+# docker-compose.yml
 services:
+  kybercore:
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8000:8000"
+  
   apislicer:
     environment:
       - PYTHONUNBUFFERED=1
       - DISPLAY=:99
-      - XVFB_RESOLUTION=1920x1080x24
     ports:
-      - "8001:8000"  # Puerto para auto-rotate-upload
+      - "8001:8000"
 ```
 
-### CORS Headers (CRÍTICO)
+### Ajuste de Performance
 
-```python
-# APISLICER/app/main.py
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=[  # ⚠️ Crucial para que frontend lea headers
-        "X-Rotation-Applied",
-        "X-Rotation-Degrees",
-        "X-Improvement-Percentage",
-        "X-Contact-Area",
-        "X-Original-Area",
-        "X-Improvement-Threshold"
-    ]
-)
+**Para más throughput** (si tienes CPU potente):
+```bash
+# .env
+ROTATION_WORKER_POOL_SIZE=5
+```
+
+**Para más confiabilidad** (si APISLICER es inestable):
+```bash
+# .env
+ROTATION_MAX_RETRIES=5
+ROTATION_RETRY_DELAY=3
+```
+
+**Para archivos grandes**:
+```bash
+# .env
+APISLICER_TIMEOUT=120
 ```
 
 ---
 
-## 🧪 Testing
+## 🧪 Testing y Debugging
 
-### Test 1: Verificar Rotación Básica
-
-```javascript
-// En consola del navegador
-const testRotation = async () => {
-    const formData = new FormData();
-    
-    // Usar un archivo STL de prueba
-    const response = await fetch('/api/gallery/projects/files/1/Cover_USB.stl');
-    const blob = await response.blob();
-    
-    formData.append('file', blob, 'test.stl');
-    
-    const params = new URLSearchParams({
-        method: 'auto',
-        improvement_threshold: '0'  // Rotar siempre
-    });
-    
-    const result = await fetch(`http://localhost:8001/auto-rotate-upload?${params}`, {
-        method: 'POST',
-        body: formData
-    });
-    
-    console.log('Status:', result.status);
-    console.log('Rotation Applied:', result.headers.get('X-Rotation-Applied'));
-    console.log('Improvement:', result.headers.get('X-Improvement-Percentage'));
-    console.log('Rotation Degrees:', result.headers.get('X-Rotation-Degrees'));
-};
-
-testRotation();
-```
-
-### Test 2: Verificar Guardado de Archivos
+### Test 1: Probar Procesamiento Completo
 
 ```bash
-# Ejecutar procesamiento completo y verificar
-SESSION_ID="wizard_test_123"
+# En navegador: abrir proyecto → wizard → Step 5
+# Activar auto-rotación, click "Iniciar Procesamiento"
+# Ver logs en tiempo real:
+docker logs -f kybercore | grep -E "RotationWorker|Progreso"
 
-# 1. Verificar que se creó el directorio
-ls -la /tmp/kybercore_rotated_stls/$SESSION_ID/
-
-# 2. Verificar contenido de archivos STL
-file /tmp/kybercore_rotated_stls/$SESSION_ID/*.stl
-
-# 3. Verificar sesión actualizada
-cat base_datos/wizard_sessions.json | jq ".\"$SESSION_ID\".rotated_files_map"
+# Deberías ver:
+# [RotationWorker] 🚀 Iniciando procesamiento de batch
+# [RotationWorker] ⚙️ Procesando archivo 1/2: Cover_USB.stl
+# [RotationWorker] ✅ Rotación exitosa: Cover_USB.stl (Mejora: 22.76%)
+# [RotationWorker] ✅ Laminado exitoso: Cover_USB.stl (51KB)
+# [RotationWorker] 📊 Progreso actualizado: 50.0% (1/2 completados)
+# [RotationWorker] ✅ Batch completado exitosamente
 ```
 
-### Test 3: Verificar Laminado Usa Archivo Rotado
+### Test 2: Verificar Archivos Generados
 
 ```bash
-# Ver logs durante procesamiento
-docker logs -f kybercore 2>&1 | grep -E "Usando archivo|rotated"
+# Listar archivos procesados
+ls -lh /tmp/kybercore_processing/temp_*/
 
-# Debería mostrar:
-# INFO: 📐 Usando archivo rotado: /tmp/kybercore_rotated_stls/wizard_XXX/rotated_YYY_file.stl
-# INFO:    Rotación aplicada: {'rotation': [180.0, 0.0, 0.0], 'improvement': 22.76}
+# Deberías ver:
+# drwxr-xr-x  temp_1_20251005_150251/
+#   ├── gcode_temp_1_..._Cover_USB.gcode      (51KB)
+#   ├── gcode_temp_1_..._back_frame.gcode     (2.8MB)
+#   ├── rotated_Cover_USB.stl                 (archivo rotado)
+#   └── rotated_back_frame.stl                (archivo rotado)
+
+# Verificar contenido de G-code
+head -50 /tmp/kybercore_processing/temp_*/gcode_*.gcode
 ```
 
----
+### Test 3: Verificar Estado de Tarea
 
-## 🐛 Debugging
+```bash
+# Obtener task_id del frontend (consola del navegador)
+TASK_ID="task_ad945e5c-1e94-48a3-89a1-e89830106e2d"
 
-### Problema: Headers No Se Leen
+# Consultar estado
+curl -s http://localhost:8000/api/print/task-status/$TASK_ID | jq
 
-```javascript
-// Verificar en consola
-fetch('http://localhost:8001/auto-rotate-upload?...', {
-    method: 'POST',
-    body: formData
-}).then(response => {
-    console.log('All headers:');
-    for (let [key, value] of response.headers.entries()) {
-        console.log(`  ${key}: ${value}`);
+# Response esperado:
+{
+  "task_id": "task_ad945e5c...",
+  "status": "completed",
+  "progress": {
+    "total_files": 2,
+    "completed": 2,
+    "failed": 0,
+    "percentage": 100.0
+  },
+  "results": [
+    {
+      "filename": "Cover_USB.stl",
+      "success": true,
+      "rotation_applied": {
+        "x": 180.0,
+        "y": 0.0,
+        "z": 0.0,
+        "improvement_percent": 22.76
+      }
     }
-});
-
-// Si no ves X-Rotation-*, verificar expose_headers en APISLICER
+  ]
+}
 ```
 
-### Problema: Backend Usa Archivo Original
+---
 
-```python
-# Agregar logs en print_flow_controller.py
-logger.info(f"Rotated files map: {rotated_files_map}")
-logger.info(f"Looking for: {piece_filename}")
-logger.info(f"Found in map: {piece_filename in rotated_files_map}")
-logger.info(f"Using path: {file_path}")
+## 🐛 Troubleshooting
+
+### Problema: "Task not found"
+
+```bash
+# Causa: task_id incorrecto o servidor reiniciado
+# Solución: Reiniciar procesamiento desde wizard
+
+# Verificar logs:
+docker logs kybercore | grep "task_"
 ```
 
-### Problema: Optimización Muy Lenta
+### Problema: "Proyecto no encontrado"
 
-```python
-# Reducir iteraciones en APISLICER/app/main.py
-# Para testing rápido:
-@app.post("/auto-rotate-upload")
-async def auto_rotate_stl_upload(
-    max_iterations: int = 20,  # Default: 50
-    max_rotations: int = 12,   # Default: 24
-    ...
+```bash
+# Causa: Session referencia proyecto inexistente
+# Verificar proyectos disponibles:
+cat base_datos/proyectos.json | jq '.proyectos[].id'
+
+# Verificar session:
+cat base_datos/wizard_sessions.json | jq '.["temp_1_..."].project_id'
+```
+
+### Problema: "APISLICER timeout"
+
+```bash
+# Verificar que APISLICER está corriendo:
+docker ps | grep apislicer
+curl http://localhost:8001/health
+
+# Aumentar timeout en .env:
+APISLICER_TIMEOUT=120
+
+# Reducir concurrencia:
+ROTATION_WORKER_POOL_SIZE=1
+
+# Reiniciar:
+docker compose restart kybercore
+```
+
+### Problema: "403 Forbidden en G-code viewer"
+
+```bash
+# Causa: Archivo fuera de directorio permitido
+# Verificar ubicación:
+docker exec kybercore ls -la /tmp/kybercore_processing/
+
+# Verificar logs:
+docker logs kybercore | grep "gcode-content"
+```
+
+### Problema: Procesamiento muy lento
+
+```bash
+# Ver configuración actual:
+docker exec kybercore env | grep ROTATION
+
+# Aumentar pool size (más CPU):
+# En .env:
+ROTATION_WORKER_POOL_SIZE=5
+ROTATION_MAX_RETRIES=2
+
+# Reiniciar:
+docker compose restart kybercore
 ```
 
 ---
 
 ## 📊 Monitoreo
 
-### Logs Importantes
+### Logs del Worker
 
 ```bash
-# Monitorear todo el flujo
-docker logs -f apislicer-slicer-api 2>&1 | grep -E "Rotación|mejora|umbral"
-docker logs -f kybercore 2>&1 | grep -E "rotado|Usando archivo"
+# Ver procesamiento en tiempo real
+docker logs -f kybercore | grep RotationWorker
+
+# Logs importantes:
+# [RotationWorker] 🚀 Iniciando procesamiento de batch
+# [RotationWorker] ⚙️ Procesando archivo 1/2: filename.stl
+# [RotationWorker] ✅ Rotación exitosa: filename.stl (Mejora: 22.76%)
+# [RotationWorker] 📊 Progreso actualizado: 50.0% (1/2 completados)
+# [RotationWorker] ✅ Batch completado exitosamente
 ```
 
 ### Métricas de Performance
 
 ```bash
-# Tiempo de rotación por archivo
-docker logs apislicer-slicer-api | grep "Optimización finalizada" | tail -10
+# Tiempo de procesamiento
+docker logs kybercore | grep "Batch completado" | tail -10
 
-# Archivos procesados exitosamente
-docker logs kybercore | grep "archivos procesados" | tail -5
+# Archivos procesados
+docker logs kybercore | grep "archivos procesados"
 
-# Espacio usado en /tmp/
-du -sh /tmp/kybercore_rotated_stls/
+# Espacio usado
+du -sh /tmp/kybercore_processing/*/
+```
+
+### Monitoreo de APISLICER
+
+```bash
+# Ver llamadas a APISLICER
+docker logs apislicer-slicer-api | grep -E "auto-rotate|slice" | tail -20
+
+# Ver mejoras detectadas
+docker logs apislicer-slicer-api | grep "Mejora" | tail -10
 ```
 
 ---
 
-## 🔄 Limpieza Manual
+## 🔄 Limpieza y Mantenimiento
+
+### Limpieza Manual
 
 ```bash
-# Limpiar archivos rotados antiguos
-find /tmp/kybercore_rotated_stls/ -type f -mtime +1 -delete
-find /tmp/kybercore_rotated_stls/ -type d -empty -delete
+# Limpiar archivos procesados > 24 horas
+find /tmp/kybercore_processing/ -type d -mtime +1 -exec rm -rf {} +
 
-# Limpiar G-codes generados
-find /tmp/ -name "kybercore_gcode_*" -mtime +1 -delete
+# Limpiar todos los archivos temporales
+rm -rf /tmp/kybercore_processing/temp_*
+rm -f /tmp/kybercore_gcode_*
 
-# Reiniciar sesiones del wizard
+# Reiniciar sesiones del wizard (si es necesario)
+# Advertencia: esto borrará todas las sesiones activas
 echo '{}' > base_datos/wizard_sessions.json
+docker compose restart kybercore
+```
+
+### Limpieza Automática (Cron)
+
+```bash
+# Agregar a crontab
+crontab -e
+
+# Limpiar cada día a las 3 AM
+0 3 * * * find /tmp/kybercore_processing/ -type d -mtime +1 -exec rm -rf {} + 2>/dev/null
+0 3 * * * find /tmp/ -name "kybercore_gcode_*" -mtime +1 -delete 2>/dev/null
 ```
 
 ---
 
 ## 📚 Referencias Rápidas
 
-### Parámetros de Optimización
+### Endpoints Principales
 
-| Parámetro | Tipo | Default | Descripción |
-|-----------|------|---------|-------------|
-| `method` | string | `"auto"` | Método: auto, gradient, grid |
-| `improvement_threshold` | float | `5.0` | Umbral mínimo de mejora (%) |
-| `rotation_step` | int | `15` | Paso de rotación para grid |
-| `max_rotations` | int | `24` | Máx rotaciones para grid |
-| `max_iterations` | int | `50` | Máx iteraciones para gradient |
-| `learning_rate` | float | `0.1` | Tasa de aprendizaje |
+| Endpoint | Método | Descripción |
+|----------|--------|-------------|
+| `/api/print/process-with-rotation` | POST | Inicia procesamiento asíncrono (202 Accepted) |
+| `/api/print/task-status/{task_id}` | GET | Consulta progreso de tarea |
+| `/api/print/gcode-files` | GET | Lista archivos G-code generados |
+| `/api/print/gcode-content` | GET | Obtiene contenido de G-code para viewer |
 
-### Response Headers
+### Variables de Entorno
 
-| Header | Tipo | Ejemplo | Descripción |
-|--------|------|---------|-------------|
-| `X-Rotation-Applied` | boolean | `"true"` | Si se aplicó rotación |
-| `X-Rotation-Degrees` | array | `"[180.0, 0.0, 0.0]"` | Ángulos de rotación |
-| `X-Improvement-Percentage` | float | `"22.76"` | Mejora en área (%) |
-| `X-Contact-Area` | float | `"279.76"` | Área de contacto (mm²) |
-| `X-Original-Area` | float | `"228.0"` | Área original (mm²) |
-| `X-Improvement-Threshold` | float | `"5.0"` | Umbral usado |
+| Variable | Default | Rango | Descripción |
+|----------|---------|-------|-------------|
+| `ROTATION_WORKER_POOL_SIZE` | `3` | 1-10 | Archivos procesados simultáneamente |
+| `ROTATION_MAX_RETRIES` | `3` | 1-5 | Reintentos automáticos por archivo |
+| `ROTATION_RETRY_DELAY` | `2` | 1-5 | Segundos entre reintentos |
+| `APISLICER_TIMEOUT` | `60` | 30-300 | Timeout para llamadas APISLICER |
 
-### Códigos de Estado HTTP
+### Estados de Tarea
+
+| Estado | Descripción | Acción Frontend |
+|--------|-------------|----------------|
+| `pending` | Tarea en cola | Seguir polling |
+| `processing` | Procesando archivos | Actualizar progress bar |
+| `completed` | ✅ Todos exitosos | Avanzar a siguiente paso |
+| `failed` | ❌ Error fatal | Mostrar error y reintentar |
+| `cancelled` | Cancelada por usuario | Volver a step 5 (futuro) |
+
+### Códigos HTTP
 
 | Código | Significado | Acción |
 |--------|-------------|--------|
-| 200 | ✅ OK | Rotación exitosa |
-| 400 | ❌ Bad Request | Verificar parámetros |
-| 404 | ❌ Not Found | Verificar ruta del archivo |
-| 422 | ❌ Unprocessable | Verificar FormData |
-| 500 | ❌ Server Error | Ver logs del servidor |
+| 200 OK | ✅ Operación exitosa | Continuar |
+| 202 Accepted | ✅ Procesamiento iniciado | Iniciar polling |
+| 400 Bad Request | ❌ Parámetros inválidos | Verificar JSON |
+| 403 Forbidden | ❌ Archivo no permitido | Verificar ruta |
+| 404 Not Found | ❌ Recurso inexistente | Verificar task_id |
+| 500 Server Error | ❌ Error interno | Ver logs backend |
 
 ---
 
-## 💡 Tips y Trucos
+## 💡 Tips y Mejores Prácticas
 
-### Optimizar Performance
+### Configuración por Escenario
 
-1. **Usar método "gradient"** para geometrías simples (más rápido)
-2. **Aumentar rotation_step** en "grid" para búsquedas más rápidas
-3. **Reducir max_iterations** en pruebas (ej: 20 en vez de 50)
-4. **Cachear rotaciones** para archivos que se procesan frecuentemente
-
-### Mejores Prácticas
-
-1. **Umbral 5%** es un buen default para producción
-2. **Umbral 0%** solo para testing (rota todo)
-3. **Limpiar /tmp/** cada 24 horas
-4. **Monitorear logs** para detectar fallos temprano
-5. **Validar headers CORS** después de cada actualización de APISLICER
-
-### Casos Especiales
-
-```python
-# Pieza muy grande (> 100MB STL)
-# Aumentar timeout en aiohttp
-async with session.post(url, data=data, timeout=120) as response:
-    ...
-
-# Muchos archivos (> 10)
-# Procesar en paralelo
-results = await asyncio.gather(*[
-    rotate_file(f) for f in files
-])
-
-# Geometría muy compleja (> 50k faces)
-# Forzar método "grid" con menos rotaciones
-method = "grid"
-max_rotations = 12
+**Desarrollo (velocidad sobre confiabilidad)**:
+```bash
+ROTATION_WORKER_POOL_SIZE=5
+ROTATION_MAX_RETRIES=2
+ROTATION_RETRY_DELAY=1
 ```
 
+**Producción (balance óptimo)** ⭐:
+```bash
+ROTATION_WORKER_POOL_SIZE=3
+ROTATION_MAX_RETRIES=3
+ROTATION_RETRY_DELAY=2
+```
+
+**Alta confiabilidad (confiabilidad sobre velocidad)**:
+```bash
+ROTATION_WORKER_POOL_SIZE=2
+ROTATION_MAX_RETRIES=5
+ROTATION_RETRY_DELAY=3
+```
+
+### Recomendaciones de Umbral
+
+| Umbral | Uso | Comportamiento |
+|--------|-----|----------------|
+| **0-3%** | Testing, máxima optimización | Rota casi todos los archivos |
+| **5%** ⭐ | **Producción default** | Balance óptimo mejora/velocidad |
+| **10-15%** | Solo mejoras notables | Procesa más rápido, menos rotaciones |
+| **20%** | Solo mejoras dramáticas | Raramente rota, muy selectivo |
+
+### Performance Best Practices
+
+1. ✅ **Pool size 3-5** para CPU modernas (balance óptimo)
+2. ✅ **Limpiar /tmp/ diariamente** con cron job
+3. ✅ **Monitorear logs** para detectar patrones de fallo
+4. ✅ **Aumentar timeout** para archivos > 50MB
+5. ✅ **Reducir retries** si APISLICER es muy estable
+6. ✅ **Usar umbral 5-10%** para producción
+7. ✅ **Verificar disco** antes de procesar muchos archivos
+
 ---
 
-## 📞 Soporte
+## 🔗 Enlaces Útiles
 
-### Issues Comunes
-
-1. **"422 Unprocessable Entity"** → Verificar FormData y tipos de datos
-2. **"Headers no disponibles"** → Verificar `expose_headers` en CORS
-3. **"Archivos originales laminados"** → Verificar `rotated_files_map` en sesión
-4. **"Mejora siempre 0%"** → Verificar instalación de trimesh y scipy
-
-### Contacto
-
-- 📧 Email: soporte@kybercore.com
-- 💬 Discord: KyberCore Community
-- 📝 Issues: github.com/kybercore/issues
+- **📖 Documentación Completa**: [auto-rotation-backend-system.md](../architecture/auto-rotation-backend-system.md)
+- **📝 Changelog**: [CHANGELOG-auto-rotation.md](../CHANGELOG-auto-rotation.md)
+- **💻 Código RotationWorker**: `src/services/rotation_worker.py`
+- **📊 Task Models**: `src/models/task_models.py`
+- **🎛️ Print Controller**: `src/controllers/print_flow_controller.py`
+- **🌐 Frontend**: `src/web/static/js/modules/gallery/project_modal.js`
 
 ---
 
-**Última actualización:** 4 de Octubre, 2025  
-**Versión:** 1.0  
-**Mantenedor:** Equipo KyberCore
+**Última actualización**: Octubre 5, 2025  
+**Versión**: 2.0.0 (Backend-Centric - Arquitectura Definitiva)  
+**Mantenedor**: Equipo KyberCore
+
