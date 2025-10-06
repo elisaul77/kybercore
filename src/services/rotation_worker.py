@@ -178,6 +178,11 @@ class RotationWorker:
                     },
                     "completed_at": datetime.now().isoformat()
                 }
+                # ✅ IMPORTANTE: Marcar el paso como completado
+                completed_steps = session_data.get("completed_steps", [])
+                if "stl_processing" not in completed_steps:
+                    session_data["completed_steps"] = completed_steps + ["stl_processing"]
+                session_data["current_step"] = "validation"
                 save_wizard_session(session_id, session_data)
             
             # Actualizar estado de la tarea

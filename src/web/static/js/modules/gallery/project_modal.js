@@ -442,6 +442,12 @@ async function loadPrintFlowStep(flowId, projectId, step, status) {
             </div>
         `;
         
+        // 🆕 Cargar botones de acción después de que el DOM esté completamente renderizado
+        // Esto asegura que los botones se carguen correctamente para cada paso
+        setTimeout(() => {
+            loadStepActionButtons(step);
+        }, 200);
+        
     } catch (error) {
         console.error('Error cargando paso del wizard:', error);
         wizardContainer.innerHTML = `
@@ -2780,6 +2786,117 @@ function switchViewMode(mode) {
 // FUNCIONES PARA CONFIRMACIÓN
 // ===============================
 
+// 🆕 Función para generar lista de archivos G-code generados
+async function generateGcodeFilesList() {
+    if (!currentWizardSessionId) {
+        return '';
+    }
+    
+    try {
+        // Obtener datos de la sesión para extraer archivos procesados
+        const response = await fetch(`/api/print/session-state/${currentWizardSessionId}`);
+        const sessionData = await response.json();
+        
+        const stlProcessing = sessionData.stl_processing || {};
+        const successfulFiles = stlProcessing.successful || [];
+        const failedFiles = stlProcessing.failed || [];
+        
+        if (successfulFiles.length === 0 && failedFiles.length === 0) {
+            return '';
+        }
+        
+        // Generar HTML para archivos exitosos
+        let filesHTML = '';
+        successfulFiles.forEach((file, index) => {
+            const filename = file.filename || 'archivo.stl';
+            const gcodeSize = file.gcode_size ? (file.gcode_size / 1024).toFixed(1) + ' KB' : 'N/A';
+            const rotated = file.rotated ? '🔄 Rotado' : '';
+            const improvement = file.rotation_info?.improvement 
+                ? `+${file.rotation_info.improvement.toFixed(1)}% área` 
+                : '';
+            
+            filesHTML += `
+                <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="flex-shrink-0">
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <span class="text-green-600 font-bold">${index + 1}</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-900">${filename}</div>
+                            <div class="text-xs text-gray-500">
+                                ${gcodeSize} ${rotated ? `• ${rotated}` : ''} ${improvement ? `• ${improvement}` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            ✓ Listo
+                        </span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        // Generar HTML para archivos fallidos
+        failedFiles.forEach((file) => {
+            const filename = file.filename || 'archivo.stl';
+            const error = file.error || 'Error desconocido';
+            
+            filesHTML += `
+                <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="flex-shrink-0">
+                            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                <span class="text-red-600">✗</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-900">${filename}</div>
+                            <div class="text-xs text-red-600">${error}</div>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            Error
+                        </span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        return `
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 class="font-bold text-gray-900 mb-3 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Archivos G-code Generados
+                </h4>
+                <div class="text-sm text-gray-600 mb-3">
+                    ${successfulFiles.length > 1 
+                        ? `📤 <strong>${successfulFiles.length} archivos</strong> se subirán a la impresora. Se imprimirá <strong>el primero automáticamente</strong>.`
+                        : `📤 <strong>1 archivo</strong> se subirá e imprimirá automáticamente.`
+                    }
+                </div>
+                <div class="space-y-2">
+                    ${filesHTML}
+                </div>
+                ${failedFiles.length > 0 ? `
+                    <div class="mt-3 text-xs text-red-600">
+                        ⚠️ ${failedFiles.length} archivo(s) no se pudo(ieron) procesar
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        
+    } catch (error) {
+        console.error('Error obteniendo lista de archivos G-code:', error);
+        return '';
+    }
+}
+
 // 🆕 Función para generar HTML del estado de la impresora con validación automática
 async function generatePrinterStatusHTML() {
     const printerId = selectedPrinterData?.printer_id;
@@ -3010,8 +3127,8 @@ async function generatePrinterStatusHTML() {
 }
 
 async function loadConfirmationStep() {
-    // Actualizar botones de acción
-    setTimeout(() => {
+    // Actualizar botones de acción con retry mechanism
+    const updateActionButtons = () => {
         const actionsContainer = document.getElementById('wizard-actions');
         if (actionsContainer) {
             actionsContainer.innerHTML = `
@@ -3019,11 +3136,22 @@ async function loadConfirmationStep() {
                     🚀 <span class="hidden sm:inline">Confirmar e Iniciar Impresión</span><span class="sm:hidden">Confirmar</span>
                 </button>
             `;
+            console.log('✅ Botones de acción cargados correctamente');
+        } else {
+            console.warn('⚠️ No se encontró wizard-actions, reintentando...');
+            // Reintentar después de un poco más de tiempo
+            setTimeout(updateActionButtons, 200);
         }
-    }, 100);
+    };
+    
+    // Ejecutar después de que el DOM esté listo
+    setTimeout(updateActionButtons, 150);
     
     // 🆕 Validar automáticamente el estado de la impresora al cargar el paso
     const printerStatusHTML = await generatePrinterStatusHTML();
+    
+    // 🆕 Obtener lista de archivos G-code generados
+    const gcodeFilesHTML = await generateGcodeFilesList();
     
     return `
         <div class="space-y-6">
@@ -3034,6 +3162,9 @@ async function loadConfirmationStep() {
             
             <!-- 🆕 Estado de la Impresora (Validación Automática) -->
             ${printerStatusHTML}
+            
+            <!-- 🆕 Lista de Archivos G-code Generados -->
+            ${gcodeFilesHTML}
             
             <!-- Resumen final -->
             <div class="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg p-6">
@@ -3146,7 +3277,25 @@ async function confirmPrintJob() {
         const result = await response.json();
         
         if (result.success) {
-            showToast('¡Trabajo Confirmado!', 'Impresión iniciada exitosamente', 'success');
+            // 🆕 Mostrar información de archivos múltiples
+            const uploadedCount = result.uploaded_files?.length || 1;
+            const pendingCount = result.pending_files?.length || 0;
+            const failedCount = result.failed_uploads?.length || 0;
+            
+            let message = `Impresión iniciada: ${result.current_printing || 'archivo principal'}`;
+            
+            if (uploadedCount > 1) {
+                message += `\n\n📦 Total: ${uploadedCount} archivos subidos`;
+                if (pendingCount > 0) {
+                    message += `\n⏳ ${pendingCount} archivo(s) pendiente(s) en cola`;
+                }
+            }
+            
+            if (failedCount > 0) {
+                message += `\n⚠️ ${failedCount} archivo(s) no se pudo(ieron) subir`;
+            }
+            
+            showToast('¡Trabajo Confirmado!', message, 'success');
             
             // Ir al paso de monitoreo
             setTimeout(() => {
@@ -3154,12 +3303,32 @@ async function confirmPrintJob() {
                     completed_steps: ['piece_selection', 'material_selection', 'production_mode', 'printer_assignment', 'stl_processing', 'validation', 'confirmation'],
                     data: { 
                         job_confirmed: result.job_confirmed,
+                        printer_response: result,
+                        uploaded_files: result.uploaded_files,
+                        pending_files: result.pending_files,
                         project_name: 'Proyecto'
                     }
                 });
             }, 1500);
         } else {
-            showToast('Error', result.message || 'Error confirmando trabajo', 'error');
+            // Mostrar error con más contexto
+            let errorMessage = result.message || 'Error confirmando trabajo';
+            if (result.details) {
+                errorMessage += `\n\nDetalles: ${result.details}`;
+            }
+            
+            showToast('❌ Error al Confirmar', errorMessage, 'error');
+            
+            // Si es un error de impresora no lista, ofrecer actualizar estado
+            if (result.error === 'printer_not_ready') {
+                setTimeout(() => {
+                    showToast(
+                        '🔄 Sugerencia', 
+                        'La impresora puede no estar lista. Intenta actualizar el estado.', 
+                        'warning'
+                    );
+                }, 2000);
+            }
         }
         
     } catch (error) {
@@ -3506,6 +3675,62 @@ function generatePlaceholderStep(step) {
             <p class="text-sm text-gray-500">Se implementará en las siguientes iteraciones</p>
         </div>
     `;
+}
+
+/**
+ * Carga los botones de acción para cada paso del wizard
+ * @param {string} step - El identificador del paso actual
+ */
+function loadStepActionButtons(step) {
+    const actionsContainer = document.getElementById('wizard-actions');
+    if (!actionsContainer) {
+        console.warn('⚠️ Contenedor de acciones no encontrado');
+        return;
+    }
+
+    let buttonsHTML = '';
+    
+    switch(step) {
+        case 'confirmation':
+            // Solo mostrar botón de confirmar si la impresora está lista
+            const printerStatus = window.currentPrinterStatus;
+            if (printerStatus && printerStatus.status === 'ready') {
+                buttonsHTML = `
+                    <button 
+                        onclick="confirmPrintJob()" 
+                        class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 font-medium shadow-md hover:shadow-lg">
+                        🚀 Confirmar e Iniciar Impresión
+                    </button>
+                `;
+                console.log('✅ Impresora lista - Botón de confirmación habilitado');
+            } else {
+                console.log('⏸️ Impresora no lista - Botón de confirmación oculto', printerStatus?.status);
+            }
+            break;
+            
+        case 'monitoring':
+            // Botones para el paso de monitoreo
+            buttonsHTML = `
+                <button 
+                    onclick="updateMonitoringData()" 
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                    🔄 Actualizar Estado
+                </button>
+                <button 
+                    onclick="closePrintFlowModal()" 
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2">
+                    ✅ Cerrar Asistente
+                </button>
+            `;
+            break;
+            
+        default:
+            console.log(`ℹ️ No hay botones específicos para el paso: ${step}`);
+            return;
+    }
+    
+    actionsContainer.innerHTML = buttonsHTML;
+    console.log(`✅ Botones de acción actualizados para paso: ${step}`);
 }
 
 function getStepLabel(step) {

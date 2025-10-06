@@ -1800,12 +1800,26 @@ async def confirm_print_job(request: Request):
                 }
             })
         else:
+            # Error al enviar a la impresora
+            error_details = printer_response.get('error', 'Error desconocido')
+            status_code = printer_response.get('status_code', 500)
+            
+            # Si es un error 503 (Klippy no conectado), usar código 503
+            if status_code == 503:
+                http_status = 503
+                error_type = "printer_not_ready"
+                message = "La impresora no está lista para recibir trabajos"
+            else:
+                http_status = 500
+                error_type = "printer_communication_failed"
+                message = "No se pudo comunicar con la impresora"
+            
             return JSONResponse(content={
                 "success": False,
-                "error": "printer_communication_failed",
-                "message": "No se pudo comunicar con la impresora",
-                "details": printer_response.get('error', 'Error desconocido')
-            }, status_code=500)
+                "error": error_type,
+                "message": message,
+                "details": error_details
+            }, status_code=http_status)
             
     except Exception as e:
         logger.error(f"Error confirmando trabajo: {str(e)}")
@@ -1855,57 +1869,111 @@ async def send_job_to_printer(job_id, settings):
         # Verificar que la impresora esté disponible
         printer_status = await check_printer_status(moonraker_url)
         if not printer_status.get("success"):
+            logger.warning(f"Impresora no disponible: {printer_status.get('error')}")
             return {
                 "success": False, 
-                "error": f"Impresora no disponible: {printer_status.get('error', 'Error desconocido')}"
+                "error": f"Impresora no disponible: {printer_status.get('error', 'Error desconocido')}",
+                "status_code": printer_status.get("status_code", 500)
             }
+        
+        logger.info(f"✅ Impresora {printer_id} verificada y lista")
         
         # Obtener archivos G-code generados de la sesión
         stl_processing = session_data.get("stl_processing", {})
-        processed_files = stl_processing.get("processed_files", [])
+        
+        # Los archivos pueden estar en "successful" (nuevo formato) o "processed_files" (legacy)
+        processed_files = stl_processing.get("successful", [])
+        if not processed_files:
+            processed_files = stl_processing.get("processed_files", [])
+        
+        logger.info(f"📦 Archivos procesados encontrados: {len(processed_files)}")
         
         if not processed_files:
+            logger.error("❌ No hay archivos G-code para enviar")
             return {"success": False, "error": "No hay archivos G-code para enviar"}
         
-        # Tomar el primer archivo G-code disponible (en una implementación completa se manejarían múltiples archivos)
-        gcode_file = None
+        # 📤 NUEVO: Subir TODOS los archivos G-code válidos a la impresora
+        uploaded_files = []
+        failed_uploads = []
+        
         for file_info in processed_files:
-            if file_info.get("status") == "success" and file_info.get("gcode_path"):
-                gcode_file = file_info
-                break
+            # Verificar si es el nuevo formato (con "success") o el viejo (con "status")
+            is_success = file_info.get("success") == True or file_info.get("status") == "success"
+            
+            if is_success and file_info.get("gcode_path"):
+                filename = file_info.get('filename', 'unknown')
+                logger.info(f"📤 Subiendo archivo: {filename}")
+                
+                upload_result = await upload_gcode_to_printer(
+                    moonraker_url, 
+                    file_info["gcode_path"], 
+                    job_id
+                )
+                
+                if upload_result.get("success"):
+                    uploaded_files.append({
+                        "original_filename": filename,
+                        "gcode_filename": upload_result["filename"],
+                        "gcode_path": file_info["gcode_path"],
+                        "file_info": file_info
+                    })
+                    logger.info(f"✅ Archivo subido: {upload_result['filename']}")
+                else:
+                    failed_uploads.append({
+                        "filename": filename,
+                        "error": upload_result.get("error")
+                    })
+                    logger.warning(f"⚠️ Error subiendo {filename}: {upload_result.get('error')}")
         
-        if not gcode_file:
-            return {"success": False, "error": "No hay archivos G-code válidos"}
+        if not uploaded_files:
+            logger.error("❌ No se pudo subir ningún archivo G-code")
+            return {
+                "success": False, 
+                "error": "No se pudo subir ningún archivo G-code",
+                "failed_uploads": failed_uploads
+            }
         
-        # Enviar archivo G-code a la impresora vía Moonraker
-        upload_result = await upload_gcode_to_printer(moonraker_url, gcode_file["gcode_path"], job_id)
-        if not upload_result.get("success"):
-            return {"success": False, "error": f"Error subiendo archivo: {upload_result.get('error')}"}
+        logger.info(f"📊 Resumen: {len(uploaded_files)} archivos subidos, {len(failed_uploads)} fallidos")
         
-        # Iniciar la impresión
-        print_result = await start_print_job(moonraker_url, upload_result["filename"])
+        # 🚀 Iniciar impresión del PRIMER archivo
+        first_file = uploaded_files[0]
+        logger.info(f"🚀 Iniciando impresión del primer archivo: {first_file['gcode_filename']}")
+        
+        print_result = await start_print_job(moonraker_url, first_file["gcode_filename"])
         if not print_result.get("success"):
+            logger.error(f"❌ Error iniciando impresión: {print_result.get('error')}")
+            logger.error(f"❌ Error iniciando impresión: {print_result.get('error')}")
             return {"success": False, "error": f"Error iniciando impresión: {print_result.get('error')}"}
         
-        # Guardar información del trabajo en la cola
+        logger.info(f"✅ Impresión iniciada exitosamente en {printer_id}")
+        
+        # Guardar información del trabajo en la cola (incluyendo TODOS los archivos)
         queue_position = save_job_to_queue({
             "job_id": job_id,
             "printer_id": printer_id,
             "moonraker_url": moonraker_url,
             "status": "printing",
-            "gcode_filename": upload_result["filename"],
+            "current_file": first_file["gcode_filename"],
+            "all_files": uploaded_files,
+            "failed_uploads": failed_uploads,
             "settings": settings,
             "started_at": datetime.now().isoformat()
         })
         
+        # 📋 Preparar información de archivos pendientes
+        pending_files = uploaded_files[1:] if len(uploaded_files) > 1 else []
+        
         return {
             "success": True,
             "printer_job_id": f"printer_{job_id}",
-            "message": "Trabajo enviado e iniciado en la impresora exitosamente",
+            "message": f"Impresión iniciada. {len(uploaded_files)} archivo(s) subido(s), {len(pending_files)} pendiente(s)",
             "printer_id": printer_id,
             "queue_position": queue_position,
             "moonraker_url": moonraker_url,
-            "gcode_filename": upload_result["filename"],
+            "current_printing": first_file["gcode_filename"],
+            "uploaded_files": [f["gcode_filename"] for f in uploaded_files],
+            "pending_files": [f["gcode_filename"] for f in pending_files],
+            "failed_uploads": failed_uploads,
             "estimated_completion": datetime.now().isoformat()  # Se actualizará con datos reales
         }
         
@@ -1917,14 +1985,37 @@ async def check_printer_status(moonraker_url: str):
     """Verifica que la impresora esté disponible y lista para recibir trabajos"""
     try:
         async with aiohttp.ClientSession() as session:
-            # Verificar conexión con Moonraker
+            # Verificar conexión con Moonraker y estado de Klippy
             async with session.get(f"{moonraker_url}/printer/info", timeout=10) as response:
-                if response.status != 200:
-                    return {"success": False, "error": f"Error conectando con Moonraker: HTTP {response.status}"}
+                if response.status == 503:
+                    # Klippy no está conectado
+                    error_data = await response.json()
+                    error_msg = error_data.get('error', {}).get('message', 'Klippy Host not connected')
+                    return {
+                        "success": False, 
+                        "error": f"Klipper no está conectado: {error_msg}",
+                        "status_code": 503
+                    }
+                elif response.status != 200:
+                    return {
+                        "success": False, 
+                        "error": f"Error conectando con Moonraker: HTTP {response.status}",
+                        "status_code": response.status
+                    }
                 
                 info = await response.json()
+                result = info.get("result", {})
+                printer_state = result.get("state", "")
                 
-            # Verificar estado de la impresora
+                # Verificar que Klipper esté en estado "ready"
+                if printer_state != "ready":
+                    return {
+                        "success": False,
+                        "error": f"Impresora no está lista (estado: {printer_state})",
+                        "state": printer_state
+                    }
+                
+            # Verificar estado de la impresión
             async with session.get(f"{moonraker_url}/printer/objects/query?print_stats", timeout=10) as response:
                 if response.status != 200:
                     return {"success": False, "error": "No se pudo obtener estado de impresión"}
@@ -1939,7 +2030,8 @@ async def check_printer_status(moonraker_url: str):
                 return {
                     "success": True, 
                     "state": state,
-                    "info": info.get("result", {})
+                    "printer_state": printer_state,
+                    "info": result
                 }
                 
     except asyncio.TimeoutError:
