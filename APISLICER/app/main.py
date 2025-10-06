@@ -69,52 +69,95 @@ class AutoRotateRequest(BaseModel):
 
 def calculate_contact_area(mesh: trimesh.Trimesh, rotation_matrix: np.ndarray) -> float:
     """
-    Calcula el área de contacto con la cama después de aplicar una rotación.
-    Encuentra los vértices que tocan la cama (cerca de Z=0) y calcula su área convexa.
+    Calcula el área REAL de contacto con la cama sumando las áreas de las caras (triángulos)
+    que están en contacto o muy cerca del plato.
+    
+    Este método es más preciso que ConvexHull porque:
+    - ConvexHull crea un "envoltorio convexo" que rellena huecos
+    - Este método suma solo las caras reales del mesh que tocan
+    
+    Ejemplo: Una pieza en forma de "H" tendrá 2 áreas separadas, no un rectángulo completo.
     """
     # Aplicar rotación al mesh
     rotated_mesh = mesh.copy()
     rotated_mesh.apply_transform(rotation_matrix)
 
-    # Encontrar el valor Z mínimo (punto más bajo)
+    # Encontrar el valor Z mínimo (punto más bajo del mesh)
     z_min = np.min(rotated_mesh.vertices[:, 2])
 
-    # Considerar vértices que están cerca de la cama (dentro de un pequeño umbral)
-    # Esto simula qué partes tocan primero la cama
-    threshold = 0.1  # umbral pequeño para considerar "tocando"
+    # Umbral para considerar una cara "en contacto" con la cama
+    # Si el centro de la cara está dentro de este rango de Z, se considera en contacto
+    z_threshold = 0.5  # mm - ajustable según precisión deseada
+
+    # Calcular el área total de las caras en contacto
+    total_contact_area = 0.0
+    contact_faces_count = 0
+
+    # Iterar sobre cada cara (triángulo) del mesh
+    for face_idx in range(len(rotated_mesh.faces)):
+        # Obtener los 3 vértices del triángulo
+        vertices = rotated_mesh.vertices[rotated_mesh.faces[face_idx]]
+        
+        # Calcular el centro (centroide) de la cara
+        face_center_z = np.mean(vertices[:, 2])
+        
+        # Si el centro de la cara está cerca de la cama (z_min), considerarla en contacto
+        if face_center_z <= z_min + z_threshold:
+            # Calcular el área del triángulo usando vectores
+            v0, v1, v2 = vertices
+            # Área = 0.5 * ||(v1-v0) × (v2-v0)||
+            edge1 = v1 - v0
+            edge2 = v2 - v0
+            cross_product = np.cross(edge1, edge2)
+            face_area = 0.5 * np.linalg.norm(cross_product)
+            
+            # Sumar al área total
+            total_contact_area += face_area
+            contact_faces_count += 1
+    
+    # Si no se encontraron caras en contacto, usar fallback de ConvexHull
+    # (caso edge: mesh muy pequeño o mal formado)
+    if contact_faces_count == 0 or total_contact_area < 0.01:
+        logger.warning("⚠️  No se encontraron caras en contacto, usando ConvexHull como fallback")
+        return calculate_contact_area_convexhull_fallback(rotated_mesh, z_min)
+    
+    logger.debug(f"   📐 Área real de contacto: {total_contact_area:.2f} mm² ({contact_faces_count} caras)")
+    return total_contact_area
+
+
+def calculate_contact_area_convexhull_fallback(rotated_mesh: trimesh.Trimesh, z_min: float) -> float:
+    """
+    Método alternativo usando ConvexHull (menos preciso pero más robusto).
+    Solo se usa si el método principal falla.
+    """
+    threshold = 0.1
     contact_vertices = rotated_mesh.vertices[rotated_mesh.vertices[:, 2] <= z_min + threshold]
 
     if len(contact_vertices) < 3:
-        # Si hay menos de 3 vértices, calcular área basada en bounding box de los puntos de contacto
         if len(contact_vertices) == 0:
             return 0.0
         elif len(contact_vertices) == 1:
-            return 0.01  # área mínima para un punto
+            return 0.01
         elif len(contact_vertices) == 2:
-            # Distancia entre dos puntos
             v1, v2 = contact_vertices[0][:2], contact_vertices[1][:2]
-            return np.linalg.norm(v1 - v2) * 0.1  # ancho mínimo
+            return np.linalg.norm(v1 - v2) * 0.1
         else:
-            # Bounding box de los puntos
             vertices_2d = contact_vertices[:, :2]
             min_coords = np.min(vertices_2d, axis=0)
             max_coords = np.max(vertices_2d, axis=0)
             return (max_coords[0] - min_coords[0]) * (max_coords[1] - min_coords[1])
 
-    # Proyectar los vértices de contacto sobre el plano XY
     vertices_2d = contact_vertices[:, :2]
 
     try:
-        # Calcular el convex hull de los puntos de contacto
         hull = ConvexHull(vertices_2d)
         contact_area = hull.volume  # En 2D, volume = area
-        return max(contact_area, 0.01)  # área mínima
+        return max(contact_area, 0.01)
     except:
-        # Si falla el convex hull, calcular bounding box como aproximación
         min_coords = np.min(vertices_2d, axis=0)
         max_coords = np.max(vertices_2d, axis=0)
         contact_area = (max_coords[0] - min_coords[0]) * (max_coords[1] - min_coords[1])
-        return max(contact_area, 0.01)  # área mínima
+        return max(contact_area, 0.01)
 
 def find_optimal_rotation_gradient(stl_path: str, max_iterations: int = 50, learning_rate: float = 0.1) -> Tuple[np.ndarray, float, Dict]:
     """
