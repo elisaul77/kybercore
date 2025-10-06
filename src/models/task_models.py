@@ -93,6 +93,7 @@ class PlatingConfig(BaseModel):
     algorithm: str = 'bin-packing'  # 'bin-packing', 'grid', o 'spiral'
     spacing: float = 3.0  # mm de separación entre piezas
     optimize_rotation: bool = True  # Rotar piezas para mejor encaje
+    enable_nesting: bool = False  # 🔬 Nesting 3D avanzado (piezas dentro de huecos)
     
     class Config:
         schema_extra = {
@@ -100,7 +101,8 @@ class PlatingConfig(BaseModel):
                 "enabled": True,
                 "algorithm": "bin-packing",
                 "spacing": 3.0,
-                "optimize_rotation": True
+                "optimize_rotation": True,
+                "enable_nesting": False
             }
         }
 

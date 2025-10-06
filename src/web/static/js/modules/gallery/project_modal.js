@@ -1467,6 +1467,16 @@ async function loadSTLProcessingStep() {
                             <div class="text-sm text-gray-600">Organiza automáticamente múltiples piezas en el plato de impresión, generando un solo archivo G-code optimizado.</div>
                         </div>
                     </label>
+                    
+                    <!-- 🔬 NUEVO: Opción de Nesting 3D Avanzado -->
+                    <label class="flex items-start space-x-3 cursor-pointer ml-8">
+                        <input type="checkbox" id="enable-nesting-3d-step5" class="mt-1 w-5 h-5 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                        <div class="flex-1">
+                            <div class="font-medium text-gray-900">🔬 Nesting 3D Avanzado (Experimental)</div>
+                            <div class="text-sm text-gray-600">Coloca piezas pequeñas dentro de espacios huecos (marcos, anillos, letras, etc.) para maximizar el uso del plato.</div>
+                        </div>
+                    </label>
+                    
                     <div id="plating-info" class="ml-8 text-xs text-gray-600 bg-white p-3 rounded border border-pink-100">
                         <div class="flex items-start space-x-2">
                             <span class="text-pink-500">ℹ️</span>
@@ -1477,6 +1487,7 @@ async function loadSTLProcessingStep() {
                                     <li>Calcula posiciones óptimas minimizando espacio desperdiciado</li>
                                     <li>Verifica que todas las piezas caben en el plato</li>
                                     <li>Genera un solo G-code con todas las piezas organizadas</li>
+                                    <li class="text-purple-700 font-medium">🔬 Con Nesting 3D: detecta huecos y coloca piezas dentro para maximizar utilización</li>
                                 </ul>
                                 <div class="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
                                     <strong class="text-yellow-800">⚠️ Nota:</strong> <span class="text-yellow-700">Si habilitaste esta opción en el Paso 1, ya está activada.</span>
@@ -1530,8 +1541,15 @@ async function startSTLProcessing() {
         const autoPlatingFromStep5 = document.getElementById('enable-auto-plating-step5')?.checked || false;
         const autoPlatingEnabled = autoPlatingFromStep1 || autoPlatingFromStep5;
         
+        // 🔬 Capturar configuración de nesting 3D
+        const enableNesting3D = document.getElementById('enable-nesting-3d-step5')?.checked || false;
+        
         if (autoPlatingEnabled) {
             console.log('🎨 Auto-plating habilitado - Las piezas se combinarán en el plato');
+            if (enableNesting3D) {
+                console.log('🔬 Nesting 3D habilitado - Las piezas pequeñas se colocarán dentro de huecos');
+                showToast('Nesting 3D', 'Sistema avanzado de anidación activado', 'info');
+            }
             showToast('Auto-Plating', 'Las piezas se organizarán automáticamente en el plato', 'info');
         }
 
@@ -1603,7 +1621,8 @@ async function startSTLProcessing() {
                     enabled: autoPlatingEnabled,
                     algorithm: 'bin-packing',  // Algoritmo de organización
                     spacing: 3,  // mm de separación entre piezas
-                    optimize_rotation: enableAutoRotation  // Rotar piezas para mejor encaje
+                    optimize_rotation: enableAutoRotation,  // Rotar piezas para mejor encaje
+                    enable_nesting: enableNesting3D  // 🔬 Nesting 3D avanzado
                 },
                 profile_config: {
                     job_id: profileResult.job_id,

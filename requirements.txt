@@ -15,3 +15,7 @@ trimesh==4.5.3        # Manipulación de archivos STL
 numpy-stl==3.1.2      # Lectura/escritura de STL
 rectpack==0.2.2       # Algoritmos de bin-packing 2D
 numpy>=2.1.0          # Dependencia de numpy-stl (Python 3.13 compatible)
+
+# 🔬 Nesting 3D Avanzado Dependencies
+scipy==1.14.1         # Análisis científico (binary_fill_holes, ConvexHull)
+scikit-learn==1.5.2   # Machine Learning (DBSCAN clustering, PCA)

@@ -204,8 +204,9 @@ class RotationWorker:
                     bed_size = profile_config.get('bed_size', [220.0, 220.0])
                     algorithm = plating_config.get('algorithm', 'bin-packing')
                     spacing = plating_config.get('spacing', 3.0)
+                    enable_nesting = plating_config.get('enable_nesting', False)  # 🔬 Nesting 3D
                     
-                    logger.info(f"🎨 Configuración: bed={bed_size}, algoritmo={algorithm}, spacing={spacing}mm")
+                    logger.info(f"🎨 Configuración: bed={bed_size}, algoritmo={algorithm}, spacing={spacing}mm, nesting={enable_nesting}")
                     
                     # Combinar archivos (ya rotados si rotation_enabled=True)
                     success, message, metadata = plating_service.combine_stl_files(
@@ -213,7 +214,8 @@ class RotationWorker:
                         output_path=str(session_dir / "combined_plating.stl"),
                         bed_size=tuple(bed_size),
                         spacing=spacing,
-                        algorithm=algorithm
+                        algorithm=algorithm,
+                        enable_nesting=enable_nesting
                     )
                     
                     if success:
