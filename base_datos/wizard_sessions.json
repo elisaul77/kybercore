@@ -16077,6 +16077,311 @@
         },
         "completed_at": "2025-10-06T19:14:24.283115"
       }
+    },
+    "temp_1_20251006_192102": {
+      "project_id": "1",
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-06T19:21:02.622956",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "complete-s25.3mf",
+          "flap-inserts-s25.3mf"
+        ],
+        "total_pieces": 2,
+        "total_estimated_filament_grams": 24.6,
+        "total_estimated_time_hours": 1.5,
+        "completed_at": "2025-10-06T19:21:02.623115"
+      },
+      "updated_at": "2025-10-06T19:26:28.002203",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-06T19:21:05.986584"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-06T19:21:09.616584"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-06T19:21:12.983286"
+      },
+      "stl_processing": {
+        "task_id": "task_98f13d6b-a640-44b0-bddc-6e465b0ce225",
+        "successful": [],
+        "failed": [
+          {
+            "filename": "complete-s25.3mf",
+            "success": false,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": null,
+            "gcode_size": null,
+            "error": "Error leyendo archivo: No se pudo convertir el archivo 3MF: No module named 'lxml'",
+            "processing_time_seconds": null
+          },
+          {
+            "filename": "flap-inserts-s25.3mf",
+            "success": false,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": null,
+            "gcode_size": null,
+            "error": "Error leyendo archivo: No se pudo convertir el archivo 3MF: No module named 'lxml'",
+            "processing_time_seconds": null
+          }
+        ],
+        "processing_summary": {
+          "total_files": 2,
+          "successful": 0,
+          "failed": 2
+        },
+        "completed_at": "2025-10-06T19:26:27.999176"
+      }
+    },
+    "temp_1_20251006_192702": {
+      "project_id": "1",
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-06T19:27:02.627048",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "complete-s25.3mf",
+          "flap-inserts-s25.3mf"
+        ],
+        "total_pieces": 2,
+        "total_estimated_filament_grams": 24.6,
+        "total_estimated_time_hours": 1.5,
+        "completed_at": "2025-10-06T19:27:02.627118"
+      },
+      "updated_at": "2025-10-06T19:34:28.844806",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-06T19:27:06.249387"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-06T19:27:12.745748"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-06T19:27:18.383449"
+      },
+      "stl_processing": {
+        "task_id": "task_a6437ce8-3289-47c2-8a61-a063d298c36e",
+        "successful": [
+          {
+            "filename": "combined_plating.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_192702/gcode_temp_1_20251006_192702_combined_plating.gcode",
+            "gcode_size": 12258899,
+            "error": null,
+            "processing_time_seconds": 5.178918361663818
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0,
+          "plating_used": true,
+          "original_files_count": 2,
+          "combined_file": "combined_plating.stl"
+        },
+        "completed_at": "2025-10-06T19:34:28.839143"
+      },
+      "plating_info": {
+        "enabled": true,
+        "rotation_applied_first": true,
+        "original_files": [
+          "complete-s25.3mf",
+          "flap-inserts-s25.3mf"
+        ],
+        "combined_file": "combined_plating.stl",
+        "algorithm": "bin-packing",
+        "metadata": {
+          "pieces_count": 2,
+          "positions": [
+            {
+              "x": 1.5,
+              "y": 65.8180504,
+              "rotation": 0.0
+            },
+            {
+              "x": 1.5,
+              "y": 1.5,
+              "rotation": 0.0
+            }
+          ],
+          "mesh_info": [
+            {
+              "filename": "rotated_complete-s25.3mf",
+              "path": "/tmp/kybercore_processing/temp_1_20251006_192702/rotated_complete-s25.3mf",
+              "dimensions": {
+                "x": 44.952075840000006,
+                "y": 24.400254200000006,
+                "z": 127.1354142
+              },
+              "bounds": [
+                [
+                  102.74596165999999,
+                  90.52183629999999,
+                  0.0
+                ],
+                [
+                  147.6980375,
+                  114.9220905,
+                  127.1354142
+                ]
+              ],
+              "volume": 24082.264523420487
+            },
+            {
+              "filename": "rotated_flap-inserts-s25.3mf",
+              "path": "/tmp/kybercore_processing/temp_1_20251006_192702/rotated_flap-inserts-s25.3mf",
+              "dimensions": {
+                "x": 34.296863599999995,
+                "y": 61.318050400000004,
+                "z": 1.396999956
+              },
+              "bounds": [
+                [
+                  108.3718322,
+                  66.8276036,
+                  0.0
+                ],
+                [
+                  142.6686958,
+                  128.145654,
+                  1.396999956
+                ]
+              ],
+              "volume": 873.4931981741232
+            }
+          ],
+          "bed_size": [
+            220.0,
+            220.0
+          ],
+          "spacing": 3.0,
+          "algorithm": "bin-packing",
+          "total_area_used": 3199.8588881004043,
+          "bed_area": 48400.0,
+          "utilization_percent": 6.611278694422324,
+          "combined_file_size": 4183984,
+          "combined_file_path": "/tmp/kybercore_processing/temp_1_20251006_192702/combined_plating.stl",
+          "nesting_used": false
+        },
+        "message": "Plating exitoso: 2 piezas combinadas"
+      }
     }
   },
   "metadata": {

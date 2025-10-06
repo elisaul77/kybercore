@@ -438,6 +438,7 @@ async def create_project(
             "fecha_creacion": datetime.now().strftime("%Y-%m-%d"),
             "estado": "listo",
             "favorito": False,
+            "carpeta": project_dir,  # 🔑 Agregar ruta de la carpeta del proyecto
             "imagen": f"/api/gallery/projects/{project_name.lower().replace(' ', '-')}-{new_id}/images/{image_files[0]}" if image_files else None,
             "badges": badges,
             "progreso": {

@@ -452,15 +452,47 @@ class RotationWorker:
                     if not project:
                         raise ValueError(f"Proyecto {project_id} no encontrado")
                     
-                    # Ahora sí buscar el archivo STL
+                    # Ahora sí buscar el archivo (puede ser STL, 3MF, etc.)
                     original_path = find_stl_file_path(project, filename)
                     if not original_path or not Path(original_path).exists():
-                        raise FileNotFoundError(f"Archivo STL no encontrado: {filename}")
+                        raise FileNotFoundError(f"Archivo 3D no encontrado: {filename}")
                     
                     with open(original_path, 'rb') as f:
                         file_bytes = f.read()
                     
                     logger.info(f"   ✓ Archivo leído: {len(file_bytes)} bytes")
+                    
+                    # 🔄 Si es archivo 3MF, convertirlo a STL para el slicer
+                    if filename.lower().endswith('.3mf'):
+                        logger.info(f"   🔄 Convirtiendo 3MF a STL...")
+                        try:
+                            import trimesh
+                            import io
+                            
+                            # Cargar el archivo 3MF
+                            mesh = trimesh.load(io.BytesIO(file_bytes), file_type='3mf')
+                            
+                            # Si es una escena con múltiples objetos, combinarlos
+                            if isinstance(mesh, trimesh.Scene):
+                                meshes = [geom for geom in mesh.geometry.values()]
+                                if len(meshes) > 1:
+                                    mesh = trimesh.util.concatenate(meshes)
+                                elif len(meshes) == 1:
+                                    mesh = meshes[0]
+                                else:
+                                    raise ValueError("No se encontraron geometrías en el archivo 3MF")
+                            
+                            # Convertir a STL
+                            stl_bytes = trimesh.exchange.stl.export_stl(mesh)
+                            file_bytes = stl_bytes
+                            
+                            # Actualizar el nombre del archivo para el slicer
+                            filename = filename.replace('.3mf', '.stl')
+                            
+                            logger.info(f"   ✅ Conversión 3MF→STL exitosa: {len(file_bytes)} bytes")
+                        except Exception as conv_error:
+                            logger.error(f"   ❌ Error convirtiendo 3MF a STL: {conv_error}")
+                            raise ValueError(f"No se pudo convertir el archivo 3MF: {conv_error}")
             except Exception as e:
                 error_msg = f"Error leyendo archivo: {str(e)}"
                 logger.error(f"   ✗ {error_msg}")

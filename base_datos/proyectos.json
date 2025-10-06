@@ -1,7 +1,7 @@
 {
   "estadisticas": {
     "total_proyectos": 1,
-    "total_stls": 54,
+    "total_stls": 59,
     "completados": 0,
     "en_progreso": 0,
     "tasa_exito": 0
@@ -10,15 +10,16 @@
     {
       "id": 1,
       "nombre": "star ship",
-      "descripcion": "",
+      "descripcion": "jh",
       "autor": "Usuario",
       "fecha_creacion": "2025-10-06",
       "estado": "listo",
       "favorito": false,
+      "carpeta": "src/proyect/star ship - 1",
       "imagen": "/api/gallery/projects/star-ship-1/images/pdf_page1_img1.jpg",
       "badges": {
         "estado": "Listo",
-        "tipo": "Funcional",
+        "tipo": "Prototipo",
         "piezas": "5 piezas"
       },
       "progreso": {
