@@ -522,6 +522,40 @@ async function loadPieceSelectionStep(projectId) {
                         ☑️ Seleccionar todas
                     </button>
                 </div>
+                
+                <!-- 🆕 OPCIÓN DE AUTO-PLATING -->
+                <div class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-4 mb-4">
+                    <div class="flex items-start space-x-3">
+                        <input 
+                            type="checkbox" 
+                            id="enable-auto-plating" 
+                            class="mt-1 w-5 h-5 text-purple-600 border-gray-300 rounded focus:ring-purple-500 cursor-pointer"
+                        >
+                        <div class="flex-1">
+                            <label for="enable-auto-plating" class="font-medium text-gray-900 cursor-pointer flex items-center">
+                                🎨 Organizar todas las piezas en el mismo plato automáticamente
+                                <span class="ml-2 px-2 py-0.5 text-xs bg-purple-100 text-purple-700 rounded-full">NUEVO</span>
+                            </label>
+                            <div class="text-sm text-gray-600 mt-1">
+                                Las piezas seleccionadas se combinarán y organizarán inteligentemente en el plato de impresión, generando <strong>un solo archivo G-code</strong> optimizado.
+                            </div>
+                            <div class="mt-2 text-xs text-gray-500 bg-white p-2 rounded border border-purple-100">
+                                <strong>✅ Ventajas:</strong>
+                                <ul class="list-disc list-inside mt-1 space-y-0.5">
+                                    <li>Una sola impresión en lugar de varias secuenciales</li>
+                                    <li>Optimización automática del espacio del plato</li>
+                                    <li>Ahorro de tiempo (sin cambios de pieza)</li>
+                                </ul>
+                                <strong class="block mt-2">⚠️ Consideraciones:</strong>
+                                <ul class="list-disc list-inside mt-1 space-y-0.5">
+                                    <li>Todas las piezas deben caber en el plato (se verificará automáticamente)</li>
+                                    <li>Si una pieza falla, afecta toda la impresión</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="max-h-64 overflow-y-auto space-y-2" id="pieces-list">
                     ${data.pieces.map(piece => `
                         <div class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer" onclick="document.getElementById('piece_${piece.filename}').click()">
@@ -584,13 +618,23 @@ function confirmPieceSelectionFromCheckboxes(projectId) {
         return;
     }
     
+    // 🆕 Capturar estado del checkbox de auto-plating
+    const autoPlatingEnabled = document.getElementById('enable-auto-plating')?.checked || false;
+    
     // Llamar al endpoint con la selección
-    confirmPieceSelection(projectId, selectedPieces, false);
+    confirmPieceSelection(projectId, selectedPieces, false, autoPlatingEnabled);
 }
 
-async function confirmPieceSelection(projectId, selectedPieces, selectAll) {
+async function confirmPieceSelection(projectId, selectedPieces, selectAll, autoPlating = false) {
     try {
         showToast('Procesando', 'Confirmando selección...', 'info');
+        
+        // 🆕 Guardar configuración de auto-plating globalmente
+        window.autoPlatingEnabled = autoPlating;
+        
+        if (autoPlating) {
+            console.log('🎨 Auto-plating habilitado - Las piezas se combinarán en el plato');
+        }
         
         const response = await fetch('/api/print/select-pieces', {
             method: 'POST',
@@ -1412,6 +1456,37 @@ async function loadSTLProcessingStep() {
                 </div>
             </div>
 
+            <!-- 🆕 Configuración de Auto-Plating -->
+            <div class="bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg p-4 border border-pink-200">
+                <h4 class="font-medium text-pink-900 mb-3">🎨 Organización Automática del Plato</h4>
+                <div class="space-y-3">
+                    <label class="flex items-start space-x-3 cursor-pointer">
+                        <input type="checkbox" id="enable-auto-plating-step5" class="mt-1 w-5 h-5 text-pink-600 border-gray-300 rounded focus:ring-pink-500" ${window.autoPlatingEnabled ? 'checked' : ''}>
+                        <div class="flex-1">
+                            <div class="font-medium text-gray-900">Combinar todas las piezas en el mismo plato</div>
+                            <div class="text-sm text-gray-600">Organiza automáticamente múltiples piezas en el plato de impresión, generando un solo archivo G-code optimizado.</div>
+                        </div>
+                    </label>
+                    <div id="plating-info" class="ml-8 text-xs text-gray-600 bg-white p-3 rounded border border-pink-100">
+                        <div class="flex items-start space-x-2">
+                            <span class="text-pink-500">ℹ️</span>
+                            <div>
+                                <strong>Cómo funciona:</strong>
+                                <ul class="list-disc list-inside mt-1 space-y-0.5">
+                                    <li>Analiza dimensiones de cada pieza</li>
+                                    <li>Calcula posiciones óptimas minimizando espacio desperdiciado</li>
+                                    <li>Verifica que todas las piezas caben en el plato</li>
+                                    <li>Genera un solo G-code con todas las piezas organizadas</li>
+                                </ul>
+                                <div class="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
+                                    <strong class="text-yellow-800">⚠️ Nota:</strong> <span class="text-yellow-700">Si habilitaste esta opción en el Paso 1, ya está activada.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Lista de archivos a procesar -->
             <div class="space-y-2">
                 <h4 class="font-medium text-gray-900">📁 Archivos a procesar:</h4>
@@ -1449,6 +1524,16 @@ async function startSTLProcessing() {
     try {
         console.log('🚀 Iniciando procesamiento Backend-Centric');
         showToast('Iniciando', 'Procesamiento inteligente...', 'info');
+
+        // 🆕 Capturar configuración de auto-plating (desde Paso 1 o Paso 5)
+        const autoPlatingFromStep1 = window.autoPlatingEnabled || false;
+        const autoPlatingFromStep5 = document.getElementById('enable-auto-plating-step5')?.checked || false;
+        const autoPlatingEnabled = autoPlatingFromStep1 || autoPlatingFromStep5;
+        
+        if (autoPlatingEnabled) {
+            console.log('🎨 Auto-plating habilitado - Las piezas se combinarán en el plato');
+            showToast('Auto-Plating', 'Las piezas se organizarán automáticamente en el plato', 'info');
+        }
 
         // Paso 1: Generar perfil personalizado
         updateStepStatus(1, 'in-progress', 'Generando perfil personalizado...');
@@ -1513,6 +1598,12 @@ async function startSTLProcessing() {
                     learning_rate: 0.1,
                     rotation_step: 15,
                     max_rotations: 24
+                },
+                plating_config: {
+                    enabled: autoPlatingEnabled,
+                    algorithm: 'bin-packing',  // Algoritmo de organización
+                    spacing: 3,  // mm de separación entre piezas
+                    optimize_rotation: enableAutoRotation  // Rotar piezas para mejor encaje
                 },
                 profile_config: {
                     job_id: profileResult.job_id,

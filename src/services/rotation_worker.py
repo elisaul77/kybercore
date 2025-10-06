@@ -21,6 +21,7 @@ from src.models.task_models import (
 from src.controllers.print_flow_controller import (
     load_wizard_session, save_wizard_session, find_stl_file_path
 )
+from src.services.plating_service import plating_service
 import logging
 
 logger = logging.getLogger(__name__)
@@ -53,10 +54,12 @@ class RotationWorker:
         session_id: str,
         files: List[str],
         rotation_config: Dict[str, Any],
-        profile_config: Dict[str, Any]
+        profile_config: Dict[str, Any],
+        plating_config: Optional[Dict[str, Any]] = None
     ) -> None:
         """
         Procesa múltiples archivos en paralelo con control de concurrencia.
+        Soporta auto-plating para combinar múltiples piezas en un solo plato.
         
         Args:
             task_id: ID único de la tarea
@@ -64,6 +67,7 @@ class RotationWorker:
             files: Lista de nombres de archivos a procesar
             rotation_config: Configuración de auto-rotación
             profile_config: Configuración del perfil de laminado
+            plating_config: (Opcional) Configuración de auto-plating para combinar piezas
         """
         start_time = time.time()
         
@@ -105,6 +109,72 @@ class RotationWorker:
             session_dir.mkdir(parents=True, exist_ok=True)
             logger.info(f"📁 Directorio temporal creado: {session_dir}")
             
+            # 🎨 AUTO-PLATING: Combinar múltiples piezas en un solo plato si está habilitado
+            files_to_process = normalized_files  # Por defecto, procesar todos los archivos individualmente
+            plating_enabled = plating_config and plating_config.get('enabled', False)
+            combined_stl_path = None
+            
+            if plating_enabled and len(normalized_files) > 1:
+                logger.info(f"🎨 Auto-Plating HABILITADO: Intentando combinar {len(normalized_files)} piezas")
+                
+                # Buscar las rutas absolutas de los archivos STL
+                stl_paths = []
+                for filename in normalized_files:
+                    stl_path = find_stl_file_path(filename, session_id)
+                    if stl_path and Path(stl_path).exists():
+                        stl_paths.append(stl_path)
+                    else:
+                        logger.warning(f"⚠️  No se encontró el archivo STL: {filename}")
+                
+                if len(stl_paths) >= 2:
+                    # Extraer configuración de plating
+                    bed_size = profile_config.get('bed_size', [220.0, 220.0])
+                    algorithm = plating_config.get('algorithm', 'bin-packing')
+                    spacing = plating_config.get('spacing', 3.0)
+                    # optimize_rotation se podría implementar en el futuro
+                    
+                    logger.info(f"🎨 Configuración: bed={bed_size}, algoritmo={algorithm}, spacing={spacing}mm")
+                    
+                    # Llamar al servicio de plating (sin optimize_rotation por ahora)
+                    success, message, metadata = plating_service.combine_stl_files(
+                        stl_files=stl_paths,
+                        output_path=str(session_dir / "combined_plating.stl"),
+                        bed_size=tuple(bed_size),
+                        spacing=spacing,
+                        algorithm=algorithm
+                    )
+                    
+                    if success:
+                        combined_stl_path = str(session_dir / "combined_plating.stl")
+                        files_to_process = ["combined_plating.stl"]  # Procesar solo el archivo combinado
+                        
+                        # Actualizar el TaskStatus para reflejar que es 1 archivo combinado
+                        self.tasks[task_id].progress.total_files = 1
+                        
+                        logger.info(f"✅ Plating exitoso: {message}")
+                        logger.info(f"📊 Metadata: {metadata}")
+                        
+                        # Guardar info de plating en la sesión
+                        session_data = load_wizard_session(session_id)
+                        if session_data:
+                            session_data["plating_info"] = {
+                                "enabled": True,
+                                "original_files": normalized_files,
+                                "combined_file": "combined_plating.stl",
+                                "algorithm": algorithm,
+                                "metadata": metadata,
+                                "message": message
+                            }
+                            save_wizard_session(session_id, session_data)
+                    else:
+                        logger.error(f"❌ Error en plating: {message}")
+                        logger.warning(f"⚠️  Continuando con procesamiento individual de archivos")
+                        # Si falla el plating, continuar con procesamiento individual
+                else:
+                    logger.warning(f"⚠️  No se encontraron suficientes archivos STL válidos para plating")
+            elif plating_enabled and len(normalized_files) == 1:
+                logger.info(f"ℹ️  Plating habilitado pero solo hay 1 archivo, procesando individualmente")
+            
             # Procesar archivos en paralelo con semáforo para limitar concurrencia
             semaphore = asyncio.Semaphore(self.max_concurrent)
             
@@ -129,9 +199,9 @@ class RotationWorker:
                         self.tasks[task_id].progress.in_progress -= 1
             
             # Ejecutar en paralelo todas las tareas
-            logger.info(f"🚀 Procesando {len(normalized_files)} archivos en paralelo (máx {self.max_concurrent} simultáneos)")
+            logger.info(f"🚀 Procesando {len(files_to_process)} archivos en paralelo (máx {self.max_concurrent} simultáneos)")
             results = await asyncio.gather(
-                *[process_with_semaphore(f) for f in normalized_files],
+                *[process_with_semaphore(f) for f in files_to_process],
                 return_exceptions=True
             )
             
@@ -139,7 +209,7 @@ class RotationWorker:
             successful_results = []
             failed_results = []
             
-            for filename, result in zip(normalized_files, results):
+            for filename, result in zip(files_to_process, results):
                 if isinstance(result, Exception):
                     # Excepción no capturada
                     error_msg = f"Error inesperado procesando {filename}: {str(result)}"
@@ -161,21 +231,30 @@ class RotationWorker:
                 self.tasks[task_id].progress.completed = len(successful_results)
                 self.tasks[task_id].progress.failed = len(failed_results)
                 self.tasks[task_id].progress.percentage = (
-                    (len(successful_results) + len(failed_results)) / len(normalized_files) * 100
+                    (len(successful_results) + len(failed_results)) / len(files_to_process) * 100
                 )
             
             # Actualizar sesión con resultados
             session_data = load_wizard_session(session_id)
             if session_data:
+                # Construir resumen de procesamiento
+                processing_summary = {
+                    "total_files": len(files_to_process),
+                    "successful": len(successful_results),
+                    "failed": len(failed_results)
+                }
+                
+                # Si se usó plating, agregar info adicional
+                if plating_enabled and combined_stl_path:
+                    processing_summary["plating_used"] = True
+                    processing_summary["original_files_count"] = len(normalized_files)
+                    processing_summary["combined_file"] = "combined_plating.stl"
+                
                 session_data["stl_processing"] = {
                     "task_id": task_id,
                     "successful": [r.dict() for r in successful_results],
                     "failed": [r.dict() for r in failed_results],
-                    "processing_summary": {
-                        "total_files": len(normalized_files),
-                        "successful": len(successful_results),
-                        "failed": len(failed_results)
-                    },
+                    "processing_summary": processing_summary,
                     "completed_at": datetime.now().isoformat()
                 }
                 # ✅ IMPORTANTE: Marcar el paso como completado
@@ -264,36 +343,50 @@ class RotationWorker:
                 if not session_data:
                     raise ValueError(f"Sesión no encontrada: {session_id}")
                 
-                # Obtener project_id y cargar proyecto
-                project_id = session_data.get("project_id")
-                if not project_id:
-                    raise ValueError(f"project_id no encontrado en sesión {session_id}")
+                # **Caso especial: Archivo combinado de plating**
+                if filename == "combined_plating.stl":
+                    # El archivo está en session_dir, no en el proyecto
+                    combined_path = session_dir / "combined_plating.stl"
+                    if not combined_path.exists():
+                        raise FileNotFoundError(f"Archivo combinado no encontrado: {combined_path}")
+                    
+                    with open(combined_path, 'rb') as f:
+                        file_bytes = f.read()
+                    
+                    logger.info(f"   ✓ Archivo combinado leído: {len(file_bytes)} bytes")
                 
-                logger.info(f"   📋 Buscando proyecto con ID: {project_id} (tipo: {type(project_id)})")
-                
-                # Cargar información del proyecto
-                from src.controllers.gallery_controller import load_projects_data
-                projects_data = load_projects_data()
-                projects = projects_data.get("proyectos", [])  # Usar "proyectos" (español)
-                
-                logger.info(f"   📊 Total proyectos disponibles: {len(projects)}")
-                if len(projects) > 0:
-                    logger.info(f"   📊 IDs disponibles: {[p.get('id') for p in projects[:5]]}")
-                
-                project = next((p for p in projects if p.get("id") == int(project_id)), None)
-                
-                if not project:
-                    raise ValueError(f"Proyecto {project_id} no encontrado")
-                
-                # Ahora sí buscar el archivo STL
-                original_path = find_stl_file_path(project, filename)
-                if not original_path or not Path(original_path).exists():
-                    raise FileNotFoundError(f"Archivo STL no encontrado: {filename}")
-                
-                with open(original_path, 'rb') as f:
-                    file_bytes = f.read()
-                
-                logger.info(f"   ✓ Archivo leído: {len(file_bytes)} bytes")
+                else:
+                    # **Caso normal: Archivo original del proyecto**
+                    # Obtener project_id y cargar proyecto
+                    project_id = session_data.get("project_id")
+                    if not project_id:
+                        raise ValueError(f"project_id no encontrado en sesión {session_id}")
+                    
+                    logger.info(f"   📋 Buscando proyecto con ID: {project_id} (tipo: {type(project_id)})")
+                    
+                    # Cargar información del proyecto
+                    from src.controllers.gallery_controller import load_projects_data
+                    projects_data = load_projects_data()
+                    projects = projects_data.get("proyectos", [])  # Usar "proyectos" (español)
+                    
+                    logger.info(f"   📊 Total proyectos disponibles: {len(projects)}")
+                    if len(projects) > 0:
+                        logger.info(f"   📊 IDs disponibles: {[p.get('id') for p in projects[:5]]}")
+                    
+                    project = next((p for p in projects if p.get("id") == int(project_id)), None)
+                    
+                    if not project:
+                        raise ValueError(f"Proyecto {project_id} no encontrado")
+                    
+                    # Ahora sí buscar el archivo STL
+                    original_path = find_stl_file_path(project, filename)
+                    if not original_path or not Path(original_path).exists():
+                        raise FileNotFoundError(f"Archivo STL no encontrado: {filename}")
+                    
+                    with open(original_path, 'rb') as f:
+                        file_bytes = f.read()
+                    
+                    logger.info(f"   ✓ Archivo leído: {len(file_bytes)} bytes")
             except Exception as e:
                 error_msg = f"Error leyendo archivo: {str(e)}"
                 logger.error(f"   ✗ {error_msg}")

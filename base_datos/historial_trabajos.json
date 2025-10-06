@@ -1412,6 +1412,1294 @@
         "estimated_completion": "2025-10-06T02:34:32.002035"
       },
       "completed_at": "2025-10-06T02:34:32.022808"
+    },
+    {
+      "job_id": "bda1a5fe-196b-44fe-a339-f582b327e219",
+      "status": "started",
+      "session_data": {
+        "project_id": "1",
+        "current_step": "monitoring",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing",
+          "confirmation"
+        ],
+        "created_at": "2025-10-06T02:57:27.867315",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Cover_USB.stl",
+            "back_frame.stl"
+          ],
+          "total_pieces": 2,
+          "total_estimated_filament_grams": 24.6,
+          "total_estimated_time_hours": 1.5,
+          "completed_at": "2025-10-06T02:57:27.867349"
+        },
+        "updated_at": "2025-10-06T02:57:48.154347",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-06T02:57:33.129601"
+        },
+        "production_mode": {
+          "mode": "prototype",
+          "priority": "speed",
+          "settings": {
+            "layer_height": 0.3,
+            "infill_density": 15,
+            "print_speed": 80,
+            "quality_preset": "draft"
+          },
+          "estimated_impact": {
+            "time_factor": 0.7,
+            "quality_level": "estándar",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-06T02:57:37.721502"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Impresora Prueba",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-06T02:57:42.567011"
+        },
+        "stl_processing": {
+          "task_id": "task_0c82dba9-d043-44a0-b114-219e88f00619",
+          "successful": [
+            {
+              "filename": "Cover_USB.stl",
+              "success": true,
+              "rotated": true,
+              "rotation_info": {
+                "applied": true,
+                "degrees": [
+                  180.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 22.75651071393782,
+                "contact_area": 279.755987696896,
+                "original_area": 227.89503063411235
+              },
+              "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_025727/gcode_temp_1_20251006_025727_Cover_USB.gcode",
+              "gcode_size": 51068,
+              "error": null,
+              "processing_time_seconds": 1.0165064334869385
+            },
+            {
+              "filename": "back_frame.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  180.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 3.2462703888593882,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_025727/gcode_temp_1_20251006_025727_back_frame.gcode",
+              "gcode_size": 2839031,
+              "error": null,
+              "processing_time_seconds": 1.0208065509796143
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 2,
+            "successful": 2,
+            "failed": 0
+          },
+          "completed_at": "2025-10-06T02:57:48.151443"
+        },
+        "confirmed_job_id": "bda1a5fe-196b-44fe-a339-f582b327e219",
+        "final_status": "job_sent_to_printer",
+        "completed_at": "2025-10-06T02:58:10.960103"
+      },
+      "printer_response": {
+        "success": true,
+        "printer_job_id": "printer_temp_1_20251006_025727",
+        "message": "Impresión iniciada. 2 archivo(s) subido(s), 1 pendiente(s)",
+        "printer_id": "printer-test-1",
+        "queue_position": 30,
+        "moonraker_url": "http://10.10.10.71:7126",
+        "current_printing": "kybercore_temp_1_20251006_025727_gcode_temp_1_20251006_025727_Cover_USB.gcode",
+        "uploaded_files": [
+          "kybercore_temp_1_20251006_025727_gcode_temp_1_20251006_025727_Cover_USB.gcode",
+          "kybercore_temp_1_20251006_025727_gcode_temp_1_20251006_025727_back_frame.gcode"
+        ],
+        "pending_files": [
+          "kybercore_temp_1_20251006_025727_gcode_temp_1_20251006_025727_back_frame.gcode"
+        ],
+        "failed_uploads": [],
+        "estimated_completion": "2025-10-06T02:58:10.959980"
+      },
+      "completed_at": "2025-10-06T02:58:10.980491"
+    },
+    {
+      "job_id": "48bd9555-811a-4f69-972a-ef8994f311ad",
+      "status": "started",
+      "session_data": {
+        "project_id": "1",
+        "current_step": "monitoring",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing",
+          "confirmation"
+        ],
+        "created_at": "2025-10-06T03:13:41.908362",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Cover_USB.stl",
+            "back_frame.stl"
+          ],
+          "total_pieces": 2,
+          "total_estimated_filament_grams": 24.6,
+          "total_estimated_time_hours": 1.5,
+          "completed_at": "2025-10-06T03:13:41.908426"
+        },
+        "updated_at": "2025-10-06T03:14:07.188181",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-06T03:13:45.837957"
+        },
+        "production_mode": {
+          "mode": "prototype",
+          "priority": "speed",
+          "settings": {
+            "layer_height": 0.3,
+            "infill_density": 15,
+            "print_speed": 80,
+            "quality_preset": "draft"
+          },
+          "estimated_impact": {
+            "time_factor": 0.7,
+            "quality_level": "estándar",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-06T03:13:50.031180"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Impresora Prueba",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-06T03:13:53.678501"
+        },
+        "stl_processing": {
+          "task_id": "task_7a2c4aca-da06-44fb-ac45-4ac487035539",
+          "successful": [
+            {
+              "filename": "Cover_USB.stl",
+              "success": true,
+              "rotated": true,
+              "rotation_info": {
+                "applied": true,
+                "degrees": [
+                  180.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 22.75651071393782,
+                "contact_area": 279.755987696896,
+                "original_area": 227.89503063411235
+              },
+              "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_031341/gcode_temp_1_20251006_031341_Cover_USB.gcode",
+              "gcode_size": 51068,
+              "error": null,
+              "processing_time_seconds": 0.9592299461364746
+            },
+            {
+              "filename": "back_frame.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  180.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 3.2462703888593882,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_031341/gcode_temp_1_20251006_031341_back_frame.gcode",
+              "gcode_size": 2839031,
+              "error": null,
+              "processing_time_seconds": 0.9677770137786865
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 2,
+            "successful": 2,
+            "failed": 0
+          },
+          "completed_at": "2025-10-06T03:14:07.185779"
+        },
+        "confirmed_job_id": "48bd9555-811a-4f69-972a-ef8994f311ad",
+        "final_status": "job_sent_to_printer",
+        "completed_at": "2025-10-06T03:14:38.268475"
+      },
+      "printer_response": {
+        "success": true,
+        "printer_job_id": "printer_temp_1_20251006_031341",
+        "message": "Impresión iniciada. 2 archivo(s) subido(s), 1 pendiente(s)",
+        "printer_id": "printer-test-1",
+        "queue_position": 32,
+        "moonraker_url": "http://10.10.10.71:7126",
+        "current_printing": "kybercore_temp_1_20251006_031341_gcode_temp_1_20251006_031341_Cover_USB.gcode",
+        "uploaded_files": [
+          "kybercore_temp_1_20251006_031341_gcode_temp_1_20251006_031341_Cover_USB.gcode",
+          "kybercore_temp_1_20251006_031341_gcode_temp_1_20251006_031341_back_frame.gcode"
+        ],
+        "pending_files": [
+          "kybercore_temp_1_20251006_031341_gcode_temp_1_20251006_031341_back_frame.gcode"
+        ],
+        "failed_uploads": [],
+        "estimated_completion": "2025-10-06T03:14:38.268451"
+      },
+      "completed_at": "2025-10-06T03:14:38.286549"
+    },
+    {
+      "job_id": "cbaaeff6-4a29-4068-86ed-7ddfd3a6b7cb",
+      "status": "started",
+      "session_data": {
+        "project_id": "1",
+        "current_step": "monitoring",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing",
+          "confirmation"
+        ],
+        "created_at": "2025-10-06T04:17:36.834661",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Cover_USB.stl",
+            "back_frame.stl"
+          ],
+          "total_pieces": 2,
+          "total_estimated_filament_grams": 24.6,
+          "total_estimated_time_hours": 1.5,
+          "completed_at": "2025-10-06T04:17:36.834709"
+        },
+        "updated_at": "2025-10-06T04:17:55.652283",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-06T04:17:39.622000"
+        },
+        "production_mode": {
+          "mode": "prototype",
+          "priority": "speed",
+          "settings": {
+            "layer_height": 0.3,
+            "infill_density": 15,
+            "print_speed": 80,
+            "quality_preset": "draft"
+          },
+          "estimated_impact": {
+            "time_factor": 0.7,
+            "quality_level": "estándar",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-06T04:17:44.329797"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Impresora Prueba",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-06T04:17:48.160530"
+        },
+        "stl_processing": {
+          "task_id": "task_52d327d3-3e74-4510-80c4-c21a4349fa2e",
+          "successful": [
+            {
+              "filename": "Cover_USB.stl",
+              "success": true,
+              "rotated": true,
+              "rotation_info": {
+                "applied": true,
+                "degrees": [
+                  180.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 22.75651071393782,
+                "contact_area": 279.755987696896,
+                "original_area": 227.89503063411235
+              },
+              "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_041736/gcode_temp_1_20251006_041736_Cover_USB.gcode",
+              "gcode_size": 51068,
+              "error": null,
+              "processing_time_seconds": 0.6474390029907227
+            },
+            {
+              "filename": "back_frame.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  180.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 3.2462703888593882,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_041736/gcode_temp_1_20251006_041736_back_frame.gcode",
+              "gcode_size": 2839031,
+              "error": null,
+              "processing_time_seconds": 1.2157797813415527
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 2,
+            "successful": 2,
+            "failed": 0
+          },
+          "completed_at": "2025-10-06T04:17:55.649893"
+        },
+        "confirmed_job_id": "cbaaeff6-4a29-4068-86ed-7ddfd3a6b7cb",
+        "final_status": "job_sent_to_printer",
+        "completed_at": "2025-10-06T04:18:44.906333"
+      },
+      "printer_response": {
+        "success": true,
+        "printer_job_id": "printer_temp_1_20251006_041736",
+        "message": "Impresión iniciada. 2 archivo(s) subido(s), 1 pendiente(s)",
+        "printer_id": "printer-test-1",
+        "queue_position": 34,
+        "moonraker_url": "http://10.10.10.71:7126",
+        "current_printing": "kybercore_temp_1_20251006_041736_gcode_temp_1_20251006_041736_Cover_USB.gcode",
+        "uploaded_files": [
+          "kybercore_temp_1_20251006_041736_gcode_temp_1_20251006_041736_Cover_USB.gcode",
+          "kybercore_temp_1_20251006_041736_gcode_temp_1_20251006_041736_back_frame.gcode"
+        ],
+        "pending_files": [
+          "kybercore_temp_1_20251006_041736_gcode_temp_1_20251006_041736_back_frame.gcode"
+        ],
+        "failed_uploads": [],
+        "estimated_completion": "2025-10-06T04:18:44.905851"
+      },
+      "completed_at": "2025-10-06T04:18:44.939318"
+    },
+    {
+      "job_id": "61c1b7a0-cb76-474b-9b15-de9460eefb18",
+      "status": "started",
+      "session_data": {
+        "project_id": "1",
+        "current_step": "monitoring",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing",
+          "confirmation"
+        ],
+        "created_at": "2025-10-06T04:27:06.201203",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Cover_USB.stl",
+            "back_frame.stl"
+          ],
+          "total_pieces": 2,
+          "total_estimated_filament_grams": 24.6,
+          "total_estimated_time_hours": 1.5,
+          "completed_at": "2025-10-06T04:27:06.201255"
+        },
+        "updated_at": "2025-10-06T04:27:26.090309",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-06T04:27:09.979855"
+        },
+        "production_mode": {
+          "mode": "prototype",
+          "priority": "speed",
+          "settings": {
+            "layer_height": 0.3,
+            "infill_density": 15,
+            "print_speed": 80,
+            "quality_preset": "draft"
+          },
+          "estimated_impact": {
+            "time_factor": 0.7,
+            "quality_level": "estándar",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-06T04:27:14.298797"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Impresora Prueba",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-06T04:27:18.175198"
+        },
+        "stl_processing": {
+          "task_id": "task_b6e82f88-9c28-4165-8b90-7c1e6465ce52",
+          "successful": [
+            {
+              "filename": "Cover_USB.stl",
+              "success": true,
+              "rotated": true,
+              "rotation_info": {
+                "applied": true,
+                "degrees": [
+                  180.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 22.75651071393782,
+                "contact_area": 279.755987696896,
+                "original_area": 227.89503063411235
+              },
+              "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_042706/gcode_temp_1_20251006_042706_Cover_USB.gcode",
+              "gcode_size": 51068,
+              "error": null,
+              "processing_time_seconds": 1.0681867599487305
+            },
+            {
+              "filename": "back_frame.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  180.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 3.2462703888593882,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_042706/gcode_temp_1_20251006_042706_back_frame.gcode",
+              "gcode_size": 2839031,
+              "error": null,
+              "processing_time_seconds": 1.079298973083496
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 2,
+            "successful": 2,
+            "failed": 0
+          },
+          "completed_at": "2025-10-06T04:27:26.087984"
+        },
+        "confirmed_job_id": "61c1b7a0-cb76-474b-9b15-de9460eefb18",
+        "final_status": "job_sent_to_printer",
+        "completed_at": "2025-10-06T04:27:56.074182"
+      },
+      "printer_response": {
+        "success": true,
+        "printer_job_id": "printer_temp_1_20251006_042706",
+        "message": "Impresión iniciada. 2 archivo(s) subido(s), 1 pendiente(s)",
+        "printer_id": "printer-test-1",
+        "queue_position": 36,
+        "moonraker_url": "http://10.10.10.71:7126",
+        "current_printing": "kybercore_temp_1_20251006_042706_gcode_temp_1_20251006_042706_Cover_USB.gcode",
+        "uploaded_files": [
+          "kybercore_temp_1_20251006_042706_gcode_temp_1_20251006_042706_Cover_USB.gcode",
+          "kybercore_temp_1_20251006_042706_gcode_temp_1_20251006_042706_back_frame.gcode"
+        ],
+        "pending_files": [
+          "kybercore_temp_1_20251006_042706_gcode_temp_1_20251006_042706_back_frame.gcode"
+        ],
+        "failed_uploads": [],
+        "estimated_completion": "2025-10-06T04:27:56.074074"
+      },
+      "completed_at": "2025-10-06T04:27:56.099738"
+    },
+    {
+      "job_id": "3dbf1cd1-1110-4109-8e31-e182907e54c3",
+      "status": "started",
+      "session_data": {
+        "project_id": "1",
+        "current_step": "monitoring",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing",
+          "confirmation"
+        ],
+        "created_at": "2025-10-06T04:30:29.914355",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Cover_USB.stl",
+            "back_frame.stl"
+          ],
+          "total_pieces": 2,
+          "total_estimated_filament_grams": 24.6,
+          "total_estimated_time_hours": 1.5,
+          "completed_at": "2025-10-06T04:30:29.914400"
+        },
+        "updated_at": "2025-10-06T04:30:48.632553",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-06T04:30:33.231239"
+        },
+        "production_mode": {
+          "mode": "prototype",
+          "priority": "speed",
+          "settings": {
+            "layer_height": 0.3,
+            "infill_density": 15,
+            "print_speed": 80,
+            "quality_preset": "draft"
+          },
+          "estimated_impact": {
+            "time_factor": 0.7,
+            "quality_level": "estándar",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-06T04:30:37.090245"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Impresora Prueba",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-06T04:30:41.465795"
+        },
+        "stl_processing": {
+          "task_id": "task_7b1db051-5146-4818-821a-35b8102abcfb",
+          "successful": [
+            {
+              "filename": "Cover_USB.stl",
+              "success": true,
+              "rotated": true,
+              "rotation_info": {
+                "applied": true,
+                "degrees": [
+                  180.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 22.75651071393782,
+                "contact_area": 279.755987696896,
+                "original_area": 227.89503063411235
+              },
+              "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_043029/gcode_temp_1_20251006_043029_Cover_USB.gcode",
+              "gcode_size": 51068,
+              "error": null,
+              "processing_time_seconds": 1.115588903427124
+            },
+            {
+              "filename": "back_frame.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  180.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 3.2462703888593882,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_043029/gcode_temp_1_20251006_043029_back_frame.gcode",
+              "gcode_size": 2839031,
+              "error": null,
+              "processing_time_seconds": 1.0664353370666504
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 2,
+            "successful": 2,
+            "failed": 0
+          },
+          "completed_at": "2025-10-06T04:30:48.630153"
+        },
+        "confirmed_job_id": "3dbf1cd1-1110-4109-8e31-e182907e54c3",
+        "final_status": "job_sent_to_printer",
+        "completed_at": "2025-10-06T04:31:31.505823"
+      },
+      "printer_response": {
+        "success": true,
+        "printer_job_id": "printer_temp_1_20251006_043029",
+        "message": "Impresión iniciada. 2 archivo(s) subido(s), 1 pendiente(s)",
+        "printer_id": "printer-test-1",
+        "queue_position": 38,
+        "moonraker_url": "http://10.10.10.71:7126",
+        "current_printing": "kybercore_temp_1_20251006_043029_gcode_temp_1_20251006_043029_Cover_USB.gcode",
+        "uploaded_files": [
+          "kybercore_temp_1_20251006_043029_gcode_temp_1_20251006_043029_Cover_USB.gcode",
+          "kybercore_temp_1_20251006_043029_gcode_temp_1_20251006_043029_back_frame.gcode"
+        ],
+        "pending_files": [
+          "kybercore_temp_1_20251006_043029_gcode_temp_1_20251006_043029_back_frame.gcode"
+        ],
+        "failed_uploads": [],
+        "estimated_completion": "2025-10-06T04:31:31.505793"
+      },
+      "completed_at": "2025-10-06T04:31:31.525496"
+    },
+    {
+      "job_id": "a1746400-8fc4-432a-87e9-97ec0fe9fc67",
+      "status": "started",
+      "session_data": {
+        "project_id": "1",
+        "current_step": "monitoring",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing",
+          "confirmation"
+        ],
+        "created_at": "2025-10-06T04:35:55.277547",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Cover_USB.stl",
+            "back_frame.stl"
+          ],
+          "total_pieces": 2,
+          "total_estimated_filament_grams": 24.6,
+          "total_estimated_time_hours": 1.5,
+          "completed_at": "2025-10-06T04:35:55.277587"
+        },
+        "updated_at": "2025-10-06T04:37:49.222128",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-06T04:35:58.548458"
+        },
+        "production_mode": {
+          "mode": "prototype",
+          "priority": "speed",
+          "settings": {
+            "layer_height": 0.3,
+            "infill_density": 15,
+            "print_speed": 80,
+            "quality_preset": "draft"
+          },
+          "estimated_impact": {
+            "time_factor": 0.7,
+            "quality_level": "estándar",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-06T04:36:02.499344"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Impresora Prueba",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-06T04:36:06.030490"
+        },
+        "stl_processing": {
+          "task_id": "task_bfe4a02d-ffef-4560-88f9-f5817732088b",
+          "successful": [
+            {
+              "filename": "Cover_USB.stl",
+              "success": true,
+              "rotated": true,
+              "rotation_info": {
+                "applied": true,
+                "degrees": [
+                  180.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 22.75651071393782,
+                "contact_area": 279.755987696896,
+                "original_area": 227.89503063411235
+              },
+              "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_043555/gcode_temp_1_20251006_043555_Cover_USB.gcode",
+              "gcode_size": 51068,
+              "error": null,
+              "processing_time_seconds": 0.7087352275848389
+            },
+            {
+              "filename": "back_frame.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  180.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 3.2462703888593882,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_043555/gcode_temp_1_20251006_043555_back_frame.gcode",
+              "gcode_size": 2839031,
+              "error": null,
+              "processing_time_seconds": 0.6770918369293213
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 2,
+            "successful": 2,
+            "failed": 0
+          },
+          "completed_at": "2025-10-06T04:37:49.219728"
+        },
+        "confirmed_job_id": "a1746400-8fc4-432a-87e9-97ec0fe9fc67",
+        "final_status": "job_sent_to_printer",
+        "completed_at": "2025-10-06T04:38:14.546661"
+      },
+      "printer_response": {
+        "success": true,
+        "printer_job_id": "printer_temp_1_20251006_043555",
+        "message": "Impresión iniciada. 2 archivo(s) subido(s), 1 pendiente(s)",
+        "printer_id": "printer-test-1",
+        "queue_position": 40,
+        "moonraker_url": "http://10.10.10.71:7126",
+        "current_printing": "kybercore_temp_1_20251006_043555_gcode_temp_1_20251006_043555_Cover_USB.gcode",
+        "uploaded_files": [
+          "kybercore_temp_1_20251006_043555_gcode_temp_1_20251006_043555_Cover_USB.gcode",
+          "kybercore_temp_1_20251006_043555_gcode_temp_1_20251006_043555_back_frame.gcode"
+        ],
+        "pending_files": [
+          "kybercore_temp_1_20251006_043555_gcode_temp_1_20251006_043555_back_frame.gcode"
+        ],
+        "failed_uploads": [],
+        "estimated_completion": "2025-10-06T04:38:14.546621"
+      },
+      "completed_at": "2025-10-06T04:38:14.566823"
+    },
+    {
+      "job_id": "103f2b60-6971-4b23-be52-fe2d0f79ddc7",
+      "status": "started",
+      "session_data": {
+        "project_id": "1",
+        "current_step": "monitoring",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing",
+          "confirmation"
+        ],
+        "created_at": "2025-10-06T04:39:37.116034",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Cover_USB.stl",
+            "back_frame.stl"
+          ],
+          "total_pieces": 2,
+          "total_estimated_filament_grams": 24.6,
+          "total_estimated_time_hours": 1.5,
+          "completed_at": "2025-10-06T04:39:37.116086"
+        },
+        "updated_at": "2025-10-06T04:39:58.264524",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-06T04:39:40.569982"
+        },
+        "production_mode": {
+          "mode": "prototype",
+          "priority": "speed",
+          "settings": {
+            "layer_height": 0.3,
+            "infill_density": 15,
+            "print_speed": 80,
+            "quality_preset": "draft"
+          },
+          "estimated_impact": {
+            "time_factor": 0.7,
+            "quality_level": "estándar",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-06T04:39:45.063773"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Impresora Prueba",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-06T04:39:49.020598"
+        },
+        "stl_processing": {
+          "task_id": "task_8fd97bbe-1885-45e1-a57a-1d515ca8dbdb",
+          "successful": [
+            {
+              "filename": "Cover_USB.stl",
+              "success": true,
+              "rotated": true,
+              "rotation_info": {
+                "applied": true,
+                "degrees": [
+                  180.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 22.75651071393782,
+                "contact_area": 279.755987696896,
+                "original_area": 227.89503063411235
+              },
+              "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_043937/gcode_temp_1_20251006_043937_Cover_USB.gcode",
+              "gcode_size": 51068,
+              "error": null,
+              "processing_time_seconds": 0.9520459175109863
+            },
+            {
+              "filename": "back_frame.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  180.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 3.2462703888593882,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_043937/gcode_temp_1_20251006_043937_back_frame.gcode",
+              "gcode_size": 2839031,
+              "error": null,
+              "processing_time_seconds": 0.9678127765655518
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 2,
+            "successful": 2,
+            "failed": 0
+          },
+          "completed_at": "2025-10-06T04:39:58.261920"
+        },
+        "confirmed_job_id": "103f2b60-6971-4b23-be52-fe2d0f79ddc7",
+        "final_status": "job_sent_to_printer",
+        "completed_at": "2025-10-06T04:40:32.995959"
+      },
+      "printer_response": {
+        "success": true,
+        "printer_job_id": "printer_temp_1_20251006_043937",
+        "message": "Impresión iniciada. 2 archivo(s) subido(s), 1 pendiente(s)",
+        "printer_id": "printer-test-1",
+        "queue_position": 42,
+        "moonraker_url": "http://10.10.10.71:7126",
+        "current_printing": "kybercore_temp_1_20251006_043937_gcode_temp_1_20251006_043937_Cover_USB.gcode",
+        "uploaded_files": [
+          "kybercore_temp_1_20251006_043937_gcode_temp_1_20251006_043937_Cover_USB.gcode",
+          "kybercore_temp_1_20251006_043937_gcode_temp_1_20251006_043937_back_frame.gcode"
+        ],
+        "pending_files": [
+          "kybercore_temp_1_20251006_043937_gcode_temp_1_20251006_043937_back_frame.gcode"
+        ],
+        "failed_uploads": [],
+        "estimated_completion": "2025-10-06T04:40:32.995927"
+      },
+      "completed_at": "2025-10-06T04:40:33.012810"
+    },
+    {
+      "job_id": "b188a3a8-5afc-4bb8-83dd-956ab5d18aa5",
+      "status": "started",
+      "session_data": {
+        "project_id": "1",
+        "current_step": "monitoring",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing",
+          "confirmation"
+        ],
+        "created_at": "2025-10-06T04:43:37.811051",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Cover_USB.stl",
+            "back_frame.stl"
+          ],
+          "total_pieces": 2,
+          "total_estimated_filament_grams": 24.6,
+          "total_estimated_time_hours": 1.5,
+          "completed_at": "2025-10-06T04:43:37.811114"
+        },
+        "updated_at": "2025-10-06T04:43:59.123055",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-06T04:43:41.742613"
+        },
+        "production_mode": {
+          "mode": "prototype",
+          "priority": "speed",
+          "settings": {
+            "layer_height": 0.3,
+            "infill_density": 15,
+            "print_speed": 80,
+            "quality_preset": "draft"
+          },
+          "estimated_impact": {
+            "time_factor": 0.7,
+            "quality_level": "estándar",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-06T04:43:46.088810"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Impresora Prueba",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-06T04:43:49.339932"
+        },
+        "stl_processing": {
+          "task_id": "task_b144e2e9-0377-4fb8-bb9b-c0eabfa7c583",
+          "successful": [
+            {
+              "filename": "Cover_USB.stl",
+              "success": true,
+              "rotated": true,
+              "rotation_info": {
+                "applied": true,
+                "degrees": [
+                  180.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 22.75651071393782,
+                "contact_area": 279.755987696896,
+                "original_area": 227.89503063411235
+              },
+              "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_044337/gcode_temp_1_20251006_044337_Cover_USB.gcode",
+              "gcode_size": 51068,
+              "error": null,
+              "processing_time_seconds": 0.2269282341003418
+            },
+            {
+              "filename": "back_frame.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  180.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 3.2462703888593882,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": "/tmp/kybercore_processing/temp_1_20251006_044337/gcode_temp_1_20251006_044337_back_frame.gcode",
+              "gcode_size": 2839031,
+              "error": null,
+              "processing_time_seconds": 0.7027091979980469
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 2,
+            "successful": 2,
+            "failed": 0
+          },
+          "completed_at": "2025-10-06T04:43:59.120652"
+        },
+        "confirmed_job_id": "b188a3a8-5afc-4bb8-83dd-956ab5d18aa5",
+        "final_status": "job_sent_to_printer",
+        "completed_at": "2025-10-06T04:44:47.480550"
+      },
+      "printer_response": {
+        "success": true,
+        "printer_job_id": "printer_temp_1_20251006_044337",
+        "message": "Impresión iniciada. 2 archivo(s) subido(s), 1 pendiente(s)",
+        "printer_id": "printer-test-1",
+        "queue_position": 44,
+        "moonraker_url": "http://10.10.10.71:7126",
+        "current_printing": "kybercore_temp_1_20251006_044337_gcode_temp_1_20251006_044337_Cover_USB.gcode",
+        "uploaded_files": [
+          "kybercore_temp_1_20251006_044337_gcode_temp_1_20251006_044337_Cover_USB.gcode",
+          "kybercore_temp_1_20251006_044337_gcode_temp_1_20251006_044337_back_frame.gcode"
+        ],
+        "pending_files": [
+          "kybercore_temp_1_20251006_044337_gcode_temp_1_20251006_044337_back_frame.gcode"
+        ],
+        "failed_uploads": [],
+        "estimated_completion": "2025-10-06T04:44:47.480524"
+      },
+      "completed_at": "2025-10-06T04:44:47.499778"
     }
   ],
   "estadisticas": {

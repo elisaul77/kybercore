@@ -87,10 +87,29 @@ class TaskStatus(BaseModel):
         }
 
 
+class PlatingConfig(BaseModel):
+    """Configuración para auto-plating (organización automática en el plato)"""
+    enabled: bool = False
+    algorithm: str = 'bin-packing'  # 'bin-packing', 'grid', o 'spiral'
+    spacing: float = 3.0  # mm de separación entre piezas
+    optimize_rotation: bool = True  # Rotar piezas para mejor encaje
+    
+    class Config:
+        schema_extra = {
+            "example": {
+                "enabled": True,
+                "algorithm": "bin-packing",
+                "spacing": 3.0,
+                "optimize_rotation": True
+            }
+        }
+
+
 class ProcessWithRotationRequest(BaseModel):
     """Request para el endpoint unificado de procesamiento"""
     session_id: str
     rotation_config: Dict[str, Any]
+    plating_config: Optional[PlatingConfig] = PlatingConfig()  # 🆕 NUEVO
     profile_config: Dict[str, Any]
     
     class Config:

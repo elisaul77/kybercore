@@ -1012,13 +1012,20 @@ async def process_with_rotation(
         logger.info(
             f"📦 Iniciando tarea: task_id={task_id}, "
             f"archivos={len(selected_pieces)}, "
-            f"rotación={'habilitada' if req.rotation_config.get('enabled') else 'deshabilitada'}"
+            f"rotación={'habilitada' if req.rotation_config.get('enabled') else 'deshabilitada'}, "
+            f"plating={'habilitado' if req.plating_config and req.plating_config.enabled else 'deshabilitado'}"
         )
         
         # Debug: ver qué tipos de datos estamos pasando
         logger.debug(f"   rotation_config type: {type(req.rotation_config)}")
         logger.debug(f"   rotation_config value: {req.rotation_config}")
         logger.debug(f"   profile_config type: {type(req.profile_config)}")
+        logger.debug(f"   plating_config: {req.plating_config}")
+        
+        # Convertir plating_config a dict si existe
+        plating_config_dict = None
+        if req.plating_config:
+            plating_config_dict = req.plating_config.dict()
         
         # Iniciar procesamiento en background
         background_tasks.add_task(
@@ -1027,7 +1034,8 @@ async def process_with_rotation(
             session_id=req.session_id,
             files=selected_pieces,
             rotation_config=req.rotation_config,
-            profile_config=req.profile_config
+            profile_config=req.profile_config,
+            plating_config=plating_config_dict
         )
         
         return JSONResponse(
@@ -1354,12 +1362,92 @@ endfacet
 endsolid cube"""
     return stl_content.encode('utf-8')
 
-def find_stl_file_path(project, filename):
-    """Busca la ruta del archivo STL en el proyecto"""
-    project_folder = project.get("carpeta", "")
-    if project_folder:
-        # Los archivos STL están en la subcarpeta 'files' dentro de la carpeta del proyecto
-        return f"/app/{project_folder}/files/{filename}"
+def find_stl_file_path(project_or_filename, filename_or_session=None):
+    """
+    Busca la ruta del archivo STL en el proyecto.
+    
+    Puede usarse de dos formas:
+    1. find_stl_file_path(project_dict, filename) - Uso original con diccionario de proyecto
+    2. find_stl_file_path(filename, session_id) - Uso nuevo para buscar por session_id
+    
+    Args:
+        project_or_filename: Diccionario de proyecto O nombre de archivo STL
+        filename_or_session: Nombre de archivo O session_id
+        
+    Returns:
+        str: Ruta absoluta del archivo STL o None si no se encuentra
+    """
+    # Caso 1: Uso original - find_stl_file_path(project_dict, filename)
+    if isinstance(project_or_filename, dict):
+        project = project_or_filename
+        filename = filename_or_session
+        project_folder = project.get("carpeta", "")
+        if project_folder:
+            # Los archivos STL están en la subcarpeta 'files' dentro de la carpeta del proyecto
+            return f"/app/{project_folder}/files/{filename}"
+        return None
+    
+    # Caso 2: Uso nuevo - find_stl_file_path(filename, session_id)
+    elif isinstance(project_or_filename, str) and filename_or_session:
+        filename = project_or_filename
+        session_id = filename_or_session
+        
+        # Cargar la sesión para obtener el project_id
+        session_data = load_wizard_session(session_id)
+        if not session_data:
+            logger.warning(f"⚠️  No se encontró sesión: {session_id}")
+            return None
+        
+        project_id = session_data.get("project_id")
+        if not project_id:
+            logger.warning(f"⚠️  Sesión {session_id} no tiene project_id")
+            return None
+        
+        # Cargar el proyecto para obtener la carpeta
+        from pathlib import Path
+        proyectos_path = Path("/app/base_datos/proyectos.json")
+        
+        if not proyectos_path.exists():
+            logger.warning(f"⚠️  No se encontró base de datos de proyectos")
+            return None
+        
+        try:
+            with open(proyectos_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            # Extraer la lista de proyectos del JSON (estructura: {estadisticas: {...}, proyectos: [...]})
+            proyectos = data.get('proyectos', [])
+            
+            if not proyectos:
+                logger.warning(f"⚠️  No hay proyectos en la base de datos")
+                return None
+            
+            # Convertir project_id a int si es string (puede venir como "1" o 1)
+            try:
+                project_id_int = int(project_id)
+            except (ValueError, TypeError):
+                project_id_int = project_id
+            
+            # Buscar el proyecto por ID (comparar tanto int como string)
+            project = next(
+                (p for p in proyectos if p.get('id') == project_id or p.get('id') == project_id_int),
+                None
+            )
+            
+            if not project:
+                logger.warning(f"⚠️  No se encontró proyecto con ID: {project_id} (buscado como {project_id_int})")
+                return None
+            
+            project_folder = project.get("carpeta", "")
+            if project_folder:
+                stl_path = f"/app/{project_folder}/files/{filename}"
+                logger.debug(f"🔍 Ruta STL encontrada: {stl_path}")
+                return stl_path
+            
+        except Exception as e:
+            logger.error(f"❌ Error buscando proyecto: {e}", exc_info=True)
+            return None
+    
     return None
 
 async def process_single_stl(filename, file_path, config, session_id=None):
