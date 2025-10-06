@@ -2849,6 +2849,36 @@ async function generatePrinterStatusHTML() {
                     </button>
                 </div>
             `;
+        } else if (status.is_startup) {
+            // Impresora iniciándose
+            bgColor = 'bg-blue-50';
+            borderColor = 'border-blue-400';
+            iconColor = 'text-blue-400';
+            icon = '⏳';
+            statusBadge = '<span class="px-2 py-1 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">INICIANDO</span>';
+            actionButtons = `
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <button id="btn-retry-${printerId}" class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                        🔄 Actualizar Estado
+                    </button>
+                </div>
+                <div class="mt-3 text-center">
+                    <p class="text-xs text-blue-700">⏳ La impresora se está iniciando. Actualiza el estado en unos momentos.</p>
+                </div>
+            `;
+            
+            // Configurar el botón después de que se renderice
+            setTimeout(() => {
+                const btn = document.getElementById('btn-retry-' + printerId);
+                if (btn) {
+                    btn.addEventListener('click', async () => {
+                        console.log('🔄 Click en actualizar estado para:', printerId);
+                        await retryPrinterConnection(printerId);
+                    });
+                } else {
+                    console.warn('⚠️ No se encontró el botón btn-retry-' + printerId);
+                }
+            }, 100);
         } else if (status.is_printing) {
             // Impresora ocupada
             bgColor = 'bg-yellow-50';
@@ -3268,27 +3298,25 @@ async function attemptRecoveryFlow(printerId, statusResult) {
             
             if (result.success) {
                 updateStep('final', '✅', '¡Recuperación exitosa!', 'completed');
-                showToast('Recuperación Exitosa', 'La impresora está lista para imprimir', 'success');
                 
-                // Esperar un momento y cerrar
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                // Esperar un momento antes de cerrar
+                await new Promise(resolve => setTimeout(resolve, 1500));
                 if (!cancelled) {
                     document.body.removeChild(recoveryDialog);
                 }
                 
                 return true;
             } else {
-                updateStep('final', '❌', result.message || 'Recuperación fallida', 'failed');
+                updateStep('final', '⚠️', result.message || 'Recuperación completada con advertencias', 'warning');
                 
-                // Mostrar botón de reintentar
-                retryBtn.classList.remove('hidden');
-                retryBtn.addEventListener('click', async () => {
+                // Cerrar automáticamente después de un momento
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                if (!cancelled) {
                     document.body.removeChild(recoveryDialog);
-                    return await attemptRecoveryFlow(printerId, statusResult);
-                });
+                }
                 
-                showToast('Recuperación Fallida', result.message || 'No se pudo recuperar la impresora', 'error');
-                return false;
+                // Aún retornar true para recargar el estado
+                return true;
             }
             
         } catch (error) {
@@ -3316,15 +3344,44 @@ async function attemptRecoveryFlow(printerId, statusResult) {
 async function retryPrinterConnection(printerId) {
     console.log('🔄 Reintentando conexión con impresora:', printerId);
     
-    // Recargar el paso de confirmación para actualizar el estado
-    const wizardContent = document.getElementById('wizard-content');
-    if (wizardContent) {
-        wizardContent.innerHTML = '<div class="flex items-center justify-center p-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div><span class="ml-3 text-gray-600">Verificando estado...</span></div>';
+    try {
+        // Buscar el contenedor correcto del wizard
+        const wizardContainer = document.getElementById('print-flow-wizard');
+        if (!wizardContainer) {
+            console.error('❌ No se encontró print-flow-wizard');
+            // Intentar recargar todo el paso
+            await loadPrintFlowStep(null, null, 'confirmation', {
+                completed_steps: ['piece_selection', 'material_selection', 'production_mode', 'printer_assignment', 'stl_processing', 'validation'],
+                data: {}
+            });
+            return;
+        }
         
-        setTimeout(async () => {
-            const html = await loadConfirmationStep();
-            wizardContent.innerHTML = html;
-        }, 500);
+        console.log('📦 Wizard container encontrado, recargando paso...');
+        
+        // Esperar un poco para dar tiempo a que Klipper se estabilice si estaba en startup
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Recargar todo el paso para asegurar que se actualice correctamente
+        await loadPrintFlowStep(null, null, 'confirmation', {
+            completed_steps: ['piece_selection', 'material_selection', 'production_mode', 'printer_assignment', 'stl_processing', 'validation'],
+            data: {}
+        });
+        
+        console.log('✅ Estado actualizado correctamente');
+    } catch (error) {
+        console.error('❌ Error en retryPrinterConnection:', error);
+        const wizardContainer = document.getElementById('print-flow-wizard');
+        if (wizardContainer) {
+            wizardContainer.innerHTML = `
+                <div class="text-center p-8">
+                    <p class="text-red-600 mb-4">❌ Error al actualizar: ${error.message}</p>
+                    <button onclick="window.retryPrinterConnection('${printerId}')" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        🔄 Reintentar
+                    </button>
+                </div>
+            `;
+        }
     }
 }
 
@@ -3333,10 +3390,10 @@ async function attemptAutomaticRecovery(printerId) {
     
     const success = await attemptRecoveryFlow(printerId, window.currentPrinterStatus);
     
-    if (success) {
-        // Si la recuperación fue exitosa, recargar el paso
-        await retryPrinterConnection(printerId);
-    }
+    // Siempre recargar el estado después del intento de recuperación
+    // para mostrar el estado actualizado de la impresora
+    console.log('🔄 Recargando estado de impresora después de recuperación...');
+    await retryPrinterConnection(printerId);
 }
 
 async function saveJobForLater() {

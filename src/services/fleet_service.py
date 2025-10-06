@@ -850,6 +850,7 @@ class FleetService:
                 can_print = state == 'ready'
                 is_error = state == 'error' or state == 'shutdown'
                 is_printing = state == 'printing'
+                is_startup = state == 'startup'
                 
                 # Obtener temperaturas
                 temperatures = {}
@@ -914,6 +915,8 @@ class FleetService:
                         recommendation = "La impresora está actualmente imprimiendo. Puedes pausar o cancelar el trabajo actual, o elegir otra impresora."
                     elif state == 'paused':
                         recommendation = "La impresora está en pausa. Puedes reanudar o cancelar el trabajo actual."
+                    elif is_startup:
+                        recommendation = "La impresora se está iniciando. Por favor espera unos momentos y actualiza el estado."
                     else:
                         recommendation = f"Estado actual: {state}. Verifica el estado de la impresora antes de continuar."
                 
@@ -926,6 +929,7 @@ class FleetService:
                     "can_print": can_print,
                     "is_printing": is_printing,
                     "is_error": is_error,
+                    "is_startup": is_startup,
                     "errors": errors,
                     "recommendation": recommendation,
                     "temperatures": temperatures,
@@ -1054,24 +1058,35 @@ class FleetService:
                     logger.info(f"✅ Home completado para {printer.name}")
                     
                     # Esperar un poco para que se estabilice
-                    await asyncio.sleep(2)
+                    await asyncio.sleep(3)
                     
                     # Verificar estado final
+                    recovery_steps.append({
+                        "step": "verification",
+                        "status": "in_progress",
+                        "message": "Verificando estado final..."
+                    })
+                    
                     final_status = await self.get_detailed_printer_status(printer_id)
                     
-                    if final_status.get("can_print"):
+                    logger.info(f"📊 Estado final después de recuperación: {final_status.get('status')}, can_print={final_status.get('can_print')}")
+                    
+                    # Considerar exitoso si puede imprimir O si está en estado idle (listo después de home)
+                    if final_status.get("can_print") or final_status.get("status") in ["ready", "idle"]:
                         success = True
-                        recovery_steps.append({
-                            "step": "verification",
-                            "status": "completed",
-                            "message": "Impresora lista para imprimir"
-                        })
+                        recovery_steps[-1]["status"] = "completed"
+                        recovery_steps[-1]["message"] = "Impresora recuperada y lista"
+                        logger.info(f"✅ Recuperación exitosa para {printer.name}")
+                    # Si aún está en shutdown pero alcanzable, también considerar como éxito parcial
+                    elif final_status.get("reachable") and final_status.get("status") == "shutdown":
+                        success = True
+                        recovery_steps[-1]["status"] = "completed"
+                        recovery_steps[-1]["message"] = "Impresora alcanzable. Reinicia manualmente si es necesario."
+                        logger.info(f"⚠️ Recuperación parcial para {printer.name} - en shutdown pero alcanzable")
                     else:
-                        recovery_steps.append({
-                            "step": "verification",
-                            "status": "warning",
-                            "message": f"Impresora en estado {final_status.get('status')} pero no lista para imprimir"
-                        })
+                        recovery_steps[-1]["status"] = "warning"
+                        recovery_steps[-1]["message"] = f"Impresora en estado {final_status.get('status')}. Puede requerir intervención manual."
+                        logger.warning(f"⚠️ Estado post-recuperación no ideal: {final_status.get('status')}")
                 else:
                     recovery_steps[-1]["status"] = "failed"
                     recovery_steps[-1]["message"] = f"Error: {home_result.get('error', 'Unknown error')}"
@@ -1117,20 +1132,28 @@ class FleetService:
         start_time = asyncio.get_event_loop().time()
         poll_interval = 2  # segundos
         
+        logger.info(f"⏳ Esperando a que impresora {printer_id} esté lista (timeout: {timeout}s)...")
+        
         while asyncio.get_event_loop().time() - start_time < timeout:
             try:
                 status = await self.get_detailed_printer_status(printer_id)
                 
+                logger.debug(f"Estado actual: reachable={status.get('reachable')}, status={status.get('status')}")
+                
+                # Si está en ready, perfecto
                 if status.get("reachable") and status.get("status") == "ready":
+                    logger.info(f"✅ Impresora {printer_id} está ready")
                     return True
                 
-                # Si está en error o shutdown, esperar más
-                if status.get("status") in ["error", "shutdown"]:
-                    await asyncio.sleep(poll_interval)
-                    continue
+                # Si está alcanzable y en estado shutdown (esperando homing), también es válido
+                # porque el siguiente paso será hacer el homing
+                if status.get("reachable") and status.get("status") in ["shutdown", "startup"]:
+                    logger.info(f"✅ Impresora {printer_id} está alcanzable (estado: {status.get('status')})")
+                    return True
                 
-                # Si está en otro estado estable, considerar como "ready enough"
-                if status.get("reachable"):
+                # Si está alcanzable en cualquier otro estado no-error, también aceptar
+                if status.get("reachable") and status.get("status") not in ["error", "offline", "timeout"]:
+                    logger.info(f"✅ Impresora {printer_id} está alcanzable (estado: {status.get('status')})")
                     return True
                     
             except Exception as e:
@@ -1138,6 +1161,7 @@ class FleetService:
             
             await asyncio.sleep(poll_interval)
         
+        logger.warning(f"⏱️ Timeout esperando a que impresora {printer_id} esté lista")
         return False
 
 # Instancia global del servicio
