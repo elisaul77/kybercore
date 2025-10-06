@@ -48,6 +48,14 @@ class ProjectModal {
     open(projectData) {
         if (!this.modal) return;
 
+        // Verificar si es modo import
+        if (projectData.mode === 'import') {
+            this.showImportForm();
+            this.modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            return;
+        }
+
         // Establecer título
         if (this.modalTitle && projectData.title) {
             this.modalTitle.textContent = projectData.title;
@@ -231,9 +239,175 @@ class ProjectModal {
 
         return statusList.map(item => `<p>• ${item}</p>`).join('');
     }
+
+    showImportForm() {
+        // Configurar título para modo import
+        if (this.modalTitle) {
+            this.modalTitle.textContent = '📥 Importar Proyecto desde Thingiverse';
+        }
+
+        // Generar formulario de importación
+        const importFormHTML = `
+            <div class="max-w-2xl mx-auto p-6">
+                <div class="space-y-6">
+                    <!-- Descripción -->
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+                        <p class="text-sm text-blue-700">
+                            <strong>💡 Importar desde Thingiverse:</strong> Ingresa la URL de un proyecto de Thingiverse 
+                            para descargarlo automáticamente y agregarlo a tu galería.
+                        </p>
+                    </div>
+
+                    <!-- Campo URL -->
+                    <div>
+                        <label for="thingiverse-url" class="block text-sm font-medium text-gray-700 mb-2">
+                            🔗 URL del Proyecto de Thingiverse
+                        </label>
+                        <input 
+                            type="text" 
+                            id="thingiverse-url" 
+                            name="thingiverse-url"
+                            placeholder="https://www.thingiverse.com/thing:1234567"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <p class="mt-2 text-sm text-gray-500">
+                            Ejemplo: https://www.thingiverse.com/thing:1234567
+                        </p>
+                    </div>
+
+                    <!-- Opciones adicionales -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="font-medium text-gray-900 mb-3">⚙️ Opciones de Importación</h4>
+                        
+                        <div class="space-y-3">
+                            <label class="flex items-center">
+                                <input 
+                                    type="checkbox" 
+                                    id="auto-analyze" 
+                                    checked
+                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                />
+                                <span class="ml-2 text-sm text-gray-700">Analizar piezas automáticamente</span>
+                            </label>
+
+                            <label class="flex items-center">
+                                <input 
+                                    type="checkbox" 
+                                    id="enable-nesting" 
+                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                />
+                                <span class="ml-2 text-sm text-gray-700">🔬 Habilitar Nesting 3D Avanzado (Experimental)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="flex justify-end gap-3 pt-4 border-t">
+                        <button 
+                            onclick="window.projectModal.close()"
+                            class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                        >
+                            Cancelar
+                        </button>
+                        <button 
+                            onclick="handleThingiverseImport()"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                            📥 Importar Proyecto
+                        </button>
+                    </div>
+
+                    <!-- Estado de importación -->
+                    <div id="import-status" class="hidden">
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                            <p class="text-sm text-yellow-700">
+                                ⏳ Importando proyecto... Por favor espera.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        if (this.modalContent) {
+            this.modalContent.innerHTML = importFormHTML;
+        }
+    }
 }
 
 // Funciones globales para acciones del modal
+
+// Función para manejar la importación desde Thingiverse
+async function handleThingiverseImport() {
+    const urlInput = document.getElementById('thingiverse-url');
+    const autoAnalyze = document.getElementById('auto-analyze');
+    const enableNesting = document.getElementById('enable-nesting');
+    const statusDiv = document.getElementById('import-status');
+    
+    if (!urlInput || !urlInput.value.trim()) {
+        showToast('Atención', 'Por favor ingresa una URL válida', 'warning');
+        return;
+    }
+
+    const url = urlInput.value.trim();
+    
+    // Validar formato de URL de Thingiverse
+    if (!url.includes('thingiverse.com/thing:')) {
+        showToast('Error', 'URL no válida. Debe ser una URL de Thingiverse (ejemplo: https://www.thingiverse.com/thing:1234567)', 'error');
+        return;
+    }
+
+    try {
+        // Mostrar estado de carga
+        if (statusDiv) {
+            statusDiv.classList.remove('hidden');
+        }
+        urlInput.disabled = true;
+
+        showToast('Importando', 'Descargando proyecto desde Thingiverse...', 'info');
+
+        // Llamar al endpoint de importación
+        const response = await fetch('/api/projects/import-thingiverse', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                url: url,
+                auto_analyze: autoAnalyze ? autoAnalyze.checked : true,
+                enable_nesting: enableNesting ? enableNesting.checked : false
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Error al importar el proyecto');
+        }
+
+        const data = await response.json();
+        
+        showToast('Éxito', `Proyecto "${data.name}" importado correctamente con ${data.stl_count} archivos STL`, 'success');
+        
+        // Cerrar modal
+        window.projectModal.close();
+        
+        // Recargar galería
+        if (typeof loadGallery === 'function') {
+            await loadGallery();
+        } else if (typeof location !== 'undefined') {
+            location.reload();
+        }
+
+    } catch (error) {
+        console.error('Error al importar desde Thingiverse:', error);
+        showToast('Error', error.message || 'No se pudo importar el proyecto', 'error');
+        
+        if (statusDiv) {
+            statusDiv.classList.add('hidden');
+        }
+        urlInput.disabled = false;
+    }
+}
 async function printProject(projectId) {
     try {
         showToast('Impresión', `Iniciando flujo de impresión para proyecto ${projectId}...`, 'info');

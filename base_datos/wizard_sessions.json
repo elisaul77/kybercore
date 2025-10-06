@@ -15623,6 +15623,346 @@
         },
         "completed_at": "2025-10-06T17:17:15.774092"
       }
+    },
+    "temp_10_20251006_172709": {
+      "project_id": "10",
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-06T17:27:09.325119",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Roof.stl",
+          "Columns.stl"
+        ],
+        "total_pieces": 2,
+        "total_estimated_filament_grams": 24.6,
+        "total_estimated_time_hours": 1.5,
+        "completed_at": "2025-10-06T17:27:09.325196"
+      },
+      "updated_at": "2025-10-06T17:28:20.395211",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-06T17:27:12.232235"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-06T17:27:17.033737"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-06T17:27:20.991764"
+      },
+      "stl_processing": {
+        "task_id": "task_2a52e7af-1409-4547-be8c-8734298e829d",
+        "successful": [
+          {
+            "filename": "Roof.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": {
+              "applied": false,
+              "degrees": [
+                0.0,
+                0.0,
+                240.0
+              ],
+              "improvement": 1.0271987051076766e-13,
+              "contact_area": 0.0,
+              "original_area": 0.0
+            },
+            "gcode_path": "/tmp/kybercore_processing/temp_10_20251006_172709/gcode_temp_10_20251006_172709_Roof.gcode",
+            "gcode_size": 47938445,
+            "error": null,
+            "processing_time_seconds": 23.94861888885498
+          },
+          {
+            "filename": "Columns.stl",
+            "success": true,
+            "rotated": true,
+            "rotation_info": {
+              "applied": true,
+              "degrees": [
+                0.0,
+                180.0,
+                0.0
+              ],
+              "improvement": 444.97943167790106,
+              "contact_area": 4353.443377904386,
+              "original_area": 798.8270978412629
+            },
+            "gcode_path": "/tmp/kybercore_processing/temp_10_20251006_172709/gcode_temp_10_20251006_172709_Columns.gcode",
+            "gcode_size": 24968637,
+            "error": null,
+            "processing_time_seconds": 7.732603311538696
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 2,
+          "successful": 2,
+          "failed": 0
+        },
+        "completed_at": "2025-10-06T17:28:20.390363"
+      }
+    },
+    "temp_9_20251006_173433": {
+      "project_id": "9",
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-06T17:34:33.404473",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Bulb_Lattice.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-06T17:34:33.404505"
+      },
+      "updated_at": "2025-10-06T17:35:20.968683",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-06T17:34:37.525303"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-06T17:34:42.200870"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-06T17:34:46.677219"
+      },
+      "stl_processing": {
+        "task_id": "task_e4809311-a27c-4f7c-9cd6-47e97ef481d9",
+        "successful": [],
+        "failed": [
+          {
+            "filename": "Bulb_Lattice.stl",
+            "success": false,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": null,
+            "gcode_size": null,
+            "error": "Error leyendo archivo: Archivo STL no encontrado: Bulb_Lattice.stl",
+            "processing_time_seconds": null
+          }
+        ],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 0,
+          "failed": 1
+        },
+        "completed_at": "2025-10-06T17:35:20.964460"
+      }
+    },
+    "temp_9_20251006_173605": {
+      "project_id": "9",
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-06T17:36:05.204159",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Bulb_Lattice.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-06T17:36:05.204194"
+      },
+      "updated_at": "2025-10-06T17:36:27.834815",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-06T17:36:08.751786"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-06T17:36:12.813577"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-06T17:36:15.836177"
+      },
+      "stl_processing": {
+        "task_id": "task_a5da890c-7ff7-4891-a243-ff24cf07e83d",
+        "successful": [],
+        "failed": [
+          {
+            "filename": "Bulb_Lattice.stl",
+            "success": false,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": null,
+            "gcode_size": null,
+            "error": "Error leyendo archivo: Archivo STL no encontrado: Bulb_Lattice.stl",
+            "processing_time_seconds": null
+          }
+        ],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 0,
+          "failed": 1
+        },
+        "completed_at": "2025-10-06T17:36:27.831549"
+      }
     }
   },
   "metadata": {
