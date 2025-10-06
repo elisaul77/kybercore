@@ -8,6 +8,12 @@ import shutil
 from pathlib import Path
 from datetime import datetime
 import tempfile
+import logging
+
+# Importar servicio de extracción de imágenes de PDFs
+from src.services.pdf_image_extractor import process_project_pdfs
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 templates = Jinja2Templates(directory="src/web/templates")
@@ -328,6 +334,12 @@ async def create_project(
         with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
             extracted_files = []
             image_files = []
+            pdf_files = []
+            
+            # 🔍 Listar todos los archivos del ZIP para debugging
+            logger.info(f"📦 Contenido del ZIP ({len(zip_ref.filelist)} elementos):")
+            for idx, file_info in enumerate(zip_ref.filelist):
+                logger.info(f"  [{idx+1}] {'DIR' if file_info.is_dir() else 'FILE'}: {file_info.filename} ({file_info.file_size} bytes)")
             
             for file_info in zip_ref.filelist:
                 if file_info.is_dir():
@@ -344,22 +356,74 @@ async def create_project(
                     with zip_ref.open(file_info) as source, open(dest_path, "wb") as target:
                         shutil.copyfileobj(source, target)
                     image_files.append(filename)
-                    
-                elif file_ext in ['stl', 'obj', 'ply', 'gcode', 'gco', 'txt', 'md', 'json']:
+                
+                elif file_ext == 'pdf':
+                    # Guardar PDFs en el directorio files para procesarlos después
                     dest_path = project_path / "files" / filename
                     with zip_ref.open(file_info) as source, open(dest_path, "wb") as target:
                         shutil.copyfileobj(source, target)
+                    pdf_files.append(filename)
                     extracted_files.append({
                         "nombre": filename,
-                        "tipo": "STL" if file_ext == 'stl' else "G-code" if file_ext in ['gcode', 'gco'] else "Archivo",
+                        "tipo": "PDF",
+                        "tamano": f"{file_info.file_size / 1024:.2f} KB" if file_info.file_size > 0 else "0 KB"
+                    })
+                    
+                elif file_ext in ['stl', '3mf', 'obj', 'ply', 'gcode', 'gco', 'txt', 'md', 'json']:
+                    dest_path = project_path / "files" / filename
+                    with zip_ref.open(file_info) as source, open(dest_path, "wb") as target:
+                        shutil.copyfileobj(source, target)
+                    
+                    # Determinar el tipo de archivo
+                    if file_ext in ['stl', '3mf', 'obj', 'ply']:
+                        tipo = "3MF" if file_ext == '3mf' else "STL" if file_ext == 'stl' else "3D Model"
+                    elif file_ext in ['gcode', 'gco']:
+                        tipo = "G-code"
+                    else:
+                        tipo = "Archivo"
+                    
+                    extracted_files.append({
+                        "nombre": filename,
+                        "tipo": tipo,
                         "tamano": f"{file_info.file_size / 1024:.2f} KB" if file_info.file_size > 0 else "0 KB"
                     })
         
+        # � Resumen de extracción
+        stl_count = len([f for f in extracted_files if f['tipo'] in ['STL', '3D Model', '3MF']])
+        logger.info(f"📊 Resumen de extracción:")
+        logger.info(f"   - {stl_count} archivos 3D (STL/OBJ/PLY/3MF)")
+        logger.info(f"   - {len(image_files)} imágenes")
+        logger.info(f"   - {len(pdf_files)} archivos PDF")
+        logger.info(f"   - {len(extracted_files)} archivos totales")
+        
+        if stl_count == 0:
+            logger.warning(f"⚠️ ¡ATENCIÓN! No se encontraron archivos 3D en el ZIP.")
+            logger.warning(f"⚠️ Verifica que hayas descargado los archivos MODEL FILES desde Printables, no solo el PDF de instrucciones.")
+        
+        # �📄 Procesar PDFs para extraer imágenes si no hay imágenes directas
+        if not image_files and pdf_files:
+            logger.info(f"📄 No se encontraron imágenes directas. Procesando {len(pdf_files)} PDFs...")
+            try:
+                extracted_pdf_images = process_project_pdfs(
+                    project_path / "files",
+                    project_path / "images"
+                )
+                if extracted_pdf_images:
+                    # Obtener solo los nombres de archivo de las rutas completas
+                    for img_path in extracted_pdf_images:
+                        img_filename = os.path.basename(img_path)
+                        image_files.append(img_filename)
+                    logger.info(f"✅ Extraídas {len(image_files)} imágenes desde PDFs")
+            except Exception as e:
+                logger.error(f"❌ Error al procesar PDFs: {e}")
+        
         # Crear el diccionario de badges base
+        # Contar archivos 3D (STL, 3MF, etc.)
+        num_3d_files = len([f for f in extracted_files if f['tipo'] in ['STL', '3MF', '3D Model']])
         badges = {
             "estado": "Listo",
             "tipo": category.title(),
-            "piezas": f"{len([f for f in extracted_files if f['tipo'] == 'STL'])} piezas"
+            "piezas": f"{num_3d_files} piezas"
         }
         # Añadir el badge de origen si se identificó
         if source_badge:
@@ -399,7 +463,8 @@ async def create_project(
         
         data['proyectos'].append(new_project)
         data['estadisticas']['total_proyectos'] = len(data['proyectos'])
-        data['estadisticas']['total_stls'] += len([f for f in extracted_files if f['tipo'] == 'STL'])
+        # Contar archivos 3D (STL, 3MF, etc.)
+        data['estadisticas']['total_stls'] += len([f for f in extracted_files if f['tipo'] in ['STL', '3MF', '3D Model']])
         
         if save_projects_data(data):
             return {
@@ -430,7 +495,7 @@ async def create_project(
 
 @router.post("/projects/import-thingiverse")
 async def import_thingiverse_project(request: Request):
-    """Importa un proyecto desde Thingiverse usando su URL"""
+    """Importa un proyecto desde Thingiverse o Printables usando su URL"""
     try:
         body = await request.json()
         url = body.get('url', '').strip()
@@ -440,24 +505,38 @@ async def import_thingiverse_project(request: Request):
         if not url:
             raise HTTPException(status_code=400, detail="URL es requerida")
         
-        # Validar formato de URL de Thingiverse
-        if 'thingiverse.com/thing:' not in url:
-            raise HTTPException(status_code=400, detail="URL inválida. Debe ser una URL de Thingiverse")
+        # Detectar plataforma y validar URL
+        platform = None
+        item_id = None
         
-        # Extraer ID del thing
-        try:
-            thing_id = url.split('thing:')[1].split('/')[0].split('?')[0]
-        except Exception:
-            raise HTTPException(status_code=400, detail="No se pudo extraer el ID del proyecto de la URL")
+        if 'thingiverse.com/thing:' in url:
+            platform = 'thingiverse'
+            try:
+                item_id = url.split('thing:')[1].split('/')[0].split('?')[0]
+            except Exception:
+                raise HTTPException(status_code=400, detail="No se pudo extraer el ID del proyecto de Thingiverse")
         
-        # Crear nombre de proyecto basado en el thing_id
-        project_name = f"Thingiverse_{thing_id}"
+        elif 'printables.com/model/' in url:
+            platform = 'printables'
+            try:
+                # URL format: https://www.printables.com/model/123456-project-name
+                # or https://www.printables.com/model/123456
+                model_part = url.split('printables.com/model/')[1]
+                item_id = model_part.split('/')[0].split('-')[0].split('?')[0]
+            except Exception:
+                raise HTTPException(status_code=400, detail="No se pudo extraer el ID del modelo de Printables")
+        
+        else:
+            raise HTTPException(status_code=400, detail="URL inválida. Debe ser una URL de Thingiverse o Printables")
+        
+        # Crear nombre de proyecto basado en la plataforma
+        project_name = f"{platform.capitalize()}_{item_id}"
         
         # Crear carpeta del proyecto
-        project_folder = Path("src/proyect") / f"{project_name}_{thing_id}"
+        project_folder = Path("src/proyect") / f"{project_name}_{item_id}"
         project_folder.mkdir(parents=True, exist_ok=True)
         
-        # Aquí implementarías la descarga real desde Thingiverse
+        # Aquí implementarías la descarga real desde Thingiverse/Printables
         # Por ahora, creamos un proyecto de demostración
         
         # Cargar datos actuales
@@ -470,14 +549,21 @@ async def import_thingiverse_project(request: Request):
         # Crear nuevo proyecto
         new_project = {
             "id": new_id,
-            "titulo": project_name,
-            "descripcion": f"Proyecto importado desde Thingiverse (Thing:{thing_id})",
-            "imagen": "",  # Se actualizará cuando se descarguen las imágenes
-            "carpeta": str(project_folder),
-            "fecha_creacion": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "estado": {
-                "estado": "pendiente",
-                "porcentaje": 0,
+            "nombre": project_name,
+            "descripcion": f"Proyecto importado desde {platform.capitalize()} (ID:{item_id})",
+            "autor": platform.capitalize(),
+            "fecha_creacion": datetime.now().strftime("%Y-%m-%d"),
+            "estado": "pendiente",
+            "favorito": False,
+            "imagen": None,
+            "badges": {
+                "estado": "Descargando",
+                "tipo": "Importado",
+                "piezas": "0 piezas",
+                "origen": platform.capitalize()
+            },
+            "progreso": {
+                "porcentaje": 10,
                 "mensaje": "Proyecto importado, descarga en progreso..."
             },
             "archivos": [],
@@ -486,8 +572,17 @@ async def import_thingiverse_project(request: Request):
                 "filamento_estimado": "Por calcular",
                 "complejidad": "Desconocida"
             },
-            "source": "thingiverse",
-            "thing_id": thing_id,
+            "aiAnalysis": {
+                "tiempo_estimado": "Calculando...",
+                "filamento_total": "0g",
+                "costo_estimado": "$0.00",
+                "recomendaciones": [
+                    "Descarga en progreso",
+                    "Análisis disponible después de la descarga"
+                ]
+            },
+            "source": platform,
+            "item_id": item_id,
             "original_url": url,
             "nesting_enabled": enable_nesting
         }
@@ -502,10 +597,11 @@ async def import_thingiverse_project(request: Request):
             
             return {
                 "success": True,
-                "message": f"Proyecto de Thingiverse importado correctamente",
+                "message": f"Proyecto de {platform.capitalize()} importado correctamente",
                 "name": project_name,
                 "id": new_id,
-                "thing_id": thing_id,
+                "platform": platform,
+                "item_id": item_id,
                 "stl_count": 0,  # Se actualizará después de la descarga
                 "note": "La descarga de archivos se iniciará en segundo plano"
             }

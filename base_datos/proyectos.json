@@ -1,7 +1,7 @@
 {
   "estadisticas": {
-    "total_proyectos": 2,
-    "total_stls": 9,
+    "total_proyectos": 1,
+    "total_stls": 54,
     "completados": 0,
     "en_progreso": 0,
     "tasa_exito": 0
@@ -9,18 +9,17 @@
   "proyectos": [
     {
       "id": 1,
-      "nombre": "ATX Power supply by AlwaysBlue",
-      "descripcion": "este es el proyecto de un torre atx",
+      "nombre": "star ship",
+      "descripcion": "",
       "autor": "Usuario",
       "fecha_creacion": "2025-10-06",
       "estado": "listo",
       "favorito": false,
-      "imagen": "/api/gallery/projects/atx-power-supply-by-alwaysblue-1/images/a0d99613-bf99-4bec-8abd-eed589f97fdc.png",
+      "imagen": "/api/gallery/projects/star-ship-1/images/pdf_page1_img1.jpg",
       "badges": {
         "estado": "Listo",
-        "tipo": "Herramientas",
-        "piezas": "9 piezas",
-        "origen": "Thingiverse"
+        "tipo": "Funcional",
+        "piezas": "5 piezas"
       },
       "progreso": {
         "porcentaje": 100,
@@ -28,95 +27,36 @@
       },
       "archivos": [
         {
-          "nombre": "front_frame.stl",
-          "tipo": "STL",
-          "tamano": "140.32 KB"
+          "nombre": "complete-s25.3mf",
+          "tipo": "3MF",
+          "tamano": "1009.05 KB"
         },
         {
-          "nombre": "rail_bottom.stl",
-          "tipo": "STL",
-          "tamano": "34.85 KB"
+          "nombre": "flap-inserts-s25.3mf",
+          "tipo": "3MF",
+          "tamano": "56.85 KB"
         },
         {
-          "nombre": "back_frame.stl",
-          "tipo": "STL",
-          "tamano": "84.07 KB"
+          "nombre": "heat-tiles-engines-s25.3mf",
+          "tipo": "3MF",
+          "tamano": "366.35 KB"
         },
         {
-          "nombre": "front_cover_volt_ampmeter.stl",
-          "tipo": "STL",
-          "tamano": "696.57 KB"
+          "nombre": "Main Body (S25) (WITH SUPPORT BLOCKER).3mf",
+          "tipo": "3MF",
+          "tamano": "651.63 KB"
         },
         {
-          "nombre": "rail_top.stl",
-          "tipo": "STL",
-          "tamano": "51.35 KB"
+          "nombre": "main-body-s25-support-blocker-removed.3mf",
+          "tipo": "3MF",
+          "tamano": "638.52 KB"
         },
         {
-          "nombre": "front_panel.stl",
-          "tipo": "STL",
-          "tamano": "353.70 KB"
-        },
-        {
-          "nombre": "handle.stl",
-          "tipo": "STL",
-          "tamano": "252.62 KB"
-        },
-        {
-          "nombre": "Cover_USB.stl",
-          "tipo": "STL",
-          "tamano": "3.60 KB"
-        },
-        {
-          "nombre": "front_cover_volt_amp_adj.stl",
-          "tipo": "STL",
-          "tamano": "662.19 KB"
-        },
-        {
-          "nombre": "README.txt",
-          "tipo": "Archivo",
-          "tamano": "0.09 KB"
-        },
-        {
-          "nombre": "LICENSE.txt",
-          "tipo": "Archivo",
-          "tamano": "0.13 KB"
+          "nombre": "739436-spacex-starship-s25-b33cef8d-6505-4971-8e1d-1628af3130e9.pdf",
+          "tipo": "PDF",
+          "tamano": "95.55 KB"
         }
       ],
-      "estadisticas": {
-        "tiempo_estimado": "2-4 horas",
-        "filamento_estimado": "50-100g",
-        "complejidad": "Media"
-      },
-      "aiAnalysis": {
-        "tiempo_estimado": "3 horas",
-        "filamento_total": "75g",
-        "costo_estimado": "$2.50",
-        "recomendaciones": [
-          "Usar soporte en voladizos",
-          "Temperatura de cama: 60°C"
-        ]
-      }
-    },
-    {
-      "id": 2,
-      "nombre": "proyecto de printables ",
-      "descripcion": "este proyecto es d eprintables demo 1",
-      "autor": "Usuario",
-      "fecha_creacion": "2025-10-06",
-      "estado": "listo",
-      "favorito": false,
-      "imagen": null,
-      "badges": {
-        "estado": "Listo",
-        "tipo": "Prototipo",
-        "piezas": "0 piezas"
-      },
-      "progreso": {
-        "porcentaje": 100,
-        "mensaje": "Listo para imprimir"
-      },
-      "archivos": [],
       "estadisticas": {
         "tiempo_estimado": "2-4 horas",
         "filamento_estimado": "50-100g",

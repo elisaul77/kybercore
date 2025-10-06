@@ -15963,6 +15963,120 @@
         },
         "completed_at": "2025-10-06T17:36:27.831549"
       }
+    },
+    "temp_1_20251006_191350": {
+      "project_id": "1",
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-06T19:13:50.872050",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "complete-s25.3mf",
+          "flap-inserts-s25.3mf"
+        ],
+        "total_pieces": 2,
+        "total_estimated_filament_grams": 24.6,
+        "total_estimated_time_hours": 1.5,
+        "completed_at": "2025-10-06T19:13:50.872085"
+      },
+      "updated_at": "2025-10-06T19:14:24.290783",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-06T19:13:54.279726"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-06T19:13:58.287884"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-06T19:14:01.316706"
+      },
+      "stl_processing": {
+        "task_id": "task_7087036d-a458-4c6c-a653-7080aea784ab",
+        "successful": [],
+        "failed": [
+          {
+            "filename": "complete-s25.3mf",
+            "success": false,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": null,
+            "gcode_size": null,
+            "error": "Error leyendo archivo: Archivo STL no encontrado: complete-s25.3mf",
+            "processing_time_seconds": null
+          },
+          {
+            "filename": "flap-inserts-s25.3mf",
+            "success": false,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": null,
+            "gcode_size": null,
+            "error": "Error leyendo archivo: Archivo STL no encontrado: flap-inserts-s25.3mf",
+            "processing_time_seconds": null
+          }
+        ],
+        "processing_summary": {
+          "total_files": 2,
+          "successful": 0,
+          "failed": 2
+        },
+        "completed_at": "2025-10-06T19:14:24.283115"
+      }
     }
   },
   "metadata": {

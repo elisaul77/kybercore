@@ -1299,8 +1299,9 @@ function setupNewProjectModal(modal) {
     });
 }
 
-// Hacer disponible globalmente
+// Hacer disponibles globalmente las funciones principales
 window.createNewProject = createNewProject;
+window.reloadGalleryModule = reloadGalleryModule;
 
 console.log('📦 gallery_functions.js fully loaded and ready');
 

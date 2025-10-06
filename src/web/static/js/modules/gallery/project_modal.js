@@ -243,7 +243,7 @@ class ProjectModal {
     showImportForm() {
         // Configurar título para modo import
         if (this.modalTitle) {
-            this.modalTitle.textContent = '📥 Importar Proyecto desde Thingiverse';
+            this.modalTitle.textContent = '📥 Importar Proyecto desde Thingiverse o Printables';
         }
 
         // Generar formulario de importación
@@ -253,7 +253,7 @@ class ProjectModal {
                     <!-- Descripción -->
                     <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
                         <p class="text-sm text-blue-700">
-                            <strong>💡 Importar desde Thingiverse:</strong> Ingresa la URL de un proyecto de Thingiverse 
+                            <strong>💡 Importar proyecto:</strong> Ingresa la URL de un proyecto desde Thingiverse o Printables 
                             para descargarlo automáticamente y agregarlo a tu galería.
                         </p>
                     </div>
@@ -261,17 +261,19 @@ class ProjectModal {
                     <!-- Campo URL -->
                     <div>
                         <label for="thingiverse-url" class="block text-sm font-medium text-gray-700 mb-2">
-                            🔗 URL del Proyecto de Thingiverse
+                            🔗 URL del Proyecto
                         </label>
                         <input 
                             type="text" 
                             id="thingiverse-url" 
                             name="thingiverse-url"
-                            placeholder="https://www.thingiverse.com/thing:1234567"
+                            placeholder="https://www.thingiverse.com/thing:1234567 o https://www.printables.com/model/123456"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                         <p class="mt-2 text-sm text-gray-500">
-                            Ejemplo: https://www.thingiverse.com/thing:1234567
+                            Ejemplos:<br>
+                            • Thingiverse: https://www.thingiverse.com/thing:1234567<br>
+                            • Printables: https://www.printables.com/model/123456
                         </p>
                     </div>
 
@@ -351,9 +353,12 @@ async function handleThingiverseImport() {
 
     const url = urlInput.value.trim();
     
-    // Validar formato de URL de Thingiverse
-    if (!url.includes('thingiverse.com/thing:')) {
-        showToast('Error', 'URL no válida. Debe ser una URL de Thingiverse (ejemplo: https://www.thingiverse.com/thing:1234567)', 'error');
+    // Validar formato de URL de Thingiverse o Printables
+    const isThingiverseUrl = url.includes('thingiverse.com/thing:');
+    const isPrintablesUrl = url.includes('printables.com/model/');
+    
+    if (!isThingiverseUrl && !isPrintablesUrl) {
+        showToast('Error', 'URL no válida. Debe ser una URL de Thingiverse o Printables', 'error');
         return;
     }
 
@@ -364,10 +369,11 @@ async function handleThingiverseImport() {
         }
         urlInput.disabled = true;
 
-        showToast('Importando', 'Descargando proyecto desde Thingiverse...', 'info');
+        const platform = isThingiverseUrl ? 'Thingiverse' : 'Printables';
+        showToast('Importando', `Descargando proyecto desde ${platform}...`, 'info');
 
         // Llamar al endpoint de importación
-        const response = await fetch('/api/projects/import-thingiverse', {
+        const response = await fetch('/api/gallery/projects/import-thingiverse', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -386,14 +392,14 @@ async function handleThingiverseImport() {
 
         const data = await response.json();
         
-        showToast('Éxito', `Proyecto "${data.name}" importado correctamente con ${data.stl_count} archivos STL`, 'success');
+        showToast('Éxito', `Proyecto "${data.name}" importado correctamente desde ${data.platform || platform}`, 'success');
         
         // Cerrar modal
         window.projectModal.close();
         
-        // Recargar galería
-        if (typeof loadGallery === 'function') {
-            await loadGallery();
+        // Recargar galería para mostrar el nuevo proyecto
+        if (typeof reloadGalleryModule === 'function') {
+            reloadGalleryModule();
         } else if (typeof location !== 'undefined') {
             location.reload();
         }
