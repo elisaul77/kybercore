@@ -109,33 +109,105 @@ class RotationWorker:
             session_dir.mkdir(parents=True, exist_ok=True)
             logger.info(f"📁 Directorio temporal creado: {session_dir}")
             
-            # 🎨 AUTO-PLATING: Combinar múltiples piezas en un solo plato si está habilitado
+            # 🎨 FLUJO OPTIMIZADO: Auto-Rotación + Auto-Plating
+            # 1. Si rotation y plating están habilitados → rotar cada pieza ANTES de combinar
+            # 2. Si solo rotation → rotar y procesar individualmente  
+            # 3. Si solo plating → combinar originales directamente
+            
             files_to_process = normalized_files  # Por defecto, procesar todos los archivos individualmente
             plating_enabled = plating_config and plating_config.get('enabled', False)
+            rotation_enabled = rotation_config.get('enabled', False)
             combined_stl_path = None
             
-            if plating_enabled and len(normalized_files) > 1:
-                logger.info(f"🎨 Auto-Plating HABILITADO: Intentando combinar {len(normalized_files)} piezas")
+            # 🔄 PRE-PROCESAMIENTO: Aplicar auto-rotación a cada pieza si está habilitado (ANTES del plating)
+            if rotation_enabled and len(normalized_files) >= 1:
+                logger.info(f"🔄 Auto-Rotación HABILITADA: Pre-procesando {len(normalized_files)} piezas")
                 
-                # Buscar las rutas absolutas de los archivos STL
+                for filename in normalized_files:
+                    try:
+                        # Leer archivo original
+                        stl_path = find_stl_file_path(filename, session_id)
+                        if not stl_path or not Path(stl_path).exists():
+                            logger.warning(f"⚠️  No se encontró: {filename}")
+                            continue
+                        
+                        with open(stl_path, 'rb') as f:
+                            file_bytes = f.read()
+                        
+                        logger.info(f"   🔄 Rotando {filename}...")
+                        logger.info(f"   🎯 Config de rotación: threshold={rotation_config.get('improvement_threshold', 'NO DEFINIDO')}")
+                        
+                        # Aplicar rotación
+                        rotated_bytes, rotation_info = await self._rotate_file_with_retry(
+                            file_bytes=file_bytes,
+                            filename=filename,
+                            config=rotation_config
+                        )
+                        
+                        if rotation_info and rotation_info.get("applied"):
+                            # Guardar pieza rotada en session_dir
+                            rotated_path = session_dir / f"rotated_{filename}"
+                            with open(rotated_path, 'wb') as f:
+                                f.write(rotated_bytes)
+                            
+                            logger.info(
+                                f"   ✅ Rotada: {rotation_info['degrees']}, "
+                                f"mejora: {rotation_info['improvement']:.2f}%"
+                            )
+                        else:
+                            # Si no se aplicó rotación, copiar el original
+                            rotated_path = session_dir / f"rotated_{filename}"
+                            with open(rotated_path, 'wb') as f:
+                                f.write(file_bytes)
+                            logger.info(f"   ○ Sin mejora, usando original")
+                    
+                    except Exception as e:
+                        logger.error(f"   ❌ Error rotando {filename}: {str(e)}")
+                        # Copiar original si falla la rotación
+                        try:
+                            rotated_path = session_dir / f"rotated_{filename}"
+                            with open(stl_path, 'rb') as f:
+                                with open(rotated_path, 'wb') as f_out:
+                                    f_out.write(f.read())
+                        except:
+                            pass
+            
+            # 🎨 AUTO-PLATING: Combinar múltiples piezas (rotadas o originales)
+            if plating_enabled and len(normalized_files) > 1:
+                logger.info(f"🎨 Auto-Plating HABILITADO: Combinando {len(normalized_files)} piezas")
+                
+                # Si se aplicó rotación, usar archivos rotados; sino, usar originales
                 stl_paths = []
                 for filename in normalized_files:
-                    stl_path = find_stl_file_path(filename, session_id)
-                    if stl_path and Path(stl_path).exists():
-                        stl_paths.append(stl_path)
+                    if rotation_enabled:
+                        # Usar archivo rotado
+                        rotated_path = session_dir / f"rotated_{filename}"
+                        if rotated_path.exists():
+                            stl_paths.append(str(rotated_path))
+                            logger.info(f"   📦 Usando rotado: {filename}")
+                        else:
+                            # Fallback al original
+                            stl_path = find_stl_file_path(filename, session_id)
+                            if stl_path and Path(stl_path).exists():
+                                stl_paths.append(stl_path)
+                                logger.warning(f"   ⚠️  Usando original: {filename}")
                     else:
-                        logger.warning(f"⚠️  No se encontró el archivo STL: {filename}")
+                        # Usar archivo original
+                        stl_path = find_stl_file_path(filename, session_id)
+                        if stl_path and Path(stl_path).exists():
+                            stl_paths.append(stl_path)
+                        else:
+                            logger.warning(f"⚠️  No se encontró: {filename}")
                 
                 if len(stl_paths) >= 2:
-                    # Extraer configuración de plating
+                    # Configuración de plating
                     bed_size = profile_config.get('bed_size', [220.0, 220.0])
                     algorithm = plating_config.get('algorithm', 'bin-packing')
                     spacing = plating_config.get('spacing', 3.0)
-                    # optimize_rotation se podría implementar en el futuro
                     
                     logger.info(f"🎨 Configuración: bed={bed_size}, algoritmo={algorithm}, spacing={spacing}mm")
                     
-                    # Llamar al servicio de plating (sin optimize_rotation por ahora)
+                    # Combinar archivos (ya rotados si rotation_enabled=True)
                     success, message, metadata = plating_service.combine_stl_files(
                         stl_files=stl_paths,
                         output_path=str(session_dir / "combined_plating.stl"),
@@ -146,19 +218,20 @@ class RotationWorker:
                     
                     if success:
                         combined_stl_path = str(session_dir / "combined_plating.stl")
-                        files_to_process = ["combined_plating.stl"]  # Procesar solo el archivo combinado
+                        files_to_process = ["combined_plating.stl"]  # Procesar solo el combinado
                         
-                        # Actualizar el TaskStatus para reflejar que es 1 archivo combinado
+                        # Actualizar TaskStatus
                         self.tasks[task_id].progress.total_files = 1
                         
                         logger.info(f"✅ Plating exitoso: {message}")
                         logger.info(f"📊 Metadata: {metadata}")
                         
-                        # Guardar info de plating en la sesión
+                        # Guardar info en sesión
                         session_data = load_wizard_session(session_id)
                         if session_data:
                             session_data["plating_info"] = {
                                 "enabled": True,
+                                "rotation_applied_first": rotation_enabled,
                                 "original_files": normalized_files,
                                 "combined_file": "combined_plating.stl",
                                 "algorithm": algorithm,
@@ -168,12 +241,11 @@ class RotationWorker:
                             save_wizard_session(session_id, session_data)
                     else:
                         logger.error(f"❌ Error en plating: {message}")
-                        logger.warning(f"⚠️  Continuando con procesamiento individual de archivos")
-                        # Si falla el plating, continuar con procesamiento individual
+                        logger.warning(f"⚠️  Continuando con procesamiento individual")
                 else:
-                    logger.warning(f"⚠️  No se encontraron suficientes archivos STL válidos para plating")
+                    logger.warning(f"⚠️  No hay suficientes archivos válidos para plating")
             elif plating_enabled and len(normalized_files) == 1:
-                logger.info(f"ℹ️  Plating habilitado pero solo hay 1 archivo, procesando individualmente")
+                logger.info(f"ℹ️  Plating habilitado pero solo hay 1 archivo")
             
             # Procesar archivos en paralelo con semáforo para limitar concurrencia
             semaphore = asyncio.Semaphore(self.max_concurrent)
@@ -397,8 +469,12 @@ class RotationWorker:
                 )
             
             # 2. Aplicar auto-rotación si está habilitada
+            # ⚠️ IMPORTANTE: Si el archivo es combined_plating.stl, NO rotar
+            # (las piezas individuales ya fueron rotadas antes de combinarse)
             rotation_info = None
-            if rotation_config.get("enabled", False):
+            skip_rotation = (filename == "combined_plating.stl")
+            
+            if rotation_config.get("enabled", False) and not skip_rotation:
                 try:
                     logger.info(f"   🔄 Aplicando auto-rotación (umbral: {rotation_config.get('improvement_threshold', 5)}%)")
                     
@@ -430,7 +506,10 @@ class RotationWorker:
                     rotation_info = {"applied": False, "error": error_msg}
             else:
                 file_to_slice = file_bytes
-                logger.info(f"   ○ Auto-rotación deshabilitada")
+                if skip_rotation:
+                    logger.info(f"   ○ Archivo combinado (piezas ya rotadas individualmente)")
+                else:
+                    logger.info(f"   ○ Auto-rotación deshabilitada")
             
             # 3. Laminar archivo (rotado o original)
             try:
@@ -513,12 +592,18 @@ class RotationWorker:
                     data.add_field('file', file_bytes, filename=filename, content_type='application/octet-stream')
                     
                     # Agregar parámetros de configuración
+                    # IMPORTANTE: Usar 'in' para detectar si la clave existe, no confiar solo en .get()
+                    # porque improvement_threshold=0 es un valor válido y debe respetarse
+                    threshold = config.get('improvement_threshold', 5.0) if 'improvement_threshold' in config else 5.0
+                    
                     data.add_field('method', config.get('method', 'auto'))
-                    data.add_field('improvement_threshold', str(config.get('improvement_threshold', 5.0)))
+                    data.add_field('improvement_threshold', str(threshold))
                     data.add_field('max_iterations', str(config.get('max_iterations', 50)))
                     data.add_field('learning_rate', str(config.get('learning_rate', 0.1)))
                     data.add_field('rotation_step', str(config.get('rotation_step', 15)))
                     data.add_field('max_rotations', str(config.get('max_rotations', 24)))
+                    
+                    logger.debug(f"🎯 Enviando threshold a APISLICER: {threshold}")
                     
                     # Llamar a APISLICER con timeout
                     timeout = aiohttp.ClientTimeout(total=120)

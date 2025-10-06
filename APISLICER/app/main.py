@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -727,12 +727,12 @@ async def auto_rotate_stl(request: AutoRotateRequest):
 @app.post("/auto-rotate-upload")
 async def auto_rotate_stl_upload(
     file: UploadFile = File(...),
-    method: str = "auto",
-    rotation_step: int = 15,
-    max_rotations: int = 24,
-    max_iterations: int = 50,
-    learning_rate: float = 0.1,
-    improvement_threshold: float = 5.0
+    method: str = Form("auto"),
+    rotation_step: int = Form(15),
+    max_rotations: int = Form(24),
+    max_iterations: int = Form(50),
+    learning_rate: float = Form(0.1),
+    improvement_threshold: float = Form(5.0)
 ):
     """
     Recibe un archivo STL, lo analiza, encuentra la rotación óptima y devuelve el archivo rotado.
