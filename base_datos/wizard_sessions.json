@@ -14799,6 +14799,140 @@
         },
         "completed_at": "2025-10-06T05:50:35.979740"
       }
+    },
+    "temp_10_20251006_055529": {
+      "project_id": "10",
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-06T05:55:29.116876",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "UpperFloor.stl",
+          "Roof.stl"
+        ],
+        "total_pieces": 2,
+        "total_estimated_filament_grams": 24.6,
+        "total_estimated_time_hours": 1.5,
+        "completed_at": "2025-10-06T05:55:29.116930"
+      },
+      "updated_at": "2025-10-06T05:56:18.189544",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-06T05:55:32.511544"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-06T05:55:36.531508"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-06T05:55:41.737588"
+      },
+      "stl_processing": {
+        "task_id": "task_671a4a76-95f8-4656-a622-674979117866",
+        "successful": [
+          {
+            "filename": "UpperFloor.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": {
+              "applied": false,
+              "degrees": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "improvement": 0.0,
+              "contact_area": 0.0,
+              "original_area": 0.0
+            },
+            "gcode_path": "/tmp/kybercore_processing/temp_10_20251006_055529/gcode_temp_10_20251006_055529_UpperFloor.gcode",
+            "gcode_size": 6633230,
+            "error": null,
+            "processing_time_seconds": 1.5334937572479248
+          },
+          {
+            "filename": "Roof.stl",
+            "success": true,
+            "rotated": true,
+            "rotation_info": {
+              "applied": true,
+              "degrees": [
+                0.0,
+                0.0,
+                240.0
+              ],
+              "improvement": 1.0271987051076766e-13,
+              "contact_area": 1992.1784060023513,
+              "original_area": 1992.1784060023492
+            },
+            "gcode_path": "/tmp/kybercore_processing/temp_10_20251006_055529/gcode_temp_10_20251006_055529_Roof.gcode",
+            "gcode_size": 47621983,
+            "error": null,
+            "processing_time_seconds": 18.207152128219604
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 2,
+          "successful": 2,
+          "failed": 0
+        },
+        "completed_at": "2025-10-06T05:56:18.185886"
+      }
     }
   },
   "metadata": {

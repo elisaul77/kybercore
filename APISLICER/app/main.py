@@ -72,6 +72,8 @@ def calculate_contact_area(mesh: trimesh.Trimesh, rotation_matrix: np.ndarray) -
     Calcula el área REAL de contacto con la cama sumando las áreas de las caras (triángulos)
     que están en contacto o muy cerca del plato.
     
+    OPTIMIZADO: Usa operaciones vectorizadas de NumPy para calcular todas las caras en paralelo.
+    
     Este método es más preciso que ConvexHull porque:
     - ConvexHull crea un "envoltorio convexo" que rellena huecos
     - Este método suma solo las caras reales del mesh que tocan
@@ -86,39 +88,46 @@ def calculate_contact_area(mesh: trimesh.Trimesh, rotation_matrix: np.ndarray) -
     z_min = np.min(rotated_mesh.vertices[:, 2])
 
     # Umbral para considerar una cara "en contacto" con la cama
-    # Si el centro de la cara está dentro de este rango de Z, se considera en contacto
     z_threshold = 0.5  # mm - ajustable según precisión deseada
 
-    # Calcular el área total de las caras en contacto
-    total_contact_area = 0.0
-    contact_faces_count = 0
-
-    # Iterar sobre cada cara (triángulo) del mesh
-    for face_idx in range(len(rotated_mesh.faces)):
-        # Obtener los 3 vértices del triángulo
-        vertices = rotated_mesh.vertices[rotated_mesh.faces[face_idx]]
-        
-        # Calcular el centro (centroide) de la cara
-        face_center_z = np.mean(vertices[:, 2])
-        
-        # Si el centro de la cara está cerca de la cama (z_min), considerarla en contacto
-        if face_center_z <= z_min + z_threshold:
-            # Calcular el área del triángulo usando vectores
-            v0, v1, v2 = vertices
-            # Área = 0.5 * ||(v1-v0) × (v2-v0)||
-            edge1 = v1 - v0
-            edge2 = v2 - v0
-            cross_product = np.cross(edge1, edge2)
-            face_area = 0.5 * np.linalg.norm(cross_product)
-            
-            # Sumar al área total
-            total_contact_area += face_area
-            contact_faces_count += 1
+    # OPTIMIZACIÓN 1: Operaciones vectorizadas en lugar de loops
+    # Obtener todos los vértices de todas las caras de una vez
+    face_vertices = rotated_mesh.vertices[rotated_mesh.faces]  # Shape: (n_faces, 3, 3)
     
-    # Si no se encontraron caras en contacto, usar fallback de ConvexHull
-    # (caso edge: mesh muy pequeño o mal formado)
-    if contact_faces_count == 0 or total_contact_area < 0.01:
+    # Calcular centroides de todas las caras a la vez
+    face_centers_z = np.mean(face_vertices[:, :, 2], axis=1)  # Shape: (n_faces,)
+    
+    # Filtrar caras en contacto (operación vectorizada)
+    contact_mask = face_centers_z <= (z_min + z_threshold)
+    contact_faces = face_vertices[contact_mask]  # Solo caras en contacto
+    
+    # Si no hay caras en contacto, usar fallback
+    if len(contact_faces) == 0:
         logger.warning("⚠️  No se encontraron caras en contacto, usando ConvexHull como fallback")
+        return calculate_contact_area_convexhull_fallback(rotated_mesh, z_min)
+    
+    # OPTIMIZACIÓN 2: Calcular áreas de todos los triángulos de una vez
+    # Para cada triángulo: área = 0.5 * ||edge1 × edge2||
+    v0 = contact_faces[:, 0, :]  # Primer vértice de cada cara
+    v1 = contact_faces[:, 1, :]  # Segundo vértice
+    v2 = contact_faces[:, 2, :]  # Tercer vértice
+    
+    edge1 = v1 - v0  # Shape: (n_contact_faces, 3)
+    edge2 = v2 - v0
+    
+    # Producto cruz vectorizado
+    cross_products = np.cross(edge1, edge2)  # Shape: (n_contact_faces, 3)
+    
+    # Normas (longitudes) de todos los productos cruz
+    face_areas = 0.5 * np.linalg.norm(cross_products, axis=1)  # Shape: (n_contact_faces,)
+    
+    # Sumar todas las áreas
+    total_contact_area = np.sum(face_areas)
+    contact_faces_count = len(contact_faces)
+    
+    # Validación mínima
+    if total_contact_area < 0.01:
+        logger.warning("⚠️  Área de contacto muy pequeña, usando ConvexHull como fallback")
         return calculate_contact_area_convexhull_fallback(rotated_mesh, z_min)
     
     logger.debug(f"   📐 Área real de contacto: {total_contact_area:.2f} mm² ({contact_faces_count} caras)")
