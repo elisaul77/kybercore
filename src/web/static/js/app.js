@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Validar que el módulo existe
-        const validModules = ['dashboard', 'new-job', 'recommender', 'analysis', 'fleet', 'consumables', 'gallery', 'settings'];
+        const validModules = ['dashboard', 'new-job', 'recommender', 'analysis', 'fleet', 'consumables', 'orders', 'gallery', 'settings'];
         if (!validModules.includes(moduleId)) {
             console.warn(`Módulo desconocido: ${moduleId}, cargando dashboard`);
             moduleId = 'dashboard';
@@ -236,6 +236,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (typeof initConsumablesModule === 'function') {
                     console.log('Inicializando módulo de consumibles...');
                     setTimeout(initConsumablesModule, 100);
+                }
+            }
+            
+            // Initialize orders module
+            if (moduleId === 'orders') {
+                if (typeof OrdersModule !== 'undefined' && typeof OrdersModule.init === 'function') {
+                    console.log('Inicializando módulo de pedidos...');
+                    setTimeout(() => OrdersModule.init(), 100);
                 }
             }
             

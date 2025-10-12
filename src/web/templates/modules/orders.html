@@ -1,0 +1,829 @@
+<!-- Módulo de Gestión de Pedidos -->
+<div class="orders-module">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+                    <span class="text-4xl">📦</span>
+                    Sistema de Pedidos
+                </h1>
+                <p class="text-gray-600 mt-2">Gestión completa de pedidos de impresión 3D</p>
+            </div>
+            <button onclick="OrdersModule.showCreateOrderModal()" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition-all">
+                <span class="text-xl">➕</span>
+                Nuevo Pedido
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabs de Navegación -->
+    <div class="bg-white rounded-lg shadow-sm mb-6">
+        <nav class="flex border-b border-gray-200">
+            <button onclick="OrdersModule.switchTab('dashboard')" 
+                    data-tab="dashboard"
+                    class="orders-tab px-6 py-4 font-medium text-gray-700 hover:text-blue-600 hover:border-blue-600 border-b-2 border-transparent transition-all active">
+                📊 Dashboard
+            </button>
+            <button onclick="OrdersModule.switchTab('orders')" 
+                    data-tab="orders"
+                    class="orders-tab px-6 py-4 font-medium text-gray-700 hover:text-blue-600 hover:border-blue-600 border-b-2 border-transparent transition-all">
+                📋 Pedidos
+            </button>
+            <button onclick="OrdersModule.switchTab('customers')" 
+                    data-tab="customers"
+                    class="orders-tab px-6 py-4 font-medium text-gray-700 hover:text-blue-600 hover:border-blue-600 border-b-2 border-transparent transition-all">
+                👥 Clientes
+            </button>
+            <button onclick="OrdersModule.switchTab('production')" 
+                    data-tab="production"
+                    class="orders-tab px-6 py-4 font-medium text-gray-700 hover:text-blue-600 hover:border-blue-600 border-b-2 border-transparent transition-all">
+                🏭 Producción
+            </button>
+        </nav>
+    </div>
+
+    <!-- Tab Content: Dashboard -->
+    <div id="tab-dashboard" class="orders-tab-content">
+        <!-- Métricas Principales -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Total Pedidos</p>
+                        <p class="text-3xl font-bold text-gray-800" id="metric-total-orders">-</p>
+                    </div>
+                    <span class="text-4xl">📦</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Pendientes</p>
+                        <p class="text-3xl font-bold text-gray-800" id="metric-pending-orders">-</p>
+                    </div>
+                    <span class="text-4xl">⏳</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Completados</p>
+                        <p class="text-3xl font-bold text-gray-800" id="metric-completed-orders">-</p>
+                    </div>
+                    <span class="text-4xl">✅</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Ingresos</p>
+                        <p class="text-2xl font-bold text-gray-800" id="metric-revenue">$0</p>
+                    </div>
+                    <span class="text-4xl">💰</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos y Estadísticas -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Estado de Pedidos</h3>
+                <div id="orders-status-chart" class="h-64"></div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Pedidos Recientes</h3>
+                <div id="recent-orders-list" class="space-y-3 max-h-64 overflow-y-auto"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Orders -->
+    <div id="tab-orders" class="orders-tab-content hidden">
+        <!-- Filtros -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Cliente</label>
+                    <select id="filter-customer" onchange="OrdersModule.applyFilters()" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Todos los clientes</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                    <select id="filter-status" onchange="OrdersModule.applyFilters()" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Todos los estados</option>
+                        <option value="pending">Pendiente</option>
+                        <option value="in_progress">En Progreso</option>
+                        <option value="completed">Completado</option>
+                        <option value="cancelled">Cancelado</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Prioridad</label>
+                    <select id="filter-priority" onchange="OrdersModule.applyFilters()" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Todas las prioridades</option>
+                        <option value="low">Baja</option>
+                        <option value="normal">Normal</option>
+                        <option value="high">Alta</option>
+                        <option value="urgent">Urgente</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="OrdersModule.clearFilters()" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        Limpiar Filtros
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Pedidos -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pedido</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prioridad</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progreso</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-table-body" class="bg-white divide-y divide-gray-200">
+                        <!-- Los datos se cargan dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Customers -->
+    <div id="tab-customers" class="orders-tab-content hidden">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Gestión de Clientes</h2>
+            <button onclick="OrdersModule.showCreateCustomerModal()" 
+                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition-all">
+                <span class="text-xl">➕</span>
+                Nuevo Cliente
+            </button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="customers-grid">
+            <!-- Los clientes se cargan dinámicamente -->
+        </div>
+    </div>
+
+    <!-- Tab Content: Production -->
+    <div id="tab-production" class="orders-tab-content hidden">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Lotes de Producción</h3>
+            <div id="production-batches-list" class="space-y-4">
+                <!-- Los lotes se cargan dinámicamente -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.orders-tab.active {
+    color: #2563eb;
+    border-color: #2563eb;
+}
+
+.orders-tab-content {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-pending { background-color: #fef3c7; color: #92400e; }
+.status-in_progress { background-color: #dbeafe; color: #1e40af; }
+.status-completed { background-color: #d1fae5; color: #065f46; }
+.status-cancelled { background-color: #fee2e2; color: #991b1b; }
+
+.priority-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.priority-low { background-color: #f3f4f6; color: #4b5563; }
+.priority-normal { background-color: #dbeafe; color: #1e40af; }
+.priority-high { background-color: #fed7aa; color: #c2410c; }
+.priority-urgent { background-color: #fecaca; color: #991b1b; }
+
+/* Modal styles */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none; /* Cambiado de flex a none para asegurar que esté oculto */
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal-overlay:not(.hidden) {
+    display: flex; /* Solo mostrar cuando no tenga la clase hidden */
+}
+
+.modal-content {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Order type selection */
+.order-type-option input[type="radio"]:checked + .order-type-card {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    ring: 2px;
+    ring-color: rgba(59, 130, 246, 0.5);
+}
+
+.form-input.error {
+    border-color: #ef4444;
+}
+
+.form-error {
+    color: #ef4444;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.notification {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    animation: slideInRight 0.3s ease-out;
+    z-index: 100;
+    min-width: 300px;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.notification.success { background-color: #d1fae5; color: #065f46; border-left: 4px solid #10b981; }
+.notification.error { background-color: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
+.notification.warning { background-color: #fef3c7; color: #92400e; border-left: 4px solid #f59e0b; }
+.notification.info { background-color: #dbeafe; color: #1e40af; border-left: 4px solid #3b82f6; }
+</style>
+
+<!-- MODALES -->
+
+<!-- Modal: Crear Cliente -->
+<div id="modal-create-customer" class="modal-overlay hidden" onclick="OrdersModule.closeModal('modal-create-customer', event)">
+    <div class="modal-content w-full md:w-2/3 lg:w-1/2 p-6" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                <span class="text-3xl">👤</span>
+                Nuevo Cliente
+            </h2>
+            <button onclick="OrdersModule.closeModal('modal-create-customer')" 
+                    class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
+                ×
+            </button>
+        </div>
+
+        <form id="form-create-customer" onsubmit="OrdersModule.submitCreateCustomer(event)">
+            <div class="space-y-4">
+                <!-- Nombre -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Nombre Completo <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           name="name" 
+                           id="customer-name"
+                           class="form-input" 
+                           placeholder="Juan Pérez"
+                           required>
+                    <div class="form-error hidden" id="error-customer-name"></div>
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Email <span class="text-red-500">*</span>
+                    </label>
+                    <input type="email" 
+                           name="email" 
+                           id="customer-email"
+                           class="form-input" 
+                           placeholder="juan@example.com"
+                           required>
+                    <div class="form-error hidden" id="error-customer-email"></div>
+                </div>
+
+                <!-- Teléfono -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Teléfono
+                    </label>
+                    <input type="tel" 
+                           name="phone" 
+                           id="customer-phone"
+                           class="form-input" 
+                           placeholder="+1234567890">
+                </div>
+
+                <!-- Empresa -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Empresa
+                    </label>
+                    <input type="text" 
+                           name="company" 
+                           id="customer-company"
+                           class="form-input" 
+                           placeholder="Acme Corp">
+                </div>
+
+                <!-- Dirección -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Dirección
+                    </label>
+                    <textarea name="address" 
+                              id="customer-address"
+                              class="form-input" 
+                              rows="2"
+                              placeholder="Calle Principal 123, Ciudad"></textarea>
+                </div>
+
+                <!-- Notas -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Notas
+                    </label>
+                    <textarea name="notes" 
+                              id="customer-notes"
+                              class="form-input" 
+                              rows="2"
+                              placeholder="Información adicional sobre el cliente"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+                <button type="button" 
+                        onclick="OrdersModule.closeModal('modal-create-customer')"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                    Cancelar
+                </button>
+                <button type="submit" 
+                        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                    <span>✓</span>
+                    Crear Cliente
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Editar Cliente -->
+<div id="modal-edit-customer" class="modal-overlay hidden" onclick="OrdersModule.closeModal('modal-edit-customer', event)">
+    <div class="modal-content w-full md:w-2/3 lg:w-1/2 p-6" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                <span class="text-3xl">✏️</span>
+                Editar Cliente
+            </h2>
+            <button onclick="OrdersModule.closeModal('modal-edit-customer')" 
+                    class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
+                ×
+            </button>
+        </div>
+
+        <form id="form-edit-customer" onsubmit="OrdersModule.submitEditCustomer(event)">
+            <input type="hidden" name="customer_id" id="edit-customer-id">
+            
+            <div class="space-y-4">
+                <!-- Same fields as create -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Nombre Completo <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="name" id="edit-customer-name" class="form-input" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Email <span class="text-red-500">*</span>
+                    </label>
+                    <input type="email" name="email" id="edit-customer-email" class="form-input" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Teléfono
+                    </label>
+                    <input type="tel" name="phone" id="edit-customer-phone" class="form-input">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Empresa
+                    </label>
+                    <input type="text" name="company" id="edit-customer-company" class="form-input">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Dirección
+                    </label>
+                    <textarea name="address" id="edit-customer-address" class="form-input" rows="2"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Notas
+                    </label>
+                    <textarea name="notes" id="edit-customer-notes" class="form-input" rows="2"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+                <button type="button" 
+                        onclick="OrdersModule.closeModal('modal-edit-customer')"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                    Cancelar
+                </button>
+                <button type="submit" 
+                        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                    <span>💾</span>
+                    Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Crear Pedido -->
+<div id="modal-create-order" class="modal-overlay hidden" onclick="OrdersModule.closeModal('modal-create-order', event)">
+    <div class="modal-content w-full md:w-4/5 lg:w-3/4 p-6" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                <span class="text-3xl">📦</span>
+                Nuevo Pedido
+            </h2>
+            <button onclick="OrdersModule.closeModal('modal-create-order')" 
+                    class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
+                ×
+            </button>
+        </div>
+
+        <form id="form-create-order" onsubmit="OrdersModule.submitCreateOrder(event)">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Columna 1: Información del Pedido -->
+                <div class="lg:col-span-2 space-y-4">
+                    <!-- Cliente -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Cliente <span class="text-red-500">*</span>
+                        </label>
+                        <div class="flex gap-2">
+                            <select name="customer_id" 
+                                    id="order-customer-id" 
+                                    class="form-input flex-1"
+                                    required>
+                                <option value="">Seleccionar cliente...</option>
+                            </select>
+                            <button type="button" 
+                                    onclick="OrdersModule.showCreateCustomerModal()"
+                                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors whitespace-nowrap">
+                                ➕ Nuevo
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tipo de Pedido -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Tipo de Pedido <span class="text-red-500">*</span>
+                        </label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="order-type-option">
+                                <input type="radio" 
+                                       name="order_type" 
+                                       value="print_only" 
+                                       checked
+                                       onchange="OrdersModule.toggleOrderType(this.value)"
+                                       class="hidden">
+                                <div class="order-type-card cursor-pointer border-2 border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition-all">
+                                    <div class="text-4xl mb-2">🖨️</div>
+                                    <div class="font-semibold text-gray-800 mb-1">Solo Impresión</div>
+                                    <div class="text-xs text-gray-600">Seleccionar archivos STL desde galería</div>
+                                </div>
+                            </label>
+                            <label class="order-type-option">
+                                <input type="radio" 
+                                       name="order_type" 
+                                       value="design_and_print"
+                                       onchange="OrdersModule.toggleOrderType(this.value)"
+                                       class="hidden">
+                                <div class="order-type-card cursor-pointer border-2 border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition-all">
+                                    <div class="text-4xl mb-2">✏️</div>
+                                    <div class="font-semibold text-gray-800 mb-1">Diseño + Impresión</div>
+                                    <div class="text-xs text-gray-600">Requiere diseño previo del modelo</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Sección de Diseño (solo para design_and_print) -->
+                    <div id="design-section" class="hidden border-2 border-purple-200 rounded-lg p-4 bg-purple-50 space-y-3">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-2xl">✏️</span>
+                            <h3 class="text-lg font-semibold text-purple-900">Información de Diseño</h3>
+                        </div>
+
+                        <!-- Descripción del Diseño -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Descripción del Diseño <span class="text-red-500">*</span>
+                            </label>
+                            <textarea name="design_description" 
+                                      id="design-description"
+                                      class="form-input" 
+                                      rows="3"
+                                      placeholder="Describe detalladamente qué necesitas que diseñemos..."></textarea>
+                        </div>
+
+                        <!-- Propósito/Uso -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                ¿Para qué se usará?
+                            </label>
+                            <input type="text" 
+                                   name="design_purpose" 
+                                   id="design-purpose"
+                                   class="form-input"
+                                   placeholder="Ej: Prototipo funcional, pieza de repuesto, modelo decorativo...">
+                        </div>
+
+                        <!-- Especificaciones Técnicas -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Dimensiones Requeridas
+                                </label>
+                                <input type="text" 
+                                       name="design_dimensions" 
+                                       id="design-dimensions"
+                                       class="form-input"
+                                       placeholder="Ej: 100x50x30mm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Material Preferido
+                                </label>
+                                <select name="design_material_preference" id="design-material" class="form-input">
+                                    <option value="">Sin preferencia</option>
+                                    <option value="PLA">PLA</option>
+                                    <option value="ABS">ABS</option>
+                                    <option value="PETG">PETG</option>
+                                    <option value="TPU">TPU (Flexible)</option>
+                                    <option value="Nylon">Nylon</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Color Preferido
+                                </label>
+                                <input type="text" 
+                                       name="design_color_preference" 
+                                       id="design-color"
+                                       class="form-input"
+                                       placeholder="Ej: Negro mate, Blanco brillante...">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Requisitos de Acabado
+                                </label>
+                                <input type="text" 
+                                       name="design_finishing_requirements" 
+                                       id="design-finishing"
+                                       class="form-input"
+                                       placeholder="Ej: Lijado, pintura, suavizado...">
+                            </div>
+                        </div>
+
+                        <!-- Requisitos Especiales -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Requisitos Especiales
+                            </label>
+                            <textarea name="design_special_requirements" 
+                                      id="design-special"
+                                      class="form-input" 
+                                      rows="2"
+                                      placeholder="Resistencia a temperatura, impermeabilidad, compatibilidades, etc."></textarea>
+                        </div>
+
+                        <!-- Archivos de Referencia -->
+                        <div class="border-t border-purple-300 pt-3 mt-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                📎 Archivos de Referencia
+                            </label>
+                            <div class="space-y-2">
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">Fotos de Referencia</label>
+                                    <input type="file" 
+                                           name="reference_photos" 
+                                           id="reference-photos"
+                                           class="form-input text-sm"
+                                           accept="image/*"
+                                           multiple>
+                                    <p class="text-xs text-gray-500 mt-1">📷 Puedes subir múltiples fotos</p>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">Planos Técnicos / Bocetos</label>
+                                    <input type="file" 
+                                           name="technical_drawings" 
+                                           id="technical-drawings"
+                                           class="form-input text-sm"
+                                           accept="image/*,.pdf,.dwg,.dxf"
+                                           multiple>
+                                    <p class="text-xs text-gray-500 mt-1">📐 Imágenes, PDF, DWG, DXF</p>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">Otros Archivos</label>
+                                    <input type="file" 
+                                           name="reference_files" 
+                                           id="reference-files"
+                                           class="form-input text-sm"
+                                           multiple>
+                                    <p class="text-xs text-gray-500 mt-1">📄 Cualquier archivo adicional relevante</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prioridad -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Prioridad <span class="text-red-500">*</span>
+                        </label>
+                        <select name="priority" id="order-priority" class="form-input" required>
+                            <option value="normal">Normal</option>
+                            <option value="low">Baja</option>
+                            <option value="high">Alta</option>
+                            <option value="urgent">Urgente</option>
+                        </select>
+                    </div>
+
+                    <!-- Fecha de Entrega -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Fecha de Entrega Estimada
+                        </label>
+                        <input type="date" 
+                               name="due_date" 
+                               id="order-due-date"
+                               class="form-input">
+                    </div>
+
+                    <!-- Notas -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Notas del Pedido
+                        </label>
+                        <textarea name="notes" 
+                                  id="order-notes"
+                                  class="form-input" 
+                                  rows="2"
+                                  placeholder="Instrucciones especiales, requisitos, etc."></textarea>
+                    </div>
+
+                    <!-- Items del Pedido -->
+                    <div class="border-t border-gray-200 pt-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="block text-sm font-medium text-gray-700">
+                                Items del Pedido <span class="text-red-500">*</span>
+                            </label>
+                            <button type="button" 
+                                    onclick="OrdersModule.addOrderItem()"
+                                    class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
+                                <span class="text-lg">➕</span> Agregar Item
+                            </button>
+                        </div>
+                        
+                        <div id="order-items-list" class="space-y-3">
+                            <!-- Items se agregan dinámicamente -->
+                        </div>
+                        
+                        <div class="form-error hidden" id="error-order-items">
+                            Debe agregar al menos un item al pedido
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna 2: Resumen -->
+                <div class="lg:col-span-1">
+                    <div class="bg-gray-50 rounded-lg p-4 sticky top-4">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Resumen del Pedido</h3>
+                        
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total Items:</span>
+                                <span class="font-semibold" id="summary-items-count">0</span>
+                            </div>
+                            
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Cantidad Total:</span>
+                                <span class="font-semibold" id="summary-total-quantity">0</span>
+                            </div>
+                            
+                            <div class="border-t border-gray-300 pt-3 mt-3">
+                                <div class="flex justify-between text-base">
+                                    <span class="text-gray-800 font-medium">Precio Total:</span>
+                                    <span class="font-bold text-lg text-blue-600" id="summary-total-price">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 space-y-2">
+                            <button type="submit" 
+                                    class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center gap-2">
+                                <span>📦</span>
+                                Crear Pedido
+                            </button>
+                            
+                            <button type="button" 
+                                    onclick="OrdersModule.closeModal('modal-create-order')"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Contenedor de notificaciones -->
+<div id="notifications-container" class="fixed top-4 right-4 z-100 space-y-2"></div>

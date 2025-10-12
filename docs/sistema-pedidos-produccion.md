@@ -1246,6 +1246,50 @@ graph LR
 - Timeline visual de producción
 - Comparación de estimaciones vs. reales
 
+### 10.4 Inteligencia Artificial Aplicada al Sistema de Pedidos
+
+**Objetivos inmediatos (v1.0):**
+- Aumentar la precisión de las fechas prometidas mediante estimaciones dinámicas basadas en historiales de impresión y disponibilidad de impresoras.
+- Detectar riesgos de fallo y sugerir planes de acción antes de que se consuman recursos.
+- Automatizar la comunicación proactiva con clientes y operadores para reducir incertidumbre y tareas manuales.
+
+**Componentes propuestos:**
+1. **Motor de Priorización Predictiva**
+    - Combina reglas operativas (prioridad declarada, SLA, material) con un optimizador heurístico inspirado en modelos de scheduling para fabricación distribuida.[^1]
+    - Calcula continuamente un *score* por pedido y reajusta la cola cuando se liberan impresoras o entran trabajos urgentes.
+    - Produce recomendaciones accionables ("mover pedido ORD-2025-014 a impresora Artillery-02 a las 16:30"), dejando trazabilidad de la decisión.
+2. **Predicción de Duración y Fallos**
+    - Entrena modelos supervisados con métricas de `production_tracking.json`, logs de Moonraker y resultados de batches.[^2]
+    - Anticipa probabilidad de misprint y desviaciones de tiempo; al superar umbrales genera alertas con sugerencias (modificar temperatura, calibrar cama, dividir lote, reenrutar a otra máquina).
+    - Alimenta dashboards con estimaciones vs. real para retroalimentar mejoras de proceso.
+3. **Inspección y QA Asistidos por Visión**
+    - Integra una etapa opcional de análisis visual por IA para clasificar piezas, validar geometría y detectar defectos superficiales antes del empaquetado.[^3]
+    - Automatiza el registro de calidad a nivel de `PrintItem`, reduciendo manipulación manual y acelerando el flujo de post-procesado.
+4. **Comunicación Inteligente con Clientes**
+    - Genera mensajes personalizados (SMS/email) en cada hito relevante del pedido usando modelos de lenguaje ajustados al tono de KyberCore.[^4]
+    - Ofrece ETA explicables ("65% completado, lote 3 imprime ahora mismo") y reduce tickets de soporte.
+
+**Fuentes de datos necesarias:**
+- Telemetría de impresoras (Moonraker API y WebSocket).
+- Historial de pedidos (`orders.json`), producción (`production_tracking.json`) y consumibles.
+- Logs de fallos (`klippy.log`, causas categorizadas en la app).
+- Feedback manual de operadores (etiquetado rápido en la UI tras cada lote).
+
+**Roadmap IA:**
+1. **Fase A – Telemetría & Reglas (Sprint 1-2)**: consolidar pipelines de datos y disparadores rule-based para priorización inicial.
+2. **Fase B – Modelos Predictivos (Sprint 3-6)**: entrenar estimadores de duración/fallo con técnicas gradient boosting y regresión temporal; exponer endpoints `/api/ai/predictions`.
+3. **Fase C – Optimización en Vivo (Sprint 7+)**: incorporar re-planificación continua y visión por computadora; cerrar el ciclo con comunicación autónoma al cliente.
+
+**KPIs de impacto esperado:**
+- ≤12% reducción media en retrasos de entrega (ETA vs. real).
+- ≥20% menos reimpresiones por fallos detectables.
+- ≥30% disminución en tickets de "¿cómo va mi pedido?" gracias a notificaciones proactivas.
+
+[^1]: Eduardo Alarcón-Gerbier et al., *Customer Order Scheduling in a Mobile 3D Printing Factory*, IFAC-PapersOnLine, 2022.
+[^2]: Replique GmbH, *Top 8 3D Printing Trends in 2025: AI-Driven Design and Process Optimization*, 2025.
+[^3]: AM-Flow, *The Future of 3D Printing Lies in Automated Post-Processing*, 2025.
+[^4]: Implementi.ai, *Revolutionize 3D Print Order Communication with AI-Powered SMS Updates*, 2025.
+
 ---
 
 ## 📚 Referencias

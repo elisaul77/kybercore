@@ -14,14 +14,24 @@ import uuid
 # ENUMS
 # ===============================
 
+class OrderType(str, Enum):
+    """Tipos de pedido"""
+    DESIGN_AND_PRINT = "design_and_print"  # Requiere diseño previo + impresión
+    PRINT_ONLY = "print_only"              # Solo impresión de archivos existentes
+
+
 class OrderStatus(str, Enum):
     """Estados posibles de un pedido"""
-    PENDING = "pending"          # Creado, sin iniciar producción
-    IN_PROGRESS = "in_progress"  # Al menos una pieza iniciada
-    PAUSED = "paused"            # Pausado temporalmente
-    COMPLETED = "completed"      # Todas las piezas completadas
-    CANCELLED = "cancelled"      # Cancelado por usuario
-    FAILED = "failed"            # Falló irrecuperablemente
+    PENDING = "pending"                  # Creado, sin iniciar producción
+    PENDING_DESIGN = "pending_design"    # Esperando diseño (solo para design_and_print)
+    DESIGN_IN_PROGRESS = "design_in_progress"  # Diseñando
+    DESIGN_REVIEW = "design_review"      # Diseño listo para revisión del cliente
+    DESIGN_APPROVED = "design_approved"  # Diseño aprobado, listo para imprimir
+    IN_PROGRESS = "in_progress"          # Al menos una pieza iniciada
+    PAUSED = "paused"                    # Pausado temporalmente
+    COMPLETED = "completed"              # Todas las piezas completadas
+    CANCELLED = "cancelled"              # Cancelado por usuario
+    FAILED = "failed"                    # Falló irrecuperablemente
 
 
 class OrderPriority(str, Enum):
@@ -114,6 +124,42 @@ class CustomerUpdate(BaseModel):
 
 
 # ===============================
+# DESIGN INFO
+# ===============================
+
+class DesignInfo(BaseModel):
+    """
+    Información de diseño para pedidos tipo design_and_print.
+    Contiene referencias a fotos, archivos y especificaciones del cliente.
+    """
+    # Descripción general del proyecto
+    description: str = Field(..., description="Descripción detallada del diseño requerido")
+    purpose: Optional[str] = Field(default=None, description="Para qué se usará el diseño")
+    
+    # Referencias a archivos
+    reference_photos: List[str] = Field(default_factory=list, description="URLs o paths de fotos de referencia")
+    technical_drawings: List[str] = Field(default_factory=list, description="URLs o paths de planos técnicos")
+    reference_files: List[str] = Field(default_factory=list, description="Otros archivos de referencia (PDFs, CAD, etc)")
+    
+    # Especificaciones técnicas
+    dimensions: Optional[str] = Field(default=None, description="Dimensiones requeridas (ej: '100x50x30mm')")
+    material_preference: Optional[str] = Field(default=None, description="Preferencia de material")
+    color_preference: Optional[str] = Field(default=None, description="Preferencia de color")
+    finishing_requirements: Optional[str] = Field(default=None, description="Requisitos de acabado")
+    special_requirements: Optional[str] = Field(default=None, description="Requisitos especiales")
+    
+    # Estado del diseño
+    design_status: str = Field(default="pending", description="Estado del diseño: pending, in_progress, review, approved")
+    design_notes: Optional[str] = Field(default=None, description="Notas del diseñador")
+    designed_files: List[str] = Field(default_factory=list, description="Archivos STL generados del diseño")
+    
+    # Fechas
+    design_started_at: Optional[datetime] = None
+    design_completed_at: Optional[datetime] = None
+    design_approved_at: Optional[datetime] = None
+
+
+# ===============================
 # ORDER LINE (Línea de Pedido)
 # ===============================
 
@@ -124,7 +170,7 @@ class OrderLine(BaseModel):
     """
     id: str = Field(default_factory=lambda: f"line_{uuid.uuid4().hex[:12]}")
     order_id: str = Field(..., description="ID del pedido padre")
-    project_id: int = Field(..., description="ID del proyecto (proyectos.json)")
+    project_id: Optional[int] = Field(default=None, description="ID del proyecto (proyectos.json)")
     project_name: str = Field(..., description="Nombre del proyecto")
     
     # Cantidades
@@ -145,6 +191,15 @@ class OrderLine(BaseModel):
     estimated_time_per_unit_hours: float = Field(default=0.0, ge=0)
     estimated_filament_per_unit_grams: float = Field(default=0.0, ge=0)
     estimated_cost_per_unit: float = Field(default=0.0, ge=0)
+    
+    # Precio unitario (puede ser diferente del costo estimado)
+    unit_price: float = Field(default=0.0, ge=0, description="Precio unitario para el cliente")
+    
+    # Información adicional del item
+    material: Optional[str] = Field(default=None, description="Material de impresión")
+    color: Optional[str] = Field(default=None, description="Color del material")
+    file_path: Optional[str] = Field(default=None, description="Ruta al archivo STL/G-code")
+    notes: Optional[str] = Field(default=None, description="Notas específicas del item")
     
     @validator('pending', always=True)
     def calculate_pending(cls, v, values):
@@ -215,10 +270,17 @@ class Order(BaseModel):
     """
     Representa un pedido completo de un cliente.
     Contiene múltiples líneas de pedido (proyectos + cantidades).
+    Soporta dos tipos: design_and_print (requiere diseño previo) y print_only (archivos existentes).
     """
     id: str = Field(default_factory=lambda: f"ord_{int(datetime.now().timestamp())}_{uuid.uuid4().hex[:6]}")
     order_number: str = Field(..., description="Número de pedido legible (ORD-2025-001)")
     customer_id: str = Field(..., description="ID del cliente")
+    
+    # Tipo de pedido
+    order_type: OrderType = Field(default=OrderType.PRINT_ONLY, description="Tipo de pedido")
+    
+    # Información de diseño (solo para design_and_print)
+    design_info: Optional[DesignInfo] = Field(default=None, description="Información de diseño si order_type es design_and_print")
     
     # Líneas de pedido
     order_lines: List[OrderLine] = Field(default_factory=list)
@@ -236,6 +298,7 @@ class Order(BaseModel):
     # Métricas agregadas (calculadas desde order_lines)
     total_estimated_time_hours: float = Field(default=0.0, ge=0)
     total_estimated_cost: float = Field(default=0.0, ge=0)
+    total_amount: float = Field(default=0.0, ge=0, description="Total a pagar por el pedido")
     total_filament_grams: float = Field(default=0.0, ge=0)
     total_items: int = Field(default=0, ge=0)
     completed_items: int = Field(default=0, ge=0)
@@ -256,6 +319,9 @@ class Order(BaseModel):
         self.total_filament_grams = sum(line.total_estimated_filament_grams for line in self.order_lines)
         self.total_estimated_cost = sum(line.total_estimated_cost for line in self.order_lines)
         
+        # Calcular total_amount desde unit_price * quantity de cada línea
+        self.total_amount = sum(line.unit_price * line.quantity for line in self.order_lines)
+        
         if self.total_items > 0:
             self.completion_percentage = (self.completed_items / self.total_items) * 100.0
         else:
@@ -263,11 +329,31 @@ class Order(BaseModel):
     
     def update_status(self):
         """
-        Actualiza el estado del pedido basándose en el progreso.
-        Debe llamarse después de cambios en las líneas.
+        Actualiza el estado del pedido basándose en el progreso y tipo de pedido.
+        Para pedidos design_and_print, maneja estados de diseño.
         """
+        # Para pedidos con diseño, verificar estado del diseño primero
+        if self.order_type == OrderType.DESIGN_AND_PRINT:
+            if self.design_info:
+                if self.design_info.design_status == "pending":
+                    self.status = OrderStatus.PENDING_DESIGN
+                    return
+                elif self.design_info.design_status == "in_progress":
+                    self.status = OrderStatus.DESIGN_IN_PROGRESS
+                    return
+                elif self.design_info.design_status == "review":
+                    self.status = OrderStatus.DESIGN_REVIEW
+                    return
+                elif self.design_info.design_status != "approved":
+                    # Si no está aprobado, no puede estar en producción
+                    return
+        
+        # Lógica normal de producción (para print_only o después de diseño aprobado)
         if self.completion_percentage == 0:
-            self.status = OrderStatus.PENDING
+            if self.order_type == OrderType.DESIGN_AND_PRINT and self.design_info and self.design_info.design_status == "approved":
+                self.status = OrderStatus.DESIGN_APPROVED
+            else:
+                self.status = OrderStatus.PENDING
         elif self.completion_percentage == 100:
             self.status = OrderStatus.COMPLETED
             if not self.completed_at:
