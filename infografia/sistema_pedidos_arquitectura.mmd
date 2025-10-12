@@ -1,0 +1,96 @@
+
+graph TB
+    subgraph Capa de Presentación - Frontend
+        UI_Dashboard[📊 Dashboard Principal<br/>Vista general de pedidos activos]
+        UI_Orders[📋 Lista de Pedidos<br/>Filtros: estado, prioridad, cliente]
+        UI_OrderDetail[🔍 Detalle de Pedido<br/>Progreso, líneas, batches]
+        UI_OrderForm[➕ Formulario Pedido<br/>Creación/edición]
+        UI_Customers[👥 Gestión Clientes<br/>CRUD de clientes]
+        UI_Reports[📈 Reportes & Métricas<br/>KPIs, gráficos, análisis]
+    end
+    
+    subgraph Capa de Lógica - Backend Controllers
+        API_Orders[🎮 Orders Controller<br/>CRUD de pedidos]
+        API_Customers[👤 Customers Controller<br/>CRUD de clientes]
+        API_Production[🏭 Production Controller<br/>Tracking de producción]
+        API_Metrics[📊 Metrics Controller<br/>Agregaciones y reportes]
+    end
+    
+    subgraph Capa de Servicios - Business Logic
+        Service_Order[📦 Order Service\nValidación, cálculos\nestado, estimaciones]
+        Service_Production[⚙️ Production Service\nGestión batches\ntracking progreso]
+        Service_Metrics[📈 Metrics Service\nCálculo KPIs\ngeneración reportes]
+        Service_Notification[🔔 Notification Service\nAlertas, emails\nwebhooks (futuro)]
+    end
+    
+    subgraph Capa de Datos - Database
+        DB_Orders[(📄 orders.json<br/>Pedidos y líneas)]
+        DB_Customers[(👥 customers.json<br/>Información clientes)]
+        DB_Production[(🏭 production_tracking.json<br/>Batches y print items)]
+        DB_Projects[(📁 proyectos.json<br/>Catálogo de proyectos)]
+        DB_Printers[(🖨️ printers.json<br/>Flota de impresoras)]
+    end
+    
+    subgraph Integración con Sistema Existente
+        Existing_PrintFlow[🖨️ Print Flow Controller<br/>Wizard de impresión]
+        Existing_RotationWorker[🔄 Rotation Worker<br/>Procesamiento STL/3MF]
+        Existing_Gallery[🖼️ Gallery Controller<br/>Gestión proyectos]
+        Existing_Consumables[🧪 Consumables Controller<br/>Gestión materiales]
+    end
+    
+    %% Flujo de usuario
+    UI_Dashboard --> UI_OrderForm
+    UI_Dashboard --> UI_Orders
+    UI_Orders --> UI_OrderDetail
+    UI_OrderDetail --> UI_Reports
+    UI_Dashboard --> UI_Customers
+    
+    %% Conexiones Frontend-Backend
+    UI_OrderForm --> API_Orders
+    UI_Orders --> API_Orders
+    UI_OrderDetail --> API_Orders
+    UI_OrderDetail --> API_Production
+    UI_Customers --> API_Customers
+    UI_Reports --> API_Metrics
+    UI_Dashboard --> API_Metrics
+    
+    %% Conexiones Controllers-Services
+    API_Orders --> Service_Order
+    API_Customers --> Service_Order
+    API_Production --> Service_Production
+    API_Metrics --> Service_Metrics
+    
+    %% Servicios notifican
+    Service_Order --> Service_Notification
+    Service_Production --> Service_Notification
+    
+    %% Servicios acceden a datos
+    Service_Order --> DB_Orders
+    Service_Order --> DB_Customers
+    Service_Order --> DB_Projects
+    Service_Production --> DB_Production
+    Service_Production --> DB_Orders
+    Service_Metrics --> DB_Orders
+    Service_Metrics --> DB_Production
+    Service_Metrics --> DB_Customers
+    
+    %% Integración con sistema existente
+    Service_Order -.Valida proyectos.-> Existing_Gallery
+    Service_Order -.Valida materiales.-> Existing_Consumables
+    Service_Production -.Inicia impresión.-> Existing_PrintFlow
+    Existing_PrintFlow -.Actualiza progreso.-> Service_Production
+    Existing_RotationWorker -.Reporta status.-> Service_Production
+    Service_Production -.Lee impresoras.-> DB_Printers
+    
+    %% Estilos
+    classDef frontend fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
+    classDef backend fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef service fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef database fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef existing fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    
+    class UI_Dashboard,UI_Orders,UI_OrderDetail,UI_OrderForm,UI_Customers,UI_Reports frontend
+    class API_Orders,API_Customers,API_Production,API_Metrics backend
+    class Service_Order,Service_Production,Service_Metrics,Service_Notification service
+    class DB_Orders,DB_Customers,DB_Production,DB_Projects,DB_Printers database
+    class Existing_PrintFlow,Existing_RotationWorker,Existing_Gallery,Existing_Consumables existing

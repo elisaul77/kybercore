@@ -1,0 +1,128 @@
+```mermaid
+erDiagram
+    CUSTOMER ||--o{ ORDER : "places"
+    ORDER ||--|{ ORDER_LINE : "contains"
+    ORDER_LINE }o--|| PROJECT : "references"
+    ORDER ||--o{ PRODUCTION_BATCH : "tracks"
+    PRODUCTION_BATCH ||--|{ PRINT_ITEM : "produces"
+    PRINT_ITEM }o--|| PROJECT : "prints"
+    PRINTER ||--o{ PRODUCTION_BATCH : "executes"
+    MATERIAL ||--o{ PRODUCTION_BATCH : "uses"
+    
+    CUSTOMER {
+        string id PK "cust_<uuid>"
+        string name "Nombre completo"
+        string email "Email contacto"
+        string phone "Teléfono"
+        string company "Empresa (opcional)"
+        string address "Dirección envío"
+        datetime created_at "Fecha registro"
+        datetime last_order_at "Último pedido"
+        int total_orders "Total pedidos histórico"
+        string notes "Notas del cliente"
+    }
+    
+    ORDER {
+        string id PK "ord_<timestamp>_<random>"
+        string order_number UK "ORD-2025-001"
+        string customer_id FK "Referencia a CUSTOMER"
+        enum status "pending|in_progress|paused|completed|cancelled|failed"
+        enum priority "low|normal|high|urgent"
+        datetime created_at "Fecha creación"
+        datetime due_date "Fecha límite entrega"
+        datetime started_at "Inicio producción"
+        datetime completed_at "Fin producción"
+        float total_estimated_time_hours "Tiempo estimado total"
+        float total_estimated_cost "Costo estimado €"
+        float total_filament_grams "Filamento total"
+        int total_items "Total de items"
+        int completed_items "Items completados"
+        float completion_percentage "Progreso %"
+        string notes "Notas del pedido"
+        array tags "Etiquetas"
+    }
+    
+    ORDER_LINE {
+        string id PK "line_<uuid>"
+        string order_id FK "Referencia a ORDER"
+        int project_id FK "Referencia a PROJECT"
+        string project_name "Nombre del proyecto"
+        int quantity "Cantidad solicitada"
+        int completed "Completados exitosamente"
+        int in_progress "En proceso"
+        int pending "Pendientes"
+        int failed "Fallidos"
+        enum status "pending|in_progress|completed|failed"
+        datetime started_at "Inicio producción línea"
+        datetime completed_at "Fin producción línea"
+        float estimated_time_per_unit_hours "Tiempo/unidad"
+        float estimated_filament_per_unit_grams "Filamento/unidad"
+        float estimated_cost_per_unit "Costo/unidad €"
+    }
+    
+    PROJECT {
+        int id PK "ID numérico"
+        string nombre "Nombre del proyecto"
+        string descripcion "Descripción"
+        string carpeta "Ruta en disco"
+        string imagen "Preview image"
+        enum estado "listo|en_progreso|error"
+        array archivos "Lista de STL/3MF"
+        datetime fecha_creacion "Fecha importación"
+    }
+    
+    PRODUCTION_BATCH {
+        string id PK "batch_<uuid>"
+        string order_id FK "Referencia a ORDER"
+        string order_line_id FK "Referencia a ORDER_LINE"
+        int batch_number "Número secuencial"
+        string session_id "ID de sesión wizard"
+        string printer_id FK "Impresora asignada"
+        string material_type "PLA|PETG|ABS|etc"
+        string material_color "Color del material"
+        enum status "pending|processing|completed|failed"
+        datetime started_at "Inicio del batch"
+        datetime completed_at "Fin del batch"
+        float actual_filament_used_grams "Filamento real usado"
+        float actual_print_time_hours "Tiempo real impresión"
+        int items_count "Total items en batch"
+        int items_completed "Items completados"
+        int items_failed "Items fallidos"
+    }
+    
+    PRINT_ITEM {
+        string id PK "item_<uuid>"
+        string batch_id FK "Referencia a BATCH"
+        string filename "Nombre archivo STL/3MF"
+        string gcode_path "Ruta del G-code generado"
+        enum status "pending|processing|completed|failed"
+        datetime started_at "Inicio procesamiento"
+        datetime completed_at "Fin procesamiento"
+        string failure_reason "Razón del fallo"
+        int retry_count "Intentos de reintento"
+        float processing_time_seconds "Tiempo de procesamiento"
+        int gcode_size_bytes "Tamaño del G-code"
+    }
+    
+    PRINTER {
+        string id PK "ender3_001"
+        string nombre "Nombre de impresora"
+        string model "Modelo (Ender3, Prusa, etc)"
+        string ip "Dirección IP"
+        enum estado "idle|printing|offline|error"
+        object capacidades "Volumen, materiales, etc"
+        string location "Ubicación física"
+    }
+    
+    MATERIAL {
+        string id PK "fil_001"
+        string tipo "PLA|PETG|ABS|TPU|etc"
+        string color "Color del filamento"
+        string marca "Marca comercial"
+        float stock_actual "Gramos disponibles"
+        float stock_minimo "Umbral de reorden"
+        float precio_por_kg "Precio €/kg"
+        int temperatura_extrusor "Temp. extrusor °C"
+        int temperatura_cama "Temp. cama °C"
+    }
+```

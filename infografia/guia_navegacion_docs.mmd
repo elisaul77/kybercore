@@ -1,0 +1,83 @@
+graph TB
+    Start([🚀 START HERE])
+    
+    Start --> Question{¿Qué necesitas?}
+    
+    %% Path 1: Overview rápido
+    Question -->|Vista general rápida| Overview[📄 Resumen Ejecutivo<br/>5 min]
+    Overview --> OverviewDone{¿Suficiente?}
+    OverviewDone -->|Sí| Done1([✅ ¡Listo!])
+    OverviewDone -->|No, más detalles| Technical
+    
+    %% Path 2: Empezar a desarrollar
+    Question -->|Empezar a desarrollar| QuickStart[📖 Quick Start Guide<br/>10 min]
+    QuickStart --> QuickRole{¿Tu rol?}
+    QuickRole -->|Backend Dev| BackendPath[1. Ver modelos<br/>2. Leer spec API<br/>3. Implementar controllers]
+    QuickRole -->|Frontend Dev| FrontendPath[1. Ver wireframes<br/>2. Revisar flujos<br/>3. Crear templates]
+    QuickRole -->|Full Stack| FullPath[1. Quick Start<br/>2. Especificación<br/>3. Implementar todo]
+    BackendPath --> Done2([✅ ¡A codear!])
+    FrontendPath --> Done2
+    FullPath --> Done2
+    
+    %% Path 3: Entender el sistema completo
+    Question -->|Entender todo| Technical[📚 Especificación Técnica<br/>60 min]
+    Technical --> Diagrams[📊 Ver todos los diagramas<br/>20 min]
+    Diagrams --> Models[💻 Explorar modelos<br/>10 min]
+    Models --> Data[💾 Ver datos ejemplo<br/>10 min]
+    Data --> Done3([✅ Sistema dominado!])
+    
+    %% Path 4: Resolver dudas específicas
+    Question -->|Tengo una pregunta| FAQ[❓ FAQ<br/>Buscar pregunta]
+    FAQ --> FAQFound{¿Encontrada?}
+    FAQFound -->|Sí| Done4([✅ Resuelta!])
+    FAQFound -->|No| SearchMore[🔍 Buscar en:]
+    SearchMore --> SearchOpt1[• Especificación Técnica]
+    SearchMore --> SearchOpt2[• Decisiones Técnicas]
+    SearchMore --> SearchOpt3[• Diagramas]
+    SearchOpt1 --> Done4
+    SearchOpt2 --> Done4
+    SearchOpt3 --> Done4
+    
+    %% Path 5: Ver arquitectura
+    Question -->|Ver arquitectura| ArchDiag[📊 Diagrama: Arquitectura]
+    ArchDiag --> ERD[📊 Diagrama: Entidades]
+    ERD --> StateMachine[📊 Diagrama: Estados]
+    StateMachine --> SeqDiag[📊 Diagramas: Flujos]
+    SeqDiag --> Done5([✅ Arquitectura clara!])
+    
+    %% Path 6: Implementar siguiente fase
+    Question -->|Implementar Fase 2| Phase2[📋 Leer Plan Fase 2]
+    Phase2 --> Phase2Check{¿Entiendes?}
+    Phase2Check -->|No| Phase2Docs[Revisar:<br/>• Spec Técnica<br/>• Modelos<br/>• Endpoints]
+    Phase2Docs --> Phase2Check
+    Phase2Check -->|Sí| Phase2Code[💻 Implementar<br/>controllers]
+    Phase2Code --> Done6([✅ Fase 2 en progreso!])
+    
+    %% Path 7: Validar diseño
+    Question -->|Validar diseño| Decisions[🧠 Decisiones Técnicas]
+    Decisions --> DecisionsCheck{¿Aceptable?}
+    DecisionsCheck -->|Sí| Approved([✅ Aprobado!])
+    DecisionsCheck -->|No| Feedback[📝 Dar feedback<br/>Ajustar diseño]
+    Feedback --> Decisions
+    
+    %% Path 8: Primera vez aquí
+    Question -->|Primera vez aquí| Index[📚 Índice General<br/>5 min]
+    Index --> IndexChoice{¿Qué hacer?}
+    IndexChoice -->|Leer overview| Overview
+    IndexChoice -->|Ver roadmap| Roadmap[🗺️ Ver Timeline]
+    IndexChoice -->|Explorar| Explore[🔍 Navegar docs]
+    Roadmap --> Done7([✅ Planificado!])
+    Explore --> Done7
+    
+    %% Estilos
+    classDef startStyle fill:#90EE90,stroke:#2E8B57,stroke-width:3px,color:#000
+    classDef docStyle fill:#87CEEB,stroke:#4682B4,stroke-width:2px,color:#000
+    classDef actionStyle fill:#FFD700,stroke:#FFA500,stroke-width:2px,color:#000
+    classDef doneStyle fill:#98FB98,stroke:#228B22,stroke-width:3px,color:#000
+    classDef questionStyle fill:#FFA07A,stroke:#FF6347,stroke-width:2px,color:#000
+    
+    class Start startStyle
+    class Overview,QuickStart,Technical,FAQ,Index,Diagrams,Models,Data docStyle
+    class BackendPath,FrontendPath,FullPath,Phase2Code,Decisions actionStyle
+    class Done1,Done2,Done3,Done4,Done5,Done6,Done7,Approved doneStyle
+    class Question,OverviewDone,QuickRole,FAQFound,Phase2Check,DecisionsCheck,IndexChoice questionStyle

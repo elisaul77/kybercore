@@ -1,0 +1,182 @@
+```mermaid
+sequenceDiagram
+    actor Usuario
+    participant UI as Frontend<br/>Order Detail View
+    participant PrintWizard as Print Wizard<br/>(Existente)
+    participant ProdAPI as Production API<br/>Controller
+    participant ProdService as Production Service<br/>Business Logic
+    participant OrderService as Order Service
+    participant Worker as Rotation Worker<br/>(Existente)
+    participant ProdDB as Production DB<br/>(production_tracking.json)
+    participant OrderDB as Orders DB<br/>(orders.json)
+    
+    %% Fase 1: Visualización del pedido
+    Usuario->>UI: 1. Abrir pedido "ORD-2025-015"
+    activate UI
+    UI->>OrderDB: 2. GET pedido completo
+    activate OrderDB
+    OrderDB-->>UI: 3. Order con 2 líneas<br/>• Starship x5 (pending)<br/>• Drone Frame x3 (pending)
+    deactivate OrderDB
+    UI-->>Usuario: 4. Mostrar detalle del pedido<br/>Progreso: 0% (0/8 items)
+    deactivate UI
+    
+    %% Fase 2: Iniciar producción de primera línea
+    Usuario->>UI: 5. Clic "▶ Imprimir" en línea 1<br/>(Starship x5)
+    activate UI
+    Note over UI: Cargar contexto:<br/>• order_id: ord_xxx<br/>• order_line_id: line_1<br/>• project_id: 1<br/>• quantity: 5
+    UI->>PrintWizard: 6. Abrir wizard con contexto de pedido
+    deactivate UI
+    
+    activate PrintWizard
+    Note over PrintWizard: Wizard pre-poblado:<br/>• Proyecto: Starship<br/>• Piezas: Todas seleccionadas<br/>• Cantidad implícita: 5
+    PrintWizard-->>Usuario: 7. Mostrar wizard (Step 1: Material)
+    deactivate PrintWizard
+    
+    %% Fase 3: Completar wizard
+    Usuario->>PrintWizard: 8. Seleccionar Material: PLA Negro
+    Usuario->>PrintWizard: 9. Modo: Prototype - Velocidad
+    Usuario->>PrintWizard: 10. Impresora: Ender3_001
+    Usuario->>PrintWizard: 11. Confirmar configuración
+    
+    activate PrintWizard
+    PrintWizard->>ProdAPI: 12. POST /api/production/start-from-order<br/>{order_id, order_line_id, config}
+    deactivate PrintWizard
+    
+    activate ProdAPI
+    ProdAPI->>OrderService: 13. Obtener Order Line details
+    activate OrderService
+    OrderService->>OrderDB: 14. Query OrderLine
+    activate OrderDB
+    OrderDB-->>OrderService: 15. Line details:<br/>• project_id: 1<br/>• quantity: 5<br/>• project_name: "Starship"
+    deactivate OrderDB
+    OrderService-->>ProdAPI: 16. OrderLine data
+    deactivate OrderService
+    
+    %% Fase 4: Crear Production Batch
+    ProdAPI->>ProdService: 17. Crear Production Batch
+    activate ProdService
+    Note over ProdService: Generar batch:<br/>• batch_id: batch_abc123<br/>• order_id: ord_xxx<br/>• order_line_id: line_1<br/>• batch_number: 1<br/>• printer_id: ender3_001<br/>• material: PLA Negro<br/>• items_count: 5<br/>• status: processing
+    
+    ProdService->>ProdDB: 18. Guardar Production Batch
+    activate ProdDB
+    ProdDB-->>ProdService: 19. Batch guardado ✓
+    deactivate ProdDB
+    
+    %% Fase 5: Actualizar Order Line status
+    ProdService->>OrderService: 20. Actualizar OrderLine status
+    activate OrderService
+    OrderService->>OrderDB: 21. UPDATE OrderLine<br/>status = "in_progress"<br/>in_progress = 5<br/>started_at = now()
+    activate OrderDB
+    OrderDB-->>OrderService: 22. Actualizado ✓
+    deactivate OrderDB
+    
+    OrderService->>OrderDB: 23. UPDATE Order<br/>status = "in_progress"<br/>started_at = now()
+    activate OrderDB
+    OrderDB-->>OrderService: 24. Actualizado ✓
+    deactivate OrderDB
+    OrderService-->>ProdService: 25. Status actualizado
+    deactivate OrderService
+    
+    ProdService-->>ProdAPI: 26. Batch creado exitosamente
+    deactivate ProdService
+    
+    %% Fase 6: Iniciar procesamiento
+    ProdAPI->>Worker: 27. Procesar archivos<br/>{session_id, files, config, quantity: 5}
+    deactivate ProdAPI
+    
+    activate Worker
+    Note over Worker: Procesamiento paralelo:<br/>• 5 copias de cada archivo<br/>• Auto-rotación habilitada<br/>• Genera 5 G-codes
+    
+    %% Fase 7: Progress updates en tiempo real
+    loop Cada archivo procesado
+        Worker->>ProdService: 28. Progress update<br/>{batch_id, item_completed}
+        activate ProdService
+        ProdService->>ProdDB: 29. Crear PrintItem<br/>status = "completed"
+        activate ProdDB
+        ProdDB-->>ProdService: 30. Item guardado
+        deactivate ProdDB
+        
+        ProdService->>OrderService: 31. Actualizar progreso
+        activate OrderService
+        OrderService->>OrderDB: 32. UPDATE OrderLine<br/>completed++<br/>in_progress--<br/>completion_percentage = (completed/quantity)*100
+        activate OrderDB
+        OrderDB-->>OrderService: 33. Actualizado
+        deactivate OrderDB
+        
+        OrderService->>OrderDB: 34. UPDATE Order<br/>completed_items++<br/>completion_percentage = (completed/total)*100
+        activate OrderDB
+        OrderDB-->>OrderService: 35. Actualizado
+        deactivate OrderDB
+        OrderService-->>ProdService: 36. Progreso actualizado
+        deactivate OrderService
+        
+        ProdService-->>Worker: 37. ACK
+        deactivate ProdService
+        
+        %% Frontend polling
+        UI->>ProdAPI: 38. GET /api/orders/ord_xxx/progress
+        activate UI
+        activate ProdAPI
+        ProdAPI->>OrderDB: 39. Query progreso actual
+        activate OrderDB
+        OrderDB-->>ProdAPI: 40. completion_percentage, items_status
+        deactivate OrderDB
+        ProdAPI-->>UI: 41. Progress data
+        deactivate ProdAPI
+        UI-->>Usuario: 42. Actualizar UI<br/>Progreso: 20% (1/5 completado)
+        deactivate UI
+    end
+    
+    %% Fase 8: Completar batch
+    Worker-->>ProdService: 43. Batch completado<br/>{batch_id, results}
+    deactivate Worker
+    
+    activate ProdService
+    Note over ProdService: Resultados:<br/>• items_completed: 5<br/>• items_failed: 0<br/>• actual_time: 14.8h<br/>• actual_filament: 242g
+    
+    ProdService->>ProdDB: 44. UPDATE Production Batch<br/>status = "completed"<br/>completed_at = now()<br/>actual metrics
+    activate ProdDB
+    ProdDB-->>ProdService: 45. Batch actualizado ✓
+    deactivate ProdDB
+    
+    ProdService->>OrderService: 46. Actualizar OrderLine final
+    activate OrderService
+    OrderService->>OrderDB: 47. UPDATE OrderLine<br/>status = "completed"<br/>completed = 5<br/>in_progress = 0<br/>completed_at = now()
+    activate OrderDB
+    OrderDB-->>OrderService: 48. Actualizado ✓
+    deactivate OrderDB
+    
+    %% Verificar si Order completo
+    OrderService->>OrderDB: 49. Query todas las OrderLines
+    activate OrderDB
+    OrderDB-->>OrderService: 50. line_1: completed ✓<br/>line_2: pending
+    deactivate OrderDB
+    
+    Note over OrderService: Order no completado aún<br/>(line_2 pendiente)<br/>completion_percentage = 62.5%<br/>(5/8 items)
+    
+    OrderService->>OrderDB: 51. UPDATE Order<br/>completion_percentage = 62.5%
+    activate OrderDB
+    OrderDB-->>OrderService: 52. Actualizado ✓
+    deactivate OrderDB
+    
+    OrderService-->>ProdService: 53. Order status actualizado
+    deactivate OrderService
+    ProdService-->>UI: 54. WebSocket notification<br/>"Batch completado"
+    deactivate ProdService
+    
+    %% Fase 9: Notificar al usuario
+    activate UI
+    UI-->>Usuario: 55. 🎉 Notificación<br/>"Línea 1 completada: 5/5 items"<br/>"Progreso del pedido: 62.5%"
+    deactivate UI
+    
+    Usuario->>UI: 56. Refrescar vista del pedido
+    activate UI
+    UI->>OrderDB: 57. GET pedido actualizado
+    activate OrderDB
+    OrderDB-->>UI: 58. Order con progreso<br/>• line_1: completed ✅<br/>• line_2: pending ⏸️<br/>• Progreso: 62.5% (5/8)
+    deactivate OrderDB
+    UI-->>Usuario: 59. Vista actualizada con:<br/>• Batch #1 completado<br/>• Archivos G-code disponibles<br/>• Botón "Imprimir" en línea 2
+    deactivate UI
+    
+    Note over Usuario,OrderDB: Primera línea completada<br/>Order status: IN_PROGRESS<br/>Progreso: 5/8 items (62.5%)<br/>Siguiente: Procesar línea 2
+```

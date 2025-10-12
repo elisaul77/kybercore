@@ -1,0 +1,135 @@
+```mermaid
+sequenceDiagram
+    actor Usuario
+    participant UI as Frontend<br/>Order Form
+    participant OrderAPI as Orders API<br/>Controller
+    participant OrderService as Order Service<br/>Business Logic
+    participant ProjectDB as Proyectos DB<br/>(proyectos.json)
+    participant OrderDB as Orders DB<br/>(orders.json)
+    participant CustomerDB as Customers DB<br/>(customers.json)
+    
+    %% Fase 1: Inicialización del formulario
+    Usuario->>UI: 1. Clic "Crear Nuevo Pedido"
+    activate UI
+    UI->>OrderAPI: 2. GET /api/orders/form-data
+    activate OrderAPI
+    OrderAPI->>ProjectDB: 3. Obtener lista de proyectos
+    activate ProjectDB
+    ProjectDB-->>OrderAPI: 4. Proyectos disponibles
+    deactivate ProjectDB
+    OrderAPI->>CustomerDB: 5. Obtener lista de clientes
+    activate CustomerDB
+    CustomerDB-->>OrderAPI: 6. Clientes activos
+    deactivate CustomerDB
+    OrderAPI-->>UI: 7. Datos del formulario
+    deactivate OrderAPI
+    UI-->>Usuario: 8. Mostrar formulario completo
+    deactivate UI
+    
+    %% Fase 2: Selección de cliente
+    Usuario->>UI: 9. Seleccionar cliente "SpaceX Demo"
+    activate UI
+    Note over UI: Cliente seleccionado:<br/>cust_abc123
+    deactivate UI
+    
+    %% Fase 3: Agregar líneas de pedido
+    Usuario->>UI: 10. Buscar proyecto "Starship"
+    activate UI
+    UI->>Usuario: 11. Mostrar proyecto con preview
+    deactivate UI
+    
+    Usuario->>UI: 12. Agregar "Starship" x5 unidades
+    activate UI
+    UI->>ProjectDB: 13. Obtener detalles del proyecto
+    activate ProjectDB
+    ProjectDB-->>UI: 14. Archivos, dimensiones, estimaciones
+    deactivate ProjectDB
+    Note over UI: Calcular estimaciones:<br/>• 5 unidades x 3h = 15h<br/>• 5 unidades x 50g = 250g<br/>• 5 unidades x €5.50 = €27.50
+    UI-->>Usuario: 15. Línea agregada con estimaciones
+    deactivate UI
+    
+    Usuario->>UI: 16. Buscar proyecto "Drone Frame"
+    Usuario->>UI: 17. Agregar "Drone Frame" x3 unidades
+    activate UI
+    UI->>ProjectDB: 18. Obtener detalles
+    activate ProjectDB
+    ProjectDB-->>UI: 19. Detalles del proyecto
+    deactivate ProjectDB
+    Note over UI: Calcular estimaciones:<br/>• 3 unidades x 2.5h = 7.5h<br/>• 3 unidades x 35g = 105g<br/>• 3 unidades x €4.20 = €12.60
+    UI-->>Usuario: 20. Segunda línea agregada
+    deactivate UI
+    
+    %% Fase 4: Configuración del pedido
+    Usuario->>UI: 21. Establecer prioridad "Alta"
+    Usuario->>UI: 22. Fecha de entrega: 2025-10-15
+    Usuario->>UI: 23. Notas: "Cliente VIP urgente"
+    
+    activate UI
+    Note over UI: Resumen del pedido:<br/>• 2 proyectos<br/>• 8 items totales<br/>• 22.5h estimadas<br/>• 355g filamento<br/>• €40.10 costo
+    UI-->>Usuario: 24. Mostrar resumen calculado
+    deactivate UI
+    
+    %% Fase 5: Validación y creación
+    Usuario->>UI: 25. Clic "Crear Pedido"
+    activate UI
+    UI->>OrderAPI: 26. POST /api/orders/create<br/>{customer_id, order_lines, priority, due_date, notes}
+    deactivate UI
+    
+    activate OrderAPI
+    OrderAPI->>OrderService: 27. Crear nuevo pedido
+    activate OrderService
+    
+    %% Validaciones
+    OrderService->>CustomerDB: 28. Validar cliente existe
+    activate CustomerDB
+    CustomerDB-->>OrderService: 29. Cliente válido ✓
+    deactivate CustomerDB
+    
+    OrderService->>ProjectDB: 30. Validar proyectos existen
+    activate ProjectDB
+    ProjectDB-->>OrderService: 31. Proyectos válidos ✓
+    deactivate ProjectDB
+    
+    %% Cálculos
+    Note over OrderService: Generar order_number:<br/>"ORD-2025-015"
+    Note over OrderService: Crear Order Lines:<br/>• line_1: Starship x5<br/>• line_2: Drone Frame x3
+    Note over OrderService: Calcular totales:<br/>• total_items = 8<br/>• total_estimated_time_hours = 22.5<br/>• total_filament_grams = 355<br/>• total_estimated_cost = €40.10<br/>• completion_percentage = 0%
+    
+    %% Guardar en base de datos
+    OrderService->>OrderDB: 32. Guardar Order + OrderLines
+    activate OrderDB
+    Note over OrderDB: Estructura guardada:<br/>{<br/>  "id": "ord_1728234567_xyz",<br/>  "order_number": "ORD-2025-015",<br/>  "customer_id": "cust_abc123",<br/>  "status": "pending",<br/>  "priority": "high",<br/>  "order_lines": [...],<br/>  "total_items": 8,<br/>  ...<br/>}
+    OrderDB-->>OrderService: 33. Pedido guardado ✓
+    deactivate OrderDB
+    
+    %% Actualizar estadísticas del cliente
+    OrderService->>CustomerDB: 34. Incrementar total_orders
+    activate CustomerDB
+    CustomerDB-->>OrderService: 35. Cliente actualizado ✓
+    deactivate CustomerDB
+    
+    OrderService-->>OrderAPI: 36. Order creado exitosamente
+    deactivate OrderService
+    
+    OrderAPI-->>UI: 37. Response 201 Created<br/>{order_id, order_number}
+    deactivate OrderAPI
+    
+    activate UI
+    UI-->>Usuario: 38. ✅ Notificación éxito<br/>"Pedido ORD-2025-015 creado"
+    deactivate UI
+    
+    Usuario->>UI: 39. Ver detalle del pedido
+    activate UI
+    UI->>OrderAPI: 40. GET /api/orders/ord_1728234567_xyz
+    activate OrderAPI
+    OrderAPI->>OrderDB: 41. Obtener pedido completo
+    activate OrderDB
+    OrderDB-->>OrderAPI: 42. Order con todas las líneas
+    deactivate OrderDB
+    OrderAPI-->>UI: 43. Datos completos del pedido
+    deactivate OrderAPI
+    UI-->>Usuario: 44. Vista detallada con progreso 0%
+    deactivate UI
+    
+    Note over Usuario,OrderDB: Pedido creado exitosamente<br/>Estado: PENDING<br/>Progreso: 0/8 items (0%)<br/>Siguiente paso: Iniciar producción
+```

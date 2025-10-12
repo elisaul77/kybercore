@@ -1,0 +1,61 @@
+graph TB
+    Start([🚀 Inicio: Sistema de Pedidos])
+    
+    %% Nivel 1: Entrada Principal
+    Start --> Resumen[📄 Resumen Ejecutivo<br/>resumen-sistema-pedidos.md<br/><small>Qué se entregó, estado, próximos pasos</small>]
+    Start --> Spec[📖 Especificación Técnica<br/>sistema-pedidos-produccion.md<br/><small>1,800 líneas, 10 secciones</small>]
+    
+    %% Nivel 2: Desglose de Especificación
+    Spec --> Vision[1️⃣ Visión General<br/><small>Problema, solución, objetivos</small>]
+    Spec --> Arq[2️⃣ Arquitectura<br/><small>4 capas, componentes</small>]
+    Spec --> Modelo[3️⃣ Modelo de Datos<br/><small>8 entidades, relaciones</small>]
+    Spec --> Flujos[4️⃣ Flujos de Trabajo<br/><small>Creación, producción, tracking</small>]
+    Spec --> API[5️⃣ API Endpoints<br/><small>20+ endpoints RESTful</small>]
+    Spec --> UI[6️⃣ Interfaz de Usuario<br/><small>Wireframes, componentes</small>]
+    Spec --> CU[7️⃣ Casos de Uso<br/><small>5 escenarios completos</small>]
+    Spec --> Impl[8️⃣ Implementación<br/><small>6 fases, timeline</small>]
+    Spec --> Metrics[9️⃣ Métricas<br/><small>KPIs, reportes</small>]
+    Spec --> Future[🔟 Consideraciones Futuras<br/><small>Facturación, notificaciones</small>]
+    
+    %% Nivel 3: Diagramas
+    Arq --> D1[📊 Diagrama: Arquitectura<br/>sistema_pedidos_arquitectura.mmd<br/><small>Frontend, Backend, Services, DB</small>]
+    Modelo --> D2[📊 Diagrama: Entidades<br/>sistema_pedidos_entidades.mmd<br/><small>ERD con 8 entidades</small>]
+    Flujos --> D3[📊 Diagrama: Estados<br/>sistema_pedidos_estados.mmd<br/><small>State machine, 6 estados</small>]
+    Flujos --> D4[📊 Diagrama: Flujo Creación<br/>sistema_pedidos_flujo_creacion.mmd<br/><small>44 pasos, UI → DB</small>]
+    Flujos --> D5[📊 Diagrama: Flujo Producción<br/>sistema_pedidos_flujo_produccion.mmd<br/><small>59 pasos, Pedido → G-code</small>]
+    
+    %% Nivel 4: Código
+    Modelo --> Code1[💻 Modelos Pydantic<br/>src/models/order_models.py<br/><small>600 líneas, 5 enums, DTOs</small>]
+    API --> Code2[💻 Controladores<br/>src/controllers/*_controller.py<br/><small>⏸️ Pendiente implementar</small>]
+    Impl --> Code3[💻 Servicios<br/>src/services/*_service.py<br/><small>⏸️ Pendiente implementar</small>]
+    
+    %% Nivel 5: Base de Datos
+    Modelo --> DB1[💾 customers.json<br/><small>3 clientes ejemplo</small>]
+    Modelo --> DB2[💾 orders.json<br/><small>2 pedidos ejemplo</small>]
+    Modelo --> DB3[💾 production_tracking.json<br/><small>2 batches, 11 items</small>]
+    
+    %% Nivel 6: Frontend (Pendiente)
+    UI --> FE1[🎨 Templates HTML<br/><small>⏸️ Dashboard, List, Detail, Form</small>]
+    UI --> FE2[⚡ JavaScript Modules<br/><small>⏸️ order_form.js, production_tracker.js</small>]
+    
+    %% Nivel 7: Testing (Pendiente)
+    Impl --> Test1[🧪 Tests Unitarios<br/><small>⏸️ Pytest tests</small>]
+    Impl --> Test2[🧪 Tests Integración<br/><small>⏸️ API endpoint tests</small>]
+    
+    %% Estilo de Nodos
+    classDef completed fill:#90EE90,stroke:#2E8B57,stroke-width:2px,color:#000
+    classDef pending fill:#FFE4B5,stroke:#FF8C00,stroke-width:2px,color:#000
+    classDef diagram fill:#87CEEB,stroke:#4682B4,stroke-width:2px,color:#000
+    classDef code fill:#DDA0DD,stroke:#8B008B,stroke-width:2px,color:#000
+    classDef database fill:#F0E68C,stroke:#DAA520,stroke-width:2px,color:#000
+    classDef frontend fill:#FFA07A,stroke:#FF6347,stroke-width:2px,color:#000
+    
+    class Start,Resumen,Spec,Vision,Arq,Modelo,Flujos,API,UI,CU,Impl,Metrics,Future,Code1,DB1,DB2,DB3 completed
+    class D1,D2,D3,D4,D5 diagram
+    class Code2,Code3,FE1,FE2,Test1,Test2 pending
+    
+    %% Notas
+    note1[📝 NOTA: Verde = Completado<br/>Naranja = Pendiente<br/>Azul = Diagramas]
+    
+    %% Enlaces
+    linkStyle default stroke:#666,stroke-width:2px

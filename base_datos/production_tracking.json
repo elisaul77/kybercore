@@ -1,0 +1,202 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "last_updated": "2025-10-07T00:00:00",
+    "total_batches": 2
+  },
+  "production_batches": [
+    {
+      "id": "batch_starship_001",
+      "order_id": "ord_1728234567_xyz123",
+      "order_line_id": "line_starship_001",
+      "batch_number": 1,
+      "session_id": "temp_1_20251005_103000",
+      "printer_id": "ender3_001",
+      "material_type": "PLA",
+      "material_color": "Negro",
+      "status": "completed",
+      "started_at": "2025-10-05T10:30:00",
+      "completed_at": "2025-10-06T01:15:00",
+      "actual_filament_used_grams": 242.5,
+      "actual_print_time_hours": 14.75,
+      "items_count": 5,
+      "items_completed": 5,
+      "items_failed": 0,
+      "print_items": [
+        {
+          "id": "item_001_starship_complete",
+          "batch_id": "batch_starship_001",
+          "filename": "complete-s25.3mf",
+          "gcode_path": "/tmp/kybercore_processing/temp_1_20251005_103000/gcode_complete_s25.gcode",
+          "status": "completed",
+          "started_at": "2025-10-05T10:30:15",
+          "completed_at": "2025-10-05T13:45:30",
+          "processing_time_seconds": 11715.0,
+          "gcode_size_bytes": 12458900,
+          "failure_reason": null,
+          "retry_count": 0
+        },
+        {
+          "id": "item_002_starship_flaps",
+          "batch_id": "batch_starship_001",
+          "filename": "flap-inserts-s25.3mf",
+          "gcode_path": "/tmp/kybercore_processing/temp_1_20251005_103000/gcode_flap_inserts.gcode",
+          "status": "completed",
+          "started_at": "2025-10-05T13:45:45",
+          "completed_at": "2025-10-05T15:20:10",
+          "processing_time_seconds": 5665.0,
+          "gcode_size_bytes": 5678234,
+          "failure_reason": null,
+          "retry_count": 0
+        },
+        {
+          "id": "item_003_heat_tiles",
+          "batch_id": "batch_starship_001",
+          "filename": "heat-tiles-engines-s25.3mf",
+          "gcode_path": "/tmp/kybercore_processing/temp_1_20251005_103000/gcode_heat_tiles.gcode",
+          "status": "completed",
+          "started_at": "2025-10-05T15:20:25",
+          "completed_at": "2025-10-05T18:55:40",
+          "processing_time_seconds": 12915.0,
+          "gcode_size_bytes": 9234567,
+          "failure_reason": null,
+          "retry_count": 0
+        },
+        {
+          "id": "item_004_main_body",
+          "batch_id": "batch_starship_001",
+          "filename": "Main Body (S25) (WITH SUPPORT BLOCKER).3mf",
+          "gcode_path": "/tmp/kybercore_processing/temp_1_20251005_103000/gcode_main_body.gcode",
+          "status": "completed",
+          "started_at": "2025-10-05T18:55:55",
+          "completed_at": "2025-10-05T23:10:20",
+          "processing_time_seconds": 15265.0,
+          "gcode_size_bytes": 15678901,
+          "failure_reason": null,
+          "retry_count": 0
+        },
+        {
+          "id": "item_005_main_body_support",
+          "batch_id": "batch_starship_001",
+          "filename": "main-body-support-blocker-removed.3mf",
+          "gcode_path": "/tmp/kybercore_processing/temp_1_20251005_103000/gcode_main_body_no_support.gcode",
+          "status": "completed",
+          "started_at": "2025-10-05T23:10:35",
+          "completed_at": "2025-10-06T01:15:00",
+          "processing_time_seconds": 7465.0,
+          "gcode_size_bytes": 13456789,
+          "failure_reason": null,
+          "retry_count": 0
+        }
+      ]
+    },
+    {
+      "id": "batch_drone_001",
+      "order_id": "ord_1728150000_abc789",
+      "order_line_id": "line_drone_frame_003",
+      "batch_number": 1,
+      "session_id": "temp_1_20250928_140000",
+      "printer_id": "ender3_pro_001",
+      "material_type": "PETG",
+      "material_color": "Transparente",
+      "status": "completed",
+      "started_at": "2025-09-28T14:00:00",
+      "completed_at": "2025-10-02T16:30:00",
+      "actual_filament_used_grams": 275.8,
+      "actual_print_time_hours": 14.5,
+      "items_count": 6,
+      "items_completed": 6,
+      "items_failed": 0,
+      "print_items": [
+        {
+          "id": "item_drone_001",
+          "batch_id": "batch_drone_001",
+          "filename": "drone_frame_main.stl",
+          "gcode_path": "/tmp/kybercore_processing/temp_1_20250928_140000/gcode_drone_frame_main.gcode",
+          "status": "completed",
+          "started_at": "2025-09-28T14:00:15",
+          "completed_at": "2025-09-28T16:25:45",
+          "processing_time_seconds": 8730.0,
+          "gcode_size_bytes": 8765432,
+          "failure_reason": null,
+          "retry_count": 0
+        },
+        {
+          "id": "item_drone_002",
+          "batch_id": "batch_drone_001",
+          "filename": "drone_frame_arms_set.stl",
+          "gcode_path": "/tmp/kybercore_processing/temp_1_20250928_140000/gcode_drone_frame_arms.gcode",
+          "status": "completed",
+          "started_at": "2025-09-28T16:26:00",
+          "completed_at": "2025-09-28T18:50:30",
+          "processing_time_seconds": 8670.0,
+          "gcode_size_bytes": 7654321,
+          "failure_reason": null,
+          "retry_count": 0
+        },
+        {
+          "id": "item_drone_003",
+          "batch_id": "batch_drone_001",
+          "filename": "drone_landing_gear.stl",
+          "gcode_path": "/tmp/kybercore_processing/temp_1_20250928_140000/gcode_drone_landing.gcode",
+          "status": "completed",
+          "started_at": "2025-09-28T18:50:45",
+          "completed_at": "2025-09-28T21:15:15",
+          "processing_time_seconds": 8670.0,
+          "gcode_size_bytes": 6543210,
+          "failure_reason": null,
+          "retry_count": 0
+        },
+        {
+          "id": "item_drone_004",
+          "batch_id": "batch_drone_001",
+          "filename": "drone_camera_mount.stl",
+          "gcode_path": "/tmp/kybercore_processing/temp_1_20250928_140000/gcode_drone_camera.gcode",
+          "status": "completed",
+          "started_at": "2025-09-28T21:15:30",
+          "completed_at": "2025-09-28T23:40:00",
+          "processing_time_seconds": 8670.0,
+          "gcode_size_bytes": 5432109,
+          "failure_reason": null,
+          "retry_count": 0
+        },
+        {
+          "id": "item_drone_005",
+          "batch_id": "batch_drone_001",
+          "filename": "drone_battery_holder.stl",
+          "gcode_path": "/tmp/kybercore_processing/temp_1_20250928_140000/gcode_drone_battery.gcode",
+          "status": "completed",
+          "started_at": "2025-09-28T23:40:15",
+          "completed_at": "2025-09-29T02:05:45",
+          "processing_time_seconds": 8730.0,
+          "gcode_size_bytes": 4321098,
+          "failure_reason": null,
+          "retry_count": 0
+        },
+        {
+          "id": "item_drone_006",
+          "batch_id": "batch_drone_001",
+          "filename": "drone_prop_guards.stl",
+          "gcode_path": "/tmp/kybercore_processing/temp_1_20250928_140000/gcode_drone_prop_guards.gcode",
+          "status": "completed",
+          "started_at": "2025-09-29T02:06:00",
+          "completed_at": "2025-09-29T04:30:30",
+          "processing_time_seconds": 8670.0,
+          "gcode_size_bytes": 7890123,
+          "failure_reason": null,
+          "retry_count": 0
+        }
+      ]
+    }
+  ],
+  "statistics": {
+    "total_batches_all_time": 2,
+    "total_items_processed": 11,
+    "total_items_completed": 11,
+    "total_items_failed": 0,
+    "success_rate_percentage": 100.0,
+    "total_filament_consumed_kg": 0.518,
+    "total_production_time_hours": 29.25,
+    "average_processing_time_per_item_minutes": 159.55
+  }
+}

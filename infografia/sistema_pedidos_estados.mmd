@@ -1,0 +1,127 @@
+```mermaid
+stateDiagram-v2
+    [*] --> PENDING: Usuario crea pedido
+    
+    PENDING --> IN_PROGRESS: Primera impresión iniciada<br/>(completed_items > 0)
+    PENDING --> CANCELLED: Usuario cancela<br/>antes de iniciar
+    
+    IN_PROGRESS --> PAUSED: Usuario pausa producción<br/>(temporal)
+    IN_PROGRESS --> COMPLETED: Todas las líneas completadas<br/>(completed_items == total_items)
+    IN_PROGRESS --> FAILED: Fallos críticos irrecuperables<br/>(múltiples reintentos fallidos)
+    
+    PAUSED --> IN_PROGRESS: Usuario reanuda producción
+    PAUSED --> CANCELLED: Usuario cancela<br/>desde pausa
+    
+    FAILED --> IN_PROGRESS: Reintentar items fallidos<br/>(nuevo batch creado)
+    FAILED --> CANCELLED: Descartar pedido<br/>(no recuperable)
+    
+    COMPLETED --> [*]: Pedido entregado<br/>y archivado
+    CANCELLED --> [*]: Pedido cancelado<br/>y archivado
+    
+    note right of PENDING
+        Estado Inicial
+        ✓ Pedido creado
+        ✓ Líneas definidas
+        ✓ Estimaciones calculadas
+        
+        Condiciones:
+        • completed_items = 0
+        • completion_percentage = 0%
+        • No hay batches creados
+        
+        Acciones disponibles:
+        • Editar pedido
+        • Iniciar producción
+        • Cancelar
+    end note
+    
+    note right of IN_PROGRESS
+        Producción Activa
+        ✓ Al menos 1 item completado
+        ✓ Batches en proceso
+        ✓ Progreso trackeable
+        
+        Condiciones:
+        • 0 < completed_items < total_items
+        • 0% < completion_percentage < 100%
+        • Existe al menos 1 batch
+        
+        Acciones disponibles:
+        • Ver progreso
+        • Pausar producción
+        • Reintentar fallidos
+        • Agregar más batches
+    end note
+    
+    note right of PAUSED
+        Producción Pausada
+        ✓ Trabajo detenido temporalmente
+        ✓ Estado preservado
+        ✓ Puede reanudarse
+        
+        Razones comunes:
+        • Falta de material
+        • Mantenimiento impresora
+        • Prioridad de otro pedido
+        • Solicitud del cliente
+        
+        Acciones disponibles:
+        • Reanudar
+        • Cancelar
+        • Ver estado actual
+    end note
+    
+    note left of COMPLETED
+        Pedido Completado
+        ✓ Todos los items producidos
+        ✓ G-code generado
+        ✓ Listo para entrega
+        
+        Condiciones:
+        • completed_items = total_items
+        • completion_percentage = 100%
+        • Todos los batches completados
+        
+        Métricas finales:
+        • Tiempo total real
+        • Filamento total usado
+        • Costo total real
+        • Tasa de éxito (%)
+    end note
+    
+    note left of FAILED
+        Producción Fallida
+        ✗ Errores irrecuperables
+        ✗ Múltiples reintentos fallidos
+        ✗ Requiere intervención
+        
+        Causas comunes:
+        • Problemas de impresora
+        • Archivos corruptos
+        • Falta de material crítico
+        • Errores de configuración
+        
+        Acciones disponibles:
+        • Analizar causas
+        • Reintentar con correcciones
+        • Cancelar definitivamente
+    end note
+    
+    note left of CANCELLED
+        Pedido Cancelado
+        ✗ Producción detenida
+        ✗ Recursos liberados
+        ✗ No completable
+        
+        Razones comunes:
+        • Cliente cancela
+        • No viable técnicamente
+        • Prioridad cambió
+        • Pedido reemplazado
+        
+        Datos preservados:
+        • Historial parcial
+        • Items completados antes
+        • Logs y métricas
+    end note
+```

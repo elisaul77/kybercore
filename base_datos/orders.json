@@ -1,0 +1,115 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "last_updated": "2025-10-07T00:00:00",
+    "total_orders": 2,
+    "next_order_number": 3
+  },
+  "orders": [
+    {
+      "id": "ord_1728234567_xyz123",
+      "order_number": "ORD-2025-001",
+      "customer_id": "cust_spacex001",
+      "status": "in_progress",
+      "priority": "high",
+      "created_at": "2025-10-05T09:00:00",
+      "due_date": "2025-10-15T00:00:00",
+      "started_at": "2025-10-05T10:30:00",
+      "completed_at": null,
+      "total_estimated_time_hours": 22.5,
+      "total_estimated_cost": 40.10,
+      "total_filament_grams": 355.0,
+      "total_items": 8,
+      "completed_items": 5,
+      "completion_percentage": 62.5,
+      "notes": "Cliente VIP - demostración importante el día 15",
+      "tags": ["urgent", "vip", "demo"],
+      "order_lines": [
+        {
+          "id": "line_starship_001",
+          "order_id": "ord_1728234567_xyz123",
+          "project_id": 1,
+          "project_name": "Starship Model",
+          "quantity": 5,
+          "completed": 5,
+          "in_progress": 0,
+          "pending": 0,
+          "failed": 0,
+          "status": "completed",
+          "started_at": "2025-10-05T10:30:00",
+          "completed_at": "2025-10-06T14:45:00",
+          "estimated_time_per_unit_hours": 3.0,
+          "estimated_filament_per_unit_grams": 50.0,
+          "estimated_cost_per_unit": 5.50
+        },
+        {
+          "id": "line_drone_002",
+          "order_id": "ord_1728234567_xyz123",
+          "project_id": 2,
+          "project_name": "Drone Frame",
+          "quantity": 3,
+          "completed": 0,
+          "in_progress": 0,
+          "pending": 3,
+          "failed": 0,
+          "status": "pending",
+          "started_at": null,
+          "completed_at": null,
+          "estimated_time_per_unit_hours": 2.5,
+          "estimated_filament_per_unit_grams": 35.0,
+          "estimated_cost_per_unit": 4.20
+        }
+      ]
+    },
+    {
+      "id": "ord_1728150000_abc789",
+      "order_number": "ORD-2025-002",
+      "customer_id": "cust_drone_tech002",
+      "status": "completed",
+      "priority": "normal",
+      "created_at": "2025-09-28T11:00:00",
+      "due_date": "2025-10-10T00:00:00",
+      "started_at": "2025-09-28T14:00:00",
+      "completed_at": "2025-10-02T16:30:00",
+      "total_estimated_time_hours": 15.0,
+      "total_estimated_cost": 32.50,
+      "total_filament_grams": 280.0,
+      "total_items": 6,
+      "completed_items": 6,
+      "completion_percentage": 100.0,
+      "notes": "Pedido recurrente mensual - marcos personalizados",
+      "tags": ["recurring", "custom"],
+      "order_lines": [
+        {
+          "id": "line_drone_frame_003",
+          "order_id": "ord_1728150000_abc789",
+          "project_id": 2,
+          "project_name": "Drone Frame",
+          "quantity": 6,
+          "completed": 6,
+          "in_progress": 0,
+          "pending": 0,
+          "failed": 0,
+          "status": "completed",
+          "started_at": "2025-09-28T14:00:00",
+          "completed_at": "2025-10-02T16:30:00",
+          "estimated_time_per_unit_hours": 2.5,
+          "estimated_filament_per_unit_grams": 46.67,
+          "estimated_cost_per_unit": 5.42
+        }
+      ]
+    }
+  ],
+  "statistics": {
+    "total_orders_all_time": 2,
+    "pending_orders": 0,
+    "in_progress_orders": 1,
+    "completed_orders": 1,
+    "cancelled_orders": 0,
+    "failed_orders": 0,
+    "total_items_produced": 11,
+    "total_revenue": 72.60,
+    "average_completion_time_hours": 18.75,
+    "success_rate_percentage": 100.0
+  }
+}
