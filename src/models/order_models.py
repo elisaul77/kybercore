@@ -167,11 +167,17 @@ class OrderLine(BaseModel):
     """
     Representa una línea dentro de un pedido.
     Vincula un proyecto con una cantidad específica.
+    Puede ser un proyecto completo o un archivo específico dentro de un proyecto.
     """
     id: str = Field(default_factory=lambda: f"line_{uuid.uuid4().hex[:12]}")
     order_id: str = Field(..., description="ID del pedido padre")
     project_id: Optional[int] = Field(default=None, description="ID del proyecto (proyectos.json)")
     project_name: str = Field(..., description="Nombre del proyecto")
+    
+    # Información del archivo (para piezas específicas)
+    file_id: Optional[str] = Field(default=None, description="ID único del archivo dentro del proyecto")
+    file_name: Optional[str] = Field(default=None, description="Nombre del archivo STL/3MF específico")
+    is_full_project: bool = Field(default=True, description="True = proyecto completo, False = archivo específico")
     
     # Cantidades
     quantity: int = Field(..., gt=0, description="Cantidad solicitada")

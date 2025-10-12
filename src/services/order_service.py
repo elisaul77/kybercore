@@ -85,24 +85,33 @@ class OrderService:
             items = order_data.pop("items")
             order_lines = []
             
-            for item in items:
-                # Convertir item del frontend al formato OrderLine
-                order_line = {
-                    "id": f"line_{uuid.uuid4().hex[:8]}",
-                    "order_id": order_data.get("id", "temp"),  # Se actualizará después
-                    "project_name": item.get("name"),
-                    "quantity": item.get("quantity", 1),
-                    "material": item.get("material", "PLA"),
-                    "color": item.get("color"),
-                    "file_path": item.get("file_path"),
-                    "notes": item.get("notes"),
-                    "unit_price": item.get("unit_price", 0.0),
-                    "status": "pending",
-                    "progress_percentage": 0.0
-                }
-                order_lines.append(order_line)
+            # Solo procesar items si no es un pedido de diseño o si tiene items
+            if items:  # Permitir arrays vacíos para design_and_print
+                for item in items:
+                    # Soporte para items de galería (print_only) con campos nuevos
+                    order_line = {
+                        "id": f"line_{uuid.uuid4().hex[:8]}",
+                        "order_id": order_data.get("id", "temp"),  # Se actualizará después
+                        "project_id": item.get("project_id"),  # De galería
+                        "project_name": item.get("project_name") or item.get("name", "Sin nombre"),
+                        "is_full_project": item.get("is_full_project", True),  # True = proyecto completo
+                        "file_id": item.get("file_id"),  # Para archivos individuales
+                        "file_name": item.get("file_name"),  # Nombre del archivo individual
+                        "quantity": item.get("quantity", 1),
+                        "material": item.get("material", "PLA"),
+                        "color": item.get("color"),
+                        "file_path": item.get("file_path"),
+                        "notes": item.get("notes"),
+                        "unit_price": item.get("unit_price", 0.0),
+                        "status": "pending",
+                        "progress_percentage": 0.0
+                    }
+                    order_lines.append(order_line)
             
             order_data["order_lines"] = order_lines
+        else:
+            # Si no hay items key, asegurar que order_lines esté vacío para design_and_print
+            order_data.setdefault("order_lines", [])
 
         # El modelo espera 'order_lines' en lugar de 'lines'
         if "lines" in order_data and "order_lines" not in order_data:
@@ -123,6 +132,43 @@ class OrderService:
         # Obtener pedido actual
         order = self.get_order(order_id)
         
+        # Guardar estado original para detectar cambios
+        original_status = order.status
+        was_design_order = order.order_type == "design_and_print"
+        had_no_items = len(order.order_lines or []) == 0
+        
+        # Convertir 'items' a 'order_lines' si viene del frontend
+        if "items" in updates:
+            items = updates.pop("items")
+            order_lines = []
+            
+            if items:  # Si hay items
+                for item in items:
+                    # Soporte para items de galería con campos nuevos
+                    order_line = {
+                        "id": f"line_{uuid.uuid4().hex[:8]}",
+                        "order_id": order_id,
+                        "project_id": item.get("project_id"),
+                        "project_name": item.get("project_name") or item.get("name", "Sin nombre"),
+                        "is_full_project": item.get("is_full_project", True),
+                        "file_id": item.get("file_id"),
+                        "file_name": item.get("file_name"),
+                        "quantity": item.get("quantity", 1),
+                        "unit_price": item.get("unit_price", 0.0),
+                        "material": item.get("material", "PLA"),
+                        "color": item.get("color", ""),
+                        "file_path": item.get("file_path", ""),
+                        "notes": item.get("notes", ""),
+                        "completed": 0,
+                        "in_progress": 0,
+                        "pending": item.get("quantity", 1),
+                        "failed": 0,
+                        "status": "pending",
+                    }
+                    order_lines.append(order_line)
+            
+            updates["order_lines"] = order_lines
+        
         # Aplicar actualizaciones
         order_dict = order.model_dump()
         order_dict.update(updates)
@@ -131,6 +177,18 @@ class OrderService:
         # Validar y recalcular
         updated_order = Order(**order_dict)
         updated_order.recalculate_totals()
+        
+        # LÓGICA ESPECIAL: Si era un pedido de diseño sin items y ahora tiene items,
+        # cambiar automáticamente el estado de pending_design a pending
+        has_new_items = len(updated_order.order_lines or []) > 0
+        
+        if (was_design_order and 
+            original_status in ["pending_design", "design_in_progress", "design_review"] and 
+            had_no_items and 
+            has_new_items):
+            # Los archivos STL ya fueron agregados, cambiar a estado pending
+            updated_order.status = "pending"
+            print(f"✅ Pedido {order_id} cambió automáticamente de {original_status} a 'pending' (STLs agregados)")
         
         # Guardar (usar mode='json' para serializar datetime)
         saved_data = self._repo.upsert_order(updated_order.model_dump(mode='json'))
@@ -274,6 +332,68 @@ class OrderService:
             "generated_at": datetime.utcnow().isoformat(),
             "ai_ready": False,
         }
+
+    def add_order_lines(self, order_id: str, items: List[Dict]) -> Order:
+        """
+        Agrega order_lines a un pedido existente.
+        Útil para pedidos de tipo design_and_print donde los items se agregan
+        después de que el diseño ha sido aprobado.
+        
+        Args:
+            order_id: ID del pedido
+            items: Lista de items a agregar (mismo formato que en create_order)
+            
+        Returns:
+            Order actualizado con las nuevas líneas
+            
+        Raises:
+            ValueError: Si el pedido no existe o los items son inválidos
+        """
+        # Obtener pedido existente
+        order = self.get_order(order_id)
+        
+        # Convertir items a order_lines
+        new_order_lines = []
+        for item in items:
+            order_line = {
+                "id": f"line_{uuid.uuid4().hex[:8]}",
+                "order_id": order_id,
+                "project_id": item.get("project_id"),
+                "project_name": item.get("project_name") or item.get("name", "Sin nombre"),
+                "is_full_project": item.get("is_full_project", True),
+                "file_id": item.get("file_id"),
+                "file_name": item.get("file_name"),
+                "quantity": item.get("quantity", 1),
+                "material": item.get("material", "PLA"),
+                "color": item.get("color"),
+                "file_path": item.get("file_path"),
+                "notes": item.get("notes"),
+                "unit_price": item.get("unit_price", 0.0),
+                "status": "pending",
+                "progress_percentage": 0.0
+            }
+            new_order_lines.append(OrderLine(**order_line))
+        
+        # Agregar las nuevas líneas al pedido
+        current_lines = order.order_lines or []
+        all_lines = current_lines + new_order_lines
+        
+        # Actualizar el pedido
+        order_dict = order.model_dump()
+        order_dict["order_lines"] = [line.model_dump() for line in all_lines]
+        order_dict["updated_at"] = datetime.utcnow().isoformat()
+        
+        # Si el pedido estaba en pending_design, cambiar a pending
+        if order.status == "pending_design" or order.status == "design_approved":
+            order_dict["status"] = OrderStatus.PENDING.value
+        
+        # Validar y recalcular
+        updated_order = Order(**order_dict)
+        updated_order.recalculate_totals()
+        
+        # Guardar
+        saved_data = self._repo.upsert_order(updated_order.model_dump(mode='json'))
+        return Order(**saved_data)
 
     def suggest_order_improvements(self, order_id: str) -> Dict:
         """

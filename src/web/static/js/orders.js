@@ -144,6 +144,26 @@ const OrdersModule = {
     },
 
     /**
+     * Realiza petición PUT a la API
+     */
+    async apiPut(endpoint, data) {
+        const response = await fetch(`${this.config.apiBaseUrl}${endpoint}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || `Error ${response.status}`);
+        }
+
+        return await response.json();
+    },
+
+    /**
      * Obtiene todos los pedidos
      */
     async fetchOrders() {
@@ -395,8 +415,12 @@ const OrdersModule = {
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button onclick="OrdersModule.showOrderDetails('${order.id}')"
                                 class="text-blue-600 hover:text-blue-900 mr-3">Ver</button>
+                        ${(order.status === 'pending' || order.status === 'paused' || order.status === 'pending_design' || order.status === 'design_in_progress' || order.status === 'design_review') 
+                            ? `<button onclick="OrdersModule.showEditOrderModal('${order.id}')"
+                                       class="text-green-600 hover:text-green-900 mr-3">Editar</button>`
+                            : ''}
                         <button onclick="OrdersModule.updateOrderStatus('${order.id}')"
-                                class="text-green-600 hover:text-green-900">Actualizar</button>
+                                class="text-purple-600 hover:text-purple-900">Estado</button>
                     </td>
                 </tr>
             `;
@@ -906,6 +930,273 @@ const OrdersModule = {
     },
 
     /**
+     * Muestra modal de editar pedido
+     */
+    async showEditOrderModal(orderId) {
+        console.log('Abriendo modal de edición para pedido:', orderId);
+        
+        try {
+            // Obtener datos del pedido
+            const order = await this.apiGet(`/orders/${orderId}`);
+            
+            // Verificar que el pedido pueda editarse
+            const editableStatuses = ['pending', 'paused', 'pending_design', 'design_in_progress', 'design_review'];
+            if (!editableStatuses.includes(order.status)) {
+                this.showWarning('Solo se pueden editar pedidos en estado Pendiente, Pausado o en proceso de Diseño');
+                return;
+            }
+            
+            // Poblar dropdown de clientes
+            this.populateEditCustomerDropdown();
+            
+            // Llenar formulario con datos del pedido
+            document.getElementById('edit-order-id').value = order.id;
+            document.getElementById('edit-order-customer-id').value = order.customer_id;
+            document.getElementById('edit-order-type').value = order.order_type || 'print_only';
+            
+            // Tipo de pedido (solo lectura)
+            const orderTypeDisplay = order.order_type === 'design_and_print' 
+                ? '✏️ Diseño + Impresión' 
+                : '🖨️ Solo Impresión';
+            document.getElementById('edit-order-type-display').value = orderTypeDisplay;
+            
+            document.getElementById('edit-order-priority').value = order.priority;
+            document.getElementById('edit-order-due-date').value = order.due_date || '';
+            document.getElementById('edit-order-notes').value = order.notes || '';
+            
+            // Si es un pedido de diseño, mostrar información de diseño
+            const designInfoSection = document.getElementById('edit-design-info-section');
+            if (order.order_type === 'design_and_print' && order.design_info) {
+                designInfoSection.classList.remove('hidden');
+                
+                // Llenar campos de información de diseño
+                document.getElementById('edit-design-description').textContent = order.design_info.description || '-';
+                document.getElementById('edit-design-purpose').textContent = order.design_info.purpose || '-';
+                document.getElementById('edit-design-dimensions').textContent = order.design_info.dimensions || '-';
+                document.getElementById('edit-design-material').textContent = order.design_info.material_preference || '-';
+                document.getElementById('edit-design-color').textContent = order.design_info.color_preference || '-';
+                document.getElementById('edit-design-finishing').textContent = order.design_info.finishing_requirements || '-';
+                document.getElementById('edit-design-special').textContent = order.design_info.special_requirements || '-';
+            } else {
+                designInfoSection.classList.add('hidden');
+            }
+            
+            // Cargar items existentes
+            this.loadEditOrderItems(order.order_lines || []);
+            
+            // Actualizar resumen
+            document.getElementById('edit-summary-order-id').textContent = order.id.substring(0, 12) + '...';
+            document.getElementById('edit-summary-status').textContent = this.formatStatus(order.status);
+            this.updateEditOrderSummary();
+            
+            // Abrir modal
+            this.openModal('modal-edit-order');
+            
+        } catch (error) {
+            console.error('Error al cargar pedido:', error);
+            this.showError('Error al cargar el pedido: ' + error.message);
+        }
+    },
+
+    /**
+     * Puebla el dropdown de clientes en modal de edición
+     */
+    populateEditCustomerDropdown() {
+        const select = document.getElementById('edit-order-customer-id');
+        if (!select) return;
+
+        const currentValue = select.value;
+        select.innerHTML = '<option value="">Seleccionar cliente...</option>';
+
+        this.state.customers.forEach(customer => {
+            const option = document.createElement('option');
+            option.value = customer.id;
+            option.textContent = `${customer.name} (${customer.email})`;
+            select.appendChild(option);
+        });
+
+        if (currentValue) select.value = currentValue;
+    },
+
+    /**
+     * Carga los items existentes en el modal de edición
+     */
+    loadEditOrderItems(orderLines) {
+        const container = document.getElementById('edit-order-items-list');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        orderLines.forEach(line => {
+            this.addEditOrderItem(line);
+        });
+    },
+
+    /**
+     * Agrega un item al formulario de edición
+     */
+    addEditOrderItem(orderLine) {
+        const container = document.getElementById('edit-order-items-list');
+        if (!container) return;
+
+        const itemId = `edit-item-${orderLine.id || Date.now()}`;
+        const displayName = orderLine.is_full_project 
+            ? `📦 ${orderLine.project_name} (Proyecto completo)`
+            : `📄 ${orderLine.file_name || orderLine.project_name} (de ${orderLine.project_name})`;
+
+        const itemHTML = `
+            <div class="border border-gray-300 rounded-lg p-4" id="${itemId}" data-line-id="${orderLine.id}">
+                <div class="flex items-start gap-3">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="font-medium text-gray-800">${displayName}</span>
+                            ${orderLine.is_full_project 
+                                ? '<span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded">Completo</span>'
+                                : '<span class="text-xs px-2 py-0.5 bg-purple-100 text-purple-700 rounded">Individual</span>'
+                            }
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">Cantidad</label>
+                                <input type="number" 
+                                       value="${orderLine.quantity}" 
+                                       min="1" 
+                                       onchange="OrdersModule.updateEditOrderSummary()"
+                                       class="form-input text-sm w-full edit-item-quantity">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">Precio Unitario</label>
+                                <input type="number" 
+                                       value="${orderLine.unit_price || 0}" 
+                                       min="0" 
+                                       step="0.01"
+                                       onchange="OrdersModule.updateEditOrderSummary()"
+                                       class="form-input text-sm w-full edit-item-price">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" 
+                            onclick="OrdersModule.removeEditOrderItem('${itemId}')"
+                            class="text-red-600 hover:text-red-700 text-xl">
+                        ×
+                    </button>
+                </div>
+                <input type="hidden" class="edit-item-project-id" value="${orderLine.project_id || ''}">
+                <input type="hidden" class="edit-item-project-name" value="${orderLine.project_name || ''}">
+                <input type="hidden" class="edit-item-is-full-project" value="${orderLine.is_full_project}">
+                <input type="hidden" class="edit-item-file-id" value="${orderLine.file_id || ''}">
+                <input type="hidden" class="edit-item-file-name" value="${orderLine.file_name || ''}">
+            </div>
+        `;
+
+        container.insertAdjacentHTML('beforeend', itemHTML);
+    },
+
+    /**
+     * Elimina un item del formulario de edición
+     */
+    removeEditOrderItem(itemId) {
+        const item = document.getElementById(itemId);
+        if (item) {
+            item.remove();
+            this.updateEditOrderSummary();
+        }
+    },
+
+    /**
+     * Actualiza el resumen del pedido en edición
+     */
+    updateEditOrderSummary() {
+        const container = document.getElementById('edit-order-items-list');
+        if (!container) return;
+
+        const items = container.querySelectorAll('[data-line-id]');
+        let totalItems = items.length;
+        let totalQuantity = 0;
+        let totalPrice = 0;
+
+        items.forEach(item => {
+            const quantity = parseInt(item.querySelector('.edit-item-quantity')?.value || 0);
+            const price = parseFloat(item.querySelector('.edit-item-price')?.value || 0);
+            
+            totalQuantity += quantity;
+            totalPrice += quantity * price;
+        });
+
+        document.getElementById('edit-summary-items-count').textContent = totalItems;
+        document.getElementById('edit-summary-total-quantity').textContent = totalQuantity;
+        document.getElementById('edit-summary-total-price').textContent = `$${totalPrice.toFixed(2)}`;
+    },
+
+    /**
+     * Envía el formulario de edición de pedido
+     */
+    async submitEditOrder(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(event.target);
+        const orderId = formData.get('order_id');
+        
+        // Construir array de items desde el formulario
+        const container = document.getElementById('edit-order-items-list');
+        const itemElements = container.querySelectorAll('[data-line-id]');
+        
+        if (itemElements.length === 0) {
+            document.getElementById('error-edit-order-items').classList.remove('hidden');
+            this.showError('Debe tener al menos un item en el pedido');
+            return;
+        }
+        
+        const orderItems = [];
+        itemElements.forEach((itemElement) => {
+            const quantity = parseInt(itemElement.querySelector('.edit-item-quantity')?.value || 0);
+            const unitPrice = parseFloat(itemElement.querySelector('.edit-item-price')?.value || 0);
+            const projectId = itemElement.querySelector('.edit-item-project-id')?.value;
+            const projectName = itemElement.querySelector('.edit-item-project-name')?.value;
+            const isFullProject = itemElement.querySelector('.edit-item-is-full-project')?.value === 'true';
+            const fileId = itemElement.querySelector('.edit-item-file-id')?.value;
+            const fileName = itemElement.querySelector('.edit-item-file-name')?.value;
+            
+            const orderLine = {
+                project_id: projectId ? parseInt(projectId) : null,
+                project_name: projectName,
+                is_full_project: isFullProject,
+                file_id: fileId || null,
+                file_name: fileName || null,
+                quantity: quantity,
+                unit_price: unitPrice
+            };
+            
+            orderItems.push(orderLine);
+        });
+        
+        const updateData = {
+            customer_id: formData.get('customer_id'),
+            priority: formData.get('priority'),
+            due_date: formData.get('due_date') || null,
+            notes: formData.get('notes') || null,
+            items: orderItems
+        };
+        
+        try {
+            await this.apiPut(`/orders/${orderId}`, updateData);
+            
+            this.showSuccess('Pedido actualizado exitosamente');
+            this.closeModal('modal-edit-order');
+            
+            // Recargar datos
+            await this.loadAllData();
+            this.refreshCurrentView();
+            
+        } catch (error) {
+            console.error('Error al actualizar pedido:', error);
+            this.showError('Error al actualizar el pedido: ' + error.message);
+        }
+    },
+
+    /**
      * Alterna entre tipos de pedido
      */
     toggleOrderType(orderType) {
@@ -968,8 +1259,7 @@ const OrdersModule = {
         document.getElementById('order-items-list').innerHTML = '';
         this.updateOrderSummary();
         
-        // Agregar un item por defecto
-        this.addOrderItem();
+        // No agregar items por defecto - se seleccionan desde la galería
     },
 
     /**
@@ -1190,29 +1480,40 @@ const OrdersModule = {
             return;
         }
         
-        // Para pedidos solo impresión, validar items
+        // Para pedidos solo impresión, validar items de la galería
         const itemsContainer = document.getElementById('order-items-list');
-        const items = itemsContainer.querySelectorAll('.order-item');
+        const itemElements = itemsContainer.querySelectorAll('[data-gallery-item]');
         
-        if (items.length === 0) {
+        if (itemElements.length === 0) {
             document.getElementById('error-order-items').classList.remove('hidden');
-            this.showError('Debe agregar al menos un item al pedido');
+            this.showError('Debe agregar al menos un item al pedido desde la galería');
             return;
         }
         
-        // Construir array de items
+        // Construir array de order_lines desde items de galería
         const orderItems = [];
-        items.forEach((item, index) => {
-            const itemData = {
-                name: formData.get(`items[${index}][name]`),
-                quantity: parseInt(formData.get(`items[${index}][quantity]`)),
-                unit_price: parseFloat(formData.get(`items[${index}][unit_price]`)),
-                material: formData.get(`items[${index}][material]`),
-                color: formData.get(`items[${index}][color]`) || null,
-                file_path: formData.get(`items[${index}][file_path]`) || null,
-                notes: formData.get(`items[${index}][notes]`) || null
+        itemElements.forEach((itemElement) => {
+            const galleryItemStr = itemElement.getAttribute('data-gallery-item');
+            const galleryItem = JSON.parse(galleryItemStr);
+            
+            // Obtener valores actualizados del DOM
+            const quantityInput = itemElement.querySelector('input[type="number"][value]');
+            const priceInput = itemElement.querySelectorAll('input[type="number"]')[1];
+            
+            const quantity = quantityInput ? parseInt(quantityInput.value) : galleryItem.quantity;
+            const unitPrice = priceInput ? parseFloat(priceInput.value) : 0;
+            
+            const orderLine = {
+                project_id: galleryItem.project_id,
+                project_name: galleryItem.project_name,
+                is_full_project: galleryItem.is_full_project,
+                file_id: galleryItem.file_id || null,
+                file_name: galleryItem.file_name || null,
+                quantity: quantity,
+                unit_price: unitPrice
             };
-            orderItems.push(itemData);
+            
+            orderItems.push(orderLine);
         });
         
         const orderData = {
@@ -1240,6 +1541,381 @@ const OrdersModule = {
             console.error('Error al crear pedido:', error);
             this.showError('Error al crear el pedido: ' + error.message);
         }
+    },
+
+    // ============================================================
+    // FUNCIONES DEL SELECTOR DE GALERÍA STL
+    // ============================================================
+
+    gallerySelection: {
+        projects: [],
+        selectedItems: []
+    },
+
+    /**
+     * Muestra el modal del selector de galería
+     */
+    async showGallerySelector() {
+        console.log('Abriendo selector de galería...');
+        
+        try {
+            // Cargar proyectos de la galería
+            const response = await fetch('http://localhost:8000/api/gallery/projects');
+            const data = await response.json();
+            
+            this.gallerySelection.projects = data.projects || [];
+            this.gallerySelection.selectedItems = [];
+            
+            // Renderizar proyectos
+            this.renderGalleryProjects();
+            
+            // Mostrar modal
+            this.openModal('modal-gallery-selector');
+            
+        } catch (error) {
+            console.error('Error al cargar proyectos de galería:', error);
+            this.showError('Error al cargar los proyectos de la galería');
+        }
+    },
+
+    /**
+     * Renderiza la lista de proyectos en el modal
+     */
+    renderGalleryProjects() {
+        const container = document.getElementById('gallery-projects-list');
+        if (!container) return;
+
+        const projects = this.gallerySelection.projects;
+
+        if (projects.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-8 text-gray-500">
+                    <div class="text-4xl mb-2">📭</div>
+                    <p>No hay proyectos disponibles en la galería</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = projects.map(project => {
+            const projectCheckboxId = `project-${project.id}`;
+            const hasFiles = project.archivos && project.archivos.length > 0;
+            
+            return `
+                <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-all project-card" data-project-id="${project.id}">
+                    <div class="flex items-start gap-4">
+                        <!-- Imagen del Proyecto -->
+                        <div class="flex-shrink-0">
+                            ${project.imagen 
+                                ? `<img src="http://localhost:8000${project.imagen}" alt="${project.nombre}" class="w-20 h-20 object-cover rounded-lg">`
+                                : `<div class="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center text-3xl">📦</div>`
+                            }
+                        </div>
+
+                        <!-- Información del Proyecto -->
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" 
+                                           id="${projectCheckboxId}"
+                                           onchange="OrdersModule.toggleProjectSelection(${project.id}, this.checked)"
+                                           class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500">
+                                    <span class="font-semibold text-gray-800">${project.nombre}</span>
+                                </label>
+                                <span class="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded">${project.estado || 'Listo'}</span>
+                            </div>
+                            
+                            ${project.descripcion ? `<p class="text-sm text-gray-600 mb-2">${project.descripcion}</p>` : ''}
+                            
+                            <div class="flex items-center gap-4 text-xs text-gray-500">
+                                <span>📁 ${hasFiles ? project.archivos.length : 0} archivos</span>
+                                ${project.estadisticas?.tiempo_estimado ? `<span>⏱️ ${project.estadisticas.tiempo_estimado}</span>` : ''}
+                                ${project.estadisticas?.filamento_estimado ? `<span>🧵 ${project.estadisticas.filamento_estimado}</span>` : ''}
+                            </div>
+
+                            <!-- Archivos Individuales -->
+                            ${hasFiles ? `
+                                <div class="mt-3 pl-4 border-l-2 border-gray-200">
+                                    <button type="button" 
+                                            onclick="OrdersModule.toggleProjectFiles(${project.id})"
+                                            class="text-xs text-blue-600 hover:text-blue-700 font-medium mb-2">
+                                        ▼ Ver archivos individuales (${project.archivos.length})
+                                    </button>
+                                    <div id="files-${project.id}" class="hidden space-y-1">
+                                        ${project.archivos.map((file, fileIndex) => {
+                                            const fileCheckboxId = `file-${project.id}-${fileIndex}`;
+                                            return `
+                                                <label class="flex items-center gap-2 text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                                    <input type="checkbox" 
+                                                           id="${fileCheckboxId}"
+                                                           onchange="OrdersModule.toggleFileSelection(${project.id}, ${fileIndex}, this.checked)"
+                                                           class="w-3 h-3 text-blue-600 rounded focus:ring-blue-500">
+                                                    <span class="text-gray-700">${file.nombre}</span>
+                                                    <span class="text-xs text-gray-500">(${file.tamano})</span>
+                                                </label>
+                                            `;
+                                        }).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        this.updateGallerySelectionCount();
+    },
+
+    /**
+     * Toggle para mostrar/ocultar archivos de un proyecto
+     */
+    toggleProjectFiles(projectId) {
+        const filesContainer = document.getElementById(`files-${projectId}`);
+        if (filesContainer) {
+            filesContainer.classList.toggle('hidden');
+        }
+    },
+
+    /**
+     * Maneja la selección de un proyecto completo
+     */
+    toggleProjectSelection(projectId, isChecked) {
+        const project = this.gallerySelection.projects.find(p => p.id === projectId);
+        if (!project) return;
+
+        if (isChecked) {
+            // Agregar proyecto completo
+            const existingIndex = this.gallerySelection.selectedItems.findIndex(
+                item => item.project_id === projectId && item.is_full_project
+            );
+            
+            if (existingIndex === -1) {
+                this.gallerySelection.selectedItems.push({
+                    project_id: projectId,
+                    project_name: project.nombre,
+                    is_full_project: true,
+                    file_id: null,
+                    file_name: null,
+                    quantity: 1
+                });
+            }
+
+            // Desmarcar archivos individuales si estaban seleccionados
+            this.gallerySelection.selectedItems = this.gallerySelection.selectedItems.filter(
+                item => !(item.project_id === projectId && !item.is_full_project)
+            );
+            
+            // Desmarcar checkboxes de archivos
+            if (project.archivos) {
+                project.archivos.forEach((file, index) => {
+                    const checkbox = document.getElementById(`file-${projectId}-${index}`);
+                    if (checkbox) checkbox.checked = false;
+                });
+            }
+        } else {
+            // Remover proyecto completo
+            this.gallerySelection.selectedItems = this.gallerySelection.selectedItems.filter(
+                item => !(item.project_id === projectId && item.is_full_project)
+            );
+        }
+
+        this.updateGallerySelectionCount();
+    },
+
+    /**
+     * Maneja la selección de un archivo individual
+     */
+    toggleFileSelection(projectId, fileIndex, isChecked) {
+        const project = this.gallerySelection.projects.find(p => p.id === projectId);
+        if (!project || !project.archivos || !project.archivos[fileIndex]) return;
+
+        const file = project.archivos[fileIndex];
+        const fileId = `${projectId}-${fileIndex}`;
+
+        if (isChecked) {
+            // Agregar archivo individual
+            const existingIndex = this.gallerySelection.selectedItems.findIndex(
+                item => item.project_id === projectId && item.file_id === fileId
+            );
+            
+            if (existingIndex === -1) {
+                this.gallerySelection.selectedItems.push({
+                    project_id: projectId,
+                    project_name: project.nombre,
+                    is_full_project: false,
+                    file_id: fileId,
+                    file_name: file.nombre,
+                    quantity: 1
+                });
+            }
+
+            // Desmarcar proyecto completo si estaba seleccionado
+            const projectCheckbox = document.getElementById(`project-${projectId}`);
+            if (projectCheckbox && projectCheckbox.checked) {
+                projectCheckbox.checked = false;
+                this.gallerySelection.selectedItems = this.gallerySelection.selectedItems.filter(
+                    item => !(item.project_id === projectId && item.is_full_project)
+                );
+            }
+        } else {
+            // Remover archivo individual
+            this.gallerySelection.selectedItems = this.gallerySelection.selectedItems.filter(
+                item => !(item.project_id === projectId && item.file_id === fileId)
+            );
+        }
+
+        this.updateGallerySelectionCount();
+    },
+
+    /**
+     * Filtra proyectos en el selector
+     */
+    filterGalleryProjects() {
+        const searchTerm = document.getElementById('gallery-search')?.value.toLowerCase() || '';
+        const projectCards = document.querySelectorAll('.project-card');
+
+        projectCards.forEach(card => {
+            const projectId = parseInt(card.dataset.projectId);
+            const project = this.gallerySelection.projects.find(p => p.id === projectId);
+            
+            if (project) {
+                const matchesSearch = 
+                    project.nombre.toLowerCase().includes(searchTerm) ||
+                    (project.descripcion && project.descripcion.toLowerCase().includes(searchTerm));
+                
+                card.style.display = matchesSearch ? 'block' : 'none';
+            }
+        });
+    },
+
+    /**
+     * Actualiza el contador de selección
+     */
+    updateGallerySelectionCount() {
+        const count = this.gallerySelection.selectedItems.length;
+        const countElement = document.getElementById('gallery-selection-count');
+        if (countElement) {
+            countElement.textContent = count;
+        }
+    },
+
+    /**
+     * Limpia la selección actual
+     */
+    clearGallerySelection() {
+        this.gallerySelection.selectedItems = [];
+        
+        // Desmarcar todos los checkboxes
+        document.querySelectorAll('#gallery-projects-list input[type="checkbox"]').forEach(cb => {
+            cb.checked = false;
+        });
+        
+        this.updateGallerySelectionCount();
+    },
+
+    /**
+     * Confirma la selección y agrega items al pedido
+     */
+    confirmGallerySelection() {
+        const selectedItems = this.gallerySelection.selectedItems;
+        
+        if (selectedItems.length === 0) {
+            this.showWarning('No has seleccionado ningún proyecto o archivo');
+            return;
+        }
+
+        // Detectar si estamos en modo edición o creación
+        const editModal = document.getElementById('modal-edit-order');
+        const isEditMode = editModal && !editModal.classList.contains('hidden');
+
+        // Agregar cada item seleccionado al formulario correspondiente
+        selectedItems.forEach(item => {
+            if (isEditMode) {
+                // Convertir item de galería a formato OrderLine para edición
+                const orderLine = {
+                    id: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                    project_id: item.project_id,
+                    project_name: item.project_name,
+                    is_full_project: item.is_full_project,
+                    file_id: item.file_id,
+                    file_name: item.file_name,
+                    quantity: item.quantity || 1,
+                    unit_price: 0
+                };
+                this.addEditOrderItem(orderLine);
+            } else {
+                this.addOrderItemFromGallery(item);
+            }
+        });
+
+        // Actualizar resumen correspondiente
+        if (isEditMode) {
+            this.updateEditOrderSummary();
+        } else {
+            this.updateOrderSummary();
+        }
+
+        this.showSuccess(`${selectedItems.length} item(s) agregado(s) al pedido`);
+        this.closeModal('modal-gallery-selector');
+    },
+
+    /**
+     * Agrega un item del selector de galería al formulario
+     */
+    addOrderItemFromGallery(galleryItem) {
+        const itemsList = document.getElementById('order-items-list');
+        if (!itemsList) return;
+
+        const itemId = `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const displayName = galleryItem.is_full_project 
+            ? `📦 ${galleryItem.project_name} (Proyecto completo)`
+            : `📄 ${galleryItem.file_name} (de ${galleryItem.project_name})`;
+
+        const itemHTML = `
+            <div class="border border-gray-300 rounded-lg p-4" id="${itemId}" data-gallery-item='${JSON.stringify(galleryItem)}'>
+                <div class="flex items-start gap-3">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="font-medium text-gray-800">${displayName}</span>
+                            ${galleryItem.is_full_project 
+                                ? '<span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded">Completo</span>'
+                                : '<span class="text-xs px-2 py-0.5 bg-purple-100 text-purple-700 rounded">Individual</span>'
+                            }
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">Cantidad</label>
+                                <input type="number" 
+                                       value="${galleryItem.quantity}" 
+                                       min="1" 
+                                       onchange="OrdersModule.updateOrderSummary()"
+                                       class="form-input text-sm w-full">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">Precio Unitario</label>
+                                <input type="number" 
+                                       value="0" 
+                                       min="0" 
+                                       step="0.01"
+                                       onchange="OrdersModule.updateOrderSummary()"
+                                       class="form-input text-sm w-full">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" 
+                            onclick="OrdersModule.removeOrderItem('${itemId}')"
+                            class="text-red-600 hover:text-red-700 text-xl">
+                        ×
+                    </button>
+                </div>
+            </div>
+        `;
+
+        itemsList.insertAdjacentHTML('beforeend', itemHTML);
+        this.updateOrderSummary();
     }
 };
 

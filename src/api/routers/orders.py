@@ -171,6 +171,32 @@ async def predict_order_completion(order_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/{order_id}/lines", response_model=Order)
+async def add_order_lines(
+    order_id: str,
+    items: List[dict] = Body(..., description="Lista de items a agregar al pedido"),
+):
+    """
+    Agrega order_lines a un pedido existente.
+    
+    Útil para pedidos de tipo design_and_print donde los items se agregan
+    después de que el diseño ha sido aprobado.
+    
+    Args:
+        order_id: ID del pedido al que se agregarán los items
+        items: Lista de items con el mismo formato que en POST /orders/
+    
+    Returns:
+        Pedido actualizado con las nuevas líneas agregadas
+    """
+    try:
+        return service.add_order_lines(order_id, items)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/{order_id}/suggestions")
 async def suggest_order_improvements(order_id: str):
     """
