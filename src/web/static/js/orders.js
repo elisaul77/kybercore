@@ -257,10 +257,14 @@ const OrdersModule = {
         const metrics = this.state.metrics;
 
         // Actualizar métricas principales
-        document.getElementById('metric-total-orders').textContent = metrics.total_orders || 0;
-        document.getElementById('metric-pending-orders').textContent = metrics.pending_orders || 0;
-        document.getElementById('metric-completed-orders').textContent = metrics.completed_orders || 0;
-        document.getElementById('metric-revenue').textContent = `$${(metrics.total_revenue || 0).toFixed(2)}`;
+        // El backend devuelve: { orders: {total, pending, completed}, financial: {total_revenue} }
+        const ordersData = metrics.orders || {};
+        const financialData = metrics.financial || {};
+        
+        document.getElementById('metric-total-orders').textContent = ordersData.total || 0;
+        document.getElementById('metric-pending-orders').textContent = ordersData.pending || 0;
+        document.getElementById('metric-completed-orders').textContent = ordersData.completed || 0;
+        document.getElementById('metric-revenue').textContent = `$${(financialData.total_revenue || 0).toFixed(2)}`;
 
         // Renderizar gráfico de estado
         this.renderStatusChart();
@@ -274,10 +278,19 @@ const OrdersModule = {
      */
     renderStatusChart() {
         const chartContainer = document.getElementById('orders-status-chart');
-        const statusCounts = this.state.metrics.orders_by_status || {};
+        
+        // Calcular conteo por estado desde los pedidos locales
+        const statusCounts = {};
+        this.state.orders.forEach(order => {
+            const status = order.status;
+            statusCounts[status] = (statusCounts[status] || 0) + 1;
+        });
 
         const statuses = {
             pending: { label: 'Pendientes', color: '#fbbf24', emoji: '⏳' },
+            pending_design: { label: 'Diseño Pendiente', color: '#e9d5ff', emoji: '✏️' },
+            design_in_progress: { label: 'Diseñando', color: '#ddd6fe', emoji: '🎨' },
+            paused: { label: 'Pausados', color: '#fed7aa', emoji: '⏸️' },
             in_progress: { label: 'En Progreso', color: '#3b82f6', emoji: '🔄' },
             completed: { label: 'Completados', color: '#10b981', emoji: '✅' },
             cancelled: { label: 'Cancelados', color: '#ef4444', emoji: '❌' }
@@ -287,8 +300,11 @@ const OrdersModule = {
 
         let html = '<div class="space-y-3">';
         
+        // Solo mostrar estados que tienen pedidos
         for (const [status, config] of Object.entries(statuses)) {
             const count = statusCounts[status] || 0;
+            if (count === 0) continue; // Saltar estados sin pedidos
+            
             const percentage = total > 0 ? (count / total * 100).toFixed(1) : 0;
 
             html += `
@@ -306,6 +322,10 @@ const OrdersModule = {
                     </div>
                 </div>
             `;
+        }
+        
+        if (total === 0) {
+            html = '<p class="text-center text-gray-500 py-8">No hay pedidos aún</p>';
         }
 
         html += '</div>';
