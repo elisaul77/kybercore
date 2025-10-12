@@ -333,11 +333,27 @@ class Order(BaseModel):
         else:
             self.completion_percentage = 0.0
     
-    def update_status(self):
+    def update_status(self, new_status: Optional[OrderStatus] = None):
         """
-        Actualiza el estado del pedido basándose en el progreso y tipo de pedido.
-        Para pedidos design_and_print, maneja estados de diseño.
+        Actualiza el estado del pedido.
+        
+        Args:
+            new_status: Si se proporciona, establece este estado directamente.
+                       Si no, calcula el estado basándose en el progreso y tipo de pedido.
         """
+        # Si se proporciona un nuevo estado explícitamente, usarlo
+        if new_status is not None:
+            self.status = new_status
+            
+            # Actualizar timestamps según el nuevo estado
+            if new_status == OrderStatus.IN_PROGRESS and not self.started_at:
+                self.started_at = datetime.now()
+            elif new_status == OrderStatus.COMPLETED and not self.completed_at:
+                self.completed_at = datetime.now()
+            
+            return
+        
+        # Lógica automática: calcular estado basándose en progreso
         # Para pedidos con diseño, verificar estado del diseño primero
         if self.order_type == OrderType.DESIGN_AND_PRINT:
             if self.design_info:

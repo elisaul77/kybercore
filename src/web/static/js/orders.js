@@ -625,22 +625,246 @@ const OrdersModule = {
     },
 
     /**
-     * Muestra detalles de un pedido
+     * Muestra detalles de un pedido en modal de solo lectura
      */
-    showOrderDetails(orderId) {
-        const order = this.state.orders.find(o => o.id === orderId);
-        if (!order) return;
-
-        const customer = this.state.customers.find(c => c.id === order.customer_id);
+    async showOrderDetails(orderId) {
+        console.log('Abriendo vista detallada del pedido:', orderId);
         
-        alert(`Pedido: ${orderId}\nCliente: ${customer?.name}\nEstado: ${order.status}\nTotal: $${order.total_amount}`);
-        // TODO: Implementar modal de detalles del pedido
+        try {
+            // Obtener datos del pedido
+            const order = await this.apiGet(`/orders/${orderId}`);
+            const customer = this.state.customers.find(c => c.id === order.customer_id);
+            
+            // Información general
+            document.getElementById('view-order-id').textContent = order.id;
+            document.getElementById('view-order-number').textContent = order.order_number || '-';
+            document.getElementById('view-order-customer').textContent = customer?.name || 'Desconocido';
+            
+            const orderTypeText = order.order_type === 'design_and_print' 
+                ? '✏️ Diseño + Impresión' 
+                : '🖨️ Solo Impresión';
+            document.getElementById('view-order-type').textContent = orderTypeText;
+            
+            document.getElementById('view-order-priority').textContent = this.formatPriority(order.priority);
+            document.getElementById('view-order-due-date').textContent = order.due_date 
+                ? this.formatDate(order.due_date) 
+                : 'Sin fecha límite';
+            
+            // Estado actual
+            const statusBadge = document.getElementById('view-order-status-badge');
+            const statusEmoji = this.getStatusEmoji(order.status);
+            statusBadge.innerHTML = `
+                <span class="status-badge status-${order.status}" style="font-size: 1.1rem; padding: 0.75rem 1.5rem;">
+                    ${statusEmoji} ${this.formatStatus(order.status)}
+                </span>
+            `;
+            
+            // Información de diseño (si aplica)
+            const designInfoSection = document.getElementById('view-design-info-section');
+            if (order.order_type === 'design_and_print' && order.design_info) {
+                designInfoSection.classList.remove('hidden');
+                document.getElementById('view-design-description').textContent = order.design_info.description || '-';
+                document.getElementById('view-design-purpose').textContent = order.design_info.purpose || '-';
+                document.getElementById('view-design-dimensions').textContent = order.design_info.dimensions || '-';
+            } else {
+                designInfoSection.classList.add('hidden');
+            }
+            
+            // Items del pedido
+            const itemsList = document.getElementById('view-order-items-list');
+            if (order.order_lines && order.order_lines.length > 0) {
+                itemsList.innerHTML = order.order_lines.map((line, index) => `
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">
+                                    ${index + 1}. ${line.project_name || 'Sin nombre'}
+                                    ${line.is_full_project ? '<span class="text-xs text-blue-600">(Proyecto completo)</span>' : ''}
+                                    ${line.file_name ? `<span class="text-xs text-gray-600">→ ${line.file_name}</span>` : ''}
+                                </p>
+                                <div class="text-xs text-gray-600 mt-1 space-y-1">
+                                    <p>Cantidad: <strong>${line.quantity}</strong> unidades</p>
+                                    <p>Precio unitario: <strong>$${line.unit_price.toFixed(2)}</strong></p>
+                                    ${line.material ? `<p>Material: <strong>${line.material}</strong></p>` : ''}
+                                    ${line.color ? `<p>Color: <strong>${line.color}</strong></p>` : ''}
+                                </div>
+                            </div>
+                            <div class="text-right ml-3">
+                                <p class="text-lg font-bold text-blue-600">
+                                    $${(line.quantity * line.unit_price).toFixed(2)}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                itemsList.innerHTML = '<p class="text-sm text-gray-500 italic">Sin items</p>';
+            }
+            
+            // Notas
+            document.getElementById('view-order-notes').textContent = order.notes || 'Sin notas';
+            
+            // Resumen financiero
+            document.getElementById('view-summary-items').textContent = order.total_items || 0;
+            document.getElementById('view-summary-quantity').textContent = order.order_lines?.reduce((sum, line) => sum + line.quantity, 0) || 0;
+            document.getElementById('view-summary-total').textContent = `$${order.total_amount?.toFixed(2) || '0.00'}`;
+            
+            // Timeline
+            document.getElementById('view-created-at').textContent = this.formatDateTime(order.created_at);
+            
+            if (order.started_at) {
+                document.getElementById('view-started-at-container').classList.remove('hidden');
+                document.getElementById('view-started-at').textContent = this.formatDateTime(order.started_at);
+            } else {
+                document.getElementById('view-started-at-container').classList.add('hidden');
+            }
+            
+            if (order.completed_at) {
+                document.getElementById('view-completed-at-container').classList.remove('hidden');
+                document.getElementById('view-completed-at').textContent = this.formatDateTime(order.completed_at);
+            } else {
+                document.getElementById('view-completed-at-container').classList.add('hidden');
+            }
+            
+            // Abrir modal
+            this.openModal('modal-view-order');
+            
+        } catch (error) {
+            console.error('Error al cargar detalles del pedido:', error);
+            this.showError('Error al cargar los detalles del pedido');
+        }
     },
 
     /**
-     * Actualiza estado de un pedido
+     * Muestra modal de gestión de estado del pedido
      */
     async updateOrderStatus(orderId) {
+        console.log('Abriendo modal de estado para pedido:', orderId);
+        
+        try {
+            // Obtener datos del pedido
+            const order = await this.apiGet(`/orders/${orderId}`);
+            const customer = this.state.customers.find(c => c.id === order.customer_id);
+            
+            // Guardar ID del pedido actual
+            this.currentStatusOrderId = orderId;
+            
+            // Información del pedido
+            document.getElementById('status-order-number').textContent = order.order_number || order.id.substring(0, 12);
+            document.getElementById('status-order-customer').textContent = customer?.name || 'Desconocido';
+            
+            // Estado actual
+            const statusBadge = document.getElementById('status-current-badge');
+            const statusEmoji = this.getStatusEmoji(order.status);
+            statusBadge.innerHTML = `
+                <span class="status-badge status-${order.status}">
+                    ${statusEmoji} ${this.formatStatus(order.status)}
+                </span>
+            `;
+            
+            // TODO: Aquí cargaríamos las impresoras asignadas desde la API
+            // Por ahora mostramos mensaje placeholder
+            const printersList = document.getElementById('status-printers-list');
+            if (order.status === 'in_progress') {
+                printersList.innerHTML = `
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+                        <p class="text-blue-800">
+                            🔵 Este pedido está en progreso. 
+                            <span class="font-semibold">La asignación de impresoras se mostrará aquí cuando esté disponible.</span>
+                        </p>
+                    </div>
+                `;
+            } else {
+                printersList.innerHTML = `
+                    <p class="text-sm text-gray-500 italic">
+                        Este pedido aún no tiene impresoras asignadas
+                    </p>
+                `;
+            }
+            
+            // Resetear selector de estado
+            document.getElementById('status-new-state').value = '';
+            document.getElementById('status-change-reason').value = '';
+            
+            // Abrir modal
+            this.openModal('modal-order-status');
+            
+        } catch (error) {
+            console.error('Error al cargar estado del pedido:', error);
+            this.showError('Error al cargar el estado del pedido');
+        }
+    },
+
+    /**
+     * Envía cambio de estado del pedido
+     */
+    async submitStatusChange() {
+        const orderId = this.currentStatusOrderId;
+        if (!orderId) {
+            this.showError('No hay pedido seleccionado');
+            return;
+        }
+        
+        const newStatus = document.getElementById('status-new-state').value;
+        if (!newStatus) {
+            this.showError('Debes seleccionar un nuevo estado');
+            return;
+        }
+        
+        const reason = document.getElementById('status-change-reason').value;
+        
+        try {
+            await this.apiPatch(`/orders/${orderId}/status`, { status: newStatus });
+            
+            this.showSuccess(`Estado actualizado a: ${this.formatStatus(newStatus)}`);
+            this.closeModal('modal-order-status');
+            
+            // Recargar datos
+            await this.loadAllData();
+            this.refreshCurrentView();
+            
+        } catch (error) {
+            console.error('Error al actualizar estado:', error);
+            this.showError('Error al actualizar el estado: ' + error.message);
+        }
+    },
+
+    /**
+     * Formatea fecha y hora
+     */
+    formatDateTime(dateString) {
+        if (!dateString) return '-';
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (e) {
+            return dateString;
+        }
+    },
+
+    /**
+     * Formatea prioridad
+     */
+    formatPriority(priority) {
+        const priorities = {
+            low: '🟢 Baja',
+            normal: '🔵 Normal',
+            high: '🟠 Alta',
+            urgent: '🔴 Urgente'
+        };
+        return priorities[priority] || priority;
+    },
+
+    /**
+     * Actualiza estado de un pedido (método antiguo - mantener compatibilidad)
+     */
+    async _updateOrderStatusOld(orderId) {
         const newStatus = prompt('Nuevo estado (pending, in_progress, completed, cancelled):');
         if (!newStatus) return;
 

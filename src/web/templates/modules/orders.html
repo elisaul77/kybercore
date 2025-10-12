@@ -1101,5 +1101,252 @@
     </div>
 </div>
 
+<!-- Modal: Vista Detallada de Pedido (Solo Lectura) -->
+<div id="modal-view-order" class="modal-overlay hidden" onclick="OrdersModule.closeModal('modal-view-order', event)">
+    <div class="modal-content w-full md:w-4/5 lg:w-3/4 p-6" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                <span class="text-3xl">👁️</span>
+                Vista Detallada del Pedido
+            </h2>
+            <button onclick="OrdersModule.closeModal('modal-view-order')" 
+                    class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
+                ×
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Columna 1: Información Principal -->
+            <div class="lg:col-span-2 space-y-4">
+                <!-- Información General -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                        <span>📋</span> Información General
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">ID del Pedido:</label>
+                            <p id="view-order-id" class="text-gray-800 font-mono text-xs bg-white p-2 rounded border">-</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Número de Pedido:</label>
+                            <p id="view-order-number" class="text-gray-800 font-semibold bg-white p-2 rounded border">-</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Cliente:</label>
+                            <p id="view-order-customer" class="text-gray-800 bg-white p-2 rounded border">-</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Tipo de Pedido:</label>
+                            <p id="view-order-type" class="text-gray-800 bg-white p-2 rounded border">-</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Prioridad:</label>
+                            <p id="view-order-priority" class="text-gray-800 bg-white p-2 rounded border">-</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Fecha de Entrega:</label>
+                            <p id="view-order-due-date" class="text-gray-800 bg-white p-2 rounded border">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información de Diseño (si aplica) -->
+                <div id="view-design-info-section" class="hidden border-2 border-purple-200 rounded-lg p-4 bg-purple-50">
+                    <h3 class="text-lg font-semibold text-purple-900 mb-3 flex items-center gap-2">
+                        <span>✏️</span> Información de Diseño
+                    </h3>
+                    <div class="space-y-2 text-sm">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Descripción:</label>
+                            <p id="view-design-description" class="text-gray-800 bg-white p-2 rounded border border-purple-200">-</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Propósito:</label>
+                                <p id="view-design-purpose" class="text-gray-800 bg-white p-2 rounded border border-purple-200">-</p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Dimensiones:</label>
+                                <p id="view-design-dimensions" class="text-gray-800 bg-white p-2 rounded border border-purple-200">-</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Items del Pedido -->
+                <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                        <span>📦</span> Items del Pedido
+                    </h3>
+                    <div id="view-order-items-list" class="space-y-2">
+                        <!-- Items se cargan dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Notas -->
+                <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-2">Notas:</h3>
+                    <p id="view-order-notes" class="text-gray-600 text-sm">Sin notas</p>
+                </div>
+            </div>
+
+            <!-- Columna 2: Resumen y Estado -->
+            <div class="lg:col-span-1 space-y-4">
+                <!-- Estado Actual -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Estado Actual</h3>
+                    <div id="view-order-status-badge" class="text-center py-3">
+                        <!-- Badge de estado -->
+                    </div>
+                </div>
+
+                <!-- Resumen Financiero -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Resumen Financiero</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Total Items:</span>
+                            <span class="font-semibold" id="view-summary-items">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Cantidad Total:</span>
+                            <span class="font-semibold" id="view-summary-quantity">0</span>
+                        </div>
+                        <div class="border-t border-gray-300 pt-2">
+                            <div class="flex justify-between text-base">
+                                <span class="text-gray-800 font-medium">Total:</span>
+                                <span class="font-bold text-lg text-blue-600" id="view-summary-total">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Timeline</h3>
+                    <div class="space-y-2 text-xs">
+                        <div>
+                            <label class="text-gray-600">Creado:</label>
+                            <p id="view-created-at" class="text-gray-800 font-mono">-</p>
+                        </div>
+                        <div id="view-started-at-container" class="hidden">
+                            <label class="text-gray-600">Iniciado:</label>
+                            <p id="view-started-at" class="text-gray-800 font-mono">-</p>
+                        </div>
+                        <div id="view-completed-at-container" class="hidden">
+                            <label class="text-gray-600">Completado:</label>
+                            <p id="view-completed-at" class="text-gray-800 font-mono">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón de Cerrar -->
+                <button type="button" 
+                        onclick="OrdersModule.closeModal('modal-view-order')"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-semibold">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Gestión de Estado del Pedido -->
+<div id="modal-order-status" class="modal-overlay hidden" onclick="OrdersModule.closeModal('modal-order-status', event)">
+    <div class="modal-content w-full md:w-3/4 lg:w-2/3 p-6" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                <span class="text-3xl">📊</span>
+                Gestión de Estado del Pedido
+            </h2>
+            <button onclick="OrdersModule.closeModal('modal-order-status')" 
+                    class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
+                ×
+            </button>
+        </div>
+
+        <div class="space-y-6">
+            <!-- Información del Pedido -->
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div class="grid grid-cols-3 gap-4 text-sm">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Pedido:</label>
+                        <p id="status-order-number" class="text-gray-800 font-semibold">-</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Cliente:</label>
+                        <p id="status-order-customer" class="text-gray-800">-</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Estado Actual:</label>
+                        <div id="status-current-badge"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado de Impresión (Impresoras Asignadas) -->
+            <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <span>🖨️</span> Impresoras Asignadas
+                </h3>
+                <div id="status-printers-list" class="space-y-2">
+                    <p class="text-sm text-gray-500 italic">Este pedido aún no tiene impresoras asignadas</p>
+                </div>
+            </div>
+
+            <!-- Cambiar Estado -->
+            <div class="border-2 border-blue-200 rounded-lg p-4 bg-blue-50">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <span>🔄</span> Cambiar Estado del Pedido
+                </h3>
+                
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nuevo Estado:</label>
+                        <select id="status-new-state" class="form-input">
+                            <option value="">Seleccionar estado...</option>
+                            <option value="pending">⏳ Pendiente</option>
+                            <option value="paused">⏸️ Pausado</option>
+                            <option value="in_progress">🔵 En Progreso</option>
+                            <option value="completed">✅ Completado</option>
+                            <option value="cancelled">❌ Cancelado</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Motivo del Cambio (Opcional):</label>
+                        <textarea id="status-change-reason" 
+                                  class="form-input" 
+                                  rows="2"
+                                  placeholder="Describe el motivo del cambio de estado..."></textarea>
+                    </div>
+
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                        <p class="text-xs text-yellow-800">
+                            ⚠️ <strong>Nota:</strong> Cambiar el estado de un pedido afectará su procesamiento en el sistema.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                <button type="button" 
+                        onclick="OrdersModule.closeModal('modal-order-status')"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                    Cancelar
+                </button>
+                <button type="button" 
+                        onclick="OrdersModule.submitStatusChange()"
+                        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-semibold">
+                    <span>💾</span>
+                    Guardar Cambio
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Contenedor de notificaciones -->
 <div id="notifications-container" class="fixed top-4 right-4 z-100 space-y-2"></div>

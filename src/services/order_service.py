@@ -199,7 +199,7 @@ class OrderService:
         order = self.get_order(order_id)
         order.update_status(new_status)
         
-        saved_data = self._repo.upsert_order(order.model_dump())
+        saved_data = self._repo.upsert_order(order.model_dump(mode='json'))
         return Order(**saved_data)
 
     def cancel_order(self, order_id: str, reason: Optional[str] = None) -> Order:
@@ -220,7 +220,7 @@ class OrderService:
             })
             order.notes = notes
         
-        saved_data = self._repo.upsert_order(order.model_dump())
+        saved_data = self._repo.upsert_order(order.model_dump(mode='json'))
         return Order(**saved_data)
 
     def delete_order(self, order_id: str) -> bool:
@@ -253,7 +253,7 @@ class OrderService:
         order.recalculate_totals()
         
         # Guardar
-        saved_data = self._repo.upsert_order(order.model_dump())
+        saved_data = self._repo.upsert_order(order.model_dump(mode='json'))
         return Order(**saved_data)
 
     def remove_order_line(self, order_id: str, line_id: str) -> Order:
@@ -271,7 +271,7 @@ class OrderService:
         order.recalculate_totals()
         
         # Guardar
-        saved_data = self._repo.upsert_order(order.model_dump())
+        saved_data = self._repo.upsert_order(order.model_dump(mode='json'))
         return Order(**saved_data)
 
     def get_pending_orders(self) -> List[Order]:
