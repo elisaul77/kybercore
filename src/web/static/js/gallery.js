@@ -167,14 +167,8 @@ console.log('📁 gallery integrator loaded');
         }, 1500);
     }
     
-    function deleteProject(projectName) {
-        if (confirm(`¿Estás seguro de que deseas eliminar el proyecto "${projectName}"?`)) {
-            showToast('Eliminando', `Eliminando proyecto "${projectName}"...`, 'warning');
-            setTimeout(() => {
-                showToast('Proyecto Eliminado', `El proyecto "${projectName}" ha sido eliminado`, 'success');
-            }, 1000);
-        }
-    }
+    // NOTA: deleteProject se implementa en gallery_dynamic.html con modal HTML5 elegante
+    // No se expone desde este archivo para evitar conflictos (ver línea 690)
 
     // Sistema de modal para detalles de proyecto - DATOS REALES
     async function viewProject(projectId) {
@@ -472,9 +466,8 @@ console.log('📁 gallery integrator loaded');
         showToast('Función pendiente', 'La función de duplicación estará disponible pronto', 'info');
     }
 
-    function deleteProject(projectId) {
-        showToast('Función pendiente', 'La función de eliminación estará disponible pronto', 'info');
-    }
+    // NOTA: deleteProject removida - se usa versión del template con modal HTML5
+    // Ver gallery_dynamic.html para la implementación completa con confirmación elegante
 
     // Función para cerrar el modal
     function closeModal() {
@@ -589,9 +582,9 @@ console.log('📁 gallery integrator loaded');
                         try { duplicateProject(parseInt(projectId)); } catch(err){ console.error(err); }
                         return;
                     case 'delete':
-                        e.preventDefault();
-                        console.log('Delete (integrator):', projectId);
-                        try { deleteProject(parseInt(projectId)); } catch(err){ console.error(err); }
+                        // deleteProject se implementa en el template con modal HTML5
+                        // No hacer nada aquí, dejar que el template maneje el evento
+                        console.log('Delete action (handled by template):', projectId);
                         return;
                 }
             }
@@ -687,7 +680,7 @@ console.log('📁 gallery integrator loaded');
         assignIfAllowed('showProjectsStatistics', showProjectsStatistics);
         assignIfAllowed('exportProject', exportProject);
         assignIfAllowed('duplicateProject', duplicateProject);
-        assignIfAllowed('deleteProject', deleteProject);
+        // assignIfAllowed('deleteProject', deleteProject); // Comentado: se usa versión del template con modal HTML5
         assignIfAllowed('showProjectDetails', showProjectDetails);
         assignIfAllowed('viewProject', viewProject);
         assignIfAllowed('closeModal', closeModal);

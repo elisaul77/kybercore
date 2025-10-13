@@ -302,6 +302,13 @@ function duplicateProject(projectId) {
         });
 }
 
+// ============================================================================
+// NOTA IMPORTANTE: deleteProject se implementa en gallery_dynamic.html
+// con modal HTML5 elegante. Esta función está COMPLETAMENTE COMENTADA
+// para evitar conflictos con la versión del template.
+// Ver: src/web/templates/modules/gallery_dynamic.html línea ~380
+// ============================================================================
+/*
 function deleteProject(projectId) {
     console.log('🗑️ deleteProject called with ID:', projectId);
     
@@ -405,6 +412,8 @@ function deleteProject(projectId) {
             showToast('Error', 'No se pudo eliminar el proyecto', 'error');
         });
 }
+*/
+// ============================================================================
 
 // Función para agregar un proyecto al DOM dinámicamente
 function addProjectToGallery(proyecto) {
@@ -795,9 +804,10 @@ function initGalleryClickHandler() {
                 break;
             }
             case 'delete': {
-                console.log('🗑️ Delete action triggered');
-                if (projectId) deleteProject(parseInt(projectId, 10));
-                handled = true;
+                // deleteProject se maneja en gallery_dynamic.html con modal HTML5
+                // NO procesar aquí para evitar conflictos
+                console.log('🗑️ Delete action (handled by template with modal)');
+                // NO marcar como handled para que el template lo maneje
                 break;
             }
         }

@@ -341,7 +341,7 @@ async function openProjectModal(projectId) {
 // Las funciones createNewProject(), analyzeAllProjects() y showProjectsStatistics()
 // están definidas en gallery_functions.js
 
-// Event listeners para acciones de proyectos (NO incluye view-project)
+// Event listener para acciones de proyectos - CAPTURE PHASE para ejecutar ANTES que gallery.js
 document.addEventListener('click', function(e) {
     // Buscar el elemento con data-action (puede ser el botón o un hijo)
     const button = e.target.closest('[data-action]');
@@ -350,36 +350,16 @@ document.addEventListener('click', function(e) {
     const action = button.getAttribute('data-action');
     const projectId = button.getAttribute('data-project-id');
     
-    // No procesar si no tiene projectId o si es view-project (se maneja por separado)
-    if (!projectId || action === 'view-project') return;
+    // Solo procesar la acción 'delete' aquí - las demás las maneja gallery.js
+    if (action !== 'delete' || !projectId) return;
     
-    // Prevenir propagación solo para las acciones que procesamos aquí
+    // Para delete: prevenir que otros listeners lo procesen
     e.stopPropagation();
     e.preventDefault();
     
-    switch(action) {
-        case 'favorite':
-            toggleFavorite(projectId);
-            break;
-        case 'export':
-            exportProject(projectId);
-            break;
-        case 'duplicate':
-            duplicateProject(projectId);
-            break;
-        case 'delete':
-            deleteProject(projectId);
-            break;
-    }
-});
-        case 'duplicate':
-            duplicateProject(projectId);
-            break;
-        case 'delete':
-            deleteProject(projectId);
-            break;
-    }
-}, true); // Usar capture phase para ejecutar primero
+    // Llamar a nuestra versión con modal HTML5
+    deleteProject(projectId);
+}, true); // CAPTURE PHASE - se ejecuta ANTES que el listener de gallery.js
 
 function toggleFavorite(projectId) {
     console.log('⭐ Toggling favorite for project:', projectId);
@@ -450,17 +430,42 @@ async function confirmDeleteProject() {
         
         const result = await response.json();
         
-        // Cerrar modal
-        modal.classList.add('hidden');
+        // IMPORTANTE: Limpiar variable ANTES de cerrar modal
         projectToDelete = null;
         
-        // Mostrar notificación de éxito (solo una vez)
-        showToast('Eliminado', `Proyecto eliminado correctamente`, 'success');
+        // Restaurar botón
+        deleteBtn.disabled = false;
+        deleteBtn.innerHTML = originalBtnText;
         
-        // Recargar página después de 1 segundo
-        setTimeout(() => {
-            window.location.reload();
-        }, 1000);
+        // Cerrar modal
+        modal.classList.add('hidden');
+        
+        // Buscar la tarjeta del proyecto en el DOM
+        const projectCard = document.querySelector(`[data-project-id="${projectId}"]`);
+        
+        if (projectCard) {
+            // Animación de eliminación elegante
+            projectCard.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+            projectCard.style.transform = 'scale(0.8) rotateX(20deg)';
+            projectCard.style.opacity = '0';
+            
+            // Esperar a que termine la animación antes de eliminar del DOM
+            setTimeout(() => {
+                projectCard.remove();
+                
+                // Actualizar contador de proyectos en las estadísticas
+                updateProjectStats(-1);
+                
+                // Mostrar notificación de éxito
+                showToast('Eliminado', `Proyecto eliminado correctamente`, 'success');
+            }, 500);
+        } else {
+            // Si no se encuentra la tarjeta, mostrar toast y recargar
+            showToast('Eliminado', `Proyecto eliminado correctamente`, 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        }
         
     } catch (error) {
         console.error('Error eliminando proyecto:', error);
@@ -476,20 +481,46 @@ async function confirmDeleteProject() {
     }
 }
 
-// Asegurar que nuestra versión se use globalmente con Object.defineProperty
-// Esto previene que gallery.js la sobrescriba
-(function() {
-    const modalDeleteProject = deleteProject;
+// Función para actualizar las estadísticas de proyectos
+function updateProjectStats(change) {
+    // Actualizar contador de "Total Proyectos"
+    const totalProjectsElements = document.querySelectorAll('.text-3xl.font-bold');
+    if (totalProjectsElements.length > 0) {
+        const totalElement = totalProjectsElements[0]; // Primer elemento (Total Proyectos)
+        const currentTotal = parseInt(totalElement.textContent) || 0;
+        const newTotal = Math.max(0, currentTotal + change);
+        
+        // Animación del contador
+        totalElement.style.transition = 'transform 0.3s ease';
+        totalElement.style.transform = 'scale(1.2)';
+        totalElement.textContent = newTotal;
+        
+        setTimeout(() => {
+            totalElement.style.transform = 'scale(1)';
+        }, 300);
+    }
     
-    // Usar defineProperty para hacer la propiedad no-writable
-    Object.defineProperty(window, 'deleteProject', {
-        value: modalDeleteProject,
-        writable: false,
-        configurable: false
-    });
-    
-    console.log('✅ deleteProject modal version loaded and protected');
-})();
+    // Verificar si la galería está vacía
+    const galleryGrid = document.getElementById('gallery-grid');
+    if (galleryGrid && galleryGrid.children.length === 0) {
+        // Mostrar mensaje de galería vacía
+        galleryGrid.innerHTML = `
+            <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
+                <div class="text-6xl mb-4">📭</div>
+                <h3 class="text-2xl font-semibold mb-2">No hay proyectos</h3>
+                <p class="text-gray-500 mb-6">Comienza importando tu primer proyecto</p>
+                <button onclick="openBulkImportModal()" class="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-indigo-600 hover:to-indigo-700 transition-colors shadow-lg">
+                    📦 Importar Proyectos
+                </button>
+            </div>
+        `;
+    }
+}
+
+// Exponer deleteProject globalmente para que los botones puedan llamarla
+// gallery.js no sobrescribe esta función (está comentada allí)
+window.deleteProject = deleteProject;
+console.log('✅ deleteProject modal version loaded');
 
 // Sistema de notificaciones toast (si no existe)
 function showToast(title, message, type = 'info') {
