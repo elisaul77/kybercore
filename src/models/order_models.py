@@ -53,7 +53,10 @@ class OrderLineStatus(str, Enum):
 class BatchStatus(str, Enum):
     """Estados de un lote de producción"""
     PENDING = "pending"
+    QUEUED = "queued"
+    IN_PROGRESS = "in_progress"
     PROCESSING = "processing"
+    PAUSED = "paused"
     COMPLETED = "completed"
     FAILED = "failed"
 

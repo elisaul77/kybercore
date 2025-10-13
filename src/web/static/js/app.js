@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Validar que el módulo existe
-        const validModules = ['dashboard', 'new-job', 'recommender', 'analysis', 'fleet', 'consumables', 'orders', 'gallery', 'settings'];
+        const validModules = ['dashboard', 'new-job', 'recommender', 'analysis', 'fleet', 'consumables', 'orders', 'production', 'gallery', 'settings'];
         if (!validModules.includes(moduleId)) {
             console.warn(`Módulo desconocido: ${moduleId}, cargando dashboard`);
             moduleId = 'dashboard';
@@ -180,7 +180,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Fetch and load module HTML
         try {
-            const response = await fetch(`/api/${moduleId}/${moduleId}`);
+            // Special case for orders module to avoid conflict with REST API
+            const endpoint = moduleId === 'orders' ? `/api/${moduleId}-view` : `/api/${moduleId}/${moduleId}`;
+            const response = await fetch(endpoint);
             if (!response.ok) throw new Error(`Failed to load module: ${moduleId}`);
             mainContent.innerHTML = await response.text();
 
@@ -244,6 +246,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (typeof OrdersModule !== 'undefined' && typeof OrdersModule.init === 'function') {
                     console.log('Inicializando módulo de pedidos...');
                     setTimeout(() => OrdersModule.init(), 100);
+                }
+            }
+            
+            // Initialize production module
+            if (moduleId === 'production') {
+                if (typeof window.ProductionModule !== 'undefined' && typeof window.ProductionModule.init === 'function') {
+                    console.log('Inicializando módulo de producción...');
+                    setTimeout(() => window.ProductionModule.init(), 100);
+                } else {
+                    console.log('⚠️ ProductionModule no está disponible aún');
                 }
             }
             

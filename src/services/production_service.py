@@ -11,7 +11,7 @@ from datetime import datetime
 import uuid
 
 from ..database import ProductionRepository, OrdersRepository, JSONRepositoryError
-from ..models.order_models import ProductionBatch, PrintItem, BatchStatus
+from ..models.order_models import ProductionBatch, PrintItem, BatchStatus, ProductionBatchCreate
 
 
 class ProductionService:
@@ -62,7 +62,7 @@ class ProductionService:
         now = datetime.utcnow().isoformat()
 
         batch_data = {
-            "batch_id": batch_id,
+            "id": batch_id,
             "order_id": order_id,
             "printer_id": printer_id,
             "status": BatchStatus.QUEUED.value,
@@ -88,6 +88,52 @@ class ProductionService:
         self._repo.update_payload(updater)
         return batch
 
+    def create_batch(self, batch_data: ProductionBatchCreate) -> ProductionBatch:
+        """
+        Crea un lote de producción con datos específicos.
+        """
+        # Validar que el pedido existe
+        try:
+            order_data = self._orders_repo.get_order_by_id(batch_data.order_id)
+        except JSONRepositoryError as exc:
+            raise ValueError(f"Pedido no válido: {batch_data.order_id}") from exc
+
+        # Generar datos del lote
+        batch_id = f"BATCH-{uuid.uuid4().hex[:8].upper()}-{datetime.now().strftime('%Y-%m-%dT%H:%M:%S')}"
+        now = datetime.utcnow()
+
+        batch_dict = {
+            "id": batch_id,
+            "order_id": batch_data.order_id,
+            "order_line_id": batch_data.order_line_id,
+            "batch_number": batch_data.batch_number,
+            "session_id": batch_data.session_id,
+            "printer_id": batch_data.printer_id,
+            "material_type": batch_data.material_type,
+            "material_color": batch_data.material_color,
+            "items_count": batch_data.items_count,
+            "status": BatchStatus.QUEUED,
+            "started_at": None,
+            "completed_at": None,
+            "actual_filament_used_grams": 0.0,
+            "actual_print_time_hours": 0.0,
+            "print_items": [],
+            "items_completed": 0,
+            "items_failed": 0,
+        }
+
+        batch = ProductionBatch(**batch_dict)
+        
+        # Guardar
+        def updater(payload):
+            batches = payload.get("production_tracking", [])
+            batches.append(batch.model_dump())
+            payload["production_tracking"] = batches
+            return payload
+        
+        self._repo.update_payload(updater)
+        return batch
+
     def update_batch_status(self, batch_id: str, new_status: BatchStatus) -> ProductionBatch:
         """Actualiza el estado de un lote."""
         batch = self.get_batch(batch_id)
@@ -104,7 +150,7 @@ class ProductionService:
         def updater(payload):
             batches = payload.get("production_tracking", [])
             for idx, b in enumerate(batches):
-                if b.get("batch_id") == batch_id:
+                if b.get("id") == batch_id:
                     batches[idx] = batch.model_dump()
                     break
             payload["production_tracking"] = batches
@@ -145,7 +191,7 @@ class ProductionService:
         def updater(payload):
             batches = payload.get("production_tracking", [])
             for idx, b in enumerate(batches):
-                if b.get("batch_id") == batch_id:
+                if b.get("id") == batch_id:
                     batches[idx] = batch.model_dump()
                     break
             payload["production_tracking"] = batches
@@ -176,7 +222,7 @@ class ProductionService:
 
         # Calcular progreso promedio
         if batches:
-            total_progress = sum(b.progress for b in batches)
+            total_progress = sum(b.completion_percentage for b in batches)
             stats["average_progress"] = total_progress / len(batches)
 
         return stats

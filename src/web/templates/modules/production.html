@@ -1,0 +1,536 @@
+<!-- Módulo de Gestión de Producción -->
+<div class="production-module">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+                    <span class="text-4xl">🏭</span>
+                    Centro de Producción
+                </h1>
+                <p class="text-gray-600 mt-2">Orquestación inteligente de impresoras 3D y gestión de lotes</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="ProductionModule.createBatchFromOrder()"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition-all">
+                    <span class="text-xl">➕</span>
+                    Nuevo Lote
+                </button>
+                <button onclick="ProductionModule.optimizeAssignments()"
+                        class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition-all">
+                    <span class="text-xl">🎯</span>
+                    Optimizar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs de Navegación -->
+    <div class="bg-white rounded-lg shadow-sm mb-6">
+        <nav class="flex border-b border-gray-200">
+            <button onclick="ProductionModule.switchTab('dashboard')"
+                    data-tab="dashboard"
+                    class="production-tab px-6 py-4 font-medium text-gray-700 hover:text-blue-600 hover:border-blue-600 border-b-2 border-transparent transition-all active">
+                📊 Dashboard
+            </button>
+            <button onclick="ProductionModule.switchTab('batches')"
+                    data-tab="batches"
+                    class="production-tab px-6 py-4 font-medium text-gray-700 hover:text-blue-600 hover:border-blue-600 border-b-2 border-transparent transition-all">
+                📦 Lotes Activos
+            </button>
+            <button onclick="ProductionModule.switchTab('printers')"
+                    data-tab="printers"
+                    class="production-tab px-6 py-4 font-medium text-gray-700 hover:text-blue-600 hover:border-blue-600 border-b-2 border-transparent transition-all">
+                🖨️ Impresoras
+            </button>
+            <button onclick="ProductionModule.switchTab('materials')"
+                    data-tab="materials"
+                    class="production-tab px-6 py-4 font-medium text-gray-700 hover:text-blue-600 hover:border-blue-600 border-b-2 border-transparent transition-all">
+                🧵 Materiales
+            </button>
+        </nav>
+    </div>
+
+    <!-- Tab Content: Dashboard -->
+    <div id="tab-dashboard" class="production-tab-content">
+        <!-- KPIs Principales -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Lotes Activos</p>
+                        <p class="text-3xl font-bold text-gray-800" id="kpi-active-batches">-</p>
+                    </div>
+                    <span class="text-4xl">📦</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Impresoras Ocupadas</p>
+                        <p class="text-3xl font-bold text-gray-800" id="kpi-busy-printers">-</p>
+                    </div>
+                    <span class="text-4xl">🖨️</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Eficiencia Global</p>
+                        <p class="text-3xl font-bold text-gray-800" id="kpi-efficiency">-%</p>
+                    </div>
+                    <span class="text-4xl">📈</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-orange-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Filamento Disponible</p>
+                        <p class="text-2xl font-bold text-gray-800" id="kpi-filament">0kg</p>
+                    </div>
+                    <span class="text-4xl">🧵</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado de Producción -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Estado de Lotes</h3>
+                <div id="batches-status-chart" class="h-64"></div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Utilización de Impresoras</h3>
+                <div id="printers-utilization-chart" class="h-64"></div>
+            </div>
+        </div>
+
+        <!-- Lotes Recientes -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Lotes Recientes</h3>
+            <div id="recent-batches-list" class="space-y-3 max-h-64 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Lotes Activos -->
+    <div id="tab-batches" class="production-tab-content hidden">
+        <!-- Filtros -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                    <select id="filter-batch-status" onchange="ProductionModule.applyFilters()"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Todos los estados</option>
+                        <option value="pending">Pendiente</option>
+                        <option value="processing">Procesando</option>
+                        <option value="completed">Completado</option>
+                        <option value="failed">Fallido</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Impresora</label>
+                    <select id="filter-printer" onchange="ProductionModule.applyFilters()"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Todas las impresoras</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Material</label>
+                    <select id="filter-material" onchange="ProductionModule.applyFilters()"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Todos los materiales</option>
+                        <option value="PLA">PLA</option>
+                        <option value="ABS">ABS</option>
+                        <option value="PETG">PETG</option>
+                        <option value="TPU">TPU</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="ProductionModule.clearFilters()"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        Limpiar Filtros
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Lotes -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lote</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pedido</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Impresora</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Material</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progreso</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="batches-table-body" class="bg-white divide-y divide-gray-200">
+                        <!-- Los lotes se cargan dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Impresoras -->
+    <div id="tab-printers" class="production-tab-content hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="printers-grid">
+            <!-- Las impresoras se cargan dinámicamente -->
+        </div>
+    </div>
+
+    <!-- Tab Content: Materiales -->
+    <div id="tab-materials" class="production-tab-content hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="materials-grid">
+            <!-- Los materiales se cargan dinámicamente -->
+        </div>
+    </div>
+</div>
+
+<style>
+.production-tab.active {
+    color: #2563eb;
+    border-color: #2563eb;
+}
+
+.production-tab-content {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.batch-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-pending { background-color: #fef3c7; color: #92400e; }
+.status-processing { background-color: #dbeafe; color: #1e40af; }
+.status-completed { background-color: #d1fae5; color: #065f46; }
+.status-failed { background-color: #fee2e2; color: #991b1b; }
+
+.printer-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.printer-idle { background-color: #d1fae5; color: #065f46; }
+.printer-busy { background-color: #dbeafe; color: #1e40af; }
+.printer-error { background-color: #fee2e2; color: #991b1b; }
+.printer-offline { background-color: #f3f4f6; color: #374151; }
+
+.material-stock-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.material-good { background-color: #d1fae5; color: #065f46; }
+.material-low { background-color: #fed7aa; color: #c2410c; }
+.material-empty { background-color: #fee2e2; color: #991b1b; }
+
+/* Modal styles */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal-overlay:not(.hidden) {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+</style>
+
+<!-- MODALES -->
+
+<!-- Modal: Crear Lote desde Pedido -->
+<div id="modal-create-batch" class="modal-overlay hidden" onclick="ProductionModule.closeModal('modal-create-batch', event)">
+    <div class="modal-content w-full md:w-3/4 lg:w-2/3 p-6" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                <span class="text-3xl">📦</span>
+                Crear Lote de Producción
+            </h2>
+            <button onclick="ProductionModule.closeModal('modal-create-batch')"
+                    class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
+                ×
+            </button>
+        </div>
+
+        <form id="form-create-batch" onsubmit="ProductionModule.submitCreateBatch(event)">
+            <div class="space-y-6">
+                <!-- Selección de Pedido -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Seleccionar Pedido <span class="text-red-500">*</span>
+                    </label>
+                    <select name="order_id" id="batch-order-select" class="form-input" required>
+                        <option value="">Cargando pedidos...</option>
+                    </select>
+                </div>
+
+                <!-- Información del Lote -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Número de Lote
+                        </label>
+                        <input type="number" name="batch_number" id="batch-number" class="form-input" value="1" min="1" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Sesión de Trabajo
+                        </label>
+                        <input type="text" name="session_id" id="batch-session-id" class="form-input" readonly>
+                    </div>
+                </div>
+
+                <!-- Asignación de Recursos -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Impresora -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Impresora Asignada <span class="text-red-500">*</span>
+                        </label>
+                        <select name="printer_id" id="batch-printer-select" class="form-input" required>
+                            <option value="">Seleccionar impresora...</option>
+                        </select>
+                    </div>
+
+                    <!-- Material -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Material <span class="text-red-500">*</span>
+                        </label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <select name="material_type" id="batch-material-type" class="form-input" required>
+                                <option value="">Tipo</option>
+                                <option value="PLA">PLA</option>
+                                <option value="ABS">ABS</option>
+                                <option value="PETG">PETG</option>
+                                <option value="TPU">TPU</option>
+                            </select>
+                            <select name="material_color" id="batch-material-color" class="form-input" required>
+                                <option value="">Color</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumen -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Resumen del Lote</h3>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="text-gray-600">Items a producir:</span>
+                            <span id="batch-items-count" class="font-semibold">-</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Tiempo estimado:</span>
+                            <span id="batch-estimated-time" class="font-semibold">-</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Filamento requerido:</span>
+                            <span id="batch-filament-needed" class="font-semibold">-</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Filamento disponible:</span>
+                            <span id="batch-filament-available" class="font-semibold">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+                <button type="button"
+                        onclick="ProductionModule.closeModal('modal-create-batch')"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                    Cancelar
+                </button>
+                <button type="submit"
+                        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                    <span>✓</span>
+                    Crear Lote
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Detalles del Lote -->
+<div id="modal-batch-details" class="modal-overlay hidden" onclick="ProductionModule.closeModal('modal-batch-details', event)">
+    <div class="modal-content w-full md:w-4/5 lg:w-3/4 p-6" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                <span class="text-3xl">📋</span>
+                Detalles del Lote
+            </h2>
+            <button onclick="ProductionModule.closeModal('modal-batch-details')"
+                    class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
+                ×
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Información Principal -->
+            <div class="lg:col-span-2 space-y-4">
+                <!-- Información General -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Información General</h3>
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div><span class="text-gray-600">ID Lote:</span> <span id="detail-batch-id" class="font-semibold">-</span></div>
+                        <div><span class="text-gray-600">Pedido:</span> <span id="detail-order-id" class="font-semibold">-</span></div>
+                        <div><span class="text-gray-600">Impresora:</span> <span id="detail-printer-id" class="font-semibold">-</span></div>
+                        <div><span class="text-gray-600">Material:</span> <span id="detail-material" class="font-semibold">-</span></div>
+                        <div><span class="text-gray-600">Estado:</span> <div id="detail-status-badge"></div></div>
+                        <div><span class="text-gray-600">Progreso:</span> <span id="detail-progress" class="font-semibold">-</span></div>
+                    </div>
+                </div>
+
+                <!-- Items del Lote -->
+                <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Items en Producción</h3>
+                    <div id="detail-items-list" class="space-y-2">
+                        <!-- Items se cargan dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Logs de Producción -->
+                <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Logs de Producción</h3>
+                    <div id="detail-logs-list" class="space-y-2 max-h-48 overflow-y-auto text-xs font-mono bg-gray-50 p-3 rounded">
+                        <!-- Logs se cargan dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de Control -->
+            <div class="lg:col-span-1 space-y-4">
+                <!-- Controles de Producción -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Controles de Producción</h3>
+                    <div class="space-y-2">
+                        <button id="btn-start-batch" onclick="ProductionModule.startBatch()"
+                                class="w-full px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
+                            ▶️ Iniciar Producción
+                        </button>
+                        <button id="btn-pause-batch" onclick="ProductionModule.pauseBatch()"
+                                class="w-full px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-sm">
+                            ⏸️ Pausar
+                        </button>
+                        <button id="btn-resume-batch" onclick="ProductionModule.resumeBatch()"
+                                class="w-full px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                            ▶️ Reanudar
+                        </button>
+                        <button id="btn-complete-batch" onclick="ProductionModule.completeBatch()"
+                                class="w-full px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm">
+                            ✅ Completar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Métricas en Tiempo Real -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Métricas en Tiempo Real</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Tiempo transcurrido:</span>
+                            <span id="metric-elapsed-time" class="font-semibold">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Filamento usado:</span>
+                            <span id="metric-filament-used" class="font-semibold">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Velocidad actual:</span>
+                            <span id="metric-current-speed" class="font-semibold">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Temperatura nozzle:</span>
+                            <span id="metric-nozzle-temp" class="font-semibold">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Timeline</h3>
+                    <div class="space-y-2 text-xs">
+                        <div><span class="text-gray-600">Creado:</span> <span id="timeline-created" class="font-semibold">-</span></div>
+                        <div id="timeline-started-container" class="hidden">
+                            <span class="text-gray-600">Iniciado:</span> <span id="timeline-started" class="font-semibold">-</span>
+                        </div>
+                        <div id="timeline-completed-container" class="hidden">
+                            <span class="text-gray-600">Completado:</span> <span id="timeline-completed" class="font-semibold">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contenedor de notificaciones -->
+<div id="production-notifications-container" class="fixed top-4 right-4 z-100 space-y-2"></div>

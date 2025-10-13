@@ -1,7 +1,7 @@
 {
   "estadisticas": {
-    "total_proyectos": 1,
-    "total_stls": 59,
+    "total_proyectos": 29,
+    "total_stls": 246,
     "completados": 0,
     "en_progreso": 0,
     "tasa_exito": 0
@@ -56,6 +56,2195 @@
           "nombre": "739436-spacex-starship-s25-b33cef8d-6505-4971-8e1d-1628af3130e9.pdf",
           "tipo": "PDF",
           "tamano": "95.55 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "nombre": "Parafuso manopla M14 by natanspricigo",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Parafuso manopla M14 by natanspricigo - 2",
+      "imagen": "/api/gallery/projects/parafuso-manopla-m14-by-natanspricigo-2/images/parafuso_M14.JPG",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "2 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "Porca_M14.STL",
+          "tipo": "STL",
+          "tamano": "356.72 KB"
+        },
+        {
+          "nombre": "Parafuso_M14x20mm.STL",
+          "tipo": "STL",
+          "tamano": "1024.89 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.26 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "nombre": "Volcano by Ezoom404",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Volcano by Ezoom404 - 3",
+      "imagen": "/api/gallery/projects/volcano-by-ezoom404-3/images/Volcano.png",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "1 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "Volcano.STL",
+          "tipo": "STL",
+          "tamano": "777.04 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.38 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "nombre": "无牙仔折叠翅膀MINI",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/无牙仔折叠翅膀MINI - 4",
+      "imagen": null,
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "1 piezas"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "obj_1_无牙仔折叠翅膀.stl_A.stl",
+          "tipo": "STL",
+          "tamano": "94805.06 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "nombre": "Aquarium Guard Tower by J_Tonkin",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Aquarium Guard Tower by J_Tonkin - 5",
+      "imagen": "/api/gallery/projects/aquarium-guard-tower-by-j_tonkin-5/images/IMG_20180613_215655.jpg",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "4 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "UpperFloor.stl",
+          "tipo": "STL",
+          "tamano": "382.11 KB"
+        },
+        {
+          "nombre": "Body.stl",
+          "tipo": "STL",
+          "tamano": "1952.43 KB"
+        },
+        {
+          "nombre": "Columns.stl",
+          "tipo": "STL",
+          "tamano": "1591.49 KB"
+        },
+        {
+          "nombre": "Roof.stl",
+          "tipo": "STL",
+          "tamano": "15451.45 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "nombre": "built-in button by bert_lz",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/built-in button by bert_lz - 6",
+      "imagen": "/api/gallery/projects/built-in-button-by-bert_lz-6/images/Taster1.jpg",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "5 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "Mutter-a.stl",
+          "tipo": "STL",
+          "tamano": "119.22 KB"
+        },
+        {
+          "nombre": "Huelle.stl",
+          "tipo": "STL",
+          "tamano": "611.21 KB"
+        },
+        {
+          "nombre": "Knopf.stl",
+          "tipo": "STL",
+          "tamano": "372.84 KB"
+        },
+        {
+          "nombre": "Knopf-V2.stl",
+          "tipo": "STL",
+          "tamano": "398.32 KB"
+        },
+        {
+          "nombre": "Mutter2.stl",
+          "tipo": "STL",
+          "tamano": "446.18 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "nombre": "STL Hardware Parts - Gears by STL_Hardware_Parts",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/STL Hardware Parts - Gears by STL_Hardware_Parts - 7",
+      "imagen": "/api/gallery/projects/stl-hardware-parts---gears-by-stl_hardware_parts-7/images/mainG.png",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "18 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "stlhardwareparts_gear6mm.STL",
+          "tipo": "STL",
+          "tamano": "624.79 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_gear15mm.STL",
+          "tipo": "STL",
+          "tamano": "294.03 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_gear32mm.STL",
+          "tipo": "STL",
+          "tamano": "637.58 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_internal.STL",
+          "tipo": "STL",
+          "tamano": "890.22 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_pawl.STL",
+          "tipo": "STL",
+          "tamano": "41.68 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_pinion.STL",
+          "tipo": "STL",
+          "tamano": "840.12 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_planetarygear.STL",
+          "tipo": "STL",
+          "tamano": "240.61 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_planetaryspinner.STL",
+          "tipo": "STL",
+          "tamano": "111.61 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_rack.STL",
+          "tipo": "STL",
+          "tamano": "478.21 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_ratchetinggear.STL",
+          "tipo": "STL",
+          "tamano": "41.10 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_ringgear.STL",
+          "tipo": "STL",
+          "tamano": "714.54 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_bevelgear.STL",
+          "tipo": "STL",
+          "tamano": "1324.69 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_gear40mm.STL",
+          "tipo": "STL",
+          "tamano": "1666.20 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_gear50mm.STL",
+          "tipo": "STL",
+          "tamano": "2304.38 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_gear90.STL",
+          "tipo": "STL",
+          "tamano": "7317.27 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_worm.STL",
+          "tipo": "STL",
+          "tamano": "2651.06 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_wormgear.STL",
+          "tipo": "STL",
+          "tamano": "7377.23 KB"
+        },
+        {
+          "nombre": "stlhardwareparts_gear_pack.3mf",
+          "tipo": "3MF",
+          "tamano": "6894.24 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "nombre": "3D Printed Perpetual Calendar Clock Ver. 2 by shiura",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/3D Printed Perpetual Calendar Clock Ver. 2 by shiura - 8",
+      "imagen": "/api/gallery/projects/3d-printed-perpetual-calendar-clock-ver.-2-by-shiura-8/images/thumb-inst.jpg",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "27 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "24h-cam.stl",
+          "tipo": "STL",
+          "tamano": "1251.45 KB"
+        },
+        {
+          "nombre": "24h-gear.stl",
+          "tipo": "STL",
+          "tamano": "177.23 KB"
+        },
+        {
+          "nombre": "24h-hand.stl",
+          "tipo": "STL",
+          "tamano": "77.82 KB"
+        },
+        {
+          "nombre": "backplate.stl",
+          "tipo": "STL",
+          "tamano": "666.49 KB"
+        },
+        {
+          "nombre": "date-hand.stl",
+          "tipo": "STL",
+          "tamano": "62.78 KB"
+        },
+        {
+          "nombre": "date-month-idler-retainer.stl",
+          "tipo": "STL",
+          "tamano": "155.55 KB"
+        },
+        {
+          "nombre": "date-month-idler1.stl",
+          "tipo": "STL",
+          "tamano": "46.18 KB"
+        },
+        {
+          "nombre": "date-month-idler2.stl",
+          "tipo": "STL",
+          "tamano": "79.38 KB"
+        },
+        {
+          "nombre": "date-rotor.stl",
+          "tipo": "STL",
+          "tamano": "212.09 KB"
+        },
+        {
+          "nombre": "date-spring.stl",
+          "tipo": "STL",
+          "tamano": "17.46 KB"
+        },
+        {
+          "nombre": "frame.stl",
+          "tipo": "STL",
+          "tamano": "967.56 KB"
+        },
+        {
+          "nombre": "hour-gear.stl",
+          "tipo": "STL",
+          "tamano": "109.95 KB"
+        },
+        {
+          "nombre": "hour-idle-gear.stl",
+          "tipo": "STL",
+          "tamano": "111.51 KB"
+        },
+        {
+          "nombre": "main-arm-a.stl",
+          "tipo": "STL",
+          "tamano": "113.17 KB"
+        },
+        {
+          "nombre": "main-arm-b.stl",
+          "tipo": "STL",
+          "tamano": "39.93 KB"
+        },
+        {
+          "nombre": "month-gear.stl",
+          "tipo": "STL",
+          "tamano": "62.48 KB"
+        },
+        {
+          "nombre": "month-hand.stl",
+          "tipo": "STL",
+          "tamano": "62.78 KB"
+        },
+        {
+          "nombre": "month-spring.stl",
+          "tipo": "STL",
+          "tamano": "20.30 KB"
+        },
+        {
+          "nombre": "program-wheel.stl",
+          "tipo": "STL",
+          "tamano": "393.44 KB"
+        },
+        {
+          "nombre": "week-drive-gear.stl",
+          "tipo": "STL",
+          "tamano": "1414.83 KB"
+        },
+        {
+          "nombre": "week-driven-gear.stl",
+          "tipo": "STL",
+          "tamano": "105.45 KB"
+        },
+        {
+          "nombre": "week-hand.stl",
+          "tipo": "STL",
+          "tamano": "62.78 KB"
+        },
+        {
+          "nombre": "week-spring.stl",
+          "tipo": "STL",
+          "tamano": "16.20 KB"
+        },
+        {
+          "nombre": "operation-manual.pdf",
+          "tipo": "PDF",
+          "tamano": "236.13 KB"
+        },
+        {
+          "nombre": "face-letter.stl",
+          "tipo": "STL",
+          "tamano": "1072.35 KB"
+        },
+        {
+          "nombre": "face-index.stl",
+          "tipo": "STL",
+          "tamano": "18.83 KB"
+        },
+        {
+          "nombre": "face.stl",
+          "tipo": "STL",
+          "tamano": "584.55 KB"
+        },
+        {
+          "nombre": "face-dial.stl",
+          "tipo": "STL",
+          "tamano": "1685.73 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "nombre": "3D Printed Case for Arduino Uno, Leonardo. by ZygmuntW",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/3D Printed Case for Arduino Uno, Leonardo. by ZygmuntW - 9",
+      "imagen": "/api/gallery/projects/3d-printed-case-for-arduino-uno,-leonardo.-by-zygmuntw-9/images/_DSC2857.jpg",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "8 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "uno_case_base.stl",
+          "tipo": "STL",
+          "tamano": "1334.02 KB"
+        },
+        {
+          "nombre": "uno_case_lid.stl",
+          "tipo": "STL",
+          "tamano": "1379.23 KB"
+        },
+        {
+          "nombre": "leonardo_case_base.stl",
+          "tipo": "STL",
+          "tamano": "1333.86 KB"
+        },
+        {
+          "nombre": "leonardo_case_lid.stl",
+          "tipo": "STL",
+          "tamano": "1324.92 KB"
+        },
+        {
+          "nombre": "reset_button.stl",
+          "tipo": "STL",
+          "tamano": "1215.25 KB"
+        },
+        {
+          "nombre": "leonardo_case_slim_base.stl",
+          "tipo": "STL",
+          "tamano": "1326.62 KB"
+        },
+        {
+          "nombre": "leonardo_case_slim_lid.stl",
+          "tipo": "STL",
+          "tamano": "1429.88 KB"
+        },
+        {
+          "nombre": "leonardo_reset_button_slim.stl",
+          "tipo": "STL",
+          "tamano": "1214.21 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "nombre": "Maker Faire Robot Action Figure (Single file) by LeFabShop",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Maker Faire Robot Action Figure (Single file) by LeFabShop - 10",
+      "imagen": null,
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "2 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "Robot_Maker_Faire_150pc.stl",
+          "tipo": "STL",
+          "tamano": "4871.76 KB"
+        },
+        {
+          "nombre": "Robot_Maker_Faire_65pc.stl",
+          "tipo": "STL",
+          "tamano": "2320.69 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "nombre": "Zilla by HeavyRotation",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Zilla by HeavyRotation - 11",
+      "imagen": null,
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "12 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "godzilla_Bottom_frame.stl",
+          "tipo": "STL",
+          "tamano": "74.08 KB"
+        },
+        {
+          "nombre": "godzilla_top_frame.stl",
+          "tipo": "STL",
+          "tamano": "193.17 KB"
+        },
+        {
+          "nombre": "godzilla_cutout_leg2.stl",
+          "tipo": "STL",
+          "tamano": "143.54 KB"
+        },
+        {
+          "nombre": "godzilla_claw.stl",
+          "tipo": "STL",
+          "tamano": "58.46 KB"
+        },
+        {
+          "nombre": "godzilla_head.stl",
+          "tipo": "STL",
+          "tamano": "147.48 KB"
+        },
+        {
+          "nombre": "godzilla_foot.stl",
+          "tipo": "STL",
+          "tamano": "67.82 KB"
+        },
+        {
+          "nombre": "godzilla_toe.stl",
+          "tipo": "STL",
+          "tamano": "49.90 KB"
+        },
+        {
+          "nombre": "godzilla_cutout_leg.stl",
+          "tipo": "STL",
+          "tamano": "122.72 KB"
+        },
+        {
+          "nombre": "godzilla_cutout_arm3.stl",
+          "tipo": "STL",
+          "tamano": "163.55 KB"
+        },
+        {
+          "nombre": "godzilla_body.stl",
+          "tipo": "STL",
+          "tamano": "604.53 KB"
+        },
+        {
+          "nombre": "Zilla_Plate_1.stl",
+          "tipo": "STL",
+          "tamano": "364.73 KB"
+        },
+        {
+          "nombre": "Zilla_Plate_2.stl",
+          "tipo": "STL",
+          "tamano": "427.23 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "nombre": "Rocket Impossible Spiral Passthrough Fidget V2 by neilhaileydesign",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Rocket Impossible Spiral Passthrough Fidget V2 by neilhaileydesign - 12",
+      "imagen": "/api/gallery/projects/rocket-impossible-spiral-passthrough-fidget-v2-by-neilhaileydesign-12/images/Rocket_Spiral_Passthrough_Fidget_V2.webp",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "3 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "inside.stl",
+          "tipo": "STL",
+          "tamano": "5347.93 KB"
+        },
+        {
+          "nombre": "outside-pointy.stl",
+          "tipo": "STL",
+          "tamano": "5678.01 KB"
+        },
+        {
+          "nombre": "outside-stubby.stl",
+          "tipo": "STL",
+          "tamano": "5981.43 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.14 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "nombre": "3 Way Corner Pipe Connector - Customizer by Paul_Tibble",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/3 Way Corner Pipe Connector - Customizer by Paul_Tibble - 13",
+      "imagen": "/api/gallery/projects/3-way-corner-pipe-connector---customizer-by-paul_tibble-13/images/0cf6e8022e6798268fd832cf8590e47b.png",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "0 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "nombre": "bitsy the spider",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/bitsy the spider - 14",
+      "imagen": null,
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "1 piezas"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "Bitsy.stl",
+          "tipo": "STL",
+          "tamano": "10731.92 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 15,
+      "nombre": "TwistEgg_stls",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/TwistEgg_stls - 15",
+      "imagen": null,
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "2 piezas"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "obj_1_Oeuf vrille test 1 v3 int.stl",
+          "tipo": "STL",
+          "tamano": "1827.72 KB"
+        },
+        {
+          "nombre": "obj_2_Oeuf vrille test 1 v3 ext.stl",
+          "tipo": "STL",
+          "tamano": "2291.10 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "nombre": "Flying Copter Toy by Dnnyboy_11",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Flying Copter Toy by Dnnyboy_11 - 16",
+      "imagen": "/api/gallery/projects/flying-copter-toy-by-dnnyboy_11-16/images/IMG_1846.jpg",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "3 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "Flying_Toy_-_Blade.stl",
+          "tipo": "STL",
+          "tamano": "6217.17 KB"
+        },
+        {
+          "nombre": "Flying_Toy_-_Handle.stl",
+          "tipo": "STL",
+          "tamano": "6668.73 KB"
+        },
+        {
+          "nombre": "Flying_Toy_-_Pusher.stl",
+          "tipo": "STL",
+          "tamano": "2165.71 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "nombre": "Articulated mouse by Olgigi",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Articulated mouse by Olgigi - 17",
+      "imagen": "/api/gallery/projects/articulated-mouse-by-olgigi-17/images/photo_2022-03-01_14.06.54.jpeg",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "1 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "Articulated_mouse.stl",
+          "tipo": "STL",
+          "tamano": "1056.92 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 18,
+      "nombre": "Simple Guitar Stand by eselfjes",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Simple Guitar Stand by eselfjes - 18",
+      "imagen": "/api/gallery/projects/simple-guitar-stand-by-eselfjes-18/images/GuitarStand.JPG",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "4 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "GuitarStand2.STL",
+          "tipo": "STL",
+          "tamano": "86.02 KB"
+        },
+        {
+          "nombre": "GuitarStand3.STL",
+          "tipo": "STL",
+          "tamano": "58.77 KB"
+        },
+        {
+          "nombre": "GuitarStandPrint.STL",
+          "tipo": "STL",
+          "tamano": "231.04 KB"
+        },
+        {
+          "nombre": "GuitarStand1.STL",
+          "tipo": "STL",
+          "tamano": "86.41 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 19,
+      "nombre": "Individual+armor+parts",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Individual+armor+parts - 19",
+      "imagen": null,
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "16 piezas"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "2x-armor-knee-v2.stl",
+          "tipo": "STL",
+          "tamano": "4.57 KB"
+        },
+        {
+          "nombre": "2x-armor-hip-v10.stl",
+          "tipo": "STL",
+          "tamano": "155.65 KB"
+        },
+        {
+          "nombre": "2x-armor-shin-v41.stl",
+          "tipo": "STL",
+          "tamano": "127.23 KB"
+        },
+        {
+          "nombre": "2x-armor-shoulder-v8.stl",
+          "tipo": "STL",
+          "tamano": "98.13 KB"
+        },
+        {
+          "nombre": "2x-armor-thigh-v27.stl",
+          "tipo": "STL",
+          "tamano": "101.74 KB"
+        },
+        {
+          "nombre": "2x-armor-toe-v9.stl",
+          "tipo": "STL",
+          "tamano": "43.83 KB"
+        },
+        {
+          "nombre": "2x-armor-forearm-v30.stl",
+          "tipo": "STL",
+          "tamano": "86.02 KB"
+        },
+        {
+          "nombre": "2x-armor-upper-arm-v14.stl",
+          "tipo": "STL",
+          "tamano": "25.47 KB"
+        },
+        {
+          "nombre": "armor-chest-lower-v25.stl",
+          "tipo": "STL",
+          "tamano": "49.98 KB"
+        },
+        {
+          "nombre": "armor-abdomen-v36.stl",
+          "tipo": "STL",
+          "tamano": "158.58 KB"
+        },
+        {
+          "nombre": "armor-chest-upper-v48.stl",
+          "tipo": "STL",
+          "tamano": "171.96 KB"
+        },
+        {
+          "nombre": "armor-crotch-v12.stl",
+          "tipo": "STL",
+          "tamano": "55.94 KB"
+        },
+        {
+          "nombre": "armor-head-v12.stl",
+          "tipo": "STL",
+          "tamano": "105.06 KB"
+        },
+        {
+          "nombre": "armor-neck-v9.stl",
+          "tipo": "STL",
+          "tamano": "5.55 KB"
+        },
+        {
+          "nombre": "armor-waist-v30.stl",
+          "tipo": "STL",
+          "tamano": "170.39 KB"
+        },
+        {
+          "nombre": "2x-armor-foot-v17.stl",
+          "tipo": "STL",
+          "tamano": "155.36 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "nombre": "Individual+frame",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Individual+frame - 20",
+      "imagen": null,
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "20 piezas"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "2x-frame-forearm-v9.stl",
+          "tipo": "STL",
+          "tamano": "694.32 KB"
+        },
+        {
+          "nombre": "2x-frame-clavicle-v3.stl",
+          "tipo": "STL",
+          "tamano": "1328.99 KB"
+        },
+        {
+          "nombre": "2x-frame-shin-v10.stl",
+          "tipo": "STL",
+          "tamano": "466.78 KB"
+        },
+        {
+          "nombre": "2x-frame-thigh-v9.stl",
+          "tipo": "STL",
+          "tamano": "135.14 KB"
+        },
+        {
+          "nombre": "2x-frame-ankle-v4.stl",
+          "tipo": "STL",
+          "tamano": "392.95 KB"
+        },
+        {
+          "nombre": "4x-frame-hip-shoulder-v3.stl",
+          "tipo": "STL",
+          "tamano": "362.88 KB"
+        },
+        {
+          "nombre": "4x-frame-knee-elbow-v9.stl",
+          "tipo": "STL",
+          "tamano": "148.52 KB"
+        },
+        {
+          "nombre": "frame-abdomen-v6.stl",
+          "tipo": "STL",
+          "tamano": "827.91 KB"
+        },
+        {
+          "nombre": "frame-chest-v7.stl",
+          "tipo": "STL",
+          "tamano": "1381.72 KB"
+        },
+        {
+          "nombre": "frame-hand-fist-left-v2.stl",
+          "tipo": "STL",
+          "tamano": "1769.42 KB"
+        },
+        {
+          "nombre": "frame-hand-grip-left-v8.stl",
+          "tipo": "STL",
+          "tamano": "2135.63 KB"
+        },
+        {
+          "nombre": "frame-hand-open-left-v5.stl",
+          "tipo": "STL",
+          "tamano": "1994.52 KB"
+        },
+        {
+          "nombre": "frame-head-v5.stl",
+          "tipo": "STL",
+          "tamano": "372.05 KB"
+        },
+        {
+          "nombre": "frame-hips-v3.stl",
+          "tipo": "STL",
+          "tamano": "1456.04 KB"
+        },
+        {
+          "nombre": "frame-neck-v9.stl",
+          "tipo": "STL",
+          "tamano": "1269.52 KB"
+        },
+        {
+          "nombre": "frame-waist-v6.stl",
+          "tipo": "STL",
+          "tamano": "882.41 KB"
+        },
+        {
+          "nombre": "2x-frame-upper-arm-v9.stl",
+          "tipo": "STL",
+          "tamano": "165.41 KB"
+        },
+        {
+          "nombre": "frame hand grip right v8.stl",
+          "tipo": "STL",
+          "tamano": "2135.63 KB"
+        },
+        {
+          "nombre": "frame hand fist right v2.stl",
+          "tipo": "STL",
+          "tamano": "1769.42 KB"
+        },
+        {
+          "nombre": "frame hand open right v5.stl",
+          "tipo": "STL",
+          "tamano": "1994.52 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "nombre": "ATX Power supply by AlwaysBlue",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/ATX Power supply by AlwaysBlue - 21",
+      "imagen": "/api/gallery/projects/atx-power-supply-by-alwaysblue-21/images/a0d99613-bf99-4bec-8abd-eed589f97fdc.png",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "9 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "front_frame.stl",
+          "tipo": "STL",
+          "tamano": "140.32 KB"
+        },
+        {
+          "nombre": "rail_bottom.stl",
+          "tipo": "STL",
+          "tamano": "34.85 KB"
+        },
+        {
+          "nombre": "back_frame.stl",
+          "tipo": "STL",
+          "tamano": "84.07 KB"
+        },
+        {
+          "nombre": "front_cover_volt_ampmeter.stl",
+          "tipo": "STL",
+          "tamano": "696.57 KB"
+        },
+        {
+          "nombre": "rail_top.stl",
+          "tipo": "STL",
+          "tamano": "51.35 KB"
+        },
+        {
+          "nombre": "front_panel.stl",
+          "tipo": "STL",
+          "tamano": "353.70 KB"
+        },
+        {
+          "nombre": "handle.stl",
+          "tipo": "STL",
+          "tamano": "252.62 KB"
+        },
+        {
+          "nombre": "Cover_USB.stl",
+          "tipo": "STL",
+          "tamano": "3.60 KB"
+        },
+        {
+          "nombre": "front_cover_volt_amp_adj.stl",
+          "tipo": "STL",
+          "tamano": "662.19 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 22,
+      "nombre": "Low-Poly Space Toys by flowalistik",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Low-Poly Space Toys by flowalistik - 22",
+      "imagen": "/api/gallery/projects/low-poly-space-toys-by-flowalistik-22/images/lowpoly_starwars2.jpg",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "9 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "toy1_lowpoly_connector.STL",
+          "tipo": "STL",
+          "tamano": "2.62 KB"
+        },
+        {
+          "nombre": "toy1_lowpoly_body.STL",
+          "tipo": "STL",
+          "tamano": "86.02 KB"
+        },
+        {
+          "nombre": "toy1_lowpoly_head.STL",
+          "tipo": "STL",
+          "tamano": "25.28 KB"
+        },
+        {
+          "nombre": "toy2_lowpoly_connector.STL",
+          "tipo": "STL",
+          "tamano": "2.62 KB"
+        },
+        {
+          "nombre": "toy2_lowpoly_bodycape.STL",
+          "tipo": "STL",
+          "tamano": "122.35 KB"
+        },
+        {
+          "nombre": "toy2_lowpoly_body.STL",
+          "tipo": "STL",
+          "tamano": "107.21 KB"
+        },
+        {
+          "nombre": "toy2_lowpoly_head.STL",
+          "tipo": "STL",
+          "tamano": "31.72 KB"
+        },
+        {
+          "nombre": "lowpoly_gold_robot_flowalistik.STL",
+          "tipo": "STL",
+          "tamano": "114.05 KB"
+        },
+        {
+          "nombre": "lowpoly_silver_robot_flowalistik.STL",
+          "tipo": "STL",
+          "tamano": "173.32 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.14 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 23,
+      "nombre": "vectorizer",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/vectorizer - 23",
+      "imagen": null,
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "0 piezas"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 24,
+      "nombre": "Flexi  Starfish by 23Marble",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Flexi  Starfish by 23Marble - 24",
+      "imagen": "/api/gallery/projects/flexi--starfish-by-23marble-24/images/Bluey_White.jpg",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "1 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "Starfish.stl",
+          "tipo": "STL",
+          "tamano": "17075.38 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 25,
+      "nombre": "MinV2 Ender 3 fan mount by ThijsOudeVrielink",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/MinV2 Ender 3 fan mount by ThijsOudeVrielink - 25",
+      "imagen": "/api/gallery/projects/minv2-ender-3-fan-mount-by-thijsoudevrielink-25/images/Screenshot_2021-03-22_164441_Medium.png",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "5 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "fan_duct.stl",
+          "tipo": "STL",
+          "tamano": "874.98 KB"
+        },
+        {
+          "nombre": "fan_mount_back_plate.stl",
+          "tipo": "STL",
+          "tamano": "41.68 KB"
+        },
+        {
+          "nombre": "fan_mount_vanilla.stl",
+          "tipo": "STL",
+          "tamano": "294.52 KB"
+        },
+        {
+          "nombre": "fan_mount_bltouch.stl",
+          "tipo": "STL",
+          "tamano": "311.70 KB"
+        },
+        {
+          "nombre": "fan_mount_induction.stl",
+          "tipo": "STL",
+          "tamano": "307.31 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 26,
+      "nombre": "Flexi Godzilla by AndresMF",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Flexi Godzilla by AndresMF - 26",
+      "imagen": "/api/gallery/projects/flexi-godzilla-by-andresmf-26/images/F1.jpg",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "9 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "1_Godzilla_Body_v2.stl",
+          "tipo": "STL",
+          "tamano": "1178.23 KB"
+        },
+        {
+          "nombre": "2_Godzilla_LEFT_Leg_v2.stl",
+          "tipo": "STL",
+          "tamano": "178.45 KB"
+        },
+        {
+          "nombre": "3_Godzilla_RIGHT_Leg_v2.stl",
+          "tipo": "STL",
+          "tamano": "193.49 KB"
+        },
+        {
+          "nombre": "4_Godzilla_LEFT_Arm_v2.stl",
+          "tipo": "STL",
+          "tamano": "123.68 KB"
+        },
+        {
+          "nombre": "5_Godzilla_RIGHT_Arm_v2.stl",
+          "tipo": "STL",
+          "tamano": "149.24 KB"
+        },
+        {
+          "nombre": "6_Pin_Legs.stl",
+          "tipo": "STL",
+          "tamano": "0.67 KB"
+        },
+        {
+          "nombre": "7_Pin_Arms.stl",
+          "tipo": "STL",
+          "tamano": "0.67 KB"
+        },
+        {
+          "nombre": "8a_Godzilla_Body_split_A_v2.stl",
+          "tipo": "STL",
+          "tamano": "698.05 KB"
+        },
+        {
+          "nombre": "8b_Godzilla_Body_split_B_v2.stl",
+          "tipo": "STL",
+          "tamano": "491.13 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 27,
+      "nombre": "Creality Ender 3 / Pro / V2 - Part & Hotend Cooling Upgrade Kit by cdsmakestuff",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Creality Ender 3 / Pro / V2 - Part & Hotend Cooling Upgrade Kit by cdsmakestuff - 27",
+      "imagen": "/api/gallery/projects/creality-ender-3-/-pro-/-v2---part-&-hotend-cooling-upgrade-kit-by-cdsmakestuff-27/images/IMG_20200826_112711.jpg",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "4 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "CE3_40mm_Fan_Cover.stl",
+          "tipo": "STL",
+          "tamano": "410.43 KB"
+        },
+        {
+          "nombre": "CE3_40mm_Fan_Shroud.stl",
+          "tipo": "STL",
+          "tamano": "211.31 KB"
+        },
+        {
+          "nombre": "CE3_Part_Cooling_Duct.stl",
+          "tipo": "STL",
+          "tamano": "99.11 KB"
+        },
+        {
+          "nombre": "CE3_Cooling_Fan_Bracket.stl",
+          "tipo": "STL",
+          "tamano": "335.43 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 28,
+      "nombre": "Star Destroyer Kit Card by Fine_Engineer",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Star Destroyer Kit Card by Fine_Engineer - 28",
+      "imagen": "/api/gallery/projects/star-destroyer-kit-card-by-fine_engineer-28/images/Star_Destroyer.JPG",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "4 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "Star_Destroyer_Parts_only.stl",
+          "tipo": "STL",
+          "tamano": "5601.45 KB"
+        },
+        {
+          "nombre": "Star_Destroyer.stl",
+          "tipo": "STL",
+          "tamano": "7721.27 KB"
+        },
+        {
+          "nombre": "Star_Destroyer_With_Stand_Parts_only.stl",
+          "tipo": "STL",
+          "tamano": "5952.43 KB"
+        },
+        {
+          "nombre": "Star_Destroyer_With_Stand.stl",
+          "tipo": "STL",
+          "tamano": "8082.99 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.14 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 29,
+      "nombre": "Mechanical Quick Grab/Release Phone Stand by Arron_mollet22",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-13",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Mechanical Quick Grab/Release Phone Stand by Arron_mollet22 - 29",
+      "imagen": "/api/gallery/projects/mechanical-quick-grab/release-phone-stand-by-arron_mollet22-29/images/DSC02798-2.jpg",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "16 piezas",
+        "origen": "Thingiverse"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "Arm_R.stl",
+          "tipo": "STL",
+          "tamano": "56.92 KB"
+        },
+        {
+          "nombre": "Arm_L.stl",
+          "tipo": "STL",
+          "tamano": "56.92 KB"
+        },
+        {
+          "nombre": "3_Finger_Mount.stl",
+          "tipo": "STL",
+          "tamano": "118.83 KB"
+        },
+        {
+          "nombre": "Back_Pannel.stl",
+          "tipo": "STL",
+          "tamano": "236.70 KB"
+        },
+        {
+          "nombre": "Bolt_Stand.stl",
+          "tipo": "STL",
+          "tamano": "391.88 KB"
+        },
+        {
+          "nombre": "BoltLong.stl",
+          "tipo": "STL",
+          "tamano": "430.26 KB"
+        },
+        {
+          "nombre": "Bolt_Short.stl",
+          "tipo": "STL",
+          "tamano": "420.49 KB"
+        },
+        {
+          "nombre": "Front_Pannel.stl",
+          "tipo": "STL",
+          "tamano": "483.58 KB"
+        },
+        {
+          "nombre": "Mount_Bracket.stl",
+          "tipo": "STL",
+          "tamano": "83.29 KB"
+        },
+        {
+          "nombre": "Nut_Stand.stl",
+          "tipo": "STL",
+          "tamano": "266.10 KB"
+        },
+        {
+          "nombre": "Slider.stl",
+          "tipo": "STL",
+          "tamano": "34.46 KB"
+        },
+        {
+          "nombre": "Stand_Link.stl",
+          "tipo": "STL",
+          "tamano": "111.80 KB"
+        },
+        {
+          "nombre": "Stand.stl",
+          "tipo": "STL",
+          "tamano": "167.56 KB"
+        },
+        {
+          "nombre": "Spur_Gear_R.stl",
+          "tipo": "STL",
+          "tamano": "239.63 KB"
+        },
+        {
+          "nombre": "Rack.stl",
+          "tipo": "STL",
+          "tamano": "326.45 KB"
+        },
+        {
+          "nombre": "Spur_Gear_L.stl",
+          "tipo": "STL",
+          "tamano": "239.63 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.14 KB"
         }
       ],
       "estadisticas": {

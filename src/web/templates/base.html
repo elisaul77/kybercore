@@ -70,6 +70,10 @@
                     <span class="mr-3 text-xl">📦</span> 
                     <span class="sidebar-text">Pedidos</span>
                 </a>
+                <a href="#production" data-module="production" data-tooltip="Centro de Producción" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
+                    <span class="mr-3 text-xl">🏭</span> 
+                    <span class="sidebar-text">Producción</span>
+                </a>
                 <a href="#gallery" data-module="gallery" data-tooltip="Galería de Proyectos" class="sidebar-link flex items-center px-4 py-2 rounded-lg">
                     <span class="mr-3 text-xl">📁</span> 
                     <span class="sidebar-text">Galería de Proyectos</span>
@@ -123,6 +127,7 @@
 <script src="{{ url_for('static', path='/js/project_management.js') }}"></script>
 <script src="{{ url_for('static', path='/js/consumables.js') }}"></script>
 <script src="{{ url_for('static', path='/js/orders.js') }}"></script>
+<script src="{{ url_for('static', path='/js/production.js') }}"></script>
 
 <!-- G-code 3D Viewer (módulo ES6) -->
 <script type="module" src="{{ url_for('static', path='/js/gcode-viewer-3d.js') }}"></script>

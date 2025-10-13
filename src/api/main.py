@@ -86,14 +86,16 @@ app.include_router(dashboard_controller.router, prefix="/api/dashboard", tags=["
 app.include_router(new_job_controller.router, prefix="/api/new-job", tags=["NewJob"])
 app.include_router(settings_controller.router, prefix="/api/settings", tags=["Settings"])
 app.include_router(consumable_controller.router, prefix="/api/consumables", tags=["Consumables"])
-app.include_router(orders_controller.router, prefix="/api/orders", tags=["Orders Module"])
 app.include_router(gallery_controller.router, prefix="/api/gallery", tags=["Gallery"])
 app.include_router(print_flow_controller.router, prefix="/api", tags=["PrintFlow"])
 
-# Incluir routers del sistema de pedidos
+# Incluir routers del sistema de pedidos (REST API)
 app.include_router(customers.router, tags=["Customers"])
 app.include_router(orders.router, tags=["Orders"])
-app.include_router(production.router, tags=["Production"])
+
+# Incluir controlador HTML de orders (debe ir después del router REST para no conflictuar)
+app.include_router(orders_controller.router, prefix="/api", tags=["Orders Module"])
+app.include_router(production.router, prefix="/api/production", tags=["Production"])
 app.include_router(metrics.router, tags=["Metrics"])
 
 # Servir la SPA: una sola plantilla con todas las secciones

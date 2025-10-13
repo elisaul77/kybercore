@@ -1,7 +1,7 @@
 {
   "metadata": {
     "version": "1.0",
-    "last_updated": "2025-10-07T00:00:00",
+    "last_updated": "2025-10-12T22:35:38.300391",
     "total_batches": 2
   },
   "production_batches": [
@@ -198,5 +198,26 @@
     "total_filament_consumed_kg": 0.518,
     "total_production_time_hours": 29.25,
     "average_processing_time_per_item_minutes": 159.55
-  }
+  },
+  "production_tracking": [
+    {
+      "id": "BATCH-E3A8695A-2025-10-12T22:35:38",
+      "order_id": "ord_1760300758_c1e5eb",
+      "order_line_id": "line_a5c38367",
+      "batch_number": 1,
+      "session_id": "session_test",
+      "printer_id": "printer_001",
+      "material_type": "PLA",
+      "material_color": "Azul",
+      "status": "queued",
+      "started_at": null,
+      "completed_at": null,
+      "actual_filament_used_grams": 0.0,
+      "actual_print_time_hours": 0.0,
+      "print_items": [],
+      "items_count": 1,
+      "items_completed": 0,
+      "items_failed": 0
+    }
+  ]
 }

@@ -61,7 +61,7 @@ class MetricsService:
                 "active_batches": len(active_batches),
                 "completed_batches": len(completed_batches),
                 "average_progress": (
-                    sum(b.progress for b in batches) / len(batches)
+                    sum(b.completion_percentage for b in batches) / len(batches)
                     if batches else 0.0
                 ),
             },
@@ -168,14 +168,14 @@ class MetricsService:
             "total_batches": len(recent_batches),
             "by_status": dict(by_status),
             "average_progress": (
-                sum(b.progress for b in recent_batches) / len(recent_batches)
+                sum(b.completion_percentage for b in recent_batches) / len(recent_batches)
                 if recent_batches else 0.0
             ),
             "average_production_time_hours": (
                 sum(production_times) / len(production_times)
                 if production_times else 0.0
             ),
-            "total_items_produced": sum(len(b.items) for b in recent_batches),
+            "total_items_produced": sum(len(b.print_items) for b in recent_batches),
             "generated_at": datetime.utcnow().isoformat(),
         }
 
