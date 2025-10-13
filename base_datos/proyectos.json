@@ -1,10 +1,10 @@
 {
   "estadisticas": {
-    "total_proyectos": 29,
-    "total_stls": 246,
-    "completados": 0,
+    "total_proyectos": 90,
+    "total_stls": 527,
+    "completados": 61,
     "en_progreso": 0,
-    "tasa_exito": 0
+    "tasa_exito": 67.8
   },
   "proyectos": [
     {
@@ -2261,6 +2261,3275 @@
           "Temperatura de cama: 60°C"
         ]
       }
+    },
+    {
+      "id": 30,
+      "nombre": "Articulating Fox - No Supports by NeonGraveStoneArt",
+      "descripcion": "Proyecto importado desde Articulating Fox - No Supports - 6817979.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Fox_Multicolor.3mf",
+          "tipo": "3MF",
+          "tamano": "8107.39 KB"
+        },
+        {
+          "nombre": "Fox_singlecolor.stl",
+          "tipo": "STL",
+          "tamano": "27247.54 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.14 KB"
+        }
+      ],
+      "imagenes": [
+        "IMG_20241102_135418196_copy.jpg",
+        "IMG_20241102_135500374_copy.jpg",
+        "IMG_20241102_135613225_copy.jpg",
+        "Fox_singlecolor.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/articulating-fox---no-supports-by-neongravestoneart-30/images/IMG_20241102_135418196_copy.jpg"
+    },
+    {
+      "id": 31,
+      "nombre": "Ender 3 Extruder and Hotend Bullseye Duct Compatible Mounts by vampyrex13",
+      "descripcion": "Proyecto importado desde Ender 3 Extruder and Hotend Bullseye Duct Compatible Mounts - 3336006.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "ENDER3-Chain-Holder_JTL_V3_with_extruder_side_link_+1.5mm_VampyreX13_Remix.stl",
+          "tipo": "STL",
+          "tamano": "231.04 KB"
+        },
+        {
+          "nombre": "ENDER3-Chain-Holder_JTL_V3_with_extruder_side_link_+3mm_VampyreX13_Remix.stl",
+          "tipo": "STL",
+          "tamano": "230.94 KB"
+        },
+        {
+          "nombre": "ENDER3-Chain-Holder_JTL_V3_with_extruder_side_link_VampyreX13_Remix.stl",
+          "tipo": "STL",
+          "tamano": "327.62 KB"
+        },
+        {
+          "nombre": "cableChain_XendCoverNoRibbon_VampyreX13_Remix.stl",
+          "tipo": "STL",
+          "tamano": "13.75 KB"
+        },
+        {
+          "nombre": "hot_end_side_link_VampyreX13_Remix.stl",
+          "tipo": "STL",
+          "tamano": "77.33 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "imagenes": [
+        "20190103_195502.jpg",
+        "20190105_130214.jpg",
+        "20190105_133512.jpg",
+        "20190105_062632.jpg",
+        "20190105_062553.jpg",
+        "10c4d5e3515fc3ff14ddf0f216743846.png",
+        "1db1df6cee89a2facc5d8ed9253ab2dd.png",
+        "99c811cb039bdc058610a56db0c0154b.png",
+        "77d5e748d51d996dd5353aac2c4690b3.png",
+        "6f6102a8720717ef614cb8f283774bf7.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/ender-3-extruder-and-hotend-bullseye-duct-compatible-mounts-by-vampyrex13-31/images/20190103_195502.jpg"
+    },
+    {
+      "id": 32,
+      "nombre": "3D Hubs Marvin - Key Chain by HubsMFG",
+      "descripcion": "Proyecto importado desde 3D Hubs Marvin - Key Chain - 215703.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "20140205_Marvin_KeyChain.STL",
+          "tipo": "STL",
+          "tamano": "658.29 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "imagenes": [
+        "3d-hubs-3d-printed-marvin-mascot-5.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/3d-hubs-marvin---key-chain-by-hubsmfg-32/images/3d-hubs-3d-printed-marvin-mascot-5.png"
+    },
+    {
+      "id": 33,
+      "nombre": "Drag Chain - Cable Chain - Ender 3 by diogosantos88",
+      "descripcion": "Proyecto importado desde Drag Chain - Cable Chain - Ender 3 - 3715002.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "chain-link.STL",
+          "tipo": "STL",
+          "tamano": "132.02 KB"
+        },
+        {
+          "nombre": "clip.STL",
+          "tipo": "STL",
+          "tamano": "3.79 KB"
+        },
+        {
+          "nombre": "support-1.STL",
+          "tipo": "STL",
+          "tamano": "123.71 KB"
+        },
+        {
+          "nombre": "support-2.STL",
+          "tipo": "STL",
+          "tamano": "77.62 KB"
+        },
+        {
+          "nombre": "support-2_remix_for_newer_extruder_.STL",
+          "tipo": "STL",
+          "tamano": "350.96 KB"
+        },
+        {
+          "nombre": "support-1_-_50mm.STL",
+          "tipo": "STL",
+          "tamano": "532.11 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        }
+      ],
+      "imagenes": [
+        "IMG_20190626_130724640.jpg",
+        "IMG_20190626_132528374.jpg",
+        "IMG_20190626_130801408.jpg",
+        "cura.PNG",
+        "6c8d0a796cce0ce38c20f69f34e0c188.png",
+        "56cace3e786daae98b6b48773218c077.png",
+        "7b92737a66f90b35ec1020de03ebdb76.png",
+        "111733d844eddd36f4a6e08c0bf44285.png",
+        "Untitled.JPG",
+        "axis.jpg",
+        "supportremix.jpg",
+        "support-2_remix_for_newer_extruder_spring_screw.png",
+        "support-1_-_50mm.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/drag-chain---cable-chain---ender-3-by-diogosantos88-33/images/IMG_20190626_130724640.jpg"
+    },
+    {
+      "id": 34,
+      "nombre": "Snap-on LCD Cover for Creality Ender-3/Ender-3s/Ender-3 Pro/Ender-5 by wolfganghsu",
+      "descripcion": "Proyecto importado desde cover ender 3.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Base.stl",
+          "tipo": "STL",
+          "tamano": "69.42 KB"
+        },
+        {
+          "nombre": "Clip.stl",
+          "tipo": "STL",
+          "tamano": "64.05 KB"
+        },
+        {
+          "nombre": "Cover.stl",
+          "tipo": "STL",
+          "tamano": "238.17 KB"
+        },
+        {
+          "nombre": "Cover_-_No_Logo.stl",
+          "tipo": "STL",
+          "tamano": "145.20 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.14 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "imagenes": [
+        "Assembly.jpg",
+        "Half.jpg",
+        "Cover.jpg",
+        "Base.jpg",
+        "Clip.jpg",
+        "Orientation.jpg",
+        "Closed.jpg",
+        "Full.jpg",
+        "8432375427c95c43477fb89aa638ea5c.png",
+        "b1e22cad43c1f7503c7b23d5b3ef9bae.png",
+        "713b4a12eb4f2f78be3c69b272215190.png",
+        "e72178b8d52bf5710ee44bdbfc6d94f3.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/snap-on-lcd-cover-for-creality-ender-3/ender-3s/ender-3-pro/ender-5-by-wolfganghsu-34/images/Assembly.jpg"
+    },
+    {
+      "id": 35,
+      "nombre": "Creality Wifi Box Case 4020 Mount by Botcan3d",
+      "descripcion": "Proyecto importado desde Creality Wifi Box Case 4020 Mount - 4678304.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Creality_Wifi_Box_Case_4020.stl",
+          "tipo": "STL",
+          "tamano": "665.84 KB"
+        },
+        {
+          "nombre": "Creality_Wifi_Box_Case_Lid.stl",
+          "tipo": "STL",
+          "tamano": "199.32 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        }
+      ],
+      "imagenes": [
+        "IMG-2552.JPG",
+        "Creality_Wifi_Box_Case_4020.png",
+        "Creality_Wifi_Box_Case_Lid.png",
+        "IMG-2553.JPG"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/creality-wifi-box-case-4020-mount-by-botcan3d-35/images/IMG-2552.JPG"
+    },
+    {
+      "id": 36,
+      "nombre": "Lego Calibration Cube by EnginEli",
+      "descripcion": "Proyecto importado desde Lego Calibration Cube - 4645349.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "LegoCalibrationCube.stl",
+          "tipo": "STL",
+          "tamano": "307.21 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        }
+      ],
+      "imagenes": [
+        "IMG_20201106_122015_331.jpg",
+        "IMG_20201106_173359.jpg"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/lego-calibration-cube-by-engineli-36/images/IMG_20201106_122015_331.jpg"
+    },
+    {
+      "id": 37,
+      "nombre": "XYZ 20mm Calibration Cube by iDig3Dprinting",
+      "descripcion": "Proyecto importado desde XYZ 20mm Calibration Cube - 1278865.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "xyzCalibration_cube.stl",
+          "tipo": "STL",
+          "tamano": "6.72 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "imagenes": [
+        "iDig3Dprinting_calibrationcube_1000x1000.jpg",
+        "xyzCalibration_cube.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/xyz-20mm-calibration-cube-by-idig3dprinting-37/images/iDig3Dprinting_calibrationcube_1000x1000.jpg"
+    },
+    {
+      "id": 38,
+      "nombre": "Cute Pig Articulated by inplace",
+      "descripcion": "Proyecto importado desde pig.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Print_Settings.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        },
+        {
+          "nombre": "Cute_Pigmulticolor.3mf",
+          "tipo": "3MF",
+          "tamano": "20027.45 KB"
+        },
+        {
+          "nombre": "Cute_Pigsinglecolor.stl",
+          "tipo": "STL",
+          "tamano": "68268.93 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        }
+      ],
+      "imagenes": [
+        "4.jpg",
+        "featured_preview_c82666cc-2351-4941-9835-2c9354ab216d.png",
+        "1.jpg",
+        "2.jpg",
+        "foto.jpg",
+        "3.jpg"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/cute-pig-articulated-by-inplace-38/images/4.jpg"
+    },
+    {
+      "id": 39,
+      "nombre": "articulated dragon toothless BlazeTooth by PinkyWings",
+      "descripcion": "Proyecto importado desde articulated_dragon_toothless_BlazeTooth_6762158.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "4_Color_Blaze_Dragon_toothless.3mf",
+          "tipo": "3MF",
+          "tamano": "11297.81 KB"
+        },
+        {
+          "nombre": "Blaze_Dragon_toothless.stl",
+          "tipo": "STL",
+          "tamano": "42548.28 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        }
+      ],
+      "imagenes": [
+        "1920.jpg",
+        "featured_preview_909d64eb-1e28-4838-8f8f-df202412f060.png",
+        "123.jpg"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/articulated-dragon-toothless-blazetooth-by-pinkywings-39/images/1920.jpg"
+    },
+    {
+      "id": 40,
+      "nombre": "Remix - Filament Motion Sensor with Optical Encoder by dapostol73",
+      "descripcion": "Proyecto importado desde Remix - Filament Motion Sensor with Optical Encoder - 5373677.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Remix_Axle_A.stl",
+          "tipo": "STL",
+          "tamano": "934.27 KB"
+        },
+        {
+          "nombre": "Remix_Axle_B.stl",
+          "tipo": "STL",
+          "tamano": "1064.45 KB"
+        },
+        {
+          "nombre": "Remix_Body_Mount.stl",
+          "tipo": "STL",
+          "tamano": "6098.79 KB"
+        },
+        {
+          "nombre": "Remix_Cutting_Tool.stl",
+          "tipo": "STL",
+          "tamano": "6292.32 KB"
+        },
+        {
+          "nombre": "Remix_Body_Front.stl",
+          "tipo": "STL",
+          "tamano": "4706.72 KB"
+        },
+        {
+          "nombre": "Remix_Body_Back.stl",
+          "tipo": "STL",
+          "tamano": "12925.41 KB"
+        },
+        {
+          "nombre": "Remix_Axle_Wheel.stl",
+          "tipo": "STL",
+          "tamano": "30759.84 KB"
+        },
+        {
+          "nombre": "Remix_Body_MountSide_Base.stl",
+          "tipo": "STL",
+          "tamano": "16882.41 KB"
+        },
+        {
+          "nombre": "Remix_Body_MountSide_Guide.stl",
+          "tipo": "STL",
+          "tamano": "1256.82 KB"
+        },
+        {
+          "nombre": "Remix_Body_MountSide_Spacer.stl",
+          "tipo": "STL",
+          "tamano": "820.39 KB"
+        },
+        {
+          "nombre": "Remix_FilamentEncoder.3mf",
+          "tipo": "3MF",
+          "tamano": "6088.40 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "imagenes": [
+        "filamentencoder1.jpg",
+        "filamentencoder2.jpg",
+        "filamentencoder4.jpg",
+        "filamentencoder3.jpg",
+        "filamentencoder0.jpg",
+        "Remix_Body_Front.png",
+        "Remix_Body_Back.png",
+        "Remix_Body_Mount.png",
+        "Remix_Axle_A.png",
+        "Remix_Cutting_Tool.png",
+        "Remix_Axle_Wheel.png",
+        "Remix_Axle_B.png",
+        "Remix_Body_MountSide_Base.png",
+        "Remix_Body_MountSide_Guide.png",
+        "Remix_Body_MountSide_Spacer.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/remix---filament-motion-sensor-with-optical-encoder-by-dapostol73-40/images/filamentencoder1.jpg"
+    },
+    {
+      "id": 41,
+      "nombre": "Me-262 Schwalbe Kit Card",
+      "descripcion": "Proyecto importado desde Me-262 Schwalbe Kit Card.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Me262_Connector.stl",
+          "tipo": "STL",
+          "tamano": "8.68 KB"
+        },
+        {
+          "nombre": "Me262_Tail.stl",
+          "tipo": "STL",
+          "tamano": "7.11 KB"
+        },
+        {
+          "nombre": "Me262_Engines.stl",
+          "tipo": "STL",
+          "tamano": "16.49 KB"
+        },
+        {
+          "nombre": "Me262_Wings.stl",
+          "tipo": "STL",
+          "tamano": "12.97 KB"
+        },
+        {
+          "nombre": "Me262_Fuselage_No-Loop.stl",
+          "tipo": "STL",
+          "tamano": "21.57 KB"
+        },
+        {
+          "nombre": "Me262_Fuselage.stl",
+          "tipo": "STL",
+          "tamano": "31.72 KB"
+        },
+        {
+          "nombre": "Frameless_Me262_Kit_No-Loop.stl",
+          "tipo": "STL",
+          "tamano": "66.49 KB"
+        },
+        {
+          "nombre": "Frameless_Me262_Kit.stl",
+          "tipo": "STL",
+          "tamano": "76.64 KB"
+        },
+        {
+          "nombre": "Me262_Kit_No-Loop.stl",
+          "tipo": "STL",
+          "tamano": "1470.79 KB"
+        },
+        {
+          "nombre": "Me262_Kit.stl",
+          "tipo": "STL",
+          "tamano": "1491.68 KB"
+        }
+      ],
+      "imagenes": [],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100
+    },
+    {
+      "id": 42,
+      "nombre": "Articulated Dragon Light Fury Cute Flexi by PinkyWings",
+      "descripcion": "Proyecto importado desde Articulated Dragon Light Fury Cute Flexi - 6737901.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "lightFury_Keychain_Color.3mf",
+          "tipo": "3MF",
+          "tamano": "6488.59 KB"
+        },
+        {
+          "nombre": "lightFury_Keychain.stl",
+          "tipo": "STL",
+          "tamano": "23988.95 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.14 KB"
+        }
+      ],
+      "imagenes": [
+        "793c1983-8418-42ed-9cd5-938eca986767.jpg",
+        "321cac3e-119b-48c1-bbcb-13937876bf33.webp",
+        "a8ca80cb-b372-4c85-a981-aa2478425d3e.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/articulated-dragon-light-fury-cute-flexi-by-pinkywings-42/images/793c1983-8418-42ed-9cd5-938eca986767.jpg"
+    },
+    {
+      "id": 43,
+      "nombre": "Flexi Triceratops by Andyfuentes",
+      "descripcion": "Proyecto importado desde Flexi Triceratops - 2834019.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Flexi_Triceratops.stl",
+          "tipo": "STL",
+          "tamano": "4350.67 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        }
+      ],
+      "imagenes": [
+        "877331b1ac168f8dd0e8be586300d6ae.png",
+        "Model.PNG",
+        "IMG_20180318_100614527.jpg"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/flexi-triceratops-by-andyfuentes-43/images/877331b1ac168f8dd0e8be586300d6ae.png"
+    },
+    {
+      "id": 44,
+      "nombre": "Articulated Flexi Cute Snake by MiniStudio",
+      "descripcion": "Proyecto importado desde Articulated Flexi Cute Snake - 6746715.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Mini_Snake.3mf",
+          "tipo": "3MF",
+          "tamano": "3300.20 KB"
+        },
+        {
+          "nombre": "Mini_Snake.stl",
+          "tipo": "STL",
+          "tamano": "59816.46 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.14 KB"
+        }
+      ],
+      "imagenes": [
+        "91d364c0-dc3e-49c0-8d2c-34082ea6713c.jpg",
+        "1d3698c8-2516-4978-af06-9e70916e6b04.jpg",
+        "dd8b503f-d90b-4d8f-8d7d-211494f698df.jpg",
+        "8bed91ee-a23d-4090-8891-3a21a33eb046.jpg",
+        "f1cb308d-66b9-4d60-8192-131500909f14.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/articulated-flexi-cute-snake-by-ministudio-44/images/91d364c0-dc3e-49c0-8d2c-34082ea6713c.jpg"
+    },
+    {
+      "id": 45,
+      "nombre": "Articulated Dragon Night Fury Cute Flexi by PinkyWings",
+      "descripcion": "Proyecto importado desde Articulated Dragon Night Fury Cute Flexi - 6728378.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Night_Fury.3mf",
+          "tipo": "3MF",
+          "tamano": "9600.53 KB"
+        },
+        {
+          "nombre": "Night_Fury.stl",
+          "tipo": "STL",
+          "tamano": "36196.71 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.14 KB"
+        }
+      ],
+      "imagenes": [
+        "63098ad5-4118-4841-a817-4f5f668b9d40.jpg",
+        "b195b65e-5ebb-47bc-8eab-1050616513bb.jpg",
+        "86326abd-89e4-426e-9b1b-0aff608ac762.jpg",
+        "679b1eda-719c-4390-b588-fd45c37a2c16.jpg",
+        "05f2d287-2b7c-41d2-897d-662b25dc7f19.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/articulated-dragon-night-fury-cute-flexi-by-pinkywings-45/images/63098ad5-4118-4841-a817-4f5f668b9d40.jpg"
+    },
+    {
+      "id": 46,
+      "nombre": "Simple gantry support (metric/inch), Z-brace for Ender-3 V3 KE/SE by hapedevee",
+      "descripcion": "Proyecto importado desde Simple gantry support (metric_inch), Z-brace for Ender-3 V3 KE_SE - 6516352.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Clamping_part_Metric_M5_L.stl",
+          "tipo": "STL",
+          "tamano": "2120.30 KB"
+        },
+        {
+          "nombre": "Clamping_part_Metric_M5_R.stl",
+          "tipo": "STL",
+          "tamano": "2126.94 KB"
+        },
+        {
+          "nombre": "Clamping_part_Inch_10-24_R.stl",
+          "tipo": "STL",
+          "tamano": "2126.94 KB"
+        },
+        {
+          "nombre": "Clamping_part_Inch_10-24_L.stl",
+          "tipo": "STL",
+          "tamano": "2120.30 KB"
+        },
+        {
+          "nombre": "BUTTRESS_BASE_Metric-Inch_L.stl",
+          "tipo": "STL",
+          "tamano": "2181.92 KB"
+        },
+        {
+          "nombre": "BUTTRESS_BASE_Metric-Inch_R.stl",
+          "tipo": "STL",
+          "tamano": "2174.40 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "imagenes": [
+        "a499bf4a-9f3f-4da5-b582-f274e2f4f823.jpg",
+        "24725f69-a4f5-4e20-b8f3-20cf21d9fcca.jpg",
+        "53d41631-c46c-48e7-948a-941549cb8b0c.jpg",
+        "9491a870-95bd-4533-af39-77c592d5d380.jpg",
+        "ef09590a-f3cc-4320-87d0-b4826f57cd41.jpg",
+        "f52f5ec5-9123-4dd4-8c99-75c6be89cd55.jpg",
+        "d82552c0-c8d9-47a2-8db7-e9716c9e2a1a.jpg",
+        "5568f3a0-4fa6-4ca5-b2dc-6413a4734a58.jpg",
+        "fded1d7d-5cdc-447b-87c7-696d76956bee.jpg",
+        "2e94397d-2aba-4bbe-812c-04875c475f75.jpg",
+        "26262bc3-00fb-40dc-829b-1f14111a5222.png",
+        "675174e5-dcdf-40ed-a78d-d7d9a490d995.png",
+        "c57e5faa-49be-4619-a21e-f6f72c3c86f0.png",
+        "a6c0e860-8e37-4182-a774-dd02688f317e.png",
+        "b23482a4-f9b1-4142-9e5e-51e7e291a68e.jpg",
+        "fcce3028-9e4a-48e3-9477-a86aab89383f.jpg",
+        "28db2081-2d2f-4cc7-a98d-fbd125d964ce.jpg",
+        "c49256e1-5338-4609-b46c-b4ba274a087f.jpg"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/simple-gantry-support-(metric/inch),-z-brace-for-ender-3-v3-ke/se-by-hapedevee-46/images/a499bf4a-9f3f-4da5-b582-f274e2f4f823.jpg"
+    },
+    {
+      "id": 47,
+      "nombre": "Ender3 V3 SE spool holder frame, balancing weight to the center by davidavs",
+      "descripcion": "Proyecto importado desde Ender3 V3 SE spool holder frame, balancing weight to the center - 6255969.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "spool-holder.stl",
+          "tipo": "STL",
+          "tamano": "374.92 KB"
+        },
+        {
+          "nombre": "pins.stl",
+          "tipo": "STL",
+          "tamano": "106.73 KB"
+        },
+        {
+          "nombre": "spool-holder-with-pins.stl",
+          "tipo": "STL",
+          "tamano": "447.77 KB"
+        },
+        {
+          "nombre": "elevated-pins.stl",
+          "tipo": "STL",
+          "tamano": "107.34 KB"
+        },
+        {
+          "nombre": "elevated-spool-holder-with-pins.stl",
+          "tipo": "STL",
+          "tamano": "447.24 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "imagenes": [
+        "42ecd1a0-d2b3-43f5-a335-651226de02be.jpg",
+        "f19696e1-5019-435e-bc32-c46987250ac6.png",
+        "e72016a8-65c5-4ee2-8792-fbe05810facf.png",
+        "aa6fcaca-d37f-4031-b522-bc4cc27ddacb.png",
+        "7c62a512-4112-4934-bc54-7dcd7b3587b4.png",
+        "16fbaadc-5832-40b2-8d3b-b65441606f8d.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/ender3-v3-se-spool-holder-frame,-balancing-weight-to-the-center-by-davidavs-47/images/42ecd1a0-d2b3-43f5-a335-651226de02be.jpg"
+    },
+    {
+      "id": 48,
+      "nombre": "Test de retraccion by diter",
+      "descripcion": "Proyecto importado desde Test de retraccion - 4249397.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Test_Retraccion.stl",
+          "tipo": "STL",
+          "tamano": "8.87 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        }
+      ],
+      "imagenes": [
+        "Test_Retraccion.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/test-de-retraccion-by-diter-48/images/Test_Retraccion.png"
+    },
+    {
+      "id": 49,
+      "nombre": "A BIT with a GRIP - A must have for your toolbox! by Prntmkr",
+      "descripcion": "Proyecto importado desde A BIT with a GRIP - A must have for your toolbox! - 6697329.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "ABitWithAGrip.stl",
+          "tipo": "STL",
+          "tamano": "6830.84 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "imagenes": [
+        "8acf5016-cbbb-4c89-99f4-0551dd730b2b.jpg",
+        "53b3b20e-4f79-4ff4-9fce-75378e95abf7.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/a-bit-with-a-grip---a-must-have-for-your-toolbox!-by-prntmkr-49/images/8acf5016-cbbb-4c89-99f4-0551dd730b2b.jpg"
+    },
+    {
+      "id": 50,
+      "nombre": "Minnie Mouse Pencil Topper - Remix by bluegearstudios",
+      "descripcion": "Proyecto importado desde Minnie Mouse Pencil Topper - Remix - 2916681.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Minnie_Mouse_Pencil_Topper.stl",
+          "tipo": "STL",
+          "tamano": "3709.75 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "imagenes": [
+        "Minnie-Mouse-Pencil-Topper.jpg",
+        "Minnie-Mouse-Pencil-Topper2.jpg",
+        "984812097643d1d068e139c03f678748.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/minnie-mouse-pencil-topper---remix-by-bluegearstudios-50/images/Minnie-Mouse-Pencil-Topper.jpg"
+    },
+    {
+      "id": 51,
+      "nombre": "Micro Catapult by LukeTansell",
+      "descripcion": "Proyecto importado desde Micro Catapult - 1763518.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Micro_Catapult_v1.1.STL",
+          "tipo": "STL",
+          "tamano": "701.94 KB"
+        },
+        {
+          "nombre": "Micro_Catapult_INC._TOL..STL",
+          "tipo": "STL",
+          "tamano": "715.32 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "imagenes": [
+        "DSC_0131.JPG",
+        "DSC_0125.JPG",
+        "DSC_0122.JPG",
+        "a825788409412cf0fe01e7808701cf1a.png",
+        "20160910_173341.jpg",
+        "800489297abdbddf2d9b0103b77eeab1.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/micro-catapult-by-luketansell-51/images/DSC_0131.JPG"
+    },
+    {
+      "id": 52,
+      "nombre": "Mario Rings by bigovereasy",
+      "descripcion": "Proyecto importado desde Mario Rings - 5981058.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "ring1_whole.stl",
+          "tipo": "STL",
+          "tamano": "303.01 KB"
+        },
+        {
+          "nombre": "ring2.stl",
+          "tipo": "STL",
+          "tamano": "272.84 KB"
+        },
+        {
+          "nombre": "ring3_whole.stl",
+          "tipo": "STL",
+          "tamano": "771.96 KB"
+        },
+        {
+          "nombre": "ring1_question.stl",
+          "tipo": "STL",
+          "tamano": "4.38 KB"
+        },
+        {
+          "nombre": "ring3_eye.stl",
+          "tipo": "STL",
+          "tamano": "42.46 KB"
+        },
+        {
+          "nombre": "ring3_ivory.stl",
+          "tipo": "STL",
+          "tamano": "327.04 KB"
+        },
+        {
+          "nombre": "ring3.stl",
+          "tipo": "STL",
+          "tamano": "365.12 KB"
+        },
+        {
+          "nombre": "ring3_red.stl",
+          "tipo": "STL",
+          "tamano": "418.25 KB"
+        },
+        {
+          "nombre": "ring4.stl",
+          "tipo": "STL",
+          "tamano": "150.28 KB"
+        },
+        {
+          "nombre": "ring4_star.stl",
+          "tipo": "STL",
+          "tamano": "838.56 KB"
+        },
+        {
+          "nombre": "ring1.stl",
+          "tipo": "STL",
+          "tamano": "290.51 KB"
+        },
+        {
+          "nombre": "read_this.txt",
+          "tipo": "Archivo",
+          "tamano": "0.38 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.14 KB"
+        }
+      ],
+      "imagenes": [
+        "a7814642-842f-46c8-a98a-a385d35d3556.jpg",
+        "ca2bc527-7e6f-4130-bfdc-a63e1274c276.jpg",
+        "d6143079-9079-4bb2-9e7e-ecf02642dbbf.png",
+        "74c926de-ad52-4ae9-8406-dca93e286ea7.png",
+        "61f91b9c-0a3d-4087-9421-7e403807df9e.png",
+        "1d52ae78-d6f1-407b-b2fc-df190ff887b8.png",
+        "93f71414-36b3-44c4-b042-84962c1db8e3.png",
+        "2588a5a7-8a35-497f-b6e2-2591b30c9e13.png",
+        "8fe644b6-9857-40bc-b1cb-a7cb574add2c.png",
+        "3239aad2-7de5-4187-a72d-72b07b27c153.png",
+        "4c39b517-c08b-476c-a986-e504cd597f5f.png",
+        "40b8e83f-2039-41f8-a9b0-0b895196e859.png",
+        "66ecbbba-f79f-4f3c-ac23-0f9dab59151f.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/mario-rings-by-bigovereasy-52/images/a7814642-842f-46c8-a98a-a385d35d3556.jpg"
+    },
+    {
+      "id": 53,
+      "nombre": "Flying Helicopter Toy (OLD) by 3DBROOKLYN",
+      "descripcion": "Proyecto importado desde Flying Helicopter Toy (OLD) - 1885007.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Helicopter_Front.stl",
+          "tipo": "STL",
+          "tamano": "193.25 KB"
+        },
+        {
+          "nombre": "Helicopter_Back.stl",
+          "tipo": "STL",
+          "tamano": "708.68 KB"
+        },
+        {
+          "nombre": "Helicopter_Blades.stl",
+          "tipo": "STL",
+          "tamano": "2771.66 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "imagenes": [
+        "Helicopter_Group.png",
+        "Helicopter_Render.png",
+        "Helicopter.png",
+        "8ea42e10f560f20b3928765afc2a69b1.png",
+        "c9bed12a14e0f39c0e0f918710c19f79.png",
+        "cdd75501b1dfcbaac760a877030d11c8.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/flying-helicopter-toy-(old)-by-3dbrooklyn-53/images/Helicopter_Group.png"
+    },
+    {
+      "id": 54,
+      "nombre": "Ender 3 v2 Spool Holder",
+      "descripcion": "Proyecto importado desde Ender 3 v2 Spool Holder.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "1.stl",
+          "tipo": "STL",
+          "tamano": "57.70 KB"
+        },
+        {
+          "nombre": "2.stl",
+          "tipo": "STL",
+          "tamano": "6.14 KB"
+        },
+        {
+          "nombre": "3.stl",
+          "tipo": "STL",
+          "tamano": "30.16 KB"
+        }
+      ],
+      "imagenes": [],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100
+    },
+    {
+      "id": 55,
+      "nombre": "Articulated Dolphin",
+      "descripcion": "Proyecto importado desde Articulated Dolphin.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Dolphin_v2.stl",
+          "tipo": "STL",
+          "tamano": "7661.70 KB"
+        }
+      ],
+      "imagenes": [],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100
+    },
+    {
+      "id": 56,
+      "nombre": "TIE Advanced Kit Card by Nakozen",
+      "descripcion": "Proyecto importado desde TIE Advanced Kit Card - 4708937.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "TieAdvanced_Kit.stl",
+          "tipo": "STL",
+          "tamano": "623.32 KB"
+        },
+        {
+          "nombre": "TieAdvanced_Kit_No_Frame.stl",
+          "tipo": "STL",
+          "tamano": "220.10 KB"
+        },
+        {
+          "nombre": "TieAdvanced_Half_A.stl",
+          "tipo": "STL",
+          "tamano": "568.93 KB"
+        },
+        {
+          "nombre": "TieAdvanced_Half_B.stl",
+          "tipo": "STL",
+          "tamano": "67.46 KB"
+        },
+        {
+          "nombre": "TieAdvanced_Fuselage_A.stl",
+          "tipo": "STL",
+          "tamano": "44.52 KB"
+        },
+        {
+          "nombre": "TieAdvanced_Fuselage_B.stl",
+          "tipo": "STL",
+          "tamano": "26.06 KB"
+        },
+        {
+          "nombre": "TieAdvanced_Canopy.stl",
+          "tipo": "STL",
+          "tamano": "46.96 KB"
+        },
+        {
+          "nombre": "TieAdvanced_Pegs.stl",
+          "tipo": "STL",
+          "tamano": "33.48 KB"
+        },
+        {
+          "nombre": "TieAdvanced_Panels.stl",
+          "tipo": "STL",
+          "tamano": "18.05 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "imagenes": [
+        "P1030444-2.jpg",
+        "P1030442-2.jpg",
+        "P1030443-2.jpg",
+        "P1030441-2.jpg",
+        "TieAdvanced_Kit_No_Frame.png",
+        "TieAdvanced_Half_B.png",
+        "TieAdvanced_Fuselage_A.png",
+        "TieAdvanced_Fuselage_B.png",
+        "TieAdvanced_Canopy.png",
+        "TieAdvanced_Pegs.png",
+        "TieAdvanced_Panels.png",
+        "TieAdvanced_Kit.png",
+        "TieAdvanced_Half_A.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/tie-advanced-kit-card-by-nakozen-56/images/P1030444-2.jpg"
+    },
+    {
+      "id": 57,
+      "nombre": "Imperial Star Destroyer Kit Card by Fletch16",
+      "descripcion": "Proyecto importado desde Imperial Star Destroyer Kit Card - 6557295.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Destroyer_v64.stl",
+          "tipo": "STL",
+          "tamano": "898.52 KB"
+        },
+        {
+          "nombre": "Stand.stl",
+          "tipo": "STL",
+          "tamano": "2.43 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.14 KB"
+        }
+      ],
+      "imagenes": [
+        "6ffd0ab9-cb9d-4eda-8f56-a7a97fc2ce5b.jpg",
+        "60fcd1e9-89ef-49aa-8426-498553e33344.jpg",
+        "318a63c7-342c-4361-92d9-4ecbf966b299.png",
+        "4e8a60b6-0934-4f63-baee-68e09eddf3c3.png",
+        "6e3f9b95-be5f-4a61-b20d-6e4c44315982.jpg"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/imperial-star-destroyer-kit-card-by-fletch16-57/images/6ffd0ab9-cb9d-4eda-8f56-a7a97fc2ce5b.jpg"
+    },
+    {
+      "id": 58,
+      "nombre": "Ender3/Pro calibration pattern by JouniL",
+      "descripcion": "Proyecto importado desde Ender3_Pro calibration pattern - 4667894.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Kalibrering_01.stl",
+          "tipo": "STL",
+          "tamano": "208.68 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        }
+      ],
+      "imagenes": [
+        "Kalibrering_01.png",
+        "ender3pro.jpg",
+        "ender3.jpg"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/ender3/pro-calibration-pattern-by-jounil-58/images/Kalibrering_01.png"
+    },
+    {
+      "id": 59,
+      "nombre": "CR-10 Basic bed level test by jrddupont",
+      "descripcion": "Proyecto importado desde CR-10 Basic bed level test - 2900744.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "250mm_Bed_Level_Test.stl",
+          "tipo": "STL",
+          "tamano": "9.26 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        }
+      ],
+      "imagenes": [
+        "7dab9deef6db4a9a3066f6761b001383.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/cr-10-basic-bed-level-test-by-jrddupont-59/images/7dab9deef6db4a9a3066f6761b001383.png"
+    },
+    {
+      "id": 60,
+      "nombre": "I Heart U MOM 2 view Art by johnnyray",
+      "descripcion": "Proyecto importado desde I Heart U MOM 2 view Art - 2908690.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "mothersday.stl",
+          "tipo": "STL",
+          "tamano": "287.78 KB"
+        },
+        {
+          "nombre": "iheartuMOM.STL",
+          "tipo": "STL",
+          "tamano": "318.05 KB"
+        },
+        {
+          "nombre": "mum.STL",
+          "tipo": "STL",
+          "tamano": "240.02 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "imagenes": [
+        "iheartmom.jpg",
+        "iheartmom.png",
+        "0e9480a379d855fe0ae56c060159085c.png",
+        "4cb0cbffc41a4e049f14f6e7ef0c5834.png",
+        "8efaa959fe33819a8d173c30e85781f8.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/i-heart-u-mom-2-view-art-by-johnnyray-60/images/iheartmom.jpg"
+    },
+    {
+      "id": 61,
+      "nombre": "Ender 3 KE Support Gantry by Callidyn",
+      "descripcion": "Proyecto importado desde Ender 3 KE Support Gantry - 6543741.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Top_Connetor_R.stl",
+          "tipo": "STL",
+          "tamano": "96.08 KB"
+        },
+        {
+          "nombre": "Bottom_M10_Socket_L.stl",
+          "tipo": "STL",
+          "tamano": "133.09 KB"
+        },
+        {
+          "nombre": "Top_Connector_L.stl",
+          "tipo": "STL",
+          "tamano": "95.98 KB"
+        },
+        {
+          "nombre": "Top_Support.stl",
+          "tipo": "STL",
+          "tamano": "344.91 KB"
+        },
+        {
+          "nombre": "Bottom_M10_Socket_R.stl",
+          "tipo": "STL",
+          "tamano": "133.09 KB"
+        },
+        {
+          "nombre": "Bottom_Connector_R.stl",
+          "tipo": "STL",
+          "tamano": "48.52 KB"
+        },
+        {
+          "nombre": "Turnbuckle.stl",
+          "tipo": "STL",
+          "tamano": "301.84 KB"
+        },
+        {
+          "nombre": "Bottom_Connetor_L.stl",
+          "tipo": "STL",
+          "tamano": "52.72 KB"
+        },
+        {
+          "nombre": "Square_Turnbuckle.stl",
+          "tipo": "STL",
+          "tamano": "302.04 KB"
+        },
+        {
+          "nombre": "Top_M10_Socket.stl",
+          "tipo": "STL",
+          "tamano": "151.84 KB"
+        },
+        {
+          "nombre": "Bottom_Support_R.stl",
+          "tipo": "STL",
+          "tamano": "355.06 KB"
+        },
+        {
+          "nombre": "Bottom_Support_L.stl",
+          "tipo": "STL",
+          "tamano": "355.45 KB"
+        },
+        {
+          "nombre": "Slim_Turnbuckle.stl",
+          "tipo": "STL",
+          "tamano": "312.09 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "imagenes": [
+        "a649fd16-bf48-4b63-b774-652cbbfe4dba.jpg",
+        "61b82907-9496-4830-ad34-8834397b4601.png",
+        "0d095598-b6c4-463a-b95c-e4f5e4d97c31.png",
+        "e7beda7e-e14b-47e4-a554-3643a732c2a8.png",
+        "10507de9-b5a1-4c69-8cb3-86d2120a82e5.png",
+        "afd90491-c91b-4e20-8f02-05b3f092f12d.png",
+        "7e95acca-e2f7-41ac-82f4-14c5a97072ed.png",
+        "d3140f99-c11f-4be2-a2dc-46ebd35803bf.png",
+        "55fed5cc-f6db-4a53-879a-853e577c2734.png",
+        "38e6237d-0c27-41bc-bf6f-653131efa8ba.png",
+        "cfb3c6a1-ff5e-4e03-8ca5-7767c1997dbd.png",
+        "276a998f-1e42-4784-8ad7-8a7d5fec154c.png",
+        "668b852e-77f3-4780-9c63-f17346e8d33b.png",
+        "5b9f1914-2e68-40eb-9697-0ff227992ade.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/ender-3-ke-support-gantry-by-callidyn-61/images/a649fd16-bf48-4b63-b774-652cbbfe4dba.jpg"
+    },
+    {
+      "id": 62,
+      "nombre": "Articulating Toothless Toy (Repaired) by isakjetbean",
+      "descripcion": "Proyecto importado desde Articulating Toothless Toy (Repaired) - 6119189.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Articulating_Toothless_Toy_Repaired.3mf",
+          "tipo": "3MF",
+          "tamano": "51963.97 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        }
+      ],
+      "imagenes": [
+        "3cb1175a-838c-4a95-a879-1d651a163e77.jpg",
+        "8f4105ed-2dc0-4487-9537-a5f7716c9279.jpg",
+        "ec9fe1fb-34cb-46f7-90f0-5cf9c2b00e36.jpg",
+        "8a898c08-e069-4e5f-ba70-8e1a74fbea70.jpg",
+        "840039f5-ad70-4148-92ea-5e8c8777a353.jpg"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/articulating-toothless-toy-(repaired)-by-isakjetbean-62/images/3cb1175a-838c-4a95-a879-1d651a163e77.jpg"
+    },
+    {
+      "id": 63,
+      "nombre": "Geodesic Planter Pot by bza",
+      "descripcion": "Proyecto importado desde Geodesic Planter Pot - 4776332.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "planter_plus_support.stl",
+          "tipo": "STL",
+          "tamano": "1058.77 KB"
+        },
+        {
+          "nombre": "small-hexagonal_hexecontahedron_standing_planter.3mf",
+          "tipo": "3MF",
+          "tamano": "267.87 KB"
+        },
+        {
+          "nombre": "small-hexagonal_hexecontahedron_standing_planter.stl",
+          "tipo": "STL",
+          "tamano": "1186.02 KB"
+        },
+        {
+          "nombre": "geodesic_planter_plus_drainage_plus_support.stl",
+          "tipo": "STL",
+          "tamano": "1377.47 KB"
+        },
+        {
+          "nombre": "geodesic_planter_plus_drainage.stl",
+          "tipo": "STL",
+          "tamano": "1352.82 KB"
+        },
+        {
+          "nombre": "geodesic_planter_supportfree_printing.3mf",
+          "tipo": "3MF",
+          "tamano": "264.61 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "imagenes": [
+        "planter_2_small.jpg",
+        "planter-small.jpg",
+        "IMG_4346.jpg",
+        "planter_plus_support.png",
+        "geodesic_planter_plus_drainage_plus_support.png",
+        "geodesic_planter_plus_drainage.png",
+        "small-hexagonal_hexecontahedron_standing_planter.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/geodesic-planter-pot-by-bza-63/images/planter_2_small.jpg"
+    },
+    {
+      "id": 64,
+      "nombre": "Self-Watering Oddish Pot by JackofAllTrades92",
+      "descripcion": "Proyecto importado desde Self-Watering Oddish Pot - 4370574.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "oddish_liner_support.stl",
+          "tipo": "STL",
+          "tamano": "304.77 KB"
+        },
+        {
+          "nombre": "oddish_liner.stl",
+          "tipo": "STL",
+          "tamano": "505.16 KB"
+        },
+        {
+          "nombre": "oddish_hollow.stl",
+          "tipo": "STL",
+          "tamano": "1544.42 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        }
+      ],
+      "imagenes": [
+        "20200516_194326.jpg",
+        "20200516_194328.jpg",
+        "20200516_194354.jpg",
+        "oddish_cross_section.JPG",
+        "oddish_hollow.png",
+        "oddish_liner.png",
+        "oddish_liner_support.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/self-watering-oddish-pot-by-jackofalltrades92-64/images/20200516_194326.jpg"
+    },
+    {
+      "id": 65,
+      "nombre": "Samsung Galaxy S9 case by fpikus",
+      "descripcion": "Proyecto importado desde Samsung Galaxy S9 case - 2980361.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Galaxy_S9_case_fixed.stl",
+          "tipo": "STL",
+          "tamano": "642.76 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        }
+      ],
+      "imagenes": [
+        "20180627_100459.jpg",
+        "f830b64918791ad1680fd86645d60f15.png",
+        "20180627_100510.jpg"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/samsung-galaxy-s9-case-by-fpikus-65/images/20180627_100459.jpg"
+    },
+    {
+      "id": 66,
+      "nombre": "Olaf Keychain by peregrine9",
+      "descripcion": "Proyecto importado desde Olaf Keychain - 731616.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "olaf_keychain.stl",
+          "tipo": "STL",
+          "tamano": "951.35 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "imagenes": [
+        "olaf_keychain.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/olaf-keychain-by-peregrine9-66/images/olaf_keychain.png"
+    },
+    {
+      "id": 67,
+      "nombre": "Ice Cold Tiara by MerganMcFergan",
+      "descripcion": "Proyecto importado desde Ice Cold Tiara - 3088759.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "IceColdTiara_Gem.stl",
+          "tipo": "STL",
+          "tamano": "5.16 KB"
+        },
+        {
+          "nombre": "IceColdTiara.stl",
+          "tipo": "STL",
+          "tamano": "1416.88 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.14 KB"
+        }
+      ],
+      "imagenes": [
+        "IMG_9364.JPG",
+        "IMG_9354.JPG",
+        "IMG_9331.JPG",
+        "SilverCAD7.JPG",
+        "SilverCAD8.JPG",
+        "SilverCAD5.JPG",
+        "SilverCAD6.JPG",
+        "IMG_9335.JPG",
+        "fbeb14aa891a27ce5518fb8f85e1c324.png",
+        "07173e91041124680ee0e25c0d34e40b.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/ice-cold-tiara-by-merganmcfergan-67/images/IMG_9364.JPG"
+    },
+    {
+      "id": 68,
+      "nombre": "Filament spool holder with a maximum width of 75mm by AngryHulk",
+      "descripcion": "Proyecto importado desde Filament spool holder with a maximum width of 75mm - 6532008.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Pin.stl",
+          "tipo": "STL",
+          "tamano": "116.88 KB"
+        },
+        {
+          "nombre": "Shaft_-_75mm.stl",
+          "tipo": "STL",
+          "tamano": "1156.53 KB"
+        },
+        {
+          "nombre": "Body_-_75mm.stl",
+          "tipo": "STL",
+          "tamano": "803.40 KB"
+        },
+        {
+          "nombre": "Threaded_Clip.stl",
+          "tipo": "STL",
+          "tamano": "1618.83 KB"
+        },
+        {
+          "nombre": "Screw.stl",
+          "tipo": "STL",
+          "tamano": "5407.21 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "imagenes": [
+        "3c89ab75-3e3b-448e-95b2-482221bbb38d.png",
+        "eb9c9852-a014-4153-bcf9-be7d9618b607.PNG",
+        "c8d8a3ce-16c1-4e7d-906a-360d22bca06d.png",
+        "2d84c074-5b9d-413b-b0a4-72f3c866200d.png",
+        "7cedea77-5248-49ee-80e5-8a8bb1af05a9.png",
+        "c41bf96e-495f-4bbf-93a2-025241539a08.png",
+        "6e1ebe7a-8cbb-4d5e-9d86-1b9c8969a817.png",
+        "301f40ca-5fb6-441e-bfb2-a0818df76b26.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/filament-spool-holder-with-a-maximum-width-of-75mm-by-angryhulk-68/images/3c89ab75-3e3b-448e-95b2-482221bbb38d.png"
+    },
+    {
+      "id": 69,
+      "nombre": "Elsa Crown Tiara by Blackthorn90",
+      "descripcion": "Proyecto importado desde Elsa Crown Tiara - 5353866.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Elsa_Crown.stl",
+          "tipo": "STL",
+          "tamano": "482.89 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        }
+      ],
+      "imagenes": [
+        "Elsa_Crown.png",
+        "Screenshot_2022-04-14_213156.jpg"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/elsa-crown-tiara-by-blackthorn90-69/images/Elsa_Crown.png"
+    },
+    {
+      "id": 70,
+      "nombre": "Articulating Bunny (Print in place) by NeonGraveStoneArt",
+      "descripcion": "Proyecto importado desde Articulating Bunny (Print in place) - 6524856.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Articulating_Bunny_Big.stl",
+          "tipo": "STL",
+          "tamano": "29815.45 KB"
+        },
+        {
+          "nombre": "Articulating_Bunny_Small.stl",
+          "tipo": "STL",
+          "tamano": "29728.82 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.14 KB"
+        }
+      ],
+      "imagenes": [
+        "9c167950-8773-4411-8b01-bcfcd2544e72.jpg",
+        "ea02711a-1dda-4f36-8353-59834c2b0c7f.jpg",
+        "eb697a93-a400-487e-96c1-728ae06353d0.png",
+        "cefbbede-e112-4303-8193-1affe6534b49.png",
+        "b27dc2c2-9914-4764-a4bd-cfa4c02721b8.png",
+        "5fe3f79a-7c35-40da-85a3-9325c71a4b28.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/articulating-bunny-(print-in-place)-by-neongravestoneart-70/images/9c167950-8773-4411-8b01-bcfcd2544e72.jpg"
+    },
+    {
+      "id": 71,
+      "nombre": "Gantry support (metric/inch), Z-brace for Ender-3 V3 KE / SE-probably by hapedevee",
+      "descripcion": "Proyecto importado desde Gantry support (metric_inch), Z-brace for Ender-3 V3 KE _ SE-probably - 6516352.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Clamping_part_Metric_M5_L.stl",
+          "tipo": "STL",
+          "tamano": "2120.30 KB"
+        },
+        {
+          "nombre": "Clamping_part_Metric_M5_R.stl",
+          "tipo": "STL",
+          "tamano": "2126.94 KB"
+        },
+        {
+          "nombre": "Clamping_part_Inch_10-24_R.stl",
+          "tipo": "STL",
+          "tamano": "2126.94 KB"
+        },
+        {
+          "nombre": "Clamping_part_Inch_10-24_L.stl",
+          "tipo": "STL",
+          "tamano": "2120.30 KB"
+        },
+        {
+          "nombre": "BUTTRESS_BASE_Metric-Inch_L.stl",
+          "tipo": "STL",
+          "tamano": "2181.92 KB"
+        },
+        {
+          "nombre": "BUTTRESS_BASE_Metric-Inch_R.stl",
+          "tipo": "STL",
+          "tamano": "2174.40 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.14 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "imagenes": [
+        "a499bf4a-9f3f-4da5-b582-f274e2f4f823.jpg",
+        "24725f69-a4f5-4e20-b8f3-20cf21d9fcca.jpg",
+        "53d41631-c46c-48e7-948a-941549cb8b0c.jpg",
+        "9491a870-95bd-4533-af39-77c592d5d380.jpg",
+        "ef09590a-f3cc-4320-87d0-b4826f57cd41.jpg",
+        "f52f5ec5-9123-4dd4-8c99-75c6be89cd55.jpg",
+        "d82552c0-c8d9-47a2-8db7-e9716c9e2a1a.jpg",
+        "5568f3a0-4fa6-4ca5-b2dc-6413a4734a58.jpg",
+        "fded1d7d-5cdc-447b-87c7-696d76956bee.jpg",
+        "2e94397d-2aba-4bbe-812c-04875c475f75.jpg",
+        "b23482a4-f9b1-4142-9e5e-51e7e291a68e.jpg",
+        "26262bc3-00fb-40dc-829b-1f14111a5222.png",
+        "675174e5-dcdf-40ed-a78d-d7d9a490d995.png",
+        "c57e5faa-49be-4619-a21e-f6f72c3c86f0.png",
+        "a6c0e860-8e37-4182-a774-dd02688f317e.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/gantry-support-(metric/inch),-z-brace-for-ender-3-v3-ke-/-se-probably-by-hapedevee-71/images/a499bf4a-9f3f-4da5-b582-f274e2f4f823.jpg"
+    },
+    {
+      "id": 72,
+      "nombre": "goku by will_CORP",
+      "descripcion": "Proyecto importado desde goku - 728204.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "copy_of_goku_keyring.stl",
+          "tipo": "STL",
+          "tamano": "280.45 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.07 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "imagenes": [
+        "copy_of_goku_keyring.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/goku-by-will_corp-72/images/copy_of_goku_keyring.png"
+    },
+    {
+      "id": 73,
+      "nombre": "Ender 3 V3 SE Filament Guide by JamesHarvard",
+      "descripcion": "Proyecto importado desde Ender 3 V3 SE Filament Guide - 6410676.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "E3V3SE_Guide.stl",
+          "tipo": "STL",
+          "tamano": "131.62 KB"
+        },
+        {
+          "nombre": "CE3V3SE_E3V3SE_Guide.gcode",
+          "tipo": "G-code",
+          "tamano": "476.36 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.14 KB"
+        }
+      ],
+      "imagenes": [
+        "19c991d1-7be1-41d5-8809-bc22a09506b6.jpg",
+        "17c92b14-83dd-4fc2-bf8c-b4650a406a31.jpg",
+        "75735bc6-3516-4659-adba-6623a77e2ba1.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/ender-3-v3-se-filament-guide-by-jamesharvard-73/images/19c991d1-7be1-41d5-8809-bc22a09506b6.jpg"
+    },
+    {
+      "id": 74,
+      "nombre": "PET BOTTLE CUTTER by darioalbiersRealDariogram",
+      "descripcion": "Proyecto importado desde PET BOTTLE CUTTER - 6467998.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "PET_Bottle_cutter.3mf",
+          "tipo": "3MF",
+          "tamano": "111.36 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "imagenes": [
+        "e41129d9-fa5d-4def-a138-b287d21156fb.jpeg"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/pet-bottle-cutter-by-darioalbiersrealdariogram-74/images/e41129d9-fa5d-4def-a138-b287d21156fb.jpeg"
+    },
+    {
+      "id": 75,
+      "nombre": "3Dino Puzzle Museum DX Set by STAG_B",
+      "descripcion": "Proyecto importado desde 3Dino Puzzle Museum DX Set - 5387557.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "101_Assembly.stl",
+          "tipo": "STL",
+          "tamano": "69513.56 KB"
+        },
+        {
+          "nombre": "103_Assembly_T-Rex_v7.stl",
+          "tipo": "STL",
+          "tamano": "7044.32 KB"
+        },
+        {
+          "nombre": "104_Assembly_Bronto_v5.stl",
+          "tipo": "STL",
+          "tamano": "3821.47 KB"
+        },
+        {
+          "nombre": "105_Assembly_Allo_v6.stl",
+          "tipo": "STL",
+          "tamano": "4429.77 KB"
+        },
+        {
+          "nombre": "106_Assembly_Trike_v6.stl",
+          "tipo": "STL",
+          "tamano": "3553.70 KB"
+        },
+        {
+          "nombre": "107_Assembly_Spino_v7.stl",
+          "tipo": "STL",
+          "tamano": "4582.50 KB"
+        },
+        {
+          "nombre": "108_Assembly_Stego_v6.stl",
+          "tipo": "STL",
+          "tamano": "4265.61 KB"
+        },
+        {
+          "nombre": "109_Assembly_plesio_v13.stl",
+          "tipo": "STL",
+          "tamano": "6795.79 KB"
+        },
+        {
+          "nombre": "110_Assembly_Ptera_v5.stl",
+          "tipo": "STL",
+          "tamano": "3118.15 KB"
+        },
+        {
+          "nombre": "201_Package1_PlatformA_v2.stl",
+          "tipo": "STL",
+          "tamano": "2092.37 KB"
+        },
+        {
+          "nombre": "202_Package1_PlatformB_v2.stl",
+          "tipo": "STL",
+          "tamano": "2262.58 KB"
+        },
+        {
+          "nombre": "203_Package2_PlatformB_v2.stl",
+          "tipo": "STL",
+          "tamano": "358.29 KB"
+        },
+        {
+          "nombre": "204_Package3_PlatformB_v2.stl",
+          "tipo": "STL",
+          "tamano": "1131.53 KB"
+        },
+        {
+          "nombre": "205_Package1_PlatformC_v2.stl",
+          "tipo": "STL",
+          "tamano": "1595.59 KB"
+        },
+        {
+          "nombre": "207_Package1_T-Rex_v5.stl",
+          "tipo": "STL",
+          "tamano": "4625.18 KB"
+        },
+        {
+          "nombre": "208_Package2_T-Rex_v3.stl",
+          "tipo": "STL",
+          "tamano": "2438.95 KB"
+        },
+        {
+          "nombre": "209_Package1_Bronto_v8.stl",
+          "tipo": "STL",
+          "tamano": "2655.94 KB"
+        },
+        {
+          "nombre": "210_Package2_Bronto_v3.stl",
+          "tipo": "STL",
+          "tamano": "1037.19 KB"
+        },
+        {
+          "nombre": "211_Package1_Allo_v4.stl",
+          "tipo": "STL",
+          "tamano": "3238.85 KB"
+        },
+        {
+          "nombre": "212_Package2_Allo_v2.stl",
+          "tipo": "STL",
+          "tamano": "1145.98 KB"
+        },
+        {
+          "nombre": "213_Package1_Trike_v7.stl",
+          "tipo": "STL",
+          "tamano": "2158.87 KB"
+        },
+        {
+          "nombre": "214_Package2_Trike_v6.stl",
+          "tipo": "STL",
+          "tamano": "1345.59 KB"
+        },
+        {
+          "nombre": "215_Package1_Spino_v3.stl",
+          "tipo": "STL",
+          "tamano": "1499.98 KB"
+        },
+        {
+          "nombre": "216_Package2_Spino_v3.stl",
+          "tipo": "STL",
+          "tamano": "3029.09 KB"
+        },
+        {
+          "nombre": "217_Package1_Stego_v4.stl",
+          "tipo": "STL",
+          "tamano": "2639.34 KB"
+        },
+        {
+          "nombre": "218_Package2_Stego_v4.stl",
+          "tipo": "STL",
+          "tamano": "1584.16 KB"
+        },
+        {
+          "nombre": "219_Package1_Plesio_v3.stl",
+          "tipo": "STL",
+          "tamano": "3224.98 KB"
+        },
+        {
+          "nombre": "220_Package2_Plesio_v4.stl",
+          "tipo": "STL",
+          "tamano": "3775.77 KB"
+        },
+        {
+          "nombre": "221_Stand1_Plesio-Hanging_v3.stl",
+          "tipo": "STL",
+          "tamano": "3.99 KB"
+        },
+        {
+          "nombre": "222_Stand2_Plesio-Hanging_v3.stl",
+          "tipo": "STL",
+          "tamano": "3.79 KB"
+        },
+        {
+          "nombre": "223_Package1_Ptera_v2.stl",
+          "tipo": "STL",
+          "tamano": "2084.46 KB"
+        },
+        {
+          "nombre": "224_Package2_Ptera_v2.stl",
+          "tipo": "STL",
+          "tamano": "981.23 KB"
+        },
+        {
+          "nombre": "225_Stand1_Pteranodon-Hanging_v2.stl",
+          "tipo": "STL",
+          "tamano": "3.99 KB"
+        },
+        {
+          "nombre": "226_Stand2_Pteranodon-Hanging_v1.stl",
+          "tipo": "STL",
+          "tamano": "3.79 KB"
+        },
+        {
+          "nombre": "301_Package1_PlatformA_Tight_v1.stl",
+          "tipo": "STL",
+          "tamano": "2092.37 KB"
+        },
+        {
+          "nombre": "302_Package1_PlatformB_Tight_v1.stl",
+          "tipo": "STL",
+          "tamano": "2262.58 KB"
+        },
+        {
+          "nombre": "303_Package3_PlatformB_Tight_v1.stl",
+          "tipo": "STL",
+          "tamano": "1131.53 KB"
+        },
+        {
+          "nombre": "304_Package1_PlatformC_Tight_v1.stl",
+          "tipo": "STL",
+          "tamano": "1595.69 KB"
+        },
+        {
+          "nombre": "307_Package1_T-Rex_0.1mm_v4.stl",
+          "tipo": "STL",
+          "tamano": "4623.42 KB"
+        },
+        {
+          "nombre": "308_Package2_T-Rex_0.1mm_v3.stl",
+          "tipo": "STL",
+          "tamano": "2436.80 KB"
+        },
+        {
+          "nombre": "309_Package1_Bronto_0.1mm_v6.stl",
+          "tipo": "STL",
+          "tamano": "2657.11 KB"
+        },
+        {
+          "nombre": "310_Package2_Bronto_0.1mm_v2.stl",
+          "tipo": "STL",
+          "tamano": "1037.19 KB"
+        },
+        {
+          "nombre": "311_Package1_Allo_0.1mm_v3.stl",
+          "tipo": "STL",
+          "tamano": "3240.80 KB"
+        },
+        {
+          "nombre": "312_Package2_Allo_0.1mm_v2.stl",
+          "tipo": "STL",
+          "tamano": "1145.98 KB"
+        },
+        {
+          "nombre": "313_Package1_Trike_0.1mm_v7.stl",
+          "tipo": "STL",
+          "tamano": "2161.31 KB"
+        },
+        {
+          "nombre": "314_Package2_Trike_0.1mm_v3.stl",
+          "tipo": "STL",
+          "tamano": "1347.54 KB"
+        },
+        {
+          "nombre": "315_Package1_Spino_0.1mm_v2.stl",
+          "tipo": "STL",
+          "tamano": "1500.86 KB"
+        },
+        {
+          "nombre": "316_Package2_Spino_0.1mm_v2.stl",
+          "tipo": "STL",
+          "tamano": "3029.09 KB"
+        },
+        {
+          "nombre": "317_Package1_Stego_0.1mm_v2.stl",
+          "tipo": "STL",
+          "tamano": "2642.56 KB"
+        },
+        {
+          "nombre": "318_Package2_Stego_0.1mm_v2.stl",
+          "tipo": "STL",
+          "tamano": "1584.16 KB"
+        },
+        {
+          "nombre": "319_Package1_Plesio_0.1mm_v3.stl",
+          "tipo": "STL",
+          "tamano": "3230.26 KB"
+        },
+        {
+          "nombre": "320_Package2_Plesio_0.1mm_v4.stl",
+          "tipo": "STL",
+          "tamano": "3774.98 KB"
+        },
+        {
+          "nombre": "321_Stand1_0.1mm_Plesio-Hanging_v1.stl",
+          "tipo": "STL",
+          "tamano": "3.99 KB"
+        },
+        {
+          "nombre": "322_Stand2_0.1mm__Plesio-Hanging_v1.stl",
+          "tipo": "STL",
+          "tamano": "3.79 KB"
+        },
+        {
+          "nombre": "323_Package1_Ptera_0.1mm_v2.stl",
+          "tipo": "STL",
+          "tamano": "2084.26 KB"
+        },
+        {
+          "nombre": "324_Package2_Ptera_0.1mm_v2.stl",
+          "tipo": "STL",
+          "tamano": "983.97 KB"
+        },
+        {
+          "nombre": "325_Stand1_0.1mm_Pteranodon-Hanging_v1.stl",
+          "tipo": "STL",
+          "tamano": "3.99 KB"
+        },
+        {
+          "nombre": "326_Stand2_0.1mm_Pteranodon-Hanging_v1.stl",
+          "tipo": "STL",
+          "tamano": "3.79 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "imagenes": [
+        "f011196c-7022-431b-aa52-6eb8972679aa.jpg",
+        "453f8837-ef86-4078-920d-7b672f5ee4f5.jpg",
+        "a9551a7b-4237-40e7-98cb-79270f5b742f.jpg",
+        "8e7e5115-11d4-4255-b8be-a942ceb3cddb.jpg",
+        "museum_DX_set_C-pic1.jpg",
+        "museum_DX_set_C-pic2.jpg",
+        "museum_DX_set_C-pic3.jpg",
+        "museum_DX_set_C-pic4.jpg",
+        "museum_DX_set_C-pic5.jpg",
+        "museum_DX_set_C-pic6.jpg",
+        "museum_DX_set_C-pic7.jpg",
+        "museum_DX_set_C-pic8.jpg",
+        "museum_DX_set_C-pic9.jpg",
+        "museum_DX_set_C-pic10.jpg",
+        "museum_DX_set_C-pic11.jpg",
+        "museum_DX_set_C-pic12.jpg",
+        "museum_DX_set_C-pic13.jpg",
+        "museum_DX_set_C-pic14.jpg",
+        "museum_DX_set_C-pic15.jpg",
+        "museum_DX_set_C-pic16.jpg",
+        "museum_DX_set_D-pic1.jpg",
+        "museum_DX_set_D-pic2.jpg",
+        "museum_DX_set_D-pic3.jpg",
+        "museum_DX_set_D-pic4.jpg",
+        "museum_DX_set_D-pic5.jpg",
+        "museum_DX_set_D-pic6.jpg",
+        "museum_DX_set_D-pic7.jpg",
+        "museum_DX_set_D-pic8.jpg",
+        "5b7d2b30-4bfd-4edc-b056-2beaffdce888.jpg",
+        "2c254c96-44b5-4219-bc4e-1663e2c198b4.jpg",
+        "47fc45f8-38a1-49fc-9e72-82d416de9092.jpg",
+        "d86879ba-e3e8-4878-bf1d-fa542bbab0fa.jpg",
+        "363a0881-7ae9-4e67-a5aa-8ce29346eaf5.jpg",
+        "266ff2e4-aa8f-49ac-97a5-29d8ff4058de.jpg",
+        "fc7a7b14-8eb1-46b1-976e-ac0e0caf0087.jpg",
+        "b32f571a-beef-4973-99fb-7932e8656b05.jpg",
+        "cc2a1caa-9b15-4ab5-b901-52d0f11bda1c.png",
+        "103_Assembly_T-Rex_v7.png",
+        "104_Assembly_Bronto_v5.png",
+        "105_Assembly_Allo_v6.png",
+        "106_Assembly_Trike_v6.png",
+        "107_Assembly_Spino_v7.png",
+        "108_Assembly_Stego_v6.png",
+        "109_Assembly_plesio_v13.png",
+        "110_Assembly_Ptera_v5.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/3dino-puzzle-museum-dx-set-by-stag_b-75/images/f011196c-7022-431b-aa52-6eb8972679aa.jpg"
+    },
+    {
+      "id": 76,
+      "nombre": "PokéPawns",
+      "descripcion": "Proyecto importado desde PokéPawns generic-use pokemon game pieces - 2271264.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "pikachu.stl",
+          "tipo": "STL",
+          "tamano": "20.20 KB"
+        },
+        {
+          "nombre": "mew.stl",
+          "tipo": "STL",
+          "tamano": "30.84 KB"
+        },
+        {
+          "nombre": "mew-supports.stl",
+          "tipo": "STL",
+          "tamano": "67.76 KB"
+        },
+        {
+          "nombre": "squirtle.stl",
+          "tipo": "STL",
+          "tamano": "18.15 KB"
+        },
+        {
+          "nombre": "charmander.stl",
+          "tipo": "STL",
+          "tamano": "17.95 KB"
+        },
+        {
+          "nombre": "gengar.stl",
+          "tipo": "STL",
+          "tamano": "16.78 KB"
+        },
+        {
+          "nombre": "bulbasaur.stl",
+          "tipo": "STL",
+          "tamano": "18.15 KB"
+        },
+        {
+          "nombre": "pokeball-half.stl",
+          "tipo": "STL",
+          "tamano": "63.85 KB"
+        },
+        {
+          "nombre": "box.stl",
+          "tipo": "STL",
+          "tamano": "449.69 KB"
+        },
+        {
+          "nombre": "box-no-tab.stl",
+          "tipo": "STL",
+          "tamano": "388.56 KB"
+        },
+        {
+          "nombre": "tab-only.stl",
+          "tipo": "STL",
+          "tamano": "25.28 KB"
+        },
+        {
+          "nombre": "base-lock-test.stl",
+          "tipo": "STL",
+          "tamano": "213.17 KB"
+        },
+        {
+          "nombre": "base.stl",
+          "tipo": "STL",
+          "tamano": "193.44 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "imagenes": [
+        "poke1.jpg",
+        "poke3.png",
+        "lock.jpg",
+        "pokephoto.jpg",
+        "ff9c527b7295719262960d1627973116.png",
+        "441b9e35f452f98532ab56e353e15c26.png",
+        "f3e907dbfe961b8a7d3541e136458278.png",
+        "8585aded6551c16c4556a58950d5b9c7.png",
+        "5c01204445edb8e7bbdcc427890dd8e7.png",
+        "cf6e68be85ffc94f640c07315cc5e233.png",
+        "730970ca09c70d186feac5956079be28.png",
+        "470d961dbe072a7b113d59c88ef3718f.png",
+        "240cda9612ce0c180d4b87b81b0d69f4.png",
+        "ebdb30ad364288c64372b7c8d855153d.png",
+        "a00bbd5628e60827ac6b61cca20514b7.png",
+        "57f312213586f4db5ce062b65d8a6737.png",
+        "38764402867f180880772245f00dd022.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/poképawns-76/images/poke1.jpg"
+    },
+    {
+      "id": 77,
+      "nombre": "Bender Bending Rodríguez (Futurama) modular by Mr_Kes",
+      "descripcion": "Proyecto importado desde Bender Bending Rodríguez (Futurama) modular - 6470320.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "hand.stl",
+          "tipo": "STL",
+          "tamano": "55.75 KB"
+        },
+        {
+          "nombre": "finger.stl",
+          "tipo": "STL",
+          "tamano": "4.96 KB"
+        },
+        {
+          "nombre": "eyes_bracket_x2.stl",
+          "tipo": "STL",
+          "tamano": "32.50 KB"
+        },
+        {
+          "nombre": "eyes_frame.stl",
+          "tipo": "STL",
+          "tamano": "121.86 KB"
+        },
+        {
+          "nombre": "head.stl",
+          "tipo": "STL",
+          "tamano": "196.47 KB"
+        },
+        {
+          "nombre": "knob.stl",
+          "tipo": "STL",
+          "tamano": "60.43 KB"
+        },
+        {
+          "nombre": "eyes_type_1.stl",
+          "tipo": "STL",
+          "tamano": "78.60 KB"
+        },
+        {
+          "nombre": "foot.stl",
+          "tipo": "STL",
+          "tamano": "132.41 KB"
+        },
+        {
+          "nombre": "antenna_t1.stl",
+          "tipo": "STL",
+          "tamano": "66.88 KB"
+        },
+        {
+          "nombre": "antenna_t3.stl",
+          "tipo": "STL",
+          "tamano": "101.74 KB"
+        },
+        {
+          "nombre": "eyes_frame_inner.stl",
+          "tipo": "STL",
+          "tamano": "39.93 KB"
+        },
+        {
+          "nombre": "hip.stl",
+          "tipo": "STL",
+          "tamano": "204.87 KB"
+        },
+        {
+          "nombre": "mouth_w_hole.stl",
+          "tipo": "STL",
+          "tamano": "49.69 KB"
+        },
+        {
+          "nombre": "mouth.stl",
+          "tipo": "STL",
+          "tamano": "38.75 KB"
+        },
+        {
+          "nombre": "neck.stl",
+          "tipo": "STL",
+          "tamano": "97.05 KB"
+        },
+        {
+          "nombre": "torso.stl",
+          "tipo": "STL",
+          "tamano": "761.70 KB"
+        },
+        {
+          "nombre": "knob_bracket.stl",
+          "tipo": "STL",
+          "tamano": "11.61 KB"
+        },
+        {
+          "nombre": "limb_1.stl",
+          "tipo": "STL",
+          "tamano": "179.57 KB"
+        },
+        {
+          "nombre": "antenna_t2.stl",
+          "tipo": "STL",
+          "tamano": "101.45 KB"
+        },
+        {
+          "nombre": "sigar.stl",
+          "tipo": "STL",
+          "tamano": "108.58 KB"
+        },
+        {
+          "nombre": "eyes_type_2.stl",
+          "tipo": "STL",
+          "tamano": "104.77 KB"
+        },
+        {
+          "nombre": "shoulder_bracket_x2.stl",
+          "tipo": "STL",
+          "tamano": "55.55 KB"
+        },
+        {
+          "nombre": "shoulder.stl",
+          "tipo": "STL",
+          "tamano": "150.67 KB"
+        },
+        {
+          "nombre": "limb_2.stl",
+          "tipo": "STL",
+          "tamano": "133.48 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "imagenes": [
+        "29fe7513-bf87-4d10-a4b4-9f35cb86079e.jpg",
+        "659c91fa-a97c-436c-9a8b-98fa9102f863.jpg",
+        "f4c945ba-f60b-4d08-8c0d-eb0d5b4360d4.jpg",
+        "c2a323aa-ae97-485c-9a12-2591c06fc129.jpg",
+        "6d0a8218-9456-4657-861c-6dd25537d1de.jpg",
+        "dce2433e-58e6-4e6d-a1ca-0a63e3cc9de5.jpg",
+        "659bd4a8-3f34-4cd0-824d-eae2c3e01dbe.png",
+        "5e6062bc-998f-4ed6-8dbc-422092311fd1.png",
+        "7c6ec031-f23f-4989-b86c-6f1d2bf5a200.png",
+        "06ee01cb-fc08-41c0-8d1a-93c1703364ee.png",
+        "b1af1043-4696-4ac0-919c-5b10ee4098a1.png",
+        "870a27f8-a556-4bc6-beb4-a3516885aee3.png",
+        "019acb10-ee73-42db-941c-acde904d217e.png",
+        "5ce0ed96-97ac-4d83-939c-e739d34b731b.png",
+        "ba63ab75-72f0-4a1e-b0a5-194b41a2f17d.png",
+        "b3409140-c2b0-4e8c-a543-31841cfc9953.png",
+        "734d28ad-bda8-4a27-9f22-25139ad218f8.png",
+        "24a5f192-49e2-4143-9803-e67a30232f79.png",
+        "7bca14bf-2f2b-44c0-a468-3274c88bb5e0.png",
+        "c9066808-1d68-4e5d-a2e2-ed95c1e9a1b0.png",
+        "d5421423-ca54-479f-9d49-1619b789eb2a.png",
+        "be5c2680-3719-43c6-a271-9fe97a9837bd.png",
+        "0f4c150b-5b2e-4170-94ff-56ad9818c666.png",
+        "68ad244e-1b24-46f7-b54b-84c3144d6184.png",
+        "b427c4a9-2a91-40a4-a5ea-bcd833b1a54e.png",
+        "e8f77230-ec1d-4137-b788-cf6bc9866f97.png",
+        "209ba196-916e-46dd-bf32-9beb61cb4ced.png",
+        "b8a8fe03-3e6e-4506-957a-257fffb7c89c.png",
+        "56396ebe-90d7-4404-ae7b-9f1a53479fe8.png",
+        "8858f091-600d-4de3-9713-b46258a64cc7.png",
+        "7cc64fb9-fc7d-4fe4-a2e1-753af6f5b17f.jpg"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/bender-bending-rodríguez-(futurama)-modular-by-mr_kes-77/images/29fe7513-bf87-4d10-a4b4-9f35cb86079e.jpg"
+    },
+    {
+      "id": 78,
+      "nombre": "Crocodile articulated by Dreampaint",
+      "descripcion": "Proyecto importado desde Crocodile articulated - 6454343.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "crocodile_V2.stl",
+          "tipo": "STL",
+          "tamano": "47725.28 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "imagenes": [
+        "e3ddf556-0f5b-4759-9796-b341dd0b3a2d.jpg",
+        "414e8c39-b864-47ab-9507-2822ed1cd08a.jpg",
+        "cee43f5b-10b6-4f09-839b-2bc5c6832254.jpg",
+        "51a01f5a-a181-4985-8cf4-a7fe476266d4.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/crocodile-articulated-by-dreampaint-78/images/e3ddf556-0f5b-4759-9796-b341dd0b3a2d.jpg"
+    },
+    {
+      "id": 79,
+      "nombre": "Flexo head & upgrade parts for Bender (Futurama) by Mr_Kes",
+      "descripcion": "Proyecto importado desde Flexo head & upgrade parts for Bender (Futurama) - 6473148.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "fingers.stl",
+          "tipo": "STL",
+          "tamano": "29.38 KB"
+        },
+        {
+          "nombre": "flexo_beard.stl",
+          "tipo": "STL",
+          "tamano": "14.44 KB"
+        },
+        {
+          "nombre": "knob_new.stl",
+          "tipo": "STL",
+          "tamano": "60.04 KB"
+        },
+        {
+          "nombre": "limb_new_part_1.stl",
+          "tipo": "STL",
+          "tamano": "137.48 KB"
+        },
+        {
+          "nombre": "hand_new.stl",
+          "tipo": "STL",
+          "tamano": "63.46 KB"
+        },
+        {
+          "nombre": "foot_new.stl",
+          "tipo": "STL",
+          "tamano": "135.63 KB"
+        },
+        {
+          "nombre": "eyes_type_3.stl",
+          "tipo": "STL",
+          "tamano": "102.82 KB"
+        },
+        {
+          "nombre": "shoulder_new.stl",
+          "tipo": "STL",
+          "tamano": "160.82 KB"
+        },
+        {
+          "nombre": "flexo_head.stl",
+          "tipo": "STL",
+          "tamano": "217.66 KB"
+        },
+        {
+          "nombre": "hip_new_x2.stl",
+          "tipo": "STL",
+          "tamano": "433.09 KB"
+        },
+        {
+          "nombre": "limb_new_part_2_x2.stl",
+          "tipo": "STL",
+          "tamano": "382.31 KB"
+        },
+        {
+          "nombre": "torso_new.stl",
+          "tipo": "STL",
+          "tamano": "772.74 KB"
+        },
+        {
+          "nombre": "mouth_w_hole_new.stl",
+          "tipo": "STL",
+          "tamano": "45.20 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "imagenes": [
+        "b00af539-7206-45eb-8418-2ecd96b67a6f.jpg",
+        "a961663c-bfc7-4990-907b-99fcdba60449.jpg",
+        "bad86b3a-9604-459c-bafe-bd5277031f82.png",
+        "d35a6fb9-5c23-4fc6-8661-defd5d704154.png",
+        "bbb2585c-17cc-47b5-9003-54a3f9e98526.png",
+        "9769664a-4187-424b-adf6-20bf9de3e477.png",
+        "63d45192-5f0d-419f-b45a-f7dd065fb582.png",
+        "45c8c0fe-378b-4ba8-b560-3c01b2023aa7.png",
+        "02597b48-fd2e-489e-b77d-8c9efff6f225.png",
+        "bc60f697-c62a-4908-8613-80dcaf7ed658.png",
+        "06a381df-69db-4c57-934f-b9e7ef9e5b82.png",
+        "fcc755aa-60b3-4025-ba94-f2a1fc458d21.png",
+        "ba226c11-ad66-4f41-9a06-a863231c9167.png",
+        "edf9ff0d-4f9b-455e-ad9a-413a938c7761.png",
+        "c97ca11c-8472-489f-83b7-75df296bfd38.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/flexo-head-&-upgrade-parts-for-bender-(futurama)-by-mr_kes-79/images/b00af539-7206-45eb-8418-2ecd96b67a6f.jpg"
+    },
+    {
+      "id": 80,
+      "nombre": "articulated-onix20211216-32020-lihkh6",
+      "descripcion": "Proyecto importado desde articulated-onix20211216-32020-lihkh6.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Onix_Circle_-_Spike.stl",
+          "tipo": "STL",
+          "tamano": "97.45 KB"
+        },
+        {
+          "nombre": "Onix_Straight_-_Spike.stl",
+          "tipo": "STL",
+          "tamano": "97.45 KB"
+        },
+        {
+          "nombre": "Onix_Circle_-_Body.stl",
+          "tipo": "STL",
+          "tamano": "10498.57 KB"
+        },
+        {
+          "nombre": "Onix_Circle_-_Full.stl",
+          "tipo": "STL",
+          "tamano": "10594.37 KB"
+        },
+        {
+          "nombre": "Onix_Straight_-_Body.stl",
+          "tipo": "STL",
+          "tamano": "10334.46 KB"
+        }
+      ],
+      "imagenes": [],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100
+    },
+    {
+      "id": 81,
+      "nombre": "flexi-puppy20211025-12674-14wo8xi",
+      "descripcion": "Proyecto importado desde flexi-puppy20211025-12674-14wo8xi.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "FLEXI PUPPY.stl",
+          "tipo": "STL",
+          "tamano": "57205.36 KB"
+        },
+        {
+          "nombre": "COPYRIGHT.txt",
+          "tipo": "Archivo",
+          "tamano": "0.20 KB"
+        }
+      ],
+      "imagenes": [],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100
+    },
+    {
+      "id": 82,
+      "nombre": "cute-flexi-cat-fillifuu20240101-160317-ejm4pr",
+      "descripcion": "Proyecto importado desde cute-flexi-cat-fillifuu20240101-160317-ejm4pr.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "A1 MINI 3 COLOUR.3mf",
+          "tipo": "3MF",
+          "tamano": "11757.84 KB"
+        },
+        {
+          "nombre": "A1 MINI NO PAINT.3mf",
+          "tipo": "3MF",
+          "tamano": "11741.45 KB"
+        },
+        {
+          "nombre": "A1 MINI 2 COLOUR.3mf",
+          "tipo": "3MF",
+          "tamano": "11752.80 KB"
+        },
+        {
+          "nombre": "X1C P1S 2 COLOUR.3mf",
+          "tipo": "3MF",
+          "tamano": "11732.39 KB"
+        },
+        {
+          "nombre": "X1C P1S 3 COLOUR.3mf",
+          "tipo": "3MF",
+          "tamano": "11740.89 KB"
+        },
+        {
+          "nombre": "X1C P1S NO PAINT.3mf",
+          "tipo": "3MF",
+          "tamano": "11721.00 KB"
+        },
+        {
+          "nombre": "FLEXI CAT.stl",
+          "tipo": "STL",
+          "tamano": "44079.77 KB"
+        }
+      ],
+      "imagenes": [],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100
+    },
+    {
+      "id": 83,
+      "nombre": "Flexi Dog by CapybaraLover",
+      "descripcion": "Proyecto importado desde Flexi Dog - 2810483.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Flexi-Dog.stl",
+          "tipo": "STL",
+          "tamano": "394.22 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        }
+      ],
+      "imagenes": [
+        "Flexi_Dog_printed.jpg",
+        "d9a58ff5d8660f8209a3caeb40b2a8d0.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/flexi-dog-by-capybaralover-83/images/Flexi_Dog_printed.jpg"
+    },
+    {
+      "id": 84,
+      "nombre": "clean flexi shark by cyclenut",
+      "descripcion": "Proyecto importado desde clean flexi shark - 2801989.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "clean_flexi_shark_v2.stl",
+          "tipo": "STL",
+          "tamano": "376.64 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        }
+      ],
+      "imagenes": [
+        "037D6744-F11E-4448-A4C6-6376DF59CCEA.jpeg",
+        "B72C4934-6E5D-4B2F-B76B-838CA7AF88F5.jpeg",
+        "50723e9711dfc7063db9528928345ce6.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/clean-flexi-shark-by-cyclenut-84/images/037D6744-F11E-4448-A4C6-6376DF59CCEA.jpeg"
+    },
+    {
+      "id": 85,
+      "nombre": "Flexi-Velociraptor by Benchy4Life",
+      "descripcion": "Proyecto importado desde Flexi-Velociraptor - 2846359.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Velociraptor_Mouth_Open.STL",
+          "tipo": "STL",
+          "tamano": "1102.23 KB"
+        },
+        {
+          "nombre": "Velociraptor.STL",
+          "tipo": "STL",
+          "tamano": "1103.01 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        }
+      ],
+      "imagenes": [
+        "Raptor.jpg",
+        "IMG_20180331_145139.jpg",
+        "IMG_20180331_145134.jpg",
+        "999a61232bddd0bf8beadafb2ae9b8ab.png",
+        "9d283d14be947623fa2e9be945cb2e08.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/flexi-velociraptor-by-benchy4life-85/images/Raptor.jpg"
+    },
+    {
+      "id": 86,
+      "nombre": "Flexi-Ankylosaurus by TubbaButta",
+      "descripcion": "Proyecto importado desde Flexi-Ankylosaurus - 2856826.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Ankylosaurus.stl",
+          "tipo": "STL",
+          "tamano": "3109.55 KB"
+        },
+        {
+          "nombre": "Ankylosaurus_STRONGER.stl",
+          "tipo": "STL",
+          "tamano": "538.75 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        }
+      ],
+      "imagenes": [
+        "IMG_20190618_075000.jpg",
+        "image.png",
+        "37ba4af10536421c11c55a950a37f997.png",
+        "1f48940910fdf6657876194e90d6bb54.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/flexi-ankylosaurus-by-tubbabutta-86/images/IMG_20190618_075000.jpg"
+    },
+    {
+      "id": 87,
+      "nombre": "Flexi Triceratop by burt_23",
+      "descripcion": "Proyecto importado desde Flexi Triceratop - 2802438.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Flexi_Triceratop.stl",
+          "tipo": "STL",
+          "tamano": "801.29 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.13 KB"
+        }
+      ],
+      "imagenes": [
+        "IMG_9821.JPG",
+        "88bb5b75b7ba933cda1662aecb2f03d0.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/flexi-triceratop-by-burt_23-87/images/IMG_9821.JPG"
+    },
+    {
+      "id": 88,
+      "nombre": "Ender 3 Bed Level Gcode by The_Inventors_Corner",
+      "descripcion": "Proyecto importado desde Ender 3 Bed Level Gcode - 5023673.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "tic_bed_level_max.gcode",
+          "tipo": "G-code",
+          "tamano": "1.10 KB"
+        },
+        {
+          "nombre": "tic_bed_level.gcode",
+          "tipo": "G-code",
+          "tamano": "1.05 KB"
+        },
+        {
+          "nombre": "a5_wing_knob_nut.stl",
+          "tipo": "STL",
+          "tamano": "460.53 KB"
+        },
+        {
+          "nombre": "a5_stub.stl",
+          "tipo": "STL",
+          "tamano": "386.02 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.10 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        }
+      ],
+      "imagenes": [
+        "a5_stub.png",
+        "a5_wing_knob_nut.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/ender-3-bed-level-gcode-by-the_inventors_corner-88/images/a5_stub.png"
+    },
+    {
+      "id": 89,
+      "nombre": "Ender 3 Bed Level by sahansudeepa",
+      "descripcion": "Proyecto importado desde Ender 3 Bed Level - 4642274.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Bed_Levelling_Ender_3.stl",
+          "tipo": "STL",
+          "tamano": "9.65 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.09 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.11 KB"
+        }
+      ],
+      "imagenes": [
+        "Bed_Levelling_Ender_3.png",
+        "IMG-7773.JPG",
+        "IMG-7775.JPG"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/ender-3-bed-level-by-sahansudeepa-89/images/Bed_Levelling_Ender_3.png"
+    },
+    {
+      "id": 90,
+      "nombre": "Control Tower by Pablo065",
+      "descripcion": "Proyecto importado desde Control Tower - 4822144.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "torre_de_control.stl",
+          "tipo": "STL",
+          "tamano": "36666.88 KB"
+        },
+        {
+          "nombre": "README.txt",
+          "tipo": "Archivo",
+          "tamano": "0.08 KB"
+        },
+        {
+          "nombre": "LICENSE.txt",
+          "tipo": "Archivo",
+          "tamano": "0.12 KB"
+        }
+      ],
+      "imagenes": [
+        "torre_de_control.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "badge": "Thingiverse",
+      "imagen": "/api/gallery/projects/control-tower-by-pablo065-90/images/torre_de_control.png"
     }
   ]
 }

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request, HTTPException, UploadFile, File, Form
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.templating import Jinja2Templates
+from typing import List
 import json
 import os
 import zipfile
@@ -9,6 +10,7 @@ from pathlib import Path
 from datetime import datetime
 import tempfile
 import logging
+import uuid
 
 # Importar servicio de extracción de imágenes de PDFs
 from src.services.pdf_image_extractor import process_project_pdfs
@@ -617,3 +619,320 @@ async def import_thingiverse_project(request: Request):
     except Exception as e:
         print(f"❌ Error importando desde Thingiverse: {e}")
         raise HTTPException(status_code=500, detail=f"Error al importar proyecto: {str(e)}")
+
+
+@router.post("/projects/bulk-import")
+async def bulk_import_projects(files: List[UploadFile] = File(...)):
+    """
+    Importa múltiples proyectos desde archivos ZIP.
+    
+    Procesa cada archivo ZIP de manera individual, creando un proyecto por cada uno.
+    Retorna un resumen con éxitos y fallos.
+    """
+    results = {
+        "total": len(files),
+        "successful": [],
+        "failed": [],
+        "warnings": []
+    }
+    
+    print(f"📦 Iniciando importación masiva de {len(files)} archivos ZIP")
+    
+    # Cargar datos actuales una sola vez
+    data = load_projects_data()
+    current_max_id = max((p.get('id', 0) for p in data['proyectos']), default=0)
+    
+    for idx, file in enumerate(files, 1):
+        print(f"\n🔄 Procesando archivo {idx}/{len(files)}: {file.filename}")
+        
+        # Validar que sea un archivo ZIP
+        if not file.filename.lower().endswith('.zip'):
+            results["failed"].append({
+                "filename": file.filename,
+                "error": "El archivo no es un ZIP válido"
+            })
+            print(f"⚠️ Archivo rechazado: {file.filename} (no es ZIP)")
+            continue
+        
+        temp_zip_path = None
+        project_path = None
+        
+        try:
+            # Guardar archivo temporalmente
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as temp_zip:
+                content = await file.read()
+                temp_zip.write(content)
+                temp_zip_path = temp_zip.name
+            
+            # Extraer nombre base del archivo ZIP (sin extensión)
+            base_name = Path(file.filename).stem
+            project_name = base_name
+            source_badge = None
+            
+            # Buscar README.txt para detectar origen y nombre
+            with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
+                readme_filename = next((f for f in zip_ref.namelist() if f.lower().endswith('readme.txt')), None)
+                
+                if readme_filename:
+                    readme_content = zip_ref.read(readme_filename).decode('utf-8', errors='ignore')
+                    if "Thingiverse" in readme_content:
+                        source_badge = "Thingiverse"
+                        # Extraer nombre de la primera línea
+                        first_line = readme_content.splitlines()[0]
+                        if ':' in first_line:
+                            parsed_name = first_line.split(':')[0].strip()
+                            parsed_name = parsed_name.replace("on Thingiverse", "").strip()
+                            if parsed_name:
+                                project_name = parsed_name
+            
+            # Generar nuevo ID
+            current_max_id += 1
+            new_id = current_max_id
+            
+            # Crear directorio del proyecto
+            project_dir = f"src/proyect/{project_name} - {new_id}"
+            project_path = Path(project_dir)
+            project_path.mkdir(parents=True, exist_ok=True)
+            
+            # Crear subdirectorios
+            (project_path / "files").mkdir(exist_ok=True)
+            (project_path / "images").mkdir(exist_ok=True)
+            
+            # Extraer archivos del ZIP
+            with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
+                extracted_files = []
+                image_files = []
+                pdf_files = []
+                
+                for file_info in zip_ref.filelist:
+                    if file_info.is_dir():
+                        continue
+                    
+                    filename = os.path.basename(file_info.filename)
+                    if not filename:
+                        continue
+                    
+                    file_ext = filename.lower().split('.')[-1] if '.' in filename else ''
+                    
+                    # Imágenes
+                    if file_ext in ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']:
+                        dest_path = project_path / "images" / filename
+                        with zip_ref.open(file_info) as source, open(dest_path, "wb") as target:
+                            shutil.copyfileobj(source, target)
+                        image_files.append(filename)
+                    
+                    # PDFs
+                    elif file_ext == 'pdf':
+                        dest_path = project_path / "files" / filename
+                        with zip_ref.open(file_info) as source, open(dest_path, "wb") as target:
+                            shutil.copyfileobj(source, target)
+                        pdf_files.append(filename)
+                        extracted_files.append({
+                            "nombre": filename,
+                            "tipo": "PDF",
+                            "tamano": f"{file_info.file_size / 1024:.2f} KB" if file_info.file_size > 0 else "0 KB"
+                        })
+                    
+                    # Archivos 3D y otros
+                    elif file_ext in ['stl', '3mf', 'obj', 'ply', 'gcode', 'gco', 'txt', 'md', 'json']:
+                        dest_path = project_path / "files" / filename
+                        with zip_ref.open(file_info) as source, open(dest_path, "wb") as target:
+                            shutil.copyfileobj(source, target)
+                        
+                        # Determinar tipo
+                        if file_ext in ['stl', '3mf', 'obj', 'ply']:
+                            tipo = "3MF" if file_ext == '3mf' else "STL" if file_ext == 'stl' else "3D Model"
+                        elif file_ext in ['gcode', 'gco']:
+                            tipo = "G-code"
+                        else:
+                            tipo = "Archivo"
+                        
+                        extracted_files.append({
+                            "nombre": filename,
+                            "tipo": tipo,
+                            "tamano": f"{file_info.file_size / 1024:.2f} KB" if file_info.file_size > 0 else "0 KB"
+                        })
+            
+            # Procesar PDFs para extraer imágenes si es necesario
+            if not image_files and pdf_files:
+                try:
+                    extracted_pdf_images = process_project_pdfs(
+                        project_path / "files",
+                        project_path / "images"
+                    )
+                    if extracted_pdf_images:
+                        for img_path in extracted_pdf_images:
+                            img_filename = os.path.basename(img_path)
+                            image_files.append(img_filename)
+                except Exception as e:
+                    logger.error(f"❌ Error procesando PDFs de {file.filename}: {e}")
+            
+            # Contar archivos 3D
+            stl_count = len([f for f in extracted_files if f['tipo'] in ['STL', '3D Model', '3MF']])
+            
+            # Generar slug del proyecto para la URL de la imagen
+            project_slug = f"{project_name.lower().replace(' ', '-')}-{new_id}"
+            
+            # Crear nuevo proyecto
+            new_project = {
+                "id": new_id,
+                "nombre": project_name,
+                "descripcion": f"Proyecto importado desde {file.filename}",
+                "categoria": "general",
+                "archivos": extracted_files,
+                "imagenes": image_files,
+                "fecha_creacion": datetime.now().strftime("%Y-%m-%d"),
+                "estado": "completado" if stl_count > 0 else "sin_archivos",
+                "progreso": 100 if stl_count > 0 else 0
+            }
+            
+            # Mapear la primera imagen disponible como imagen de previsualización
+            if image_files:
+                # Usar la primera imagen del array
+                new_project["imagen"] = f"/api/gallery/projects/{project_slug}/images/{image_files[0]}"
+            else:
+                new_project["imagen"] = None
+            
+            # Agregar badge si es de Thingiverse
+            if source_badge:
+                new_project["badge"] = source_badge
+            
+            # Agregar a la lista de proyectos
+            data['proyectos'].append(new_project)
+            
+            # Actualizar estadísticas
+            data['estadisticas']['total_proyectos'] = len(data['proyectos'])
+            data['estadisticas']['total_stls'] += stl_count
+            if stl_count > 0:
+                data['estadisticas']['completados'] += 1
+            
+            # Registrar éxito
+            results["successful"].append({
+                "filename": file.filename,
+                "project_name": project_name,
+                "project_id": new_id,
+                "stl_count": stl_count,
+                "image_count": len(image_files),
+                "source": source_badge or "generic"
+            })
+            
+            print(f"✅ Proyecto '{project_name}' creado exitosamente (ID: {new_id}, {stl_count} STLs, {len(image_files)} imágenes)")
+            
+            # Advertir si no hay archivos 3D
+            if stl_count == 0:
+                results["warnings"].append({
+                    "filename": file.filename,
+                    "project_id": new_id,
+                    "warning": "El proyecto no contiene archivos 3D (STL/3MF/OBJ)"
+                })
+            
+            # Limpiar archivo temporal
+            if temp_zip_path and os.path.exists(temp_zip_path):
+                os.unlink(temp_zip_path)
+        
+        except zipfile.BadZipFile:
+            results["failed"].append({
+                "filename": file.filename,
+                "error": "Archivo ZIP corrupto o inválido"
+            })
+            print(f"❌ Error: {file.filename} es un ZIP corrupto")
+            
+            # Limpiar en caso de error
+            if temp_zip_path and os.path.exists(temp_zip_path):
+                os.unlink(temp_zip_path)
+            if project_path and project_path.exists():
+                shutil.rmtree(project_path)
+        
+        except Exception as e:
+            results["failed"].append({
+                "filename": file.filename,
+                "error": str(e)
+            })
+            print(f"❌ Error procesando {file.filename}: {e}")
+            
+            # Limpiar en caso de error
+            if temp_zip_path and os.path.exists(temp_zip_path):
+                os.unlink(temp_zip_path)
+            if project_path and project_path.exists():
+                shutil.rmtree(project_path)
+    
+    # Guardar todos los proyectos de una vez
+    if results["successful"]:
+        # Recalcular tasa de éxito
+        if data['estadisticas']['total_proyectos'] > 0:
+            data['estadisticas']['tasa_exito'] = round(
+                (data['estadisticas']['completados'] / data['estadisticas']['total_proyectos']) * 100,
+                1
+            )
+        
+        if not save_projects_data(data):
+            # Si falla el guardado, reportar todos como fallidos
+            for success in results["successful"]:
+                results["failed"].append({
+                    "filename": success["filename"],
+                    "error": "Error al guardar en base de datos"
+                })
+            results["successful"] = []
+    
+    # Generar resumen
+    print(f"\n📊 Resumen de importación masiva:")
+    print(f"   ✅ Exitosos: {len(results['successful'])}/{results['total']}")
+    print(f"   ❌ Fallidos: {len(results['failed'])}/{results['total']}")
+    print(f"   ⚠️  Advertencias: {len(results['warnings'])}")
+    
+    return {
+        "success": True,
+        "summary": results,
+        "message": f"Procesados {results['total']} archivos: {len(results['successful'])} exitosos, {len(results['failed'])} fallidos"
+    }
+
+
+@router.post("/projects/fix-images")
+async def fix_project_images():
+    """
+    Endpoint de mantenimiento para reparar el campo 'imagen' de proyectos existentes.
+    Mapea la primera imagen disponible del array 'imagenes' al campo 'imagen' para la previsualización.
+    """
+    data = load_projects_data()
+    updated_count = 0
+    skipped_count = 0
+    
+    print(f"🔧 Iniciando reparación de imágenes de proyectos...")
+    
+    for proyecto in data['proyectos']:
+        # Si el proyecto no tiene imagen pero tiene imágenes en el array
+        if not proyecto.get('imagen') and proyecto.get('imagenes') and len(proyecto['imagenes']) > 0:
+            # Generar slug del proyecto
+            project_slug = f"{proyecto['nombre'].lower().replace(' ', '-')}-{proyecto['id']}"
+            
+            # Mapear la primera imagen
+            primera_imagen = proyecto['imagenes'][0]
+            proyecto['imagen'] = f"/api/gallery/projects/{project_slug}/images/{primera_imagen}"
+            
+            updated_count += 1
+            print(f"✅ Actualizado proyecto '{proyecto['nombre']}' (ID: {proyecto['id']}) -> {primera_imagen}")
+        else:
+            skipped_count += 1
+    
+    # Guardar cambios
+    if updated_count > 0:
+        if save_projects_data(data):
+            print(f"\n📊 Reparación completada:")
+            print(f"   ✅ Actualizados: {updated_count}")
+            print(f"   ⏭️  Omitidos: {skipped_count}")
+            
+            return {
+                "success": True,
+                "updated": updated_count,
+                "skipped": skipped_count,
+                "message": f"Se actualizaron {updated_count} proyectos exitosamente"
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Error al guardar los cambios")
+    else:
+        return {
+            "success": True,
+            "updated": 0,
+            "skipped": skipped_count,
+            "message": "No se encontraron proyectos que necesiten actualización"
+        }

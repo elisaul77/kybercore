@@ -12,6 +12,9 @@
             <button onclick="createNewProject()" class="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-colors shadow-lg">
                 ➕ Nuevo Proyecto
             </button>
+            <button onclick="openBulkImportModal()" class="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-indigo-600 hover:to-indigo-700 transition-colors shadow-lg">
+                📦 Importación Masiva
+            </button>
             <button onclick="analyzeAllProjects()" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-colors shadow-lg">
                 🔍 Analizar Todo
             </button>
@@ -136,7 +139,7 @@
                 } %}
                 {% set estado_class = estado_colors.get(proyecto.estado, 'bg-gray-500') %}
                 <div class="absolute top-3 left-3 {{ estado_class }} text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {{ proyecto.badges.estado }}
+                    {{ proyecto.estado|replace('_', ' ')|title }}
                 </div>
                 
                 <!-- Botón de favorito -->
@@ -150,8 +153,17 @@
                 <div class="flex items-start justify-between mb-3">
                     <h3 class="font-bold text-lg text-gray-900 leading-tight">{{ proyecto.nombre }}</h3>
                     <div class="flex flex-col gap-1 text-xs">
+                        {% if proyecto.badges and proyecto.badges.tipo %}
                         <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-md">{{ proyecto.badges.tipo }}</span>
+                        {% elif proyecto.categoria %}
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-md">{{ proyecto.categoria }}</span>
+                        {% endif %}
+                        
+                        {% if proyecto.badges and proyecto.badges.piezas %}
                         <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-md">{{ proyecto.badges.piezas }}</span>
+                        {% elif proyecto.archivos %}
+                        <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-md">{{ proyecto.archivos|length }} archivos</span>
+                        {% endif %}
                     </div>
                 </div>
                 
@@ -175,12 +187,32 @@
                 <div class="mb-4">
                     <div class="flex justify-between text-sm mb-1">
                         <span>Progreso</span>
+                        {% if proyecto.progreso and proyecto.progreso.porcentaje is defined %}
                         <span>{{ proyecto.progreso.porcentaje }}%</span>
+                        {% elif proyecto.progreso is number %}
+                        <span>{{ proyecto.progreso }}%</span>
+                        {% else %}
+                        <span>100%</span>
+                        {% endif %}
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-2">
+                        {% if proyecto.progreso and proyecto.progreso.porcentaje is defined %}
                         <div class="h-2 {{ progress_class }} rounded-full" style="width: {{ proyecto.progreso.porcentaje }}%"></div>
+                        {% elif proyecto.progreso is number %}
+                        <div class="h-2 {{ progress_class }} rounded-full" style="width: {{ proyecto.progreso }}%"></div>
+                        {% else %}
+                        <div class="h-2 {{ progress_class }} rounded-full" style="width: 100%"></div>
+                        {% endif %}
                     </div>
-                    <div class="text-xs {{ progress_text_class }} mt-1">{{ proyecto.progreso.mensaje }}</div>
+                    <div class="text-xs {{ progress_text_class }} mt-1">
+                        {% if proyecto.progreso and proyecto.progreso.mensaje %}
+                        {{ proyecto.progreso.mensaje }}
+                        {% elif proyecto.estado == 'completado' %}
+                        Proyecto completado
+                        {% else %}
+                        En progreso
+                        {% endif %}
+                    </div>
                 </div>
                 
                 <!-- Botones de acción -->
@@ -345,9 +377,303 @@ function duplicateProject(projectId) {
     alert(`📋 Duplicando proyecto ${projectId}`);
 }
 
+
 function deleteProject(projectId) {
     if (confirm('¿Estás seguro de que quieres eliminar este proyecto?')) {
         alert(`🗑️ Eliminando proyecto ${projectId}`);
     }
 }
+
+// ==================== IMPORTACIÓN MASIVA ====================
+function openBulkImportModal() {
+    const modal = document.getElementById('bulk-import-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        // Reset form
+        document.getElementById('bulk-files-input').value = '';
+        document.getElementById('files-selected-count').textContent = '0';
+        document.getElementById('bulk-import-progress').classList.add('hidden');
+    }
+}
+
+function closeBulkImportModal() {
+    const modal = document.getElementById('bulk-import-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+function handleBulkFilesSelect(event) {
+    const files = event.target.files;
+    const countElement = document.getElementById('files-selected-count');
+    const filesList = document.getElementById('files-list');
+    
+    if (files.length > 0) {
+        countElement.textContent = files.length;
+        
+        // Mostrar lista de archivos
+        let filesHTML = '<div class="mt-4 max-h-48 overflow-y-auto space-y-2">';
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const sizeKB = (file.size / 1024).toFixed(2);
+            filesHTML += `
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <span class="text-sm text-gray-700">📦 ${file.name}</span>
+                    <span class="text-xs text-gray-500">${sizeKB} KB</span>
+                </div>
+            `;
+        }
+        filesHTML += '</div>';
+        filesList.innerHTML = filesHTML;
+    } else {
+        countElement.textContent = '0';
+        filesList.innerHTML = '';
+    }
+}
+
+async function processBulkImport() {
+    const fileInput = document.getElementById('bulk-files-input');
+    const files = fileInput.files;
+    
+    if (files.length === 0) {
+        alert('Por favor selecciona al menos un archivo ZIP');
+        return;
+    }
+    
+    // Mostrar progreso
+    const progressContainer = document.getElementById('bulk-import-progress');
+    const progressBar = document.getElementById('bulk-progress-bar');
+    const progressText = document.getElementById('bulk-progress-text');
+    const resultsContainer = document.getElementById('bulk-import-results');
+    
+    progressContainer.classList.remove('hidden');
+    resultsContainer.innerHTML = '';
+    progressText.textContent = 'Preparando importación...';
+    
+    try {
+        // Crear FormData
+        const formData = new FormData();
+        for (let i = 0; i < files.length; i++) {
+            formData.append('files', files[i]);
+        }
+        
+        // Enviar petición
+        const response = await fetch('/api/gallery/projects/bulk-import', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        // Actualizar progreso
+        progressBar.style.width = '100%';
+        progressText.textContent = 'Importación completada';
+        
+        // Mostrar resultados
+        displayBulkImportResults(result);
+        
+        // Recargar galería después de 2 segundos
+        setTimeout(() => {
+            window.location.reload();
+        }, 3000);
+        
+    } catch (error) {
+        console.error('Error en importación masiva:', error);
+        progressText.textContent = 'Error en la importación';
+        resultsContainer.innerHTML = `
+            <div class="p-4 bg-red-50 border border-red-200 rounded">
+                <p class="text-red-600 font-semibold">❌ Error</p>
+                <p class="text-red-500 text-sm">${error.message}</p>
+            </div>
+        `;
+    }
+}
+
+function displayBulkImportResults(result) {
+    const resultsContainer = document.getElementById('bulk-import-results');
+    const summary = result.summary;
+    
+    let html = `
+        <div class="space-y-4 mt-4">
+            <!-- Resumen -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 class="font-semibold text-blue-900 mb-2">📊 Resumen</h4>
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                        <p class="text-2xl font-bold text-green-600">${summary.successful.length}</p>
+                        <p class="text-sm text-gray-600">Exitosos</p>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-red-600">${summary.failed.length}</p>
+                        <p class="text-sm text-gray-600">Fallidos</p>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-yellow-600">${summary.warnings.length}</p>
+                        <p class="text-sm text-gray-600">Advertencias</p>
+                    </div>
+                </div>
+            </div>
+    `;
+    
+    // Proyectos exitosos
+    if (summary.successful.length > 0) {
+        html += `
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4 max-h-64 overflow-y-auto">
+                <h4 class="font-semibold text-green-900 mb-2">✅ Proyectos Importados</h4>
+                <div class="space-y-2">
+        `;
+        summary.successful.forEach(item => {
+            html += `
+                <div class="flex items-center justify-between text-sm bg-white p-2 rounded">
+                    <span class="text-gray-700">${item.project_name}</span>
+                    <span class="text-gray-500">${item.stl_count} STLs, ${item.image_count} imgs</span>
+                </div>
+            `;
+        });
+        html += `
+                </div>
+            </div>
+        `;
+    }
+    
+    // Errores
+    if (summary.failed.length > 0) {
+        html += `
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 max-h-48 overflow-y-auto">
+                <h4 class="font-semibold text-red-900 mb-2">❌ Errores</h4>
+                <div class="space-y-2">
+        `;
+        summary.failed.forEach(item => {
+            html += `
+                <div class="text-sm bg-white p-2 rounded">
+                    <p class="text-gray-700 font-medium">${item.filename}</p>
+                    <p class="text-red-600 text-xs">${item.error}</p>
+                </div>
+            `;
+        });
+        html += `
+                </div>
+            </div>
+        `;
+    }
+    
+    // Advertencias
+    if (summary.warnings.length > 0) {
+        html += `
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-h-48 overflow-y-auto">
+                <h4 class="font-semibold text-yellow-900 mb-2">⚠️ Advertencias</h4>
+                <div class="space-y-2">
+        `;
+        summary.warnings.forEach(item => {
+            html += `
+                <div class="text-sm bg-white p-2 rounded">
+                    <p class="text-gray-700 font-medium">${item.filename}</p>
+                    <p class="text-yellow-600 text-xs">${item.warning}</p>
+                </div>
+            `;
+        });
+        html += `
+                </div>
+            </div>
+        `;
+    }
+    
+    html += '</div>';
+    resultsContainer.innerHTML = html;
+}
 </script>
+
+<!-- Modal de Importación Masiva -->
+<div id="bulk-import-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 p-6 rounded-t-2xl">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-2xl font-bold text-white">📦 Importación Masiva de Proyectos</h3>
+                    <p class="text-indigo-100 mt-1">Importa múltiples proyectos desde archivos ZIP de una vez</p>
+                </div>
+                <button onclick="closeBulkImportModal()" class="text-white hover:text-indigo-200 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Body -->
+        <div class="p-6 space-y-6">
+            <!-- Instrucciones -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 class="font-semibold text-blue-900 mb-2">📝 Instrucciones</h4>
+                <ul class="text-sm text-blue-800 space-y-1">
+                    <li>• Selecciona múltiples archivos ZIP de proyectos</li>
+                    <li>• Cada ZIP debe contener archivos STL, imágenes y/o PDFs</li>
+                    <li>• Los proyectos de Thingiverse se detectarán automáticamente</li>
+                    <li>• El proceso puede tardar varios minutos dependiendo del número de archivos</li>
+                </ul>
+            </div>
+            
+            <!-- Selector de archivos -->
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-indigo-500 transition-colors">
+                <input 
+                    type="file" 
+                    id="bulk-files-input" 
+                    accept=".zip" 
+                    multiple 
+                    onchange="handleBulkFilesSelect(event)"
+                    class="hidden"
+                >
+                <label for="bulk-files-input" class="cursor-pointer">
+                    <div class="text-6xl mb-4">📦</div>
+                    <p class="text-lg font-semibold text-gray-700">Haz clic para seleccionar archivos ZIP</p>
+                    <p class="text-sm text-gray-500 mt-2">o arrastra y suelta aquí</p>
+                </label>
+                
+                <!-- Contador de archivos -->
+                <div class="mt-4">
+                    <p class="text-sm text-gray-600">
+                        Archivos seleccionados: 
+                        <span id="files-selected-count" class="font-bold text-indigo-600">0</span>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Lista de archivos seleccionados -->
+            <div id="files-list"></div>
+            
+            <!-- Botón de importación -->
+            <div class="flex justify-end gap-3">
+                <button 
+                    onclick="closeBulkImportModal()" 
+                    class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                    Cancelar
+                </button>
+                <button 
+                    onclick="processBulkImport()" 
+                    class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-lg hover:from-indigo-600 hover:to-indigo-700 transition-colors shadow-lg"
+                >
+                    🚀 Iniciar Importación
+                </button>
+            </div>
+            
+            <!-- Barra de progreso -->
+            <div id="bulk-import-progress" class="hidden space-y-3">
+                <div class="bg-gray-200 rounded-full h-4 overflow-hidden">
+                    <div id="bulk-progress-bar" class="bg-indigo-600 h-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <p id="bulk-progress-text" class="text-sm text-gray-600 text-center">Preparando...</p>
+            </div>
+            
+            <!-- Resultados -->
+            <div id="bulk-import-results"></div>
+        </div>
+    </div>
+</div>
+</section>
+
