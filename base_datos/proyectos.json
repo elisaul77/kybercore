@@ -1,10 +1,10 @@
 {
   "estadisticas": {
-    "total_proyectos": 90,
-    "total_stls": 527,
-    "completados": 61,
+    "total_proyectos": 91,
+    "total_stls": 479,
+    "completados": 63,
     "en_progreso": 0,
-    "tasa_exito": 67.8
+    "tasa_exito": 67.7
   },
   "proyectos": [
     {
@@ -165,47 +165,6 @@
           "nombre": "LICENSE.txt",
           "tipo": "Archivo",
           "tamano": "0.10 KB"
-        }
-      ],
-      "estadisticas": {
-        "tiempo_estimado": "2-4 horas",
-        "filamento_estimado": "50-100g",
-        "complejidad": "Media"
-      },
-      "aiAnalysis": {
-        "tiempo_estimado": "3 horas",
-        "filamento_total": "75g",
-        "costo_estimado": "$2.50",
-        "recomendaciones": [
-          "Usar soporte en voladizos",
-          "Temperatura de cama: 60°C"
-        ]
-      }
-    },
-    {
-      "id": 4,
-      "nombre": "无牙仔折叠翅膀MINI",
-      "descripcion": "",
-      "autor": "Usuario",
-      "fecha_creacion": "2025-10-13",
-      "estado": "listo",
-      "favorito": false,
-      "carpeta": "src/proyect/无牙仔折叠翅膀MINI - 4",
-      "imagen": null,
-      "badges": {
-        "estado": "Listo",
-        "tipo": "Funcional",
-        "piezas": "1 piezas"
-      },
-      "progreso": {
-        "porcentaje": 100,
-        "mensaje": "Listo para imprimir"
-      },
-      "archivos": [
-        {
-          "nombre": "obj_1_无牙仔折叠翅膀.stl_A.stl",
-          "tipo": "STL",
-          "tamano": "94805.06 KB"
         }
       ],
       "estadisticas": {
@@ -3450,23 +3409,6 @@
       "progreso": 100
     },
     {
-      "id": 55,
-      "nombre": "Articulated Dolphin",
-      "descripcion": "Proyecto importado desde Articulated Dolphin.zip",
-      "categoria": "general",
-      "archivos": [
-        {
-          "nombre": "Dolphin_v2.stl",
-          "tipo": "STL",
-          "tamano": "7661.70 KB"
-        }
-      ],
-      "imagenes": [],
-      "fecha_creacion": "2025-10-13",
-      "estado": "completado",
-      "progreso": 100
-    },
-    {
       "id": 56,
       "nombre": "TIE Advanced Kit Card by Nakozen",
       "descripcion": "Proyecto importado desde TIE Advanced Kit Card - 4708937.zip",
@@ -5530,6 +5472,96 @@
       "progreso": 100,
       "badge": "Thingiverse",
       "imagen": "/api/gallery/projects/control-tower-by-pablo065-90/images/torre_de_control.png"
+    },
+    {
+      "id": 91,
+      "nombre": "strong-corner-bracket-model_files",
+      "descripcion": "Proyecto importado desde strong-corner-bracket-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "cornerbracket_m3.stl",
+          "tipo": "STL",
+          "tamano": "1096.76 KB"
+        },
+        {
+          "nombre": "1365078-strong-corner-bracket-3e7fa179-a9bb-46aa-a5a3-97047c98f420.pdf",
+          "tipo": "PDF",
+          "tamano": "395.85 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_preview_page1.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/strong-corner-bracket-model_files-91/images/pdf_preview_page1.png"
+    },
+    {
+      "id": 92,
+      "nombre": "strong-corner-bracket-print_files",
+      "descripcion": "Proyecto importado desde strong-corner-bracket-print_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "1365078-strong-corner-bracket-3e7fa179-a9bb-46aa-a5a3-97047c98f420.pdf",
+          "tipo": "PDF",
+          "tamano": "395.85 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_preview_page1.png"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "sin_archivos",
+      "progreso": 0,
+      "imagen": "/api/gallery/projects/strong-corner-bracket-print_files-92/images/pdf_preview_page1.png"
+    },
+    {
+      "id": 93,
+      "nombre": "spacex-starship-s25-model_files",
+      "descripcion": "Proyecto importado desde spacex-starship-s25-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "complete-s25.3mf",
+          "tipo": "3MF",
+          "tamano": "1009.05 KB"
+        },
+        {
+          "nombre": "flap-inserts-s25.3mf",
+          "tipo": "3MF",
+          "tamano": "56.85 KB"
+        },
+        {
+          "nombre": "heat-tiles-engines-s25.3mf",
+          "tipo": "3MF",
+          "tamano": "366.35 KB"
+        },
+        {
+          "nombre": "Main Body (S25) (WITH SUPPORT BLOCKER).3mf",
+          "tipo": "3MF",
+          "tamano": "651.63 KB"
+        },
+        {
+          "nombre": "main-body-s25-support-blocker-removed.3mf",
+          "tipo": "3MF",
+          "tamano": "638.52 KB"
+        },
+        {
+          "nombre": "739436-spacex-starship-s25-b33cef8d-6505-4971-8e1d-1628af3130e9.pdf",
+          "tipo": "PDF",
+          "tamano": "95.55 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_page1_img1.jpg"
+      ],
+      "fecha_creacion": "2025-10-13",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/spacex-starship-s25-model_files-93/images/pdf_page1_img1.jpg"
     }
   ]
 }

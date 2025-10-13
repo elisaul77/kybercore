@@ -936,3 +936,124 @@ async def fix_project_images():
             "skipped": skipped_count,
             "message": "No se encontraron proyectos que necesiten actualización"
         }
+
+
+@router.post("/projects/cleanup-orphaned")
+async def cleanup_orphaned_folders():
+    """
+    Endpoint de mantenimiento para eliminar carpetas de proyectos que no están en la base de datos.
+    
+    Escanea el directorio src/proyect/ y elimina todas las carpetas que no corresponden
+    a proyectos activos en la base de datos JSON. Esto limpia archivos de proyectos
+    eliminados anteriormente y corrige las estadísticas de STLs.
+    """
+    data = load_projects_data()
+    projects_base_path = Path("src/proyect")
+    
+    if not projects_base_path.exists():
+        return {
+            "success": False,
+            "message": "El directorio de proyectos no existe"
+        }
+    
+    print(f"🧹 Iniciando limpieza de carpetas huérfanas...")
+    
+    # Obtener todas las carpetas válidas de los proyectos activos
+    valid_folders = set()
+    for proyecto in data['proyectos']:
+        carpeta = proyecto.get('carpeta')
+        if carpeta:
+            # Normalizar la ruta (quitar src/proyect/ si existe)
+            if carpeta.startswith("src/proyect/"):
+                folder_name = carpeta.replace("src/proyect/", "")
+            elif carpeta.startswith("src" + os.sep + "proyect" + os.sep):
+                folder_name = carpeta.replace("src" + os.sep + "proyect" + os.sep, "")
+            else:
+                folder_name = carpeta
+            
+            valid_folders.add(folder_name)
+        else:
+            # Si no hay campo carpeta, construir el nombre esperado
+            folder_name = f"{proyecto.get('nombre')} - {proyecto.get('id')}"
+            valid_folders.add(folder_name)
+    
+    print(f"📋 Proyectos válidos en la base de datos: {len(valid_folders)}")
+    
+    # Escanear todas las carpetas en src/proyect/
+    all_folders = [f for f in projects_base_path.iterdir() if f.is_dir()]
+    print(f"📁 Carpetas encontradas en disco: {len(all_folders)}")
+    
+    # Identificar carpetas huérfanas
+    orphaned_folders = []
+    deleted_stl_count = 0
+    
+    for folder in all_folders:
+        folder_name = folder.name
+        
+        # Verificar si esta carpeta está en la lista de válidas
+        if folder_name not in valid_folders:
+            orphaned_folders.append(folder_name)
+            
+            # Contar STLs antes de eliminar
+            files_dir = folder / "files"
+            if files_dir.exists():
+                stl_files = list(files_dir.glob("*.stl")) + list(files_dir.glob("*.3mf")) + list(files_dir.glob("*.obj"))
+                deleted_stl_count += len(stl_files)
+    
+    print(f"🗑️  Carpetas huérfanas identificadas: {len(orphaned_folders)}")
+    print(f"📊 STLs que serán eliminados: {deleted_stl_count}")
+    
+    # Eliminar carpetas huérfanas
+    deleted_folders = []
+    failed_deletions = []
+    
+    for folder_name in orphaned_folders:
+        folder_path = projects_base_path / folder_name
+        try:
+            print(f"   🗑️  Eliminando: {folder_name}")
+            shutil.rmtree(folder_path)
+            deleted_folders.append(folder_name)
+        except Exception as e:
+            print(f"   ❌ Error eliminando {folder_name}: {e}")
+            failed_deletions.append({
+                "folder": folder_name,
+                "error": str(e)
+            })
+    
+    # Recalcular estadísticas de STLs
+    print(f"\n📊 Recalculando estadísticas...")
+    total_stls = 0
+    
+    for proyecto in data['proyectos']:
+        archivos = proyecto.get('archivos', [])
+        project_stls = len([f for f in archivos if f.get('tipo') in ['STL', '3D Model', '3MF']])
+        total_stls += project_stls
+    
+    # Actualizar estadísticas
+    old_total_stls = data['estadisticas']['total_stls']
+    data['estadisticas']['total_stls'] = total_stls
+    
+    # Guardar cambios
+    if save_projects_data(data):
+        print(f"\n✅ Limpieza completada:")
+        print(f"   🗑️  Carpetas eliminadas: {len(deleted_folders)}")
+        print(f"   ❌ Fallos en eliminación: {len(failed_deletions)}")
+        print(f"   📉 STLs eliminados del conteo: {old_total_stls - total_stls}")
+        print(f"   📊 Nuevo total de STLs: {total_stls}")
+        
+        return {
+            "success": True,
+            "deleted_folders": len(deleted_folders),
+            "failed_deletions": failed_deletions,
+            "deleted_stls_count": deleted_stl_count,
+            "old_stl_count": old_total_stls,
+            "new_stl_count": total_stls,
+            "message": f"Se eliminaron {len(deleted_folders)} carpetas huérfanas ({deleted_stl_count} STLs)",
+            "deleted_folder_names": deleted_folders[:10] if len(deleted_folders) > 10 else deleted_folders  # Mostrar máximo 10
+        }
+    else:
+        return {
+            "success": False,
+            "message": "Error al guardar estadísticas actualizadas"
+        }
+
