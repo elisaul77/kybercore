@@ -341,12 +341,21 @@ async function openProjectModal(projectId) {
 // Las funciones createNewProject(), analyzeAllProjects() y showProjectsStatistics()
 // están definidas en gallery_functions.js
 
-// Event listeners para acciones de proyectos
+// Event listeners para acciones de proyectos (NO incluye view-project)
 document.addEventListener('click', function(e) {
-    const action = e.target.getAttribute('data-action');
-    const projectId = e.target.getAttribute('data-project-id');
+    // Buscar el elemento con data-action (puede ser el botón o un hijo)
+    const button = e.target.closest('[data-action]');
+    if (!button) return;
     
-    if (!action || !projectId) return;
+    const action = button.getAttribute('data-action');
+    const projectId = button.getAttribute('data-project-id');
+    
+    // No procesar si no tiene projectId o si es view-project (se maneja por separado)
+    if (!projectId || action === 'view-project') return;
+    
+    // Prevenir propagación solo para las acciones que procesamos aquí
+    e.stopPropagation();
+    e.preventDefault();
     
     switch(action) {
         case 'favorite':
@@ -363,6 +372,14 @@ document.addEventListener('click', function(e) {
             break;
     }
 });
+        case 'duplicate':
+            duplicateProject(projectId);
+            break;
+        case 'delete':
+            deleteProject(projectId);
+            break;
+    }
+}, true); // Usar capture phase para ejecutar primero
 
 function toggleFavorite(projectId) {
     console.log('⭐ Toggling favorite for project:', projectId);
@@ -377,12 +394,160 @@ function duplicateProject(projectId) {
     alert(`📋 Duplicando proyecto ${projectId}`);
 }
 
+// Variable global para almacenar el ID del proyecto a eliminar
+let projectToDelete = null;
 
 function deleteProject(projectId) {
-    if (confirm('¿Estás seguro de que quieres eliminar este proyecto?')) {
-        alert(`🗑️ Eliminando proyecto ${projectId}`);
+    // Evitar múltiples llamadas
+    if (projectToDelete !== null) {
+        console.log('⚠️ Ya hay una operación de eliminación en curso');
+        return;
+    }
+    
+    projectToDelete = projectId;
+    
+    // Buscar información del proyecto
+    fetch(`/api/gallery/projects/${projectId}`)
+        .then(response => response.json())
+        .then(project => {
+            // Mostrar modal de confirmación
+            document.getElementById('delete-project-name').textContent = project.nombre || `Proyecto ${projectId}`;
+            document.getElementById('delete-confirmation-modal').classList.remove('hidden');
+        })
+        .catch(error => {
+            console.error('Error obteniendo información del proyecto:', error);
+            // Si falla, mostrar modal con ID genérico
+            document.getElementById('delete-project-name').textContent = `Proyecto ${projectId}`;
+            document.getElementById('delete-confirmation-modal').classList.remove('hidden');
+        });
+}
+
+function closeDeleteConfirmationModal() {
+    document.getElementById('delete-confirmation-modal').classList.add('hidden');
+    projectToDelete = null;
+}
+
+async function confirmDeleteProject() {
+    if (projectToDelete === null) return;
+    
+    const projectId = projectToDelete;
+    const modal = document.getElementById('delete-confirmation-modal');
+    const deleteBtn = document.getElementById('confirm-delete-btn');
+    const originalBtnText = deleteBtn.innerHTML;
+    
+    // Deshabilitar botón y mostrar loading
+    deleteBtn.disabled = true;
+    deleteBtn.innerHTML = '<span class="animate-spin inline-block mr-2">⏳</span> Eliminando...';
+    
+    try {
+        const response = await fetch(`/api/gallery/projects/${projectId}/delete`, {
+            method: 'POST'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        // Cerrar modal
+        modal.classList.add('hidden');
+        projectToDelete = null;
+        
+        // Mostrar notificación de éxito (solo una vez)
+        showToast('Eliminado', `Proyecto eliminado correctamente`, 'success');
+        
+        // Recargar página después de 1 segundo
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+        
+    } catch (error) {
+        console.error('Error eliminando proyecto:', error);
+        
+        // Mostrar error
+        showToast('Error', `No se pudo eliminar el proyecto: ${error.message}`, 'error');
+        
+        // Restaurar botón
+        deleteBtn.disabled = false;
+        deleteBtn.innerHTML = originalBtnText;
+        
+        projectToDelete = null;
     }
 }
+
+// Asegurar que nuestra versión se use globalmente con Object.defineProperty
+// Esto previene que gallery.js la sobrescriba
+(function() {
+    const modalDeleteProject = deleteProject;
+    
+    // Usar defineProperty para hacer la propiedad no-writable
+    Object.defineProperty(window, 'deleteProject', {
+        value: modalDeleteProject,
+        writable: false,
+        configurable: false
+    });
+    
+    console.log('✅ deleteProject modal version loaded and protected');
+})();
+
+// Sistema de notificaciones toast (si no existe)
+function showToast(title, message, type = 'info') {
+    // Verificar si ya existe el contenedor
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        toastContainer.className = 'fixed top-4 right-4 z-50 space-y-2';
+        document.body.appendChild(toastContainer);
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = `bg-white border-l-4 p-4 shadow-lg rounded-r max-w-sm transform transition-all duration-300 ease-in-out translate-x-full`;
+    
+    const typeClasses = {
+        'success': 'border-green-500',
+        'error': 'border-red-500',
+        'warning': 'border-yellow-500',
+        'info': 'border-blue-500'
+    };
+    
+    toast.classList.add(typeClasses[type] || typeClasses.info);
+    
+    toast.innerHTML = `
+        <div class="flex justify-between items-start">
+            <div class="flex-1">
+                <div class="font-semibold text-gray-800">${title}</div>
+                <div class="text-gray-600 text-sm mt-1">${message}</div>
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-gray-400 hover:text-gray-600">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+            </button>
+        </div>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Animación de entrada
+    setTimeout(() => {
+        toast.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Auto eliminar
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.classList.add('translate-x-full');
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.remove();
+                }
+            }, 300);
+        }
+    }, 3000);
+}
+
 
 // ==================== IMPORTACIÓN MASIVA ====================
 function openBulkImportModal() {
@@ -672,6 +837,73 @@ function displayBulkImportResults(result) {
             
             <!-- Resultados -->
             <div id="bulk-import-results"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación de Eliminación -->
+<div id="delete-confirmation-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-red-500 to-red-600 p-6 rounded-t-2xl">
+            <div class="flex items-center">
+                <div class="bg-white bg-opacity-20 rounded-full p-3 mr-4">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-white">Confirmar Eliminación</h3>
+                    <p class="text-red-100 mt-1 text-sm">Esta acción no se puede deshacer</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Body -->
+        <div class="p-6">
+            <div class="mb-6">
+                <p class="text-gray-700 text-lg mb-2">
+                    ¿Estás seguro de que deseas eliminar el proyecto?
+                </p>
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+                    <p class="text-red-800 font-semibold text-center" id="delete-project-name">
+                        <!-- Nombre del proyecto se insertará aquí -->
+                    </p>
+                </div>
+            </div>
+            
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div class="text-sm text-yellow-800">
+                        <p class="font-semibold mb-1">⚠️ Advertencia importante:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Se eliminarán todos los archivos STL</li>
+                            <li>Se perderán todas las imágenes del proyecto</li>
+                            <li>Esta acción es permanente</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Botones -->
+            <div class="flex gap-3">
+                <button 
+                    onclick="closeDeleteConfirmationModal()" 
+                    class="flex-1 px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition-colors"
+                >
+                    ❌ Cancelar
+                </button>
+                <button 
+                    id="confirm-delete-btn"
+                    onclick="confirmDeleteProject()" 
+                    class="flex-1 px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg hover:from-red-600 hover:to-red-700 transition-colors shadow-lg"
+                >
+                    🗑️ Eliminar Proyecto
+                </button>
+            </div>
         </div>
     </div>
 </div>

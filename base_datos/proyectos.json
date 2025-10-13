@@ -1,6 +1,6 @@
 {
   "estadisticas": {
-    "total_proyectos": 91,
+    "total_proyectos": 86,
     "total_stls": 479,
     "completados": 63,
     "en_progreso": 0,
@@ -790,113 +790,6 @@
       }
     },
     {
-      "id": 11,
-      "nombre": "Zilla by HeavyRotation",
-      "descripcion": "",
-      "autor": "Usuario",
-      "fecha_creacion": "2025-10-13",
-      "estado": "listo",
-      "favorito": false,
-      "carpeta": "src/proyect/Zilla by HeavyRotation - 11",
-      "imagen": null,
-      "badges": {
-        "estado": "Listo",
-        "tipo": "Funcional",
-        "piezas": "12 piezas",
-        "origen": "Thingiverse"
-      },
-      "progreso": {
-        "porcentaje": 100,
-        "mensaje": "Listo para imprimir"
-      },
-      "archivos": [
-        {
-          "nombre": "godzilla_Bottom_frame.stl",
-          "tipo": "STL",
-          "tamano": "74.08 KB"
-        },
-        {
-          "nombre": "godzilla_top_frame.stl",
-          "tipo": "STL",
-          "tamano": "193.17 KB"
-        },
-        {
-          "nombre": "godzilla_cutout_leg2.stl",
-          "tipo": "STL",
-          "tamano": "143.54 KB"
-        },
-        {
-          "nombre": "godzilla_claw.stl",
-          "tipo": "STL",
-          "tamano": "58.46 KB"
-        },
-        {
-          "nombre": "godzilla_head.stl",
-          "tipo": "STL",
-          "tamano": "147.48 KB"
-        },
-        {
-          "nombre": "godzilla_foot.stl",
-          "tipo": "STL",
-          "tamano": "67.82 KB"
-        },
-        {
-          "nombre": "godzilla_toe.stl",
-          "tipo": "STL",
-          "tamano": "49.90 KB"
-        },
-        {
-          "nombre": "godzilla_cutout_leg.stl",
-          "tipo": "STL",
-          "tamano": "122.72 KB"
-        },
-        {
-          "nombre": "godzilla_cutout_arm3.stl",
-          "tipo": "STL",
-          "tamano": "163.55 KB"
-        },
-        {
-          "nombre": "godzilla_body.stl",
-          "tipo": "STL",
-          "tamano": "604.53 KB"
-        },
-        {
-          "nombre": "Zilla_Plate_1.stl",
-          "tipo": "STL",
-          "tamano": "364.73 KB"
-        },
-        {
-          "nombre": "Zilla_Plate_2.stl",
-          "tipo": "STL",
-          "tamano": "427.23 KB"
-        },
-        {
-          "nombre": "README.txt",
-          "tipo": "Archivo",
-          "tamano": "0.08 KB"
-        },
-        {
-          "nombre": "LICENSE.txt",
-          "tipo": "Archivo",
-          "tamano": "0.11 KB"
-        }
-      ],
-      "estadisticas": {
-        "tiempo_estimado": "2-4 horas",
-        "filamento_estimado": "50-100g",
-        "complejidad": "Media"
-      },
-      "aiAnalysis": {
-        "tiempo_estimado": "3 horas",
-        "filamento_total": "75g",
-        "costo_estimado": "$2.50",
-        "recomendaciones": [
-          "Usar soporte en voladizos",
-          "Temperatura de cama: 60°C"
-        ]
-      }
-    },
-    {
       "id": 12,
       "nombre": "Rocket Impossible Spiral Passthrough Fidget V2 by neilhaileydesign",
       "descripcion": "",
@@ -1047,52 +940,6 @@
       }
     },
     {
-      "id": 15,
-      "nombre": "TwistEgg_stls",
-      "descripcion": "",
-      "autor": "Usuario",
-      "fecha_creacion": "2025-10-13",
-      "estado": "listo",
-      "favorito": false,
-      "carpeta": "src/proyect/TwistEgg_stls - 15",
-      "imagen": null,
-      "badges": {
-        "estado": "Listo",
-        "tipo": "Funcional",
-        "piezas": "2 piezas"
-      },
-      "progreso": {
-        "porcentaje": 100,
-        "mensaje": "Listo para imprimir"
-      },
-      "archivos": [
-        {
-          "nombre": "obj_1_Oeuf vrille test 1 v3 int.stl",
-          "tipo": "STL",
-          "tamano": "1827.72 KB"
-        },
-        {
-          "nombre": "obj_2_Oeuf vrille test 1 v3 ext.stl",
-          "tipo": "STL",
-          "tamano": "2291.10 KB"
-        }
-      ],
-      "estadisticas": {
-        "tiempo_estimado": "2-4 horas",
-        "filamento_estimado": "50-100g",
-        "complejidad": "Media"
-      },
-      "aiAnalysis": {
-        "tiempo_estimado": "3 horas",
-        "filamento_total": "75g",
-        "costo_estimado": "$2.50",
-        "recomendaciones": [
-          "Usar soporte en voladizos",
-          "Temperatura de cama: 60°C"
-        ]
-      }
-    },
-    {
       "id": 16,
       "nombre": "Flying Copter Toy by Dnnyboy_11",
       "descripcion": "",
@@ -1213,7 +1060,7 @@
       "autor": "Usuario",
       "fecha_creacion": "2025-10-13",
       "estado": "listo",
-      "favorito": false,
+      "favorito": true,
       "carpeta": "src/proyect/Simple Guitar Stand by eselfjes - 18",
       "imagen": "/api/gallery/projects/simple-guitar-stand-by-eselfjes-18/images/GuitarStand.JPG",
       "badges": {
@@ -1256,122 +1103,6 @@
           "nombre": "LICENSE.txt",
           "tipo": "Archivo",
           "tamano": "0.10 KB"
-        }
-      ],
-      "estadisticas": {
-        "tiempo_estimado": "2-4 horas",
-        "filamento_estimado": "50-100g",
-        "complejidad": "Media"
-      },
-      "aiAnalysis": {
-        "tiempo_estimado": "3 horas",
-        "filamento_total": "75g",
-        "costo_estimado": "$2.50",
-        "recomendaciones": [
-          "Usar soporte en voladizos",
-          "Temperatura de cama: 60°C"
-        ]
-      }
-    },
-    {
-      "id": 19,
-      "nombre": "Individual+armor+parts",
-      "descripcion": "",
-      "autor": "Usuario",
-      "fecha_creacion": "2025-10-13",
-      "estado": "listo",
-      "favorito": false,
-      "carpeta": "src/proyect/Individual+armor+parts - 19",
-      "imagen": null,
-      "badges": {
-        "estado": "Listo",
-        "tipo": "Funcional",
-        "piezas": "16 piezas"
-      },
-      "progreso": {
-        "porcentaje": 100,
-        "mensaje": "Listo para imprimir"
-      },
-      "archivos": [
-        {
-          "nombre": "2x-armor-knee-v2.stl",
-          "tipo": "STL",
-          "tamano": "4.57 KB"
-        },
-        {
-          "nombre": "2x-armor-hip-v10.stl",
-          "tipo": "STL",
-          "tamano": "155.65 KB"
-        },
-        {
-          "nombre": "2x-armor-shin-v41.stl",
-          "tipo": "STL",
-          "tamano": "127.23 KB"
-        },
-        {
-          "nombre": "2x-armor-shoulder-v8.stl",
-          "tipo": "STL",
-          "tamano": "98.13 KB"
-        },
-        {
-          "nombre": "2x-armor-thigh-v27.stl",
-          "tipo": "STL",
-          "tamano": "101.74 KB"
-        },
-        {
-          "nombre": "2x-armor-toe-v9.stl",
-          "tipo": "STL",
-          "tamano": "43.83 KB"
-        },
-        {
-          "nombre": "2x-armor-forearm-v30.stl",
-          "tipo": "STL",
-          "tamano": "86.02 KB"
-        },
-        {
-          "nombre": "2x-armor-upper-arm-v14.stl",
-          "tipo": "STL",
-          "tamano": "25.47 KB"
-        },
-        {
-          "nombre": "armor-chest-lower-v25.stl",
-          "tipo": "STL",
-          "tamano": "49.98 KB"
-        },
-        {
-          "nombre": "armor-abdomen-v36.stl",
-          "tipo": "STL",
-          "tamano": "158.58 KB"
-        },
-        {
-          "nombre": "armor-chest-upper-v48.stl",
-          "tipo": "STL",
-          "tamano": "171.96 KB"
-        },
-        {
-          "nombre": "armor-crotch-v12.stl",
-          "tipo": "STL",
-          "tamano": "55.94 KB"
-        },
-        {
-          "nombre": "armor-head-v12.stl",
-          "tipo": "STL",
-          "tamano": "105.06 KB"
-        },
-        {
-          "nombre": "armor-neck-v9.stl",
-          "tipo": "STL",
-          "tamano": "5.55 KB"
-        },
-        {
-          "nombre": "armor-waist-v30.stl",
-          "tipo": "STL",
-          "tamano": "170.39 KB"
-        },
-        {
-          "nombre": "2x-armor-foot-v17.stl",
-          "tipo": "STL",
-          "tamano": "155.36 KB"
         }
       ],
       "estadisticas": {
@@ -1694,41 +1425,6 @@
           "tamano": "0.14 KB"
         }
       ],
-      "estadisticas": {
-        "tiempo_estimado": "2-4 horas",
-        "filamento_estimado": "50-100g",
-        "complejidad": "Media"
-      },
-      "aiAnalysis": {
-        "tiempo_estimado": "3 horas",
-        "filamento_total": "75g",
-        "costo_estimado": "$2.50",
-        "recomendaciones": [
-          "Usar soporte en voladizos",
-          "Temperatura de cama: 60°C"
-        ]
-      }
-    },
-    {
-      "id": 23,
-      "nombre": "vectorizer",
-      "descripcion": "",
-      "autor": "Usuario",
-      "fecha_creacion": "2025-10-13",
-      "estado": "listo",
-      "favorito": false,
-      "carpeta": "src/proyect/vectorizer - 23",
-      "imagen": null,
-      "badges": {
-        "estado": "Listo",
-        "tipo": "Funcional",
-        "piezas": "0 piezas"
-      },
-      "progreso": {
-        "porcentaje": 100,
-        "mensaje": "Listo para imprimir"
-      },
-      "archivos": [],
       "estadisticas": {
         "tiempo_estimado": "2-4 horas",
         "filamento_estimado": "50-100g",
@@ -2418,63 +2114,6 @@
       "progreso": 100,
       "badge": "Thingiverse",
       "imagen": "/api/gallery/projects/drag-chain---cable-chain---ender-3-by-diogosantos88-33/images/IMG_20190626_130724640.jpg"
-    },
-    {
-      "id": 34,
-      "nombre": "Snap-on LCD Cover for Creality Ender-3/Ender-3s/Ender-3 Pro/Ender-5 by wolfganghsu",
-      "descripcion": "Proyecto importado desde cover ender 3.zip",
-      "categoria": "general",
-      "archivos": [
-        {
-          "nombre": "Base.stl",
-          "tipo": "STL",
-          "tamano": "69.42 KB"
-        },
-        {
-          "nombre": "Clip.stl",
-          "tipo": "STL",
-          "tamano": "64.05 KB"
-        },
-        {
-          "nombre": "Cover.stl",
-          "tipo": "STL",
-          "tamano": "238.17 KB"
-        },
-        {
-          "nombre": "Cover_-_No_Logo.stl",
-          "tipo": "STL",
-          "tamano": "145.20 KB"
-        },
-        {
-          "nombre": "README.txt",
-          "tipo": "Archivo",
-          "tamano": "0.14 KB"
-        },
-        {
-          "nombre": "LICENSE.txt",
-          "tipo": "Archivo",
-          "tamano": "0.12 KB"
-        }
-      ],
-      "imagenes": [
-        "Assembly.jpg",
-        "Half.jpg",
-        "Cover.jpg",
-        "Base.jpg",
-        "Clip.jpg",
-        "Orientation.jpg",
-        "Closed.jpg",
-        "Full.jpg",
-        "8432375427c95c43477fb89aa638ea5c.png",
-        "b1e22cad43c1f7503c7b23d5b3ef9bae.png",
-        "713b4a12eb4f2f78be3c69b272215190.png",
-        "e72178b8d52bf5710ee44bdbfc6d94f3.png"
-      ],
-      "fecha_creacion": "2025-10-13",
-      "estado": "completado",
-      "progreso": 100,
-      "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/snap-on-lcd-cover-for-creality-ender-3/ender-3s/ender-3-pro/ender-5-by-wolfganghsu-34/images/Assembly.jpg"
     },
     {
       "id": 35,
