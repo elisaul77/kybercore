@@ -30,6 +30,7 @@ class PieceSelection(BaseModel):
     project_id: str
     selected_pieces: List[str]  # Lista de nombres de archivos STL seleccionados
     select_all: bool = False
+    session_id: Optional[str] = None  # ID de sesión del wizard (opcional)
 
 class MaterialSelection(BaseModel):
     material_type: str  # PLA, PETG, ABS, etc.
@@ -455,6 +456,13 @@ async def confirm_piece_selection(selection: PieceSelection):
     """
     Confirma la selección de piezas (todas o específicas) y avanza al siguiente paso.
     """
+    print(f"=" * 80)
+    print(f"🔍 SELECT PIECES - Recibido project_id: {selection.project_id}")
+    print(f"🔍 SELECT PIECES - Recibido session_id: {selection.session_id}")
+    print(f"=" * 80)
+    logger.info(f"🔍 SELECT PIECES - Recibido project_id: {selection.project_id}")
+    logger.info(f"🔍 SELECT PIECES - Recibido session_id: {selection.session_id}")
+    
     project = load_project_data(selection.project_id)
     
     if selection.select_all:
@@ -478,14 +486,21 @@ async def confirm_piece_selection(selection: PieceSelection):
     total_filament_needed = len(selected_files) * 12.3  # Mock calculation
     total_time_minutes = len(selected_files) * 45       # Mock calculation
     
-    # Crear session_id temporal basado en project_id (en el frontend se debería pasar flow_id)
-    session_id = f"temp_{selection.project_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    # Usar session_id del frontend si existe, sino crear uno temporal
+    session_id = selection.session_id
+    if not session_id:
+        # Crear session_id temporal basado en project_id solo si no se proporcionó uno
+        session_id = f"temp_{selection.project_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        logger.info(f"🆕 Session ID generado en backend: {session_id}")
+    else:
+        logger.info(f"✅ Session ID recibido del frontend: {session_id}")
     
     # Cargar sesión existente o crear nueva
     session_data = load_wizard_session(session_id)
     if not session_data:
         session_data = {
             "project_id": selection.project_id,
+            "project_data": project,  # Guardar datos del proyecto para el reporte
             "current_step": "piece_selection",
             "completed_steps": [],
             "created_at": datetime.now().isoformat(),
@@ -506,6 +521,8 @@ async def confirm_piece_selection(selection: PieceSelection):
     
     # Guardar sesión actualizada
     save_wizard_session(session_id, session_data)
+    print(f"✅ SELECT PIECES - Sesión guardada con ID: {session_id}")
+    logger.info(f"✅ SELECT PIECES - Sesión guardada con ID: {session_id}")
     
     return JSONResponse(content={
         "success": True,
@@ -1661,9 +1678,28 @@ async def get_validation_report(job_id: str):
     """
     Obtiene el reporte de validación final antes de enviar a impresión.
     """
+    print(f"=" * 80)
+    print(f"🔍 VALIDATION REPORT - Recibido job_id: {job_id}")
+    logger.info(f"🔍 VALIDATION REPORT - Recibido job_id: {job_id}")
+    
     # Cargar datos de la sesión del wizard
     session_data = load_wizard_session(job_id)
+    print(f"🔍 VALIDATION REPORT - Sesión encontrada: {session_data is not None}")
+    logger.info(f"🔍 VALIDATION REPORT - Sesión encontrada: {session_data is not None}")
+    
+    if session_data:
+        print(f"🔍 VALIDATION REPORT - Proyecto ID: {session_data.get('project_id')}")
+        print(f"🔍 VALIDATION REPORT - Proyecto nombre: {session_data.get('project_data', {}).get('nombre')}")
+        print(f"🔍 VALIDATION REPORT - Paso actual: {session_data.get('current_step')}")
+        logger.info(f"🔍 VALIDATION REPORT - Proyecto ID: {session_data.get('project_id')}")
+        logger.info(f"🔍 VALIDATION REPORT - Proyecto nombre: {session_data.get('project_data', {}).get('nombre')}")
+        logger.info(f"🔍 VALIDATION REPORT - Paso actual: {session_data.get('current_step')}")
+    
+    print(f"=" * 80)
+    
     if not session_data:
+        print(f"❌ VALIDATION REPORT - No se encontró sesión para job_id: {job_id}")
+        logger.warning(f"❌ VALIDATION REPORT - No se encontró sesión para job_id: {job_id}")
         # Si no hay sesión, usar datos mock
         return get_mock_validation_report(job_id)
     
@@ -1682,10 +1718,16 @@ async def get_validation_report(job_id: str):
     total_time = sum([f.get("estimated_time_minutes", 0) for f in processed_files if f.get("status") == "success"])
     total_filament = sum([f.get("filament_used_grams", 0) for f in processed_files if f.get("status") == "success"])
     
+    # 🔍 Log CRÍTICO: verificar qué nombre se está usando
+    project_name = session_data.get("project_data", {}).get("nombre", "Proyecto desconocido")
+    print(f"🎯 VALIDATION REPORT - NOMBRE DEL PROYECTO QUE SE VA A DEVOLVER: '{project_name}'")
+    print(f"🎯 VALIDATION REPORT - project_data completo: {session_data.get('project_data', {})}")
+    logger.info(f"🎯 VALIDATION REPORT - NOMBRE DEVUELTO: '{project_name}'")
+    
     validation_report = {
         "job_id": job_id,
         "project_info": {
-            "name": session_data.get("project_data", {}).get("nombre", "Proyecto desconocido"),
+            "name": project_name,
             "total_pieces": piece_selection.get("total_pieces", 0),
             "selected_pieces": len(piece_selection.get("selected_pieces", []))
         },
@@ -1740,7 +1782,15 @@ async def get_validation_report(job_id: str):
     # Filtrar recomendaciones vacías
     validation_report["recommendations"] = [r for r in validation_report["recommendations"] if r]
     
-    return JSONResponse(content={
+    # 🎯 LOG FINAL: Mostrar el JSON completo que se devolverá
+    print(f"📤 VALIDATION REPORT - RESPUESTA COMPLETA:")
+    print(f"   - success: True")
+    print(f"   - validation.project_info.name: '{validation_report['project_info']['name']}'")
+    print(f"   - validation.processing_summary: {validation_report['processing_summary']}")
+    logger.info(f"📤 VALIDATION - Enviando nombre: '{validation_report['project_info']['name']}'")
+    
+    # 🔧 Agregar headers para evitar caché del navegador
+    response = JSONResponse(content={
         "success": True,
         "validation": validation_report,
         "is_ready_to_print": processing_summary.get("successful", 0) > 0,
@@ -1749,6 +1799,13 @@ async def get_validation_report(job_id: str):
             "message": "Revisa el reporte y confirma la impresión."
         }
     })
+    
+    # 🔧 Agregar headers anti-caché
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    
+    return response
 
 def get_mock_validation_report(job_id: str):
     """Genera reporte de validación mock para cuando no hay sesión"""

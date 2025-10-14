@@ -16798,6 +16798,1380 @@
       "confirmed_job_id": "33bba93a-e9be-4d37-b09f-398ce56bf146",
       "final_status": "job_sent_to_printer",
       "completed_at": "2025-10-14T03:43:01.130272"
+    },
+    "wizard_1760413952147_3689ddrbe": {
+      "project_id": "30",
+      "project_data": {
+        "id": 30,
+        "nombre": "Articulating Fox - No Supports by NeonGraveStoneArt",
+        "descripcion": "Proyecto importado desde Articulating Fox - No Supports - 6817979.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "Fox_Multicolor.3mf",
+            "tipo": "3MF",
+            "tamano": "8107.39 KB"
+          },
+          {
+            "nombre": "Fox_singlecolor.stl",
+            "tipo": "STL",
+            "tamano": "27247.54 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.11 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.14 KB"
+          }
+        ],
+        "imagenes": [
+          "IMG_20241102_135418196_copy.jpg",
+          "IMG_20241102_135500374_copy.jpg",
+          "IMG_20241102_135613225_copy.jpg",
+          "Fox_singlecolor.png"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/articulating-fox---no-supports-by-neongravestoneart-30/images/IMG_20241102_135418196_copy.jpg",
+        "carpeta": "src/proyect/Articulating Fox - No Supports by NeonGraveStoneArt - 30"
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-14T03:52:38.803237",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Fox_singlecolor.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T03:52:38.803291"
+      },
+      "updated_at": "2025-10-14T03:53:11.230814",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T03:52:43.524744"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "economy",
+        "settings": {
+          "layer_height": 0.2,
+          "infill_density": 10,
+          "print_speed": 60,
+          "quality_preset": "normal"
+        },
+        "estimated_impact": {
+          "time_factor": 1.0,
+          "quality_level": "estándar",
+          "material_usage": "optimizado"
+        },
+        "completed_at": "2025-10-14T03:52:48.296312"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T03:52:52.169927"
+      },
+      "stl_processing": {
+        "task_id": "task_110deba7-0dd9-4ee7-972d-d1844dea602e",
+        "successful": [
+          {
+            "filename": "Fox_singlecolor.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/wizard_1760413952147_3689ddrbe/gcode_wizard_1760413952147_3689ddrbe_Fox_singlecolor.gcode",
+            "gcode_size": 18693434,
+            "error": null,
+            "processing_time_seconds": 8.638550281524658
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-14T03:53:11.226677"
+      }
+    },
+    "wizard_1760414056503_p1rgtc5sn": {
+      "project_id": "70",
+      "project_data": {
+        "id": 70,
+        "nombre": "Articulating Bunny (Print in place) by NeonGraveStoneArt",
+        "descripcion": "Proyecto importado desde Articulating Bunny (Print in place) - 6524856.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "Articulating_Bunny_Big.stl",
+            "tipo": "STL",
+            "tamano": "29815.45 KB"
+          },
+          {
+            "nombre": "Articulating_Bunny_Small.stl",
+            "tipo": "STL",
+            "tamano": "29728.82 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.11 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.14 KB"
+          }
+        ],
+        "imagenes": [
+          "9c167950-8773-4411-8b01-bcfcd2544e72.jpg",
+          "ea02711a-1dda-4f36-8353-59834c2b0c7f.jpg",
+          "eb697a93-a400-487e-96c1-728ae06353d0.png",
+          "cefbbede-e112-4303-8193-1affe6534b49.png",
+          "b27dc2c2-9914-4764-a4bd-cfa4c02721b8.png",
+          "5fe3f79a-7c35-40da-85a3-9325c71a4b28.png"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/articulating-bunny-(print-in-place)-by-neongravestoneart-70/images/9c167950-8773-4411-8b01-bcfcd2544e72.jpg",
+        "carpeta": "src/proyect/Articulating Bunny (Print in place) by NeonGraveStoneArt - 70"
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-14T03:54:22.297682",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Articulating_Bunny_Big.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T03:54:22.297726"
+      },
+      "updated_at": "2025-10-14T03:54:59.417536",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T03:54:26.267922"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "economy",
+        "settings": {
+          "layer_height": 0.2,
+          "infill_density": 10,
+          "print_speed": 60,
+          "quality_preset": "normal"
+        },
+        "estimated_impact": {
+          "time_factor": 1.0,
+          "quality_level": "estándar",
+          "material_usage": "optimizado"
+        },
+        "completed_at": "2025-10-14T03:54:30.103848"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T03:54:34.184693"
+      },
+      "stl_processing": {
+        "task_id": "task_5455bda5-2699-4f64-b670-70178e139bfc",
+        "successful": [
+          {
+            "filename": "Articulating_Bunny_Big.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/wizard_1760414056503_p1rgtc5sn/gcode_wizard_1760414056503_p1rgtc5sn_Articulating_Bunny_Big.gcode",
+            "gcode_size": 48341151,
+            "error": null,
+            "processing_time_seconds": 17.27894639968872
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-14T03:54:59.413075"
+      }
+    },
+    "wizard_1760414561818_xbu7ntmp2": {
+      "project_id": "30",
+      "project_data": {
+        "id": 30,
+        "nombre": "Articulating Fox - No Supports by NeonGraveStoneArt",
+        "descripcion": "Proyecto importado desde Articulating Fox - No Supports - 6817979.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "Fox_Multicolor.3mf",
+            "tipo": "3MF",
+            "tamano": "8107.39 KB"
+          },
+          {
+            "nombre": "Fox_singlecolor.stl",
+            "tipo": "STL",
+            "tamano": "27247.54 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.11 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.14 KB"
+          }
+        ],
+        "imagenes": [
+          "IMG_20241102_135418196_copy.jpg",
+          "IMG_20241102_135500374_copy.jpg",
+          "IMG_20241102_135613225_copy.jpg",
+          "Fox_singlecolor.png"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/articulating-fox---no-supports-by-neongravestoneart-30/images/IMG_20241102_135418196_copy.jpg",
+        "carpeta": "src/proyect/Articulating Fox - No Supports by NeonGraveStoneArt - 30"
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-14T04:02:47.777822",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Fox_singlecolor.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T04:02:47.777872"
+      },
+      "updated_at": "2025-10-14T04:03:20.330947",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T04:02:52.402536"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-14T04:02:56.075873"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T04:03:00.441617"
+      },
+      "stl_processing": {
+        "task_id": "task_e318b6f6-2afa-478b-8eec-430508e73955",
+        "successful": [
+          {
+            "filename": "Fox_singlecolor.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/wizard_1760414561818_xbu7ntmp2/gcode_wizard_1760414561818_xbu7ntmp2_Fox_singlecolor.gcode",
+            "gcode_size": 18693434,
+            "error": null,
+            "processing_time_seconds": 10.034525871276855
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-14T04:03:20.326475"
+      }
+    },
+    "wizard_1760415404885_ri0i0dwg6": {
+      "project_id": "44",
+      "project_data": {
+        "id": 44,
+        "nombre": "Articulated Flexi Cute Snake by MiniStudio",
+        "descripcion": "Proyecto importado desde Articulated Flexi Cute Snake - 6746715.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "Mini_Snake.3mf",
+            "tipo": "3MF",
+            "tamano": "3300.20 KB"
+          },
+          {
+            "nombre": "Mini_Snake.stl",
+            "tipo": "STL",
+            "tamano": "59816.46 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.10 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.14 KB"
+          }
+        ],
+        "imagenes": [
+          "91d364c0-dc3e-49c0-8d2c-34082ea6713c.jpg",
+          "1d3698c8-2516-4978-af06-9e70916e6b04.jpg",
+          "dd8b503f-d90b-4d8f-8d7d-211494f698df.jpg",
+          "8bed91ee-a23d-4090-8891-3a21a33eb046.jpg",
+          "f1cb308d-66b9-4d60-8192-131500909f14.png"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/articulated-flexi-cute-snake-by-ministudio-44/images/91d364c0-dc3e-49c0-8d2c-34082ea6713c.jpg",
+        "carpeta": "src/proyect/Articulated Flexi Cute Snake by MiniStudio - 44"
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-14T04:16:49.676600",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Mini_Snake.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T04:16:49.676629"
+      },
+      "updated_at": "2025-10-14T04:17:29.066966",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T04:16:53.336650"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "economy",
+        "settings": {
+          "layer_height": 0.2,
+          "infill_density": 10,
+          "print_speed": 60,
+          "quality_preset": "normal"
+        },
+        "estimated_impact": {
+          "time_factor": 1.0,
+          "quality_level": "estándar",
+          "material_usage": "optimizado"
+        },
+        "completed_at": "2025-10-14T04:16:56.985302"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T04:17:00.535123"
+      },
+      "stl_processing": {
+        "task_id": "task_0d824af3-bace-4031-99e1-3c39a19ced86",
+        "successful": [
+          {
+            "filename": "Mini_Snake.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/wizard_1760415404885_ri0i0dwg6/gcode_wizard_1760415404885_ri0i0dwg6_Mini_Snake.gcode",
+            "gcode_size": 20067392,
+            "error": null,
+            "processing_time_seconds": 19.517756700515747
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-14T04:17:29.062570"
+      }
+    },
+    "wizard_1760415916629_n9s1w5oo5": {
+      "project_id": "17",
+      "project_data": {
+        "id": 17,
+        "nombre": "Articulated mouse by Olgigi",
+        "descripcion": "",
+        "autor": "Usuario",
+        "fecha_creacion": "2025-10-13",
+        "estado": "listo",
+        "favorito": false,
+        "carpeta": "src/proyect/Articulated mouse by Olgigi - 17",
+        "imagen": "/api/gallery/projects/articulated-mouse-by-olgigi-17/images/photo_2022-03-01_14.06.54.jpeg",
+        "badges": {
+          "estado": "Listo",
+          "tipo": "Funcional",
+          "piezas": "1 piezas",
+          "origen": "Thingiverse"
+        },
+        "progreso": {
+          "porcentaje": 100,
+          "mensaje": "Listo para imprimir"
+        },
+        "archivos": [
+          {
+            "nombre": "Articulated_mouse.stl",
+            "tipo": "STL",
+            "tamano": "1056.92 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.08 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.13 KB"
+          }
+        ],
+        "estadisticas": {
+          "tiempo_estimado": "2-4 horas",
+          "filamento_estimado": "50-100g",
+          "complejidad": "Media"
+        },
+        "aiAnalysis": {
+          "tiempo_estimado": "3 horas",
+          "filamento_total": "75g",
+          "costo_estimado": "$2.50",
+          "recomendaciones": [
+            "Usar soporte en voladizos",
+            "Temperatura de cama: 60°C"
+          ]
+        }
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-14T04:25:19.488428",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Articulated_mouse.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T04:25:19.488463"
+      },
+      "updated_at": "2025-10-14T04:25:41.974450",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T04:25:23.847749"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-14T04:25:27.749539"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T04:25:31.382443"
+      },
+      "stl_processing": {
+        "task_id": "task_b29d7752-2d1d-4859-8cd7-34a5e67564a9",
+        "successful": [
+          {
+            "filename": "Articulated_mouse.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/wizard_1760415916629_n9s1w5oo5/gcode_wizard_1760415916629_n9s1w5oo5_Articulated_mouse.gcode",
+            "gcode_size": 4225835,
+            "error": null,
+            "processing_time_seconds": 1.242431402206421
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-14T04:25:41.971088"
+      }
+    },
+    "wizard_1760416168136_otk5r30op": {
+      "project_id": "91",
+      "project_data": {
+        "id": 91,
+        "nombre": "Articulated Dolphin",
+        "descripcion": "",
+        "autor": "Usuario",
+        "fecha_creacion": "2025-10-14",
+        "estado": "listo",
+        "favorito": false,
+        "carpeta": "src/proyect/Articulated Dolphin - 91",
+        "imagen": "/api/gallery/projects/articulated-dolphin-91/images/stl_preview.png",
+        "badges": {
+          "estado": "Listo",
+          "tipo": "Funcional",
+          "piezas": "1 piezas"
+        },
+        "progreso": {
+          "porcentaje": 100,
+          "mensaje": "Listo para imprimir"
+        },
+        "archivos": [
+          {
+            "nombre": "Dolphin_v2.stl",
+            "tipo": "STL",
+            "tamano": "7661.70 KB"
+          }
+        ],
+        "estadisticas": {
+          "tiempo_estimado": "2-4 horas",
+          "filamento_estimado": "50-100g",
+          "complejidad": "Media"
+        },
+        "aiAnalysis": {
+          "tiempo_estimado": "3 horas",
+          "filamento_total": "75g",
+          "costo_estimado": "$2.50",
+          "recomendaciones": [
+            "Usar soporte en voladizos",
+            "Temperatura de cama: 60°C"
+          ]
+        }
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-14T04:29:33.270356",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Dolphin_v2.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T04:29:33.270379"
+      },
+      "updated_at": "2025-10-14T04:29:55.461014",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T04:29:36.568022"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "economy",
+        "settings": {
+          "layer_height": 0.2,
+          "infill_density": 10,
+          "print_speed": 60,
+          "quality_preset": "normal"
+        },
+        "estimated_impact": {
+          "time_factor": 1.0,
+          "quality_level": "estándar",
+          "material_usage": "optimizado"
+        },
+        "completed_at": "2025-10-14T04:29:41.023803"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T04:29:44.677942"
+      },
+      "stl_processing": {
+        "task_id": "task_9be6b2b2-e24e-4503-af2a-1f0f67a635e9",
+        "successful": [
+          {
+            "filename": "Dolphin_v2.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/wizard_1760416168136_otk5r30op/gcode_wizard_1760416168136_otk5r30op_Dolphin_v2.gcode",
+            "gcode_size": 7267630,
+            "error": null,
+            "processing_time_seconds": 2.6122190952301025
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-14T04:29:55.457078"
+      }
+    },
+    "wizard_1760416318221_7ycrlh2a2": {
+      "project_id": "5",
+      "project_data": {
+        "id": 5,
+        "nombre": "Aquarium Guard Tower by J_Tonkin",
+        "descripcion": "",
+        "autor": "Usuario",
+        "fecha_creacion": "2025-10-13",
+        "estado": "listo",
+        "favorito": false,
+        "carpeta": "src/proyect/Aquarium Guard Tower by J_Tonkin - 5",
+        "imagen": "/api/gallery/projects/aquarium-guard-tower-by-j_tonkin-5/images/IMG_20180613_215655.jpg",
+        "badges": {
+          "estado": "Listo",
+          "tipo": "Funcional",
+          "piezas": "4 piezas",
+          "origen": "Thingiverse"
+        },
+        "progreso": {
+          "porcentaje": 100,
+          "mensaje": "Listo para imprimir"
+        },
+        "archivos": [
+          {
+            "nombre": "UpperFloor.stl",
+            "tipo": "STL",
+            "tamano": "382.11 KB"
+          },
+          {
+            "nombre": "Body.stl",
+            "tipo": "STL",
+            "tamano": "1952.43 KB"
+          },
+          {
+            "nombre": "Columns.stl",
+            "tipo": "STL",
+            "tamano": "1591.49 KB"
+          },
+          {
+            "nombre": "Roof.stl",
+            "tipo": "STL",
+            "tamano": "15451.45 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.09 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.12 KB"
+          }
+        ],
+        "estadisticas": {
+          "tiempo_estimado": "2-4 horas",
+          "filamento_estimado": "50-100g",
+          "complejidad": "Media"
+        },
+        "aiAnalysis": {
+          "tiempo_estimado": "3 horas",
+          "filamento_total": "75g",
+          "costo_estimado": "$2.50",
+          "recomendaciones": [
+            "Usar soporte en voladizos",
+            "Temperatura de cama: 60°C"
+          ]
+        }
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-14T04:32:02.367223",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Body.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T04:32:02.367268"
+      },
+      "updated_at": "2025-10-14T04:32:20.471236",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T04:32:05.503298"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-14T04:32:09.588121"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T04:32:12.526562"
+      },
+      "stl_processing": {
+        "task_id": "task_aec9ccfa-2337-4a4d-a136-64ac444b4a36",
+        "successful": [],
+        "failed": [
+          {
+            "filename": "Body.stl",
+            "success": false,
+            "rotated": false,
+            "rotation_info": {
+              "applied": false,
+              "degrees": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "improvement": 0.0,
+              "contact_area": 0.0,
+              "original_area": 0.0
+            },
+            "gcode_path": null,
+            "gcode_size": null,
+            "error": "Error laminando archivo: Laminado falló después de 3 intentos: APISLICER HTTP 500: {\"detail\":\"\"}",
+            "processing_time_seconds": null
+          }
+        ],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 0,
+          "failed": 1
+        },
+        "completed_at": "2025-10-14T04:32:20.467437"
+      }
+    },
+    "wizard_1760416459757_0ln8e906o": {
+      "project_id": "17",
+      "project_data": {
+        "id": 17,
+        "nombre": "Articulated mouse by Olgigi",
+        "descripcion": "",
+        "autor": "Usuario",
+        "fecha_creacion": "2025-10-13",
+        "estado": "listo",
+        "favorito": false,
+        "carpeta": "src/proyect/Articulated mouse by Olgigi - 17",
+        "imagen": "/api/gallery/projects/articulated-mouse-by-olgigi-17/images/photo_2022-03-01_14.06.54.jpeg",
+        "badges": {
+          "estado": "Listo",
+          "tipo": "Funcional",
+          "piezas": "1 piezas",
+          "origen": "Thingiverse"
+        },
+        "progreso": {
+          "porcentaje": 100,
+          "mensaje": "Listo para imprimir"
+        },
+        "archivos": [
+          {
+            "nombre": "Articulated_mouse.stl",
+            "tipo": "STL",
+            "tamano": "1056.92 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.08 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.13 KB"
+          }
+        ],
+        "estadisticas": {
+          "tiempo_estimado": "2-4 horas",
+          "filamento_estimado": "50-100g",
+          "complejidad": "Media"
+        },
+        "aiAnalysis": {
+          "tiempo_estimado": "3 horas",
+          "filamento_total": "75g",
+          "costo_estimado": "$2.50",
+          "recomendaciones": [
+            "Usar soporte en voladizos",
+            "Temperatura de cama: 60°C"
+          ]
+        }
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-14T04:34:23.368109",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Articulated_mouse.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T04:34:23.368139"
+      },
+      "updated_at": "2025-10-14T04:34:46.284541",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T04:34:29.975702"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-14T04:34:34.116970"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T04:34:39.174787"
+      },
+      "stl_processing": {
+        "task_id": "task_e298c93a-d772-4ab7-b0bc-70e5e801f1dd",
+        "successful": [
+          {
+            "filename": "Articulated_mouse.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": {
+              "applied": false,
+              "degrees": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "improvement": 0.0,
+              "contact_area": 0.0,
+              "original_area": 0.0
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1760416459757_0ln8e906o/gcode_wizard_1760416459757_0ln8e906o_Articulated_mouse.gcode",
+            "gcode_size": 4225802,
+            "error": null,
+            "processing_time_seconds": 1.1533687114715576
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-14T04:34:46.279339"
+      }
+    },
+    "wizard_1760416728261_k8qdjkxpb": {
+      "project_id": "17",
+      "project_data": {
+        "id": 17,
+        "nombre": "Articulated mouse by Olgigi",
+        "descripcion": "",
+        "autor": "Usuario",
+        "fecha_creacion": "2025-10-13",
+        "estado": "listo",
+        "favorito": false,
+        "carpeta": "src/proyect/Articulated mouse by Olgigi - 17",
+        "imagen": "/api/gallery/projects/articulated-mouse-by-olgigi-17/images/photo_2022-03-01_14.06.54.jpeg",
+        "badges": {
+          "estado": "Listo",
+          "tipo": "Funcional",
+          "piezas": "1 piezas",
+          "origen": "Thingiverse"
+        },
+        "progreso": {
+          "porcentaje": 100,
+          "mensaje": "Listo para imprimir"
+        },
+        "archivos": [
+          {
+            "nombre": "Articulated_mouse.stl",
+            "tipo": "STL",
+            "tamano": "1056.92 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.08 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.13 KB"
+          }
+        ],
+        "estadisticas": {
+          "tiempo_estimado": "2-4 horas",
+          "filamento_estimado": "50-100g",
+          "complejidad": "Media"
+        },
+        "aiAnalysis": {
+          "tiempo_estimado": "3 horas",
+          "filamento_total": "75g",
+          "costo_estimado": "$2.50",
+          "recomendaciones": [
+            "Usar soporte en voladizos",
+            "Temperatura de cama: 60°C"
+          ]
+        }
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-14T04:38:53.450157",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Articulated_mouse.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T04:38:53.450183"
+      },
+      "updated_at": "2025-10-14T04:39:14.981503",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T04:38:56.646014"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-14T04:39:00.557742"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T04:39:04.314161"
+      },
+      "stl_processing": {
+        "task_id": "task_4c3f5470-04c6-474b-98d6-9897c5ece226",
+        "successful": [
+          {
+            "filename": "Articulated_mouse.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/wizard_1760416728261_k8qdjkxpb/gcode_wizard_1760416728261_k8qdjkxpb_Articulated_mouse.gcode",
+            "gcode_size": 4225846,
+            "error": null,
+            "processing_time_seconds": 1.1497278213500977
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-14T04:39:14.977903"
+      }
     }
   },
   "metadata": {

@@ -822,7 +822,8 @@ async function confirmPieceSelection(projectId, selectedPieces, selectAll, autoP
             body: JSON.stringify({
                 project_id: projectId,
                 selected_pieces: selectedPieces,
-                select_all: selectAll
+                select_all: selectAll,
+                session_id: currentWizardSessionId  // Enviar session_id si existe
             })
         });
         
@@ -2058,8 +2059,19 @@ async function loadValidationStep() {
     }, 100);
     
     // Cargar reporte de validación usando la sesión actual
-    const response = await fetch(`/api/print/validation-report/${currentWizardSessionId}`);
+    // 🔧 Agregar timestamp para evitar caché del navegador
+    console.log('🔍 VALIDATION - Enviando session_id:', currentWizardSessionId);
+    const cacheBuster = Date.now();
+    const response = await fetch(`/api/print/validation-report/${currentWizardSessionId}?t=${cacheBuster}`, {
+        cache: 'no-store',
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+        }
+    });
     const data = await response.json();
+    
+    console.log('🔍 VALIDATION - Respuesta:', data);
     
     if (!data.success) {
         throw new Error(data.message || 'Error cargando validación');
@@ -2067,11 +2079,20 @@ async function loadValidationStep() {
     
     const validation = data.validation;
     
+    console.log('📊 VALIDATION DATA:', validation);
+    console.log('📝 Proyecto en validación:', validation.project_info);
+    
     return `
         <div class="space-y-6">
             <div class="text-center">
                 <h3 class="text-2xl font-bold text-gray-900 mb-2">✅ Validación Final</h3>
                 <p class="text-gray-600">Revisión del plan de impresión antes de ejecutar</p>
+                <!-- 🆕 Mostrar nombre del proyecto -->
+                <div class="mt-3 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+                    <p class="text-sm text-gray-600">Proyecto:</p>
+                    <p class="text-lg font-bold text-gray-900">${validation.project_info.name}</p>
+                    <p class="text-xs text-gray-500">${validation.project_info.selected_pieces} de ${validation.project_info.total_pieces} piezas seleccionadas</p>
+                </div>
             </div>
             
             <!-- Resumen del trabajo -->
@@ -3417,6 +3438,27 @@ async function generatePrinterStatusHTML() {
 }
 
 async function loadConfirmationStep() {
+    // 🔍 Cargar datos de validación para obtener información del proyecto
+    console.log('🔍 CONFIRMATION - Cargando datos de validación para session:', currentWizardSessionId);
+    const cacheBuster = Date.now();
+    const validationResponse = await fetch(`/api/print/validation-report/${currentWizardSessionId}?t=${cacheBuster}`, {
+        cache: 'no-store',
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+        }
+    });
+    const validationData = await validationResponse.json();
+    
+    console.log('📊 CONFIRMATION - Datos de validación recibidos:', validationData);
+    
+    if (!validationData.success) {
+        throw new Error('No se pudieron cargar los datos de validación');
+    }
+    
+    const validation = validationData.validation;
+    console.log('📝 CONFIRMATION - Proyecto:', validation.project_info.name);
+    
     // Actualizar botones de acción con retry mechanism
     const updateActionButtons = () => {
         const actionsContainer = document.getElementById('wizard-actions');
@@ -3461,16 +3503,16 @@ async function loadConfirmationStep() {
                 <h4 class="font-bold text-gray-900 mb-4 text-center">📋 Resumen de Impresión</h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div class="space-y-2">
-                        <div><strong>Proyecto:</strong> ATX Power Supply</div>
-                        <div><strong>Piezas:</strong> 8 de 9 archivos</div>
-                        <div><strong>Material:</strong> PLA Blanco (eSUN)</div>
-                        <div><strong>Impresora:</strong> ${selectedPrinterData?.printer_id || 'No seleccionada'}</div>
+                        <div><strong>Proyecto:</strong> ${validation.project_info.name}</div>
+                        <div><strong>Piezas:</strong> ${validation.project_info.selected_pieces} de ${validation.project_info.total_pieces} seleccionadas</div>
+                        <div><strong>Material:</strong> ${validation.material_info.type} ${validation.material_info.color} (${validation.material_info.brand})</div>
+                        <div><strong>Impresora:</strong> ${validation.printer_info.id}</div>
                     </div>
                     <div class="space-y-2">
-                        <div><strong>Tiempo estimado:</strong> 6.5 horas</div>
-                        <div><strong>Filamento:</strong> 110.7g</div>
-                        <div><strong>Costo:</strong> €2.77</div>
-                        <div><strong>Modo:</strong> Prototipo (Velocidad)</div>
+                        <div><strong>Tiempo estimado:</strong> ${validation.processing_summary.total_estimated_time_hours}h</div>
+                        <div><strong>Filamento:</strong> ${validation.processing_summary.total_filament_grams}g</div>
+                        <div><strong>Costo:</strong> €${validation.processing_summary.estimated_cost}</div>
+                        <div><strong>Modo:</strong> ${validation.production_config.mode === 'prototype' ? '🔬 Prototipo' : '🏭 Producción'} (${validation.production_config.priority === 'speed' ? 'Velocidad' : validation.production_config.priority === 'quality' ? 'Calidad' : validation.production_config.priority === 'economy' ? 'Economía' : 'Consistencia'})</div>
                     </div>
                 </div>
             </div>
@@ -3503,7 +3545,12 @@ async function loadConfirmationStep() {
                 <div class="text-center">
                     <div class="text-sm text-gray-600 mb-2">Si confirmas ahora:</div>
                     <div class="text-lg font-bold text-blue-600">Inicio estimado: Inmediato</div>
-                    <div class="text-sm text-gray-600">Finalización estimada: Hoy 18:30</div>
+                    <div class="text-sm text-gray-600">Finalización estimada: ${(() => {
+                        const now = new Date();
+                        const hours = validation.processing_summary.total_estimated_time_hours;
+                        const finishTime = new Date(now.getTime() + hours * 60 * 60 * 1000);
+                        return finishTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                    })()}</div>
                 </div>
             </div>
         </div>
