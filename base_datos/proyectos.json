@@ -1,7 +1,7 @@
 {
   "estadisticas": {
-    "total_proyectos": 75,
-    "total_stls": 479,
+    "total_proyectos": 71,
+    "total_stls": 508,
     "completados": 63,
     "en_progreso": 0,
     "tasa_exito": 67.7
@@ -4385,127 +4385,6 @@
       "progreso": 100,
       "badge": "Thingiverse",
       "imagen": "/api/gallery/projects/ender-3-bed-level-by-sahansudeepa-89/images/Bed_Levelling_Ender_3.png"
-    },
-    {
-      "id": 90,
-      "nombre": "Control Tower by Pablo065",
-      "descripcion": "Proyecto importado desde Control Tower - 4822144.zip",
-      "categoria": "general",
-      "archivos": [
-        {
-          "nombre": "torre_de_control.stl",
-          "tipo": "STL",
-          "tamano": "36666.88 KB"
-        },
-        {
-          "nombre": "README.txt",
-          "tipo": "Archivo",
-          "tamano": "0.08 KB"
-        },
-        {
-          "nombre": "LICENSE.txt",
-          "tipo": "Archivo",
-          "tamano": "0.12 KB"
-        }
-      ],
-      "imagenes": [
-        "torre_de_control.png"
-      ],
-      "fecha_creacion": "2025-10-13",
-      "estado": "completado",
-      "progreso": 100,
-      "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/control-tower-by-pablo065-90/images/torre_de_control.png"
-    },
-    {
-      "id": 91,
-      "nombre": "strong-corner-bracket-model_files",
-      "descripcion": "Proyecto importado desde strong-corner-bracket-model_files.zip",
-      "categoria": "general",
-      "archivos": [
-        {
-          "nombre": "cornerbracket_m3.stl",
-          "tipo": "STL",
-          "tamano": "1096.76 KB"
-        },
-        {
-          "nombre": "1365078-strong-corner-bracket-3e7fa179-a9bb-46aa-a5a3-97047c98f420.pdf",
-          "tipo": "PDF",
-          "tamano": "395.85 KB"
-        }
-      ],
-      "imagenes": [
-        "pdf_preview_page1.png"
-      ],
-      "fecha_creacion": "2025-10-13",
-      "estado": "completado",
-      "progreso": 100,
-      "imagen": "/api/gallery/projects/strong-corner-bracket-model_files-91/images/pdf_preview_page1.png"
-    },
-    {
-      "id": 92,
-      "nombre": "strong-corner-bracket-print_files",
-      "descripcion": "Proyecto importado desde strong-corner-bracket-print_files.zip",
-      "categoria": "general",
-      "archivos": [
-        {
-          "nombre": "1365078-strong-corner-bracket-3e7fa179-a9bb-46aa-a5a3-97047c98f420.pdf",
-          "tipo": "PDF",
-          "tamano": "395.85 KB"
-        }
-      ],
-      "imagenes": [
-        "pdf_preview_page1.png"
-      ],
-      "fecha_creacion": "2025-10-13",
-      "estado": "sin_archivos",
-      "progreso": 0,
-      "imagen": "/api/gallery/projects/strong-corner-bracket-print_files-92/images/pdf_preview_page1.png"
-    },
-    {
-      "id": 93,
-      "nombre": "spacex-starship-s25-model_files",
-      "descripcion": "Proyecto importado desde spacex-starship-s25-model_files.zip",
-      "categoria": "general",
-      "archivos": [
-        {
-          "nombre": "complete-s25.3mf",
-          "tipo": "3MF",
-          "tamano": "1009.05 KB"
-        },
-        {
-          "nombre": "flap-inserts-s25.3mf",
-          "tipo": "3MF",
-          "tamano": "56.85 KB"
-        },
-        {
-          "nombre": "heat-tiles-engines-s25.3mf",
-          "tipo": "3MF",
-          "tamano": "366.35 KB"
-        },
-        {
-          "nombre": "Main Body (S25) (WITH SUPPORT BLOCKER).3mf",
-          "tipo": "3MF",
-          "tamano": "651.63 KB"
-        },
-        {
-          "nombre": "main-body-s25-support-blocker-removed.3mf",
-          "tipo": "3MF",
-          "tamano": "638.52 KB"
-        },
-        {
-          "nombre": "739436-spacex-starship-s25-b33cef8d-6505-4971-8e1d-1628af3130e9.pdf",
-          "tipo": "PDF",
-          "tamano": "95.55 KB"
-        }
-      ],
-      "imagenes": [
-        "pdf_page1_img1.jpg"
-      ],
-      "fecha_creacion": "2025-10-13",
-      "estado": "completado",
-      "progreso": 100,
-      "imagen": "/api/gallery/projects/spacex-starship-s25-model_files-93/images/pdf_page1_img1.jpg"
     }
   ]
 }

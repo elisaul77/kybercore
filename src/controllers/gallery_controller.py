@@ -240,17 +240,40 @@ async def duplicate_project(project_id: int):
 
 @router.post("/projects/{project_id}/delete")
 async def delete_project(project_id: int):
-    """Elimina un proyecto del JSON (simulación)."""
+    """Elimina un proyecto del JSON y su carpeta física."""
     data = load_projects_data()
     idx = next((i for i, p in enumerate(data['proyectos']) if p.get('id') == project_id), None)
     if idx is None:
         raise HTTPException(status_code=404, detail="Proyecto no encontrado")
 
     removed = data['proyectos'].pop(idx)
+    
+    # Construir ruta de la carpeta física usando el mismo patrón que al crear
+    project_name = removed.get('nombre', 'Unknown')
+    project_folder = Path(f"src/proyect/{project_name} - {project_id}")
+    
+    # Eliminar carpeta física del proyecto
+    if project_folder.exists():
+        try:
+            shutil.rmtree(project_folder)
+            logger.info(f"✅ Carpeta eliminada: {project_folder}")
+        except Exception as e:
+            logger.error(f"❌ Error eliminando carpeta {project_folder}: {e}")
+            # Continuar con la eliminación del JSON aunque falle la carpeta
+    else:
+        logger.warning(f"⚠️ Carpeta no encontrada (ya eliminada?): {project_folder}")
+    
+    # Actualizar estadísticas recalculando STLs totales
+    total_stls = sum(len(p.get('archivos', [])) for p in data['proyectos'])
     data['estadisticas']['total_proyectos'] = len(data['proyectos'])
+    data['estadisticas']['total_stls'] = total_stls
 
     if save_projects_data(data):
-        return {"message": "Proyecto eliminado", "removed": removed}
+        return {
+            "message": "Proyecto eliminado completamente", 
+            "removed": removed,
+            "folder_deleted": not project_folder.exists()
+        }
     else:
         raise HTTPException(status_code=500, detail="Error al eliminar proyecto")
 
