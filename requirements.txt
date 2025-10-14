@@ -24,7 +24,7 @@ scikit-learn==1.5.2   # Machine Learning (DBSCAN clustering, PCA)
 
 # 📄 PDF Processing Dependencies
 PyPDF2==3.0.1         # Extracción de contenido de PDFs
-Pillow==10.4.0        # Procesamiento de imágenes extraídas de PDFs
+Pillow==11.3.0        # Procesamiento de imágenes extraídas de PDFs
 pdf2image==1.17.0     # Conversión de páginas PDF a imágenes (requiere poppler-utils)
 
 # 🎨 STL Rendering Dependencies
