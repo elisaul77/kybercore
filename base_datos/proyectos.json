@@ -1,78 +1,12 @@
 {
   "estadisticas": {
-    "total_proyectos": 71,
-    "total_stls": 508,
-    "completados": 63,
+    "total_proyectos": 90,
+    "total_stls": 718,
+    "completados": 87,
     "en_progreso": 0,
-    "tasa_exito": 67.7
+    "tasa_exito": 90.6
   },
   "proyectos": [
-    {
-      "id": 1,
-      "nombre": "star ship",
-      "descripcion": "jh",
-      "autor": "Usuario",
-      "fecha_creacion": "2025-10-06",
-      "estado": "listo",
-      "favorito": false,
-      "carpeta": "src/proyect/star ship - 1",
-      "imagen": "/api/gallery/projects/star-ship-1/images/pdf_page1_img1.jpg",
-      "badges": {
-        "estado": "Listo",
-        "tipo": "Prototipo",
-        "piezas": "5 piezas"
-      },
-      "progreso": {
-        "porcentaje": 100,
-        "mensaje": "Listo para imprimir"
-      },
-      "archivos": [
-        {
-          "nombre": "complete-s25.3mf",
-          "tipo": "3MF",
-          "tamano": "1009.05 KB"
-        },
-        {
-          "nombre": "flap-inserts-s25.3mf",
-          "tipo": "3MF",
-          "tamano": "56.85 KB"
-        },
-        {
-          "nombre": "heat-tiles-engines-s25.3mf",
-          "tipo": "3MF",
-          "tamano": "366.35 KB"
-        },
-        {
-          "nombre": "Main Body (S25) (WITH SUPPORT BLOCKER).3mf",
-          "tipo": "3MF",
-          "tamano": "651.63 KB"
-        },
-        {
-          "nombre": "main-body-s25-support-blocker-removed.3mf",
-          "tipo": "3MF",
-          "tamano": "638.52 KB"
-        },
-        {
-          "nombre": "739436-spacex-starship-s25-b33cef8d-6505-4971-8e1d-1628af3130e9.pdf",
-          "tipo": "PDF",
-          "tamano": "95.55 KB"
-        }
-      ],
-      "estadisticas": {
-        "tiempo_estimado": "2-4 horas",
-        "filamento_estimado": "50-100g",
-        "complejidad": "Media"
-      },
-      "aiAnalysis": {
-        "tiempo_estimado": "3 horas",
-        "filamento_total": "75g",
-        "costo_estimado": "$2.50",
-        "recomendaciones": [
-          "Usar soporte en voladizos",
-          "Temperatura de cama: 60°C"
-        ]
-      }
-    },
     {
       "id": 2,
       "nombre": "Parafuso manopla M14 by natanspricigo",
@@ -1400,73 +1334,6 @@
           "nombre": "README.txt",
           "tipo": "Archivo",
           "tamano": "0.08 KB"
-        },
-        {
-          "nombre": "LICENSE.txt",
-          "tipo": "Archivo",
-          "tamano": "0.12 KB"
-        }
-      ],
-      "estadisticas": {
-        "tiempo_estimado": "2-4 horas",
-        "filamento_estimado": "50-100g",
-        "complejidad": "Media"
-      },
-      "aiAnalysis": {
-        "tiempo_estimado": "3 horas",
-        "filamento_total": "75g",
-        "costo_estimado": "$2.50",
-        "recomendaciones": [
-          "Usar soporte en voladizos",
-          "Temperatura de cama: 60°C"
-        ]
-      }
-    },
-    {
-      "id": 27,
-      "nombre": "Creality Ender 3 / Pro / V2 - Part & Hotend Cooling Upgrade Kit by cdsmakestuff",
-      "descripcion": "",
-      "autor": "Usuario",
-      "fecha_creacion": "2025-10-13",
-      "estado": "listo",
-      "favorito": false,
-      "carpeta": "src/proyect/Creality Ender 3 / Pro / V2 - Part & Hotend Cooling Upgrade Kit by cdsmakestuff - 27",
-      "imagen": "/api/gallery/projects/creality-ender-3-/-pro-/-v2---part-&-hotend-cooling-upgrade-kit-by-cdsmakestuff-27/images/IMG_20200826_112711.jpg",
-      "badges": {
-        "estado": "Listo",
-        "tipo": "Funcional",
-        "piezas": "4 piezas",
-        "origen": "Thingiverse"
-      },
-      "progreso": {
-        "porcentaje": 100,
-        "mensaje": "Listo para imprimir"
-      },
-      "archivos": [
-        {
-          "nombre": "CE3_40mm_Fan_Cover.stl",
-          "tipo": "STL",
-          "tamano": "410.43 KB"
-        },
-        {
-          "nombre": "CE3_40mm_Fan_Shroud.stl",
-          "tipo": "STL",
-          "tamano": "211.31 KB"
-        },
-        {
-          "nombre": "CE3_Part_Cooling_Duct.stl",
-          "tipo": "STL",
-          "tamano": "99.11 KB"
-        },
-        {
-          "nombre": "CE3_Cooling_Fan_Bracket.stl",
-          "tipo": "STL",
-          "tamano": "335.43 KB"
-        },
-        {
-          "nombre": "README.txt",
-          "tipo": "Archivo",
-          "tamano": "0.13 KB"
         },
         {
           "nombre": "LICENSE.txt",
@@ -4128,7 +3995,8 @@
       "imagenes": [],
       "fecha_creacion": "2025-10-13",
       "estado": "completado",
-      "progreso": 100
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/articulated-onix20211216-32020-lihkh6-80/images/stl_preview.png"
     },
     {
       "id": 83,
@@ -4385,6 +4253,1456 @@
       "progreso": 100,
       "badge": "Thingiverse",
       "imagen": "/api/gallery/projects/ender-3-bed-level-by-sahansudeepa-89/images/Bed_Levelling_Ender_3.png"
+    },
+    {
+      "id": 91,
+      "nombre": "Articulated Dolphin",
+      "descripcion": "",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-14",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/Articulated Dolphin - 91",
+      "imagen": "/api/gallery/projects/articulated-dolphin-91/images/stl_preview.png",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Funcional",
+        "piezas": "1 piezas"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "Dolphin_v2.stl",
+          "tipo": "STL",
+          "tamano": "7661.70 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
+    },
+    {
+      "id": 92,
+      "nombre": "filament-cleaner-model_files",
+      "descripcion": "Proyecto importado desde filament-cleaner-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "corpo1.stl",
+          "tipo": "STL",
+          "tamano": "1001.84 KB"
+        },
+        {
+          "nombre": "corpo2.stl",
+          "tipo": "STL",
+          "tamano": "1032.80 KB"
+        },
+        {
+          "nombre": "corpo3.stl",
+          "tipo": "STL",
+          "tamano": "1043.34 KB"
+        },
+        {
+          "nombre": "828933-filament-cleaner-8594ee6e-28bc-466a-a3fc-68b2b9a06460.pdf",
+          "tipo": "PDF",
+          "tamano": "101.64 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_page1_img1.jpg",
+        "pdf_page2_img2.jpg"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/filament-cleaner-model_files-92/images/pdf_page1_img1.jpg"
+    },
+    {
+      "id": 93,
+      "nombre": "pokeball-model_files",
+      "descripcion": "Proyecto importado desde pokeball-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "centerbutton.3mf",
+          "tipo": "3MF",
+          "tamano": "32.42 KB"
+        },
+        {
+          "nombre": "hingedcore.3mf",
+          "tipo": "3MF",
+          "tamano": "371.16 KB"
+        },
+        {
+          "nombre": "bottomcap.3mf",
+          "tipo": "3MF",
+          "tamano": "382.90 KB"
+        },
+        {
+          "nombre": "topcap.3mf",
+          "tipo": "3MF",
+          "tamano": "383.39 KB"
+        },
+        {
+          "nombre": "pokeball-slicer-project.3mf",
+          "tipo": "3MF",
+          "tamano": "852.50 KB"
+        },
+        {
+          "nombre": "710632-pokeball-fd5a4b69-7ad2-4496-bf79-caf879bb0918.pdf",
+          "tipo": "PDF",
+          "tamano": "232.69 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_page1_img1.jpg",
+        "pdf_page2_img2.jpg"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/pokeball-model_files-93/images/pdf_page1_img1.jpg"
+    },
+    {
+      "id": 95,
+      "nombre": "collapsing-sword-collapsing-sword-model_files",
+      "descripcion": "Proyecto importado desde collapsing-sword-collapsing-sword-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "2nd Smallest Ring.stl",
+          "tipo": "STL",
+          "tamano": "162.78 KB"
+        },
+        {
+          "nombre": "2nd Biggest Ring.stl",
+          "tipo": "STL",
+          "tamano": "165.41 KB"
+        },
+        {
+          "nombre": "Biggest Ring.stl",
+          "tipo": "STL",
+          "tamano": "166.68 KB"
+        },
+        {
+          "nombre": "Middle Ring.stl",
+          "tipo": "STL",
+          "tamano": "161.70 KB"
+        },
+        {
+          "nombre": "Secure Screw.stl",
+          "tipo": "STL",
+          "tamano": "1301.74 KB"
+        },
+        {
+          "nombre": "Round tip.stl",
+          "tipo": "STL",
+          "tamano": "182.21 KB"
+        },
+        {
+          "nombre": "Spiky Tip.stl",
+          "tipo": "STL",
+          "tamano": "123.62 KB"
+        },
+        {
+          "nombre": "Handle.stl",
+          "tipo": "STL",
+          "tamano": "12457.70 KB"
+        },
+        {
+          "nombre": "674646-collapsing-sword-collapsing-sword-43be4fff-87d9-4bbb-a3a1-4d239e6ff109.pdf",
+          "tipo": "PDF",
+          "tamano": "528.88 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_page1_img1.jpg"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/collapsing-sword-collapsing-sword-model_files-95/images/pdf_page1_img1.jpg"
+    },
+    {
+      "id": 96,
+      "nombre": "snowflake-christmas-tree-v2-schneeflocken-weihnachtsbaum-v2-model_files",
+      "descripcion": "Proyecto importado desde snowflake-christmas-tree-v2-schneeflocken-weihnachtsbaum-v2-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "layer01.stl",
+          "tipo": "STL",
+          "tamano": "462.48 KB"
+        },
+        {
+          "nombre": "layer02.stl",
+          "tipo": "STL",
+          "tamano": "462.48 KB"
+        },
+        {
+          "nombre": "layer03.stl",
+          "tipo": "STL",
+          "tamano": "462.48 KB"
+        },
+        {
+          "nombre": "layer04.stl",
+          "tipo": "STL",
+          "tamano": "461.31 KB"
+        },
+        {
+          "nombre": "layer05.stl",
+          "tipo": "STL",
+          "tamano": "461.31 KB"
+        },
+        {
+          "nombre": "layer06.stl",
+          "tipo": "STL",
+          "tamano": "461.31 KB"
+        },
+        {
+          "nombre": "layer07.stl",
+          "tipo": "STL",
+          "tamano": "461.31 KB"
+        },
+        {
+          "nombre": "layer08.stl",
+          "tipo": "STL",
+          "tamano": "461.31 KB"
+        },
+        {
+          "nombre": "layer09.stl",
+          "tipo": "STL",
+          "tamano": "460.14 KB"
+        },
+        {
+          "nombre": "layer10.stl",
+          "tipo": "STL",
+          "tamano": "460.14 KB"
+        },
+        {
+          "nombre": "layer11.stl",
+          "tipo": "STL",
+          "tamano": "462.48 KB"
+        },
+        {
+          "nombre": "layer12.stl",
+          "tipo": "STL",
+          "tamano": "464.83 KB"
+        },
+        {
+          "nombre": "layer13.stl",
+          "tipo": "STL",
+          "tamano": "467.17 KB"
+        },
+        {
+          "nombre": "layer14.stl",
+          "tipo": "STL",
+          "tamano": "469.52 KB"
+        },
+        {
+          "nombre": "layer15.stl",
+          "tipo": "STL",
+          "tamano": "451.25 KB"
+        },
+        {
+          "nombre": "foot.stl",
+          "tipo": "STL",
+          "tamano": "508.29 KB"
+        },
+        {
+          "nombre": "star.stl",
+          "tipo": "STL",
+          "tamano": "605.06 KB"
+        },
+        {
+          "nombre": "layer04.stl",
+          "tipo": "STL",
+          "tamano": "338.46 KB"
+        },
+        {
+          "nombre": "layer09.stl",
+          "tipo": "STL",
+          "tamano": "337.29 KB"
+        },
+        {
+          "nombre": "layer03.stl",
+          "tipo": "STL",
+          "tamano": "339.63 KB"
+        },
+        {
+          "nombre": "layer12.stl",
+          "tipo": "STL",
+          "tamano": "341.98 KB"
+        },
+        {
+          "nombre": "layer15.stl",
+          "tipo": "STL",
+          "tamano": "333.87 KB"
+        },
+        {
+          "nombre": "layer05.stl",
+          "tipo": "STL",
+          "tamano": "338.46 KB"
+        },
+        {
+          "nombre": "foot.stl",
+          "tipo": "STL",
+          "tamano": "508.29 KB"
+        },
+        {
+          "nombre": "layer10.stl",
+          "tipo": "STL",
+          "tamano": "337.29 KB"
+        },
+        {
+          "nombre": "layer13.stl",
+          "tipo": "STL",
+          "tamano": "344.32 KB"
+        },
+        {
+          "nombre": "layer02.stl",
+          "tipo": "STL",
+          "tamano": "339.63 KB"
+        },
+        {
+          "nombre": "layer07.stl",
+          "tipo": "STL",
+          "tamano": "338.46 KB"
+        },
+        {
+          "nombre": "layer11.stl",
+          "tipo": "STL",
+          "tamano": "339.63 KB"
+        },
+        {
+          "nombre": "layer06.stl",
+          "tipo": "STL",
+          "tamano": "338.46 KB"
+        },
+        {
+          "nombre": "layer08.stl",
+          "tipo": "STL",
+          "tamano": "338.46 KB"
+        },
+        {
+          "nombre": "layer14.stl",
+          "tipo": "STL",
+          "tamano": "346.66 KB"
+        },
+        {
+          "nombre": "layer01.stl",
+          "tipo": "STL",
+          "tamano": "339.63 KB"
+        },
+        {
+          "nombre": "star.stl",
+          "tipo": "STL",
+          "tamano": "693.25 KB"
+        },
+        {
+          "nombre": "1061526-snowflake-christmas-tree-v2-schneeflocken-weihnachtsbaum-v2-6f9a3ee2-35a2-4b51-b84b-01522a43b28a.pdf",
+          "tipo": "PDF",
+          "tamano": "536.96 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_preview_page1.png"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/snowflake-christmas-tree-v2-schneeflocken-weihnachtsbaum-v2-model_files-96/images/pdf_preview_page1.png"
+    },
+    {
+      "id": 97,
+      "nombre": "christmas-tags-christmas-ornaments-model_files",
+      "descripcion": "Proyecto importado desde christmas-tags-christmas-ornaments-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "santa.stl",
+          "tipo": "STL",
+          "tamano": "74.01 KB"
+        },
+        {
+          "nombre": "reendeer.stl",
+          "tipo": "STL",
+          "tamano": "54.57 KB"
+        },
+        {
+          "nombre": "lebkuchenmann.stl",
+          "tipo": "STL",
+          "tamano": "239.83 KB"
+        },
+        {
+          "nombre": "snowflake-6.stl",
+          "tipo": "STL",
+          "tamano": "227.62 KB"
+        },
+        {
+          "nombre": "snowflake-2.stl",
+          "tipo": "STL",
+          "tamano": "294.22 KB"
+        },
+        {
+          "nombre": "solo-engel.stl",
+          "tipo": "STL",
+          "tamano": "209.46 KB"
+        },
+        {
+          "nombre": "tag-hook.stl",
+          "tipo": "STL",
+          "tamano": "48.52 KB"
+        },
+        {
+          "nombre": "bow.stl",
+          "tipo": "STL",
+          "tamano": "88.75 KB"
+        },
+        {
+          "nombre": "bells.stl",
+          "tipo": "STL",
+          "tamano": "135.04 KB"
+        },
+        {
+          "nombre": "snowflake-1.stl",
+          "tipo": "STL",
+          "tamano": "361.02 KB"
+        },
+        {
+          "nombre": "angel-girl.stl",
+          "tipo": "STL",
+          "tamano": "224.79 KB"
+        },
+        {
+          "nombre": "tag-hook.3mf",
+          "tipo": "3MF",
+          "tamano": "360.51 KB"
+        },
+        {
+          "nombre": "bell-2.stl",
+          "tipo": "STL",
+          "tamano": "128.21 KB"
+        },
+        {
+          "nombre": "gnome-2.stl",
+          "tipo": "STL",
+          "tamano": "485.14 KB"
+        },
+        {
+          "nombre": "gnome-7.stl",
+          "tipo": "STL",
+          "tamano": "257.50 KB"
+        },
+        {
+          "nombre": "gnome-6.stl",
+          "tipo": "STL",
+          "tamano": "163.46 KB"
+        },
+        {
+          "nombre": "gnome-4.stl",
+          "tipo": "STL",
+          "tamano": "295.98 KB"
+        },
+        {
+          "nombre": "angel-wings.stl",
+          "tipo": "STL",
+          "tamano": "128.89 KB"
+        },
+        {
+          "nombre": "tree.stl",
+          "tipo": "STL",
+          "tamano": "253.30 KB"
+        },
+        {
+          "nombre": "gnome-3.stl",
+          "tipo": "STL",
+          "tamano": "436.70 KB"
+        },
+        {
+          "nombre": "snowflake-5.stl",
+          "tipo": "STL",
+          "tamano": "170.88 KB"
+        },
+        {
+          "nombre": "gnome-5.stl",
+          "tipo": "STL",
+          "tamano": "177.04 KB"
+        },
+        {
+          "nombre": "snowflake-3.stl",
+          "tipo": "STL",
+          "tamano": "271.47 KB"
+        },
+        {
+          "nombre": "kugel-1.stl",
+          "tipo": "STL",
+          "tamano": "1307.89 KB"
+        },
+        {
+          "nombre": "angel-boy.stl",
+          "tipo": "STL",
+          "tamano": "199.89 KB"
+        },
+        {
+          "nombre": "snowflake-4.stl",
+          "tipo": "STL",
+          "tamano": "257.31 KB"
+        },
+        {
+          "nombre": "elch.stl",
+          "tipo": "STL",
+          "tamano": "291.29 KB"
+        },
+        {
+          "nombre": "gnome-1.stl",
+          "tipo": "STL",
+          "tamano": "560.53 KB"
+        },
+        {
+          "nombre": "kugel-2.stl",
+          "tipo": "STL",
+          "tamano": "208.48 KB"
+        },
+        {
+          "nombre": "holy-familyl.stl",
+          "tipo": "STL",
+          "tamano": "737.29 KB"
+        },
+        {
+          "nombre": "hirsch-in-kugel.stl",
+          "tipo": "STL",
+          "tamano": "1083.48 KB"
+        },
+        {
+          "nombre": "weihnachtsmotive.3mf",
+          "tipo": "3MF",
+          "tamano": "2843.35 KB"
+        },
+        {
+          "nombre": "1069170-christmas-tags-christmas-ornaments-0c8639d0-bf94-4a68-9f7e-81ba539c0bdd.pdf",
+          "tipo": "PDF",
+          "tamano": "830.13 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_preview_page1.png"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/christmas-tags-christmas-ornaments-model_files-97/images/pdf_preview_page1.png"
+    },
+    {
+      "id": 98,
+      "nombre": "strong-corner-bracket-model_files",
+      "descripcion": "Proyecto importado desde strong-corner-bracket-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "cornerbracket_m3.stl",
+          "tipo": "STL",
+          "tamano": "1096.76 KB"
+        },
+        {
+          "nombre": "1365078-strong-corner-bracket-3e7fa179-a9bb-46aa-a5a3-97047c98f420.pdf",
+          "tipo": "PDF",
+          "tamano": "395.85 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_preview_page1.png"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/strong-corner-bracket-model_files-98/images/pdf_preview_page1.png"
+    },
+    {
+      "id": 100,
+      "nombre": "spacex-starship-s25-model_files",
+      "descripcion": "Proyecto importado desde spacex-starship-s25-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "complete-s25.3mf",
+          "tipo": "3MF",
+          "tamano": "1009.05 KB"
+        },
+        {
+          "nombre": "flap-inserts-s25.3mf",
+          "tipo": "3MF",
+          "tamano": "56.85 KB"
+        },
+        {
+          "nombre": "heat-tiles-engines-s25.3mf",
+          "tipo": "3MF",
+          "tamano": "366.35 KB"
+        },
+        {
+          "nombre": "Main Body (S25) (WITH SUPPORT BLOCKER).3mf",
+          "tipo": "3MF",
+          "tamano": "651.63 KB"
+        },
+        {
+          "nombre": "main-body-s25-support-blocker-removed.3mf",
+          "tipo": "3MF",
+          "tamano": "638.52 KB"
+        },
+        {
+          "nombre": "739436-spacex-starship-s25-b33cef8d-6505-4971-8e1d-1628af3130e9.pdf",
+          "tipo": "PDF",
+          "tamano": "95.55 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_page1_img1.jpg"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/spacex-starship-s25-model_files-100/images/pdf_page1_img1.jpg"
+    },
+    {
+      "id": 101,
+      "nombre": "christmas-ornaments-model_files",
+      "descripcion": "Proyecto importado desde christmas-ornaments-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "xmas_ornaments.3mf",
+          "tipo": "3MF",
+          "tamano": "6283.71 KB"
+        },
+        {
+          "nombre": "or_connector.stl",
+          "tipo": "STL",
+          "tamano": "1608.87 KB"
+        },
+        {
+          "nombre": "or1_top.stl",
+          "tipo": "STL",
+          "tamano": "3213.56 KB"
+        },
+        {
+          "nombre": "or1_bottom.stl",
+          "tipo": "STL",
+          "tamano": "3084.07 KB"
+        },
+        {
+          "nombre": "or2_top.stl",
+          "tipo": "STL",
+          "tamano": "3796.37 KB"
+        },
+        {
+          "nombre": "or2_bottom.stl",
+          "tipo": "STL",
+          "tamano": "3855.75 KB"
+        },
+        {
+          "nombre": "or3_top.stl",
+          "tipo": "STL",
+          "tamano": "3025.08 KB"
+        },
+        {
+          "nombre": "or3_bottom.stl",
+          "tipo": "STL",
+          "tamano": "2907.99 KB"
+        },
+        {
+          "nombre": "1080542-christmas-ornaments-3c9300a4-456b-406b-86af-cbb02291d1ad.pdf",
+          "tipo": "PDF",
+          "tamano": "366.90 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_preview_page1.png"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/christmas-ornaments-model_files-101/images/pdf_preview_page1.png"
+    },
+    {
+      "id": 102,
+      "nombre": "ender-3-direct-drive-all-metal-extruder-mount-model_files",
+      "descripcion": "Proyecto importado desde ender-3-direct-drive-all-metal-extruder-mount-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "ender3directdrivemount2.stl",
+          "tipo": "STL",
+          "tamano": "550.38 KB"
+        },
+        {
+          "nombre": "ender3directdrivemount-plate_half2.stl",
+          "tipo": "STL",
+          "tamano": "116.88 KB"
+        },
+        {
+          "nombre": "ender3directdrivemount-motor_half2.stl",
+          "tipo": "STL",
+          "tamano": "433.58 KB"
+        },
+        {
+          "nombre": "endstop.stl",
+          "tipo": "STL",
+          "tamano": "337.97 KB"
+        },
+        {
+          "nombre": "1013542-ender-3-direct-drive-all-metal-extruder-mount-f643c45f-1d73-4318-9667-c7afccba3125.pdf",
+          "tipo": "PDF",
+          "tamano": "102.22 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_page1_img1.jpg"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/ender-3-direct-drive-all-metal-extruder-mount-model_files-102/images/pdf_page1_img1.jpg"
+    },
+    {
+      "id": 103,
+      "nombre": "garden-gnomes-couple-model_files",
+      "descripcion": "Proyecto importado desde garden-gnomes-couple-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "santaclauslantern.3mf",
+          "tipo": "3MF",
+          "tamano": "17908.21 KB"
+        },
+        {
+          "nombre": "santawoman.3mf",
+          "tipo": "3MF",
+          "tamano": "21540.57 KB"
+        },
+        {
+          "nombre": "1027770-garden-gnomes-couple-f5a8ed0b-021d-4a8d-b9b4-908c31272687.pdf",
+          "tipo": "PDF",
+          "tamano": "146.64 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_preview_page1.png"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/garden-gnomes-couple-model_files-103/images/pdf_preview_page1.png"
+    },
+    {
+      "id": 104,
+      "nombre": "simple-honeycomb-mobile-stand-model_files",
+      "descripcion": "Proyecto importado desde simple-honeycomb-mobile-stand-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "stand_1.stl",
+          "tipo": "STL",
+          "tamano": "175.28 KB"
+        },
+        {
+          "nombre": "stand_2.stl",
+          "tipo": "STL",
+          "tamano": "113.56 KB"
+        },
+        {
+          "nombre": "1064086-simple-honeycomb-mobile-stand-89519706-be92-48cb-aea8-227f8e73085d.pdf",
+          "tipo": "PDF",
+          "tamano": "291.23 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_preview_page1.png"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/simple-honeycomb-mobile-stand-model_files-104/images/pdf_preview_page1.png"
+    },
+    {
+      "id": 105,
+      "nombre": "toddler-nativity-set-model_files",
+      "descripcion": "Proyecto importado desde toddler-nativity-set-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Camel Toddler Nativity.stl",
+          "tipo": "STL",
+          "tamano": "731.72 KB"
+        },
+        {
+          "nombre": "CowToddler Nativity.stl",
+          "tipo": "STL",
+          "tamano": "454.67 KB"
+        },
+        {
+          "nombre": "babe Toddler Nativity.stl",
+          "tipo": "STL",
+          "tamano": "1051.06 KB"
+        },
+        {
+          "nombre": "Angel Toddler Nativity.stl",
+          "tipo": "STL",
+          "tamano": "999.11 KB"
+        },
+        {
+          "nombre": "Donkey Toddler Nativity.stl",
+          "tipo": "STL",
+          "tamano": "759.85 KB"
+        },
+        {
+          "nombre": "Joseph Toddler Nativity.stl",
+          "tipo": "STL",
+          "tamano": "479.96 KB"
+        },
+        {
+          "nombre": "King 2 Toddler Nativity.stl",
+          "tipo": "STL",
+          "tamano": "933.87 KB"
+        },
+        {
+          "nombre": "Mary Toddler Nativity.stl",
+          "tipo": "STL",
+          "tamano": "486.70 KB"
+        },
+        {
+          "nombre": "king 1 Toddler Nativity.stl",
+          "tipo": "STL",
+          "tamano": "1469.12 KB"
+        },
+        {
+          "nombre": "king 3 Toddler Nativity.stl",
+          "tipo": "STL",
+          "tamano": "1115.02 KB"
+        },
+        {
+          "nombre": "shepherd Toddler Nativity.stl",
+          "tipo": "STL",
+          "tamano": "525.47 KB"
+        },
+        {
+          "nombre": "Sheep Toddler Nativity.stl",
+          "tipo": "STL",
+          "tamano": "766.29 KB"
+        },
+        {
+          "nombre": "325778-toddler-nativity-set-f2eb5d6f-cc9b-478b-9ca6-f5ef755c3ba8.pdf",
+          "tipo": "PDF",
+          "tamano": "186.93 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_preview_page1.png"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/toddler-nativity-set-model_files-105/images/pdf_preview_page1.png"
+    },
+    {
+      "id": 106,
+      "nombre": "extruder-visualizer-ender-3-v3-se-model_files",
+      "descripcion": "Proyecto importado desde extruder-visualizer-ender-3-v3-se-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "indikatorhjul.stl",
+          "tipo": "STL",
+          "tamano": "371.27 KB"
+        },
+        {
+          "nombre": "drivaxel.stl",
+          "tipo": "STL",
+          "tamano": "123.03 KB"
+        },
+        {
+          "nombre": "faste.stl",
+          "tipo": "STL",
+          "tamano": "79.96 KB"
+        },
+        {
+          "nombre": "756705-extruder-visualizer-ender-3-v3-se-ccd60267-07eb-48ea-bbb6-d30e7395cc83.pdf",
+          "tipo": "PDF",
+          "tamano": "266.66 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_preview_page1.png"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/extruder-visualizer-ender-3-v3-se-model_files-106/images/pdf_preview_page1.png"
+    },
+    {
+      "id": 107,
+      "nombre": "snowflake-christmas-tree-v2-schneeflocken-weihnachtsbaum-v2-model_files",
+      "descripcion": "Proyecto importado desde snowflake-christmas-tree-v2-schneeflocken-weihnachtsbaum-v2-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "layer01.stl",
+          "tipo": "STL",
+          "tamano": "462.48 KB"
+        },
+        {
+          "nombre": "layer02.stl",
+          "tipo": "STL",
+          "tamano": "462.48 KB"
+        },
+        {
+          "nombre": "layer03.stl",
+          "tipo": "STL",
+          "tamano": "462.48 KB"
+        },
+        {
+          "nombre": "layer04.stl",
+          "tipo": "STL",
+          "tamano": "461.31 KB"
+        },
+        {
+          "nombre": "layer05.stl",
+          "tipo": "STL",
+          "tamano": "461.31 KB"
+        },
+        {
+          "nombre": "layer06.stl",
+          "tipo": "STL",
+          "tamano": "461.31 KB"
+        },
+        {
+          "nombre": "layer07.stl",
+          "tipo": "STL",
+          "tamano": "461.31 KB"
+        },
+        {
+          "nombre": "layer08.stl",
+          "tipo": "STL",
+          "tamano": "461.31 KB"
+        },
+        {
+          "nombre": "layer09.stl",
+          "tipo": "STL",
+          "tamano": "460.14 KB"
+        },
+        {
+          "nombre": "layer10.stl",
+          "tipo": "STL",
+          "tamano": "460.14 KB"
+        },
+        {
+          "nombre": "layer11.stl",
+          "tipo": "STL",
+          "tamano": "462.48 KB"
+        },
+        {
+          "nombre": "layer12.stl",
+          "tipo": "STL",
+          "tamano": "464.83 KB"
+        },
+        {
+          "nombre": "layer13.stl",
+          "tipo": "STL",
+          "tamano": "467.17 KB"
+        },
+        {
+          "nombre": "layer14.stl",
+          "tipo": "STL",
+          "tamano": "469.52 KB"
+        },
+        {
+          "nombre": "layer15.stl",
+          "tipo": "STL",
+          "tamano": "451.25 KB"
+        },
+        {
+          "nombre": "foot.stl",
+          "tipo": "STL",
+          "tamano": "508.29 KB"
+        },
+        {
+          "nombre": "star.stl",
+          "tipo": "STL",
+          "tamano": "605.06 KB"
+        },
+        {
+          "nombre": "layer04.stl",
+          "tipo": "STL",
+          "tamano": "338.46 KB"
+        },
+        {
+          "nombre": "layer09.stl",
+          "tipo": "STL",
+          "tamano": "337.29 KB"
+        },
+        {
+          "nombre": "layer03.stl",
+          "tipo": "STL",
+          "tamano": "339.63 KB"
+        },
+        {
+          "nombre": "layer12.stl",
+          "tipo": "STL",
+          "tamano": "341.98 KB"
+        },
+        {
+          "nombre": "layer15.stl",
+          "tipo": "STL",
+          "tamano": "333.87 KB"
+        },
+        {
+          "nombre": "layer05.stl",
+          "tipo": "STL",
+          "tamano": "338.46 KB"
+        },
+        {
+          "nombre": "foot.stl",
+          "tipo": "STL",
+          "tamano": "508.29 KB"
+        },
+        {
+          "nombre": "layer10.stl",
+          "tipo": "STL",
+          "tamano": "337.29 KB"
+        },
+        {
+          "nombre": "layer13.stl",
+          "tipo": "STL",
+          "tamano": "344.32 KB"
+        },
+        {
+          "nombre": "layer02.stl",
+          "tipo": "STL",
+          "tamano": "339.63 KB"
+        },
+        {
+          "nombre": "layer07.stl",
+          "tipo": "STL",
+          "tamano": "338.46 KB"
+        },
+        {
+          "nombre": "layer11.stl",
+          "tipo": "STL",
+          "tamano": "339.63 KB"
+        },
+        {
+          "nombre": "layer06.stl",
+          "tipo": "STL",
+          "tamano": "338.46 KB"
+        },
+        {
+          "nombre": "layer08.stl",
+          "tipo": "STL",
+          "tamano": "338.46 KB"
+        },
+        {
+          "nombre": "layer14.stl",
+          "tipo": "STL",
+          "tamano": "346.66 KB"
+        },
+        {
+          "nombre": "layer01.stl",
+          "tipo": "STL",
+          "tamano": "339.63 KB"
+        },
+        {
+          "nombre": "star.stl",
+          "tipo": "STL",
+          "tamano": "693.25 KB"
+        },
+        {
+          "nombre": "1061526-snowflake-christmas-tree-v2-schneeflocken-weihnachtsbaum-v2-6f9a3ee2-35a2-4b51-b84b-01522a43b28a.pdf",
+          "tipo": "PDF",
+          "tamano": "536.96 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_preview_page1.png"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/snowflake-christmas-tree-v2-schneeflocken-weihnachtsbaum-v2-model_files-107/images/pdf_preview_page1.png"
+    },
+    {
+      "id": 108,
+      "nombre": "christmas-tags-christmas-ornaments-model_files",
+      "descripcion": "Proyecto importado desde christmas-tags-christmas-ornaments-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "santa.stl",
+          "tipo": "STL",
+          "tamano": "74.01 KB"
+        },
+        {
+          "nombre": "reendeer.stl",
+          "tipo": "STL",
+          "tamano": "54.57 KB"
+        },
+        {
+          "nombre": "lebkuchenmann.stl",
+          "tipo": "STL",
+          "tamano": "239.83 KB"
+        },
+        {
+          "nombre": "snowflake-6.stl",
+          "tipo": "STL",
+          "tamano": "227.62 KB"
+        },
+        {
+          "nombre": "snowflake-2.stl",
+          "tipo": "STL",
+          "tamano": "294.22 KB"
+        },
+        {
+          "nombre": "solo-engel.stl",
+          "tipo": "STL",
+          "tamano": "209.46 KB"
+        },
+        {
+          "nombre": "tag-hook.stl",
+          "tipo": "STL",
+          "tamano": "48.52 KB"
+        },
+        {
+          "nombre": "bow.stl",
+          "tipo": "STL",
+          "tamano": "88.75 KB"
+        },
+        {
+          "nombre": "bells.stl",
+          "tipo": "STL",
+          "tamano": "135.04 KB"
+        },
+        {
+          "nombre": "snowflake-1.stl",
+          "tipo": "STL",
+          "tamano": "361.02 KB"
+        },
+        {
+          "nombre": "angel-girl.stl",
+          "tipo": "STL",
+          "tamano": "224.79 KB"
+        },
+        {
+          "nombre": "tag-hook.3mf",
+          "tipo": "3MF",
+          "tamano": "360.51 KB"
+        },
+        {
+          "nombre": "bell-2.stl",
+          "tipo": "STL",
+          "tamano": "128.21 KB"
+        },
+        {
+          "nombre": "gnome-2.stl",
+          "tipo": "STL",
+          "tamano": "485.14 KB"
+        },
+        {
+          "nombre": "gnome-7.stl",
+          "tipo": "STL",
+          "tamano": "257.50 KB"
+        },
+        {
+          "nombre": "gnome-6.stl",
+          "tipo": "STL",
+          "tamano": "163.46 KB"
+        },
+        {
+          "nombre": "gnome-4.stl",
+          "tipo": "STL",
+          "tamano": "295.98 KB"
+        },
+        {
+          "nombre": "angel-wings.stl",
+          "tipo": "STL",
+          "tamano": "128.89 KB"
+        },
+        {
+          "nombre": "tree.stl",
+          "tipo": "STL",
+          "tamano": "253.30 KB"
+        },
+        {
+          "nombre": "gnome-3.stl",
+          "tipo": "STL",
+          "tamano": "436.70 KB"
+        },
+        {
+          "nombre": "snowflake-5.stl",
+          "tipo": "STL",
+          "tamano": "170.88 KB"
+        },
+        {
+          "nombre": "gnome-5.stl",
+          "tipo": "STL",
+          "tamano": "177.04 KB"
+        },
+        {
+          "nombre": "snowflake-3.stl",
+          "tipo": "STL",
+          "tamano": "271.47 KB"
+        },
+        {
+          "nombre": "kugel-1.stl",
+          "tipo": "STL",
+          "tamano": "1307.89 KB"
+        },
+        {
+          "nombre": "angel-boy.stl",
+          "tipo": "STL",
+          "tamano": "199.89 KB"
+        },
+        {
+          "nombre": "snowflake-4.stl",
+          "tipo": "STL",
+          "tamano": "257.31 KB"
+        },
+        {
+          "nombre": "elch.stl",
+          "tipo": "STL",
+          "tamano": "291.29 KB"
+        },
+        {
+          "nombre": "gnome-1.stl",
+          "tipo": "STL",
+          "tamano": "560.53 KB"
+        },
+        {
+          "nombre": "kugel-2.stl",
+          "tipo": "STL",
+          "tamano": "208.48 KB"
+        },
+        {
+          "nombre": "holy-familyl.stl",
+          "tipo": "STL",
+          "tamano": "737.29 KB"
+        },
+        {
+          "nombre": "hirsch-in-kugel.stl",
+          "tipo": "STL",
+          "tamano": "1083.48 KB"
+        },
+        {
+          "nombre": "weihnachtsmotive.3mf",
+          "tipo": "3MF",
+          "tamano": "2843.35 KB"
+        },
+        {
+          "nombre": "1069170-christmas-tags-christmas-ornaments-0c8639d0-bf94-4a68-9f7e-81ba539c0bdd.pdf",
+          "tipo": "PDF",
+          "tamano": "830.13 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_preview_page1.png"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/christmas-tags-christmas-ornaments-model_files-108/images/pdf_preview_page1.png"
+    },
+    {
+      "id": 109,
+      "nombre": "bottle-cutter-with-variable-cutting-guide-no-blades-model_files",
+      "descripcion": "Proyecto importado desde bottle-cutter-with-variable-cutting-guide-no-blades-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "bottle-cutter-608zz-part-1_short-screws.stl",
+          "tipo": "STL",
+          "tamano": "568.44 KB"
+        },
+        {
+          "nombre": "bottle-cutter-608zz-v4-part-1_long-screws.stl",
+          "tipo": "STL",
+          "tamano": "568.73 KB"
+        },
+        {
+          "nombre": "bottle-cutter-608zz-part-2.stl",
+          "tipo": "STL",
+          "tamano": "859.46 KB"
+        },
+        {
+          "nombre": "724421-bottle-cutter-with-variable-cutting-guide-no-blades-16081231-6c97-413a-9165-5656f58230e4.pdf",
+          "tipo": "PDF",
+          "tamano": "42.28 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_preview_page1.png"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/bottle-cutter-with-variable-cutting-guide-no-blades-model_files-109/images/pdf_preview_page1.png"
+    },
+    {
+      "id": 110,
+      "nombre": "tolerance-tester-model_files",
+      "descripcion": "Proyecto importado desde tolerance-tester-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "tester.stl",
+          "tipo": "STL",
+          "tamano": "435.92 KB"
+        },
+        {
+          "nombre": "circle.stl",
+          "tipo": "STL",
+          "tamano": "11.41 KB"
+        },
+        {
+          "nombre": "square.stl",
+          "tipo": "STL",
+          "tamano": "0.67 KB"
+        },
+        {
+          "nombre": "794623-tolerance-tester-6fa80437-c792-48c3-9a4e-eae762369f49.pdf",
+          "tipo": "PDF",
+          "tamano": "71.03 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_page1_img1.jpg"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/tolerance-tester-model_files-110/images/pdf_page1_img1.jpg"
+    },
+    {
+      "id": 111,
+      "nombre": "ender-3-pro-adxl345-mount-model_files",
+      "descripcion": "Proyecto importado desde ender-3-pro-adxl345-mount-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "ADXL345 HotEnd.stl",
+          "tipo": "STL",
+          "tamano": "56.92 KB"
+        },
+        {
+          "nombre": "ADXL345 Bed.stl",
+          "tipo": "STL",
+          "tamano": "69.03 KB"
+        },
+        {
+          "nombre": "543054-ender-3-pro-adxl345-mount-1250a511-cc2b-4586-84f7-3b84ba68c8db.pdf",
+          "tipo": "PDF",
+          "tamano": "108.18 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_preview_page1.png"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/ender-3-pro-adxl345-mount-model_files-111/images/pdf_preview_page1.png"
+    },
+    {
+      "id": 112,
+      "nombre": "toothbrush-travel-case-model_files",
+      "descripcion": "Proyecto importado desde toothbrush-travel-case-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "Base.stl",
+          "tipo": "STL",
+          "tamano": "1135.43 KB"
+        },
+        {
+          "nombre": "Lid.stl",
+          "tipo": "STL",
+          "tamano": "959.46 KB"
+        },
+        {
+          "nombre": "251919-toothbrush-travel-case-8356ecfb-6b4b-4757-8b61-2bff029b62b5.pdf",
+          "tipo": "PDF",
+          "tamano": "151.49 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_page1_img1.jpg",
+        "pdf_page2_img2.jpg"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/toothbrush-travel-case-model_files-112/images/pdf_page1_img1.jpg"
+    },
+    {
+      "id": 115,
+      "nombre": "pokeball-opens-and-closes-model_files",
+      "descripcion": "Proyecto importado desde pokeball-opens-and-closes-model_files.zip",
+      "categoria": "general",
+      "archivos": [
+        {
+          "nombre": "v2_pokeball_button_holder.stl",
+          "tipo": "STL",
+          "tamano": "211.31 KB"
+        },
+        {
+          "nombre": "v2_pokeball_lower_latch.stl",
+          "tipo": "STL",
+          "tamano": "0.67 KB"
+        },
+        {
+          "nombre": "v2_pokeball_outer_shell.stl",
+          "tipo": "STL",
+          "tamano": "3808.09 KB"
+        },
+        {
+          "nombre": "v2_pokeball_button.stl",
+          "tipo": "STL",
+          "tamano": "186.02 KB"
+        },
+        {
+          "nombre": "v2_pokeball_main_frame.stl",
+          "tipo": "STL",
+          "tamano": "5271.96 KB"
+        },
+        {
+          "nombre": "v2_pokeball_latch.stl",
+          "tipo": "STL",
+          "tamano": "30.75 KB"
+        },
+        {
+          "nombre": "12742-pokeball-opens-and-closes-f59b4b46-5225-4357-855a-5f77ab0bfca6.pdf",
+          "tipo": "PDF",
+          "tamano": "114.86 KB"
+        }
+      ],
+      "imagenes": [
+        "pdf_page1_img1.jpg",
+        "pdf_page2_img2.jpg"
+      ],
+      "fecha_creacion": "2025-10-14",
+      "estado": "completado",
+      "progreso": 100,
+      "imagen": "/api/gallery/projects/pokeball-opens-and-closes-model_files-115/images/pdf_page1_img1.jpg"
     }
   ]
 }

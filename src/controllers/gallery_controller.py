@@ -15,6 +15,9 @@ import uuid
 # Importar servicio de extracción de imágenes de PDFs
 from src.services.pdf_image_extractor import process_project_pdfs
 
+# Importar servicio de renderizado STL
+from src.services.stl_renderer import STLRenderer
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
@@ -278,6 +281,69 @@ async def delete_project(project_id: int):
         raise HTTPException(status_code=500, detail="Error al eliminar proyecto")
 
 
+@router.post("/projects/{project_id}/generate-preview")
+async def generate_stl_preview(project_id: int):
+    """Genera una imagen preview renderizando el primer STL del proyecto."""
+    data = load_projects_data()
+    project = next((p for p in data['proyectos'] if p.get('id') == project_id), None)
+    if not project:
+        raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+
+    # Verificar si ya tiene imagen
+    if project.get('imagen'):
+        return {
+            "message": "El proyecto ya tiene una imagen preview",
+            "imagen": project['imagen']
+        }
+
+    # Buscar archivos STL en el proyecto
+    archivos = project.get('archivos', [])
+    stl_files = [f for f in archivos if f.get('tipo') in ['STL', '3D Model']]
+
+    if not stl_files:
+        raise HTTPException(status_code=400, detail="El proyecto no contiene archivos STL para renderizar")
+
+    # Usar el primer STL encontrado
+    first_stl = stl_files[0]
+    stl_filename = first_stl.get('nombre')
+
+    # Construir rutas
+    project_name = project.get('nombre')
+    project_folder = Path(f"src/proyect/{project_name} - {project_id}")
+    stl_path = project_folder / "files" / stl_filename
+    images_dir = project_folder / "images"
+    preview_filename = "stl_preview.png"
+    preview_path = images_dir / preview_filename
+
+    # Verificar que el STL existe
+    if not stl_path.exists():
+        raise HTTPException(status_code=404, detail=f"Archivo STL no encontrado: {stl_filename}")
+
+    # Crear directorio de imágenes si no existe
+    images_dir.mkdir(exist_ok=True)
+
+    # Generar preview
+    renderer = STLRenderer()
+    generated_filename = renderer.render_stl_preview(str(stl_path), images_dir, preview_filename)
+
+    if generated_filename:
+        # Actualizar el proyecto con la nueva imagen
+        project_slug = f"{project_name.lower().replace(' ', '-')}-{project_id}"
+        project['imagen'] = f"/api/gallery/projects/{project_slug}/images/{generated_filename}"
+
+        # Guardar cambios
+        if save_projects_data(data):
+            return {
+                "message": "Preview STL generado exitosamente",
+                "imagen": project['imagen'],
+                "stl_used": stl_filename
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Error guardando la imagen generada")
+    else:
+        raise HTTPException(status_code=500, detail="Error generando el preview STL")
+
+
 @router.post("/projects/{project_id}/export")
 async def export_project(project_id: int):
     """Simula la exportación de un proyecto (no crea archivos)."""
@@ -464,7 +530,7 @@ async def create_project(
             "estado": "listo",
             "favorito": False,
             "carpeta": project_dir,  # 🔑 Agregar ruta de la carpeta del proyecto
-            "imagen": f"/api/gallery/projects/{project_name.lower().replace(' ', '-')}-{new_id}/images/{image_files[0]}" if image_files else None,
+            "imagen": None,  # Se asignará después de verificar imágenes o generar preview STL
             "badges": badges,
             "progreso": {
                 "porcentaje": 100,
@@ -486,6 +552,42 @@ async def create_project(
                 ]
             }
         }
+        
+        # Asignar imagen de preview (imágenes existentes o preview STL generado)
+        project_slug = f"{project_name.lower().replace(' ', '-')}-{new_id}"
+        logger.info(f"🔍 Asignando imagen para proyecto '{project_name}': image_files={len(image_files)}, num_3d_files={num_3d_files}")
+        
+        if image_files:
+            # Usar la primera imagen del array
+            new_project["imagen"] = f"/api/gallery/projects/{project_slug}/images/{image_files[0]}"
+            logger.info(f"✅ Usando imagen existente: {image_files[0]}")
+        elif num_3d_files > 0:
+            # No hay imágenes pero sí STLs - generar preview automáticamente
+            logger.info(f"📸 Generando preview STL automático para proyecto '{project_name}'")
+            try:
+                # Buscar el primer STL
+                stl_file = next((f for f in extracted_files if f['tipo'] in ['STL', '3D Model']), None)
+                logger.info(f"🔍 STL encontrado: {stl_file}")
+                if stl_file:
+                    stl_filename = stl_file['nombre']
+                    stl_path = project_path / "files" / stl_filename
+                    images_dir = project_path / "images"
+                    preview_filename = "stl_preview.png"
+
+                    logger.info(f"📁 Generando preview: {stl_path} -> {images_dir}/{preview_filename}")
+                    # Generar preview
+                    renderer = STLRenderer()
+                    generated_filename = renderer.render_stl_preview(str(stl_path), images_dir, preview_filename)
+
+                    if generated_filename:
+                        new_project["imagen"] = f"/api/gallery/projects/{project_slug}/images/{generated_filename}"
+                        logger.info(f"✅ Preview STL generado automáticamente: {generated_filename}")
+                    else:
+                        logger.warning(f"⚠️ No se pudo generar preview STL para {stl_filename}")
+            except Exception as e:
+                logger.error(f"❌ Error generando preview STL automático: {e}")
+        else:
+            logger.info(f"ℹ️ No hay imágenes ni archivos 3D para proyecto '{project_name}'")
         
         data['proyectos'].append(new_project)
         data['estadisticas']['total_proyectos'] = len(data['proyectos'])
@@ -813,6 +915,33 @@ async def bulk_import_projects(files: List[UploadFile] = File(...)):
             if image_files:
                 # Usar la primera imagen del array
                 new_project["imagen"] = f"/api/gallery/projects/{project_slug}/images/{image_files[0]}"
+            elif stl_count > 0:
+                # No hay imágenes pero sí STLs - generar preview automáticamente
+                logger.info(f"📸 Generando preview STL automático para proyecto '{project_name}'")
+                try:
+                    # Buscar el primer STL
+                    stl_file = next((f for f in extracted_files if f['tipo'] in ['STL', '3D Model']), None)
+                    if stl_file:
+                        stl_filename = stl_file['nombre']
+                        stl_path = project_path / "files" / stl_filename
+                        images_dir = project_path / "images"
+                        preview_filename = "stl_preview.png"
+
+                        # Generar preview
+                        renderer = STLRenderer()
+                        generated_filename = renderer.render_stl_preview(str(stl_path), images_dir, preview_filename)
+
+                        if generated_filename:
+                            new_project["imagen"] = f"/api/gallery/projects/{project_slug}/images/{generated_filename}"
+                            logger.info(f"✅ Preview STL generado automáticamente: {generated_filename}")
+                        else:
+                            logger.warning(f"⚠️ No se pudo generar preview STL para {stl_filename}")
+                            new_project["imagen"] = None
+                    else:
+                        new_project["imagen"] = None
+                except Exception as e:
+                    logger.error(f"❌ Error generando preview STL automático: {e}")
+                    new_project["imagen"] = None
             else:
                 new_project["imagen"] = None
             
