@@ -904,6 +904,7 @@ async def bulk_import_projects(files: List[UploadFile] = File(...)):
                 "nombre": project_name,
                 "descripcion": f"Proyecto importado desde {file.filename}",
                 "categoria": "general",
+                "carpeta": project_dir,  # 🔑 Agregar ruta de la carpeta del proyecto
                 "archivos": extracted_files,
                 "imagenes": image_files,
                 "fecha_creacion": datetime.now().strftime("%Y-%m-%d"),

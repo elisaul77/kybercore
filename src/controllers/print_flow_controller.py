@@ -1382,6 +1382,14 @@ def find_stl_file_path(project_or_filename, filename_or_session=None):
         project = project_or_filename
         filename = filename_or_session
         project_folder = project.get("carpeta", "")
+        
+        # Si no tiene carpeta configurada, construirla a partir de nombre + ID
+        if not project_folder:
+            project_name = project.get("nombre", "")
+            project_id = project.get("id", "")
+            if project_name and project_id:
+                project_folder = f"src/proyect/{project_name} - {project_id}"
+        
         if project_folder:
             # Los archivos STL están en la subcarpeta 'files' dentro de la carpeta del proyecto
             return f"/app/{project_folder}/files/{filename}"
@@ -1439,6 +1447,14 @@ def find_stl_file_path(project_or_filename, filename_or_session=None):
                 return None
             
             project_folder = project.get("carpeta", "")
+            
+            # Si no tiene carpeta configurada, construirla a partir de nombre + ID
+            if not project_folder:
+                project_name = project.get("nombre", "")
+                project_id = project.get("id", "")
+                if project_name and project_id:
+                    project_folder = f"src/proyect/{project_name} - {project_id}"
+            
             if project_folder:
                 stl_path = f"/app/{project_folder}/files/{filename}"
                 logger.debug(f"🔍 Ruta STL encontrada: {stl_path}")

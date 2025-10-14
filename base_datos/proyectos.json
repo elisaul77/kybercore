@@ -1,7 +1,7 @@
 {
   "estadisticas": {
-    "total_proyectos": 90,
-    "total_stls": 718,
+    "total_proyectos": 89,
+    "total_stls": 683,
     "completados": 87,
     "en_progreso": 0,
     "tasa_exito": 90.6
@@ -1460,7 +1460,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/articulating-fox---no-supports-by-neongravestoneart-30/images/IMG_20241102_135418196_copy.jpg"
+      "imagen": "/api/gallery/projects/articulating-fox---no-supports-by-neongravestoneart-30/images/IMG_20241102_135418196_copy.jpg",
+      "carpeta": "src/proyect/Articulating Fox - No Supports by NeonGraveStoneArt - 30"
     },
     {
       "id": 31,
@@ -1520,7 +1521,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/ender-3-extruder-and-hotend-bullseye-duct-compatible-mounts-by-vampyrex13-31/images/20190103_195502.jpg"
+      "imagen": "/api/gallery/projects/ender-3-extruder-and-hotend-bullseye-duct-compatible-mounts-by-vampyrex13-31/images/20190103_195502.jpg",
+      "carpeta": "src/proyect/Ender 3 Extruder and Hotend Bullseye Duct Compatible Mounts by vampyrex13 - 31"
     },
     {
       "id": 32,
@@ -1551,7 +1553,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/3d-hubs-marvin---key-chain-by-hubsmfg-32/images/3d-hubs-3d-printed-marvin-mascot-5.png"
+      "imagen": "/api/gallery/projects/3d-hubs-marvin---key-chain-by-hubsmfg-32/images/3d-hubs-3d-printed-marvin-mascot-5.png",
+      "carpeta": "src/proyect/3D Hubs Marvin - Key Chain by HubsMFG - 32"
     },
     {
       "id": 33,
@@ -1619,7 +1622,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/drag-chain---cable-chain---ender-3-by-diogosantos88-33/images/IMG_20190626_130724640.jpg"
+      "imagen": "/api/gallery/projects/drag-chain---cable-chain---ender-3-by-diogosantos88-33/images/IMG_20190626_130724640.jpg",
+      "carpeta": "src/proyect/Drag Chain - Cable Chain - Ender 3 by diogosantos88 - 33"
     },
     {
       "id": 35,
@@ -1658,7 +1662,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/creality-wifi-box-case-4020-mount-by-botcan3d-35/images/IMG-2552.JPG"
+      "imagen": "/api/gallery/projects/creality-wifi-box-case-4020-mount-by-botcan3d-35/images/IMG-2552.JPG",
+      "carpeta": "src/proyect/Creality Wifi Box Case 4020 Mount by Botcan3d - 35"
     },
     {
       "id": 36,
@@ -1690,7 +1695,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/lego-calibration-cube-by-engineli-36/images/IMG_20201106_122015_331.jpg"
+      "imagen": "/api/gallery/projects/lego-calibration-cube-by-engineli-36/images/IMG_20201106_122015_331.jpg",
+      "carpeta": "src/proyect/Lego Calibration Cube by EnginEli - 36"
     },
     {
       "id": 37,
@@ -1722,7 +1728,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/xyz-20mm-calibration-cube-by-idig3dprinting-37/images/iDig3Dprinting_calibrationcube_1000x1000.jpg"
+      "imagen": "/api/gallery/projects/xyz-20mm-calibration-cube-by-idig3dprinting-37/images/iDig3Dprinting_calibrationcube_1000x1000.jpg",
+      "carpeta": "src/proyect/XYZ 20mm Calibration Cube by iDig3Dprinting - 37"
     },
     {
       "id": 38,
@@ -1768,7 +1775,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/cute-pig-articulated-by-inplace-38/images/4.jpg"
+      "imagen": "/api/gallery/projects/cute-pig-articulated-by-inplace-38/images/4.jpg",
+      "carpeta": "src/proyect/Cute Pig Articulated by inplace - 38"
     },
     {
       "id": 39,
@@ -1806,7 +1814,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/articulated-dragon-toothless-blazetooth-by-pinkywings-39/images/1920.jpg"
+      "imagen": "/api/gallery/projects/articulated-dragon-toothless-blazetooth-by-pinkywings-39/images/1920.jpg",
+      "carpeta": "src/proyect/articulated dragon toothless BlazeTooth by PinkyWings - 39"
     },
     {
       "id": 40,
@@ -1901,7 +1910,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/remix---filament-motion-sensor-with-optical-encoder-by-dapostol73-40/images/filamentencoder1.jpg"
+      "imagen": "/api/gallery/projects/remix---filament-motion-sensor-with-optical-encoder-by-dapostol73-40/images/filamentencoder1.jpg",
+      "carpeta": "src/proyect/Remix - Filament Motion Sensor with Optical Encoder by dapostol73 - 40"
     },
     {
       "id": 42,
@@ -1939,7 +1949,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/articulated-dragon-light-fury-cute-flexi-by-pinkywings-42/images/793c1983-8418-42ed-9cd5-938eca986767.jpg"
+      "imagen": "/api/gallery/projects/articulated-dragon-light-fury-cute-flexi-by-pinkywings-42/images/793c1983-8418-42ed-9cd5-938eca986767.jpg",
+      "carpeta": "src/proyect/Articulated Dragon Light Fury Cute Flexi by PinkyWings - 42"
     },
     {
       "id": 43,
@@ -1972,7 +1983,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/flexi-triceratops-by-andyfuentes-43/images/877331b1ac168f8dd0e8be586300d6ae.png"
+      "imagen": "/api/gallery/projects/flexi-triceratops-by-andyfuentes-43/images/877331b1ac168f8dd0e8be586300d6ae.png",
+      "carpeta": "src/proyect/Flexi Triceratops by Andyfuentes - 43"
     },
     {
       "id": 44,
@@ -2012,7 +2024,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/articulated-flexi-cute-snake-by-ministudio-44/images/91d364c0-dc3e-49c0-8d2c-34082ea6713c.jpg"
+      "imagen": "/api/gallery/projects/articulated-flexi-cute-snake-by-ministudio-44/images/91d364c0-dc3e-49c0-8d2c-34082ea6713c.jpg",
+      "carpeta": "src/proyect/Articulated Flexi Cute Snake by MiniStudio - 44"
     },
     {
       "id": 45,
@@ -2052,7 +2065,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/articulated-dragon-night-fury-cute-flexi-by-pinkywings-45/images/63098ad5-4118-4841-a817-4f5f668b9d40.jpg"
+      "imagen": "/api/gallery/projects/articulated-dragon-night-fury-cute-flexi-by-pinkywings-45/images/63098ad5-4118-4841-a817-4f5f668b9d40.jpg",
+      "carpeta": "src/proyect/Articulated Dragon Night Fury Cute Flexi by PinkyWings - 45"
     },
     {
       "id": 47,
@@ -2108,7 +2122,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/ender3-v3-se-spool-holder-frame,-balancing-weight-to-the-center-by-davidavs-47/images/42ecd1a0-d2b3-43f5-a335-651226de02be.jpg"
+      "imagen": "/api/gallery/projects/ender3-v3-se-spool-holder-frame,-balancing-weight-to-the-center-by-davidavs-47/images/42ecd1a0-d2b3-43f5-a335-651226de02be.jpg",
+      "carpeta": "src/proyect/Ender3 V3 SE spool holder frame, balancing weight to the center by davidavs - 47"
     },
     {
       "id": 48,
@@ -2139,7 +2154,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/test-de-retraccion-by-diter-48/images/Test_Retraccion.png"
+      "imagen": "/api/gallery/projects/test-de-retraccion-by-diter-48/images/Test_Retraccion.png",
+      "carpeta": "src/proyect/Test de retraccion by diter - 48"
     },
     {
       "id": 49,
@@ -2171,7 +2187,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/a-bit-with-a-grip---a-must-have-for-your-toolbox!-by-prntmkr-49/images/8acf5016-cbbb-4c89-99f4-0551dd730b2b.jpg"
+      "imagen": "/api/gallery/projects/a-bit-with-a-grip---a-must-have-for-your-toolbox!-by-prntmkr-49/images/8acf5016-cbbb-4c89-99f4-0551dd730b2b.jpg",
+      "carpeta": "src/proyect/A BIT with a GRIP - A must have for your toolbox! by Prntmkr - 49"
     },
     {
       "id": 50,
@@ -2204,7 +2221,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/minnie-mouse-pencil-topper---remix-by-bluegearstudios-50/images/Minnie-Mouse-Pencil-Topper.jpg"
+      "imagen": "/api/gallery/projects/minnie-mouse-pencil-topper---remix-by-bluegearstudios-50/images/Minnie-Mouse-Pencil-Topper.jpg",
+      "carpeta": "src/proyect/Minnie Mouse Pencil Topper - Remix by bluegearstudios - 50"
     },
     {
       "id": 51,
@@ -2245,7 +2263,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/micro-catapult-by-luketansell-51/images/DSC_0131.JPG"
+      "imagen": "/api/gallery/projects/micro-catapult-by-luketansell-51/images/DSC_0131.JPG",
+      "carpeta": "src/proyect/Micro Catapult by LukeTansell - 51"
     },
     {
       "id": 52,
@@ -2343,7 +2362,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/mario-rings-by-bigovereasy-52/images/a7814642-842f-46c8-a98a-a385d35d3556.jpg"
+      "imagen": "/api/gallery/projects/mario-rings-by-bigovereasy-52/images/a7814642-842f-46c8-a98a-a385d35d3556.jpg",
+      "carpeta": "src/proyect/Mario Rings by bigovereasy - 52"
     },
     {
       "id": 53,
@@ -2389,7 +2409,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/flying-helicopter-toy-(old)-by-3dbrooklyn-53/images/Helicopter_Group.png"
+      "imagen": "/api/gallery/projects/flying-helicopter-toy-(old)-by-3dbrooklyn-53/images/Helicopter_Group.png",
+      "carpeta": "src/proyect/Flying Helicopter Toy (OLD) by 3DBROOKLYN - 53"
     },
     {
       "id": 56,
@@ -2472,7 +2493,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/tie-advanced-kit-card-by-nakozen-56/images/P1030444-2.jpg"
+      "imagen": "/api/gallery/projects/tie-advanced-kit-card-by-nakozen-56/images/P1030444-2.jpg",
+      "carpeta": "src/proyect/TIE Advanced Kit Card by Nakozen - 56"
     },
     {
       "id": 57,
@@ -2512,7 +2534,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/imperial-star-destroyer-kit-card-by-fletch16-57/images/6ffd0ab9-cb9d-4eda-8f56-a7a97fc2ce5b.jpg"
+      "imagen": "/api/gallery/projects/imperial-star-destroyer-kit-card-by-fletch16-57/images/6ffd0ab9-cb9d-4eda-8f56-a7a97fc2ce5b.jpg",
+      "carpeta": "src/proyect/Imperial Star Destroyer Kit Card by Fletch16 - 57"
     },
     {
       "id": 59,
@@ -2543,7 +2566,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/cr-10-basic-bed-level-test-by-jrddupont-59/images/7dab9deef6db4a9a3066f6761b001383.png"
+      "imagen": "/api/gallery/projects/cr-10-basic-bed-level-test-by-jrddupont-59/images/7dab9deef6db4a9a3066f6761b001383.png",
+      "carpeta": "src/proyect/CR-10 Basic bed level test by jrddupont - 59"
     },
     {
       "id": 60,
@@ -2588,7 +2612,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/i-heart-u-mom-2-view-art-by-johnnyray-60/images/iheartmom.jpg"
+      "imagen": "/api/gallery/projects/i-heart-u-mom-2-view-art-by-johnnyray-60/images/iheartmom.jpg",
+      "carpeta": "src/proyect/I Heart U MOM 2 view Art by johnnyray - 60"
     },
     {
       "id": 61,
@@ -2692,7 +2717,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/ender-3-ke-support-gantry-by-callidyn-61/images/a649fd16-bf48-4b63-b774-652cbbfe4dba.jpg"
+      "imagen": "/api/gallery/projects/ender-3-ke-support-gantry-by-callidyn-61/images/a649fd16-bf48-4b63-b774-652cbbfe4dba.jpg",
+      "carpeta": "src/proyect/Ender 3 KE Support Gantry by Callidyn - 61"
     },
     {
       "id": 62,
@@ -2727,7 +2753,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/articulating-toothless-toy-(repaired)-by-isakjetbean-62/images/3cb1175a-838c-4a95-a879-1d651a163e77.jpg"
+      "imagen": "/api/gallery/projects/articulating-toothless-toy-(repaired)-by-isakjetbean-62/images/3cb1175a-838c-4a95-a879-1d651a163e77.jpg",
+      "carpeta": "src/proyect/Articulating Toothless Toy (Repaired) by isakjetbean - 62"
     },
     {
       "id": 63,
@@ -2789,7 +2816,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/geodesic-planter-pot-by-bza-63/images/planter_2_small.jpg"
+      "imagen": "/api/gallery/projects/geodesic-planter-pot-by-bza-63/images/planter_2_small.jpg",
+      "carpeta": "src/proyect/Geodesic Planter Pot by bza - 63"
     },
     {
       "id": 64,
@@ -2836,7 +2864,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/self-watering-oddish-pot-by-jackofalltrades92-64/images/20200516_194326.jpg"
+      "imagen": "/api/gallery/projects/self-watering-oddish-pot-by-jackofalltrades92-64/images/20200516_194326.jpg",
+      "carpeta": "src/proyect/Self-Watering Oddish Pot by JackofAllTrades92 - 64"
     },
     {
       "id": 65,
@@ -2869,7 +2898,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/samsung-galaxy-s9-case-by-fpikus-65/images/20180627_100459.jpg"
+      "imagen": "/api/gallery/projects/samsung-galaxy-s9-case-by-fpikus-65/images/20180627_100459.jpg",
+      "carpeta": "src/proyect/Samsung Galaxy S9 case by fpikus - 65"
     },
     {
       "id": 66,
@@ -2900,7 +2930,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/olaf-keychain-by-peregrine9-66/images/olaf_keychain.png"
+      "imagen": "/api/gallery/projects/olaf-keychain-by-peregrine9-66/images/olaf_keychain.png",
+      "carpeta": "src/proyect/Olaf Keychain by peregrine9 - 66"
     },
     {
       "id": 67,
@@ -2945,7 +2976,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/ice-cold-tiara-by-merganmcfergan-67/images/IMG_9364.JPG"
+      "imagen": "/api/gallery/projects/ice-cold-tiara-by-merganmcfergan-67/images/IMG_9364.JPG",
+      "carpeta": "src/proyect/Ice Cold Tiara by MerganMcFergan - 67"
     },
     {
       "id": 68,
@@ -3003,7 +3035,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/filament-spool-holder-with-a-maximum-width-of-75mm-by-angryhulk-68/images/3c89ab75-3e3b-448e-95b2-482221bbb38d.png"
+      "imagen": "/api/gallery/projects/filament-spool-holder-with-a-maximum-width-of-75mm-by-angryhulk-68/images/3c89ab75-3e3b-448e-95b2-482221bbb38d.png",
+      "carpeta": "src/proyect/Filament spool holder with a maximum width of 75mm by AngryHulk - 68"
     },
     {
       "id": 69,
@@ -3035,7 +3068,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/elsa-crown-tiara-by-blackthorn90-69/images/Elsa_Crown.png"
+      "imagen": "/api/gallery/projects/elsa-crown-tiara-by-blackthorn90-69/images/Elsa_Crown.png",
+      "carpeta": "src/proyect/Elsa Crown Tiara by Blackthorn90 - 69"
     },
     {
       "id": 70,
@@ -3076,7 +3110,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/articulating-bunny-(print-in-place)-by-neongravestoneart-70/images/9c167950-8773-4411-8b01-bcfcd2544e72.jpg"
+      "imagen": "/api/gallery/projects/articulating-bunny-(print-in-place)-by-neongravestoneart-70/images/9c167950-8773-4411-8b01-bcfcd2544e72.jpg",
+      "carpeta": "src/proyect/Articulating Bunny (Print in place) by NeonGraveStoneArt - 70"
     },
     {
       "id": 72,
@@ -3107,7 +3142,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/goku-by-will_corp-72/images/copy_of_goku_keyring.png"
+      "imagen": "/api/gallery/projects/goku-by-will_corp-72/images/copy_of_goku_keyring.png",
+      "carpeta": "src/proyect/goku by will_CORP - 72"
     },
     {
       "id": 73,
@@ -3145,7 +3181,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/ender-3-v3-se-filament-guide-by-jamesharvard-73/images/19c991d1-7be1-41d5-8809-bc22a09506b6.jpg"
+      "imagen": "/api/gallery/projects/ender-3-v3-se-filament-guide-by-jamesharvard-73/images/19c991d1-7be1-41d5-8809-bc22a09506b6.jpg",
+      "carpeta": "src/proyect/Ender 3 V3 SE Filament Guide by JamesHarvard - 73"
     },
     {
       "id": 74,
@@ -3176,7 +3213,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/pet-bottle-cutter-by-darioalbiersrealdariogram-74/images/e41129d9-fa5d-4def-a138-b287d21156fb.jpeg"
+      "imagen": "/api/gallery/projects/pet-bottle-cutter-by-darioalbiersrealdariogram-74/images/e41129d9-fa5d-4def-a138-b287d21156fb.jpeg",
+      "carpeta": "src/proyect/PET BOTTLE CUTTER by darioalbiersRealDariogram - 74"
     },
     {
       "id": 75,
@@ -3536,7 +3574,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/3dino-puzzle-museum-dx-set-by-stag_b-75/images/f011196c-7022-431b-aa52-6eb8972679aa.jpg"
+      "imagen": "/api/gallery/projects/3dino-puzzle-museum-dx-set-by-stag_b-75/images/f011196c-7022-431b-aa52-6eb8972679aa.jpg",
+      "carpeta": "src/proyect/3Dino Puzzle Museum DX Set by STAG_B - 75"
     },
     {
       "id": 76,
@@ -3643,7 +3682,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/poképawns-76/images/poke1.jpg"
+      "imagen": "/api/gallery/projects/poképawns-76/images/poke1.jpg",
+      "carpeta": "src/proyect/PokéPawns - 76"
     },
     {
       "id": 77,
@@ -3819,7 +3859,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/bender-bending-rodríguez-(futurama)-modular-by-mr_kes-77/images/29fe7513-bf87-4d10-a4b4-9f35cb86079e.jpg"
+      "imagen": "/api/gallery/projects/bender-bending-rodríguez-(futurama)-modular-by-mr_kes-77/images/29fe7513-bf87-4d10-a4b4-9f35cb86079e.jpg",
+      "carpeta": "src/proyect/Bender Bending Rodríguez (Futurama) modular by Mr_Kes - 77"
     },
     {
       "id": 78,
@@ -3853,7 +3894,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/crocodile-articulated-by-dreampaint-78/images/e3ddf556-0f5b-4759-9796-b341dd0b3a2d.jpg"
+      "imagen": "/api/gallery/projects/crocodile-articulated-by-dreampaint-78/images/e3ddf556-0f5b-4759-9796-b341dd0b3a2d.jpg",
+      "carpeta": "src/proyect/Crocodile articulated by Dreampaint - 78"
     },
     {
       "id": 79,
@@ -3958,7 +4000,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/flexo-head-&-upgrade-parts-for-bender-(futurama)-by-mr_kes-79/images/b00af539-7206-45eb-8418-2ecd96b67a6f.jpg"
+      "imagen": "/api/gallery/projects/flexo-head-&-upgrade-parts-for-bender-(futurama)-by-mr_kes-79/images/b00af539-7206-45eb-8418-2ecd96b67a6f.jpg",
+      "carpeta": "src/proyect/Flexo head & upgrade parts for Bender (Futurama) by Mr_Kes - 79"
     },
     {
       "id": 80,
@@ -3996,7 +4039,8 @@
       "fecha_creacion": "2025-10-13",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/articulated-onix20211216-32020-lihkh6-80/images/stl_preview.png"
+      "imagen": "/api/gallery/projects/articulated-onix20211216-32020-lihkh6-80/images/stl_preview.png",
+      "carpeta": "src/proyect/articulated-onix20211216-32020-lihkh6 - 80"
     },
     {
       "id": 83,
@@ -4028,7 +4072,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/flexi-dog-by-capybaralover-83/images/Flexi_Dog_printed.jpg"
+      "imagen": "/api/gallery/projects/flexi-dog-by-capybaralover-83/images/Flexi_Dog_printed.jpg",
+      "carpeta": "src/proyect/Flexi Dog by CapybaraLover - 83"
     },
     {
       "id": 84,
@@ -4061,7 +4106,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/clean-flexi-shark-by-cyclenut-84/images/037D6744-F11E-4448-A4C6-6376DF59CCEA.jpeg"
+      "imagen": "/api/gallery/projects/clean-flexi-shark-by-cyclenut-84/images/037D6744-F11E-4448-A4C6-6376DF59CCEA.jpeg",
+      "carpeta": "src/proyect/clean flexi shark by cyclenut - 84"
     },
     {
       "id": 85,
@@ -4101,7 +4147,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/flexi-velociraptor-by-benchy4life-85/images/Raptor.jpg"
+      "imagen": "/api/gallery/projects/flexi-velociraptor-by-benchy4life-85/images/Raptor.jpg",
+      "carpeta": "src/proyect/Flexi-Velociraptor by Benchy4Life - 85"
     },
     {
       "id": 86,
@@ -4140,7 +4187,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/flexi-ankylosaurus-by-tubbabutta-86/images/IMG_20190618_075000.jpg"
+      "imagen": "/api/gallery/projects/flexi-ankylosaurus-by-tubbabutta-86/images/IMG_20190618_075000.jpg",
+      "carpeta": "src/proyect/Flexi-Ankylosaurus by TubbaButta - 86"
     },
     {
       "id": 87,
@@ -4172,7 +4220,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/flexi-triceratop-by-burt_23-87/images/IMG_9821.JPG"
+      "imagen": "/api/gallery/projects/flexi-triceratop-by-burt_23-87/images/IMG_9821.JPG",
+      "carpeta": "src/proyect/Flexi Triceratop by burt_23 - 87"
     },
     {
       "id": 88,
@@ -4219,7 +4268,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/ender-3-bed-level-gcode-by-the_inventors_corner-88/images/a5_stub.png"
+      "imagen": "/api/gallery/projects/ender-3-bed-level-gcode-by-the_inventors_corner-88/images/a5_stub.png",
+      "carpeta": "src/proyect/Ender 3 Bed Level Gcode by The_Inventors_Corner - 88"
     },
     {
       "id": 89,
@@ -4252,7 +4302,8 @@
       "estado": "completado",
       "progreso": 100,
       "badge": "Thingiverse",
-      "imagen": "/api/gallery/projects/ender-3-bed-level-by-sahansudeepa-89/images/Bed_Levelling_Ender_3.png"
+      "imagen": "/api/gallery/projects/ender-3-bed-level-by-sahansudeepa-89/images/Bed_Levelling_Ender_3.png",
+      "carpeta": "src/proyect/Ender 3 Bed Level by sahansudeepa - 89"
     },
     {
       "id": 91,
@@ -4329,7 +4380,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/filament-cleaner-model_files-92/images/pdf_page1_img1.jpg"
+      "imagen": "/api/gallery/projects/filament-cleaner-model_files-92/images/pdf_page1_img1.jpg",
+      "carpeta": "src/proyect/filament-cleaner-model_files - 92"
     },
     {
       "id": 93,
@@ -4375,7 +4427,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/pokeball-model_files-93/images/pdf_page1_img1.jpg"
+      "imagen": "/api/gallery/projects/pokeball-model_files-93/images/pdf_page1_img1.jpg",
+      "carpeta": "src/proyect/pokeball-model_files - 93"
     },
     {
       "id": 95,
@@ -4435,7 +4488,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/collapsing-sword-collapsing-sword-model_files-95/images/pdf_page1_img1.jpg"
+      "imagen": "/api/gallery/projects/collapsing-sword-collapsing-sword-model_files-95/images/pdf_page1_img1.jpg",
+      "carpeta": "src/proyect/collapsing-sword-collapsing-sword-model_files - 95"
     },
     {
       "id": 96,
@@ -4625,7 +4679,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/snowflake-christmas-tree-v2-schneeflocken-weihnachtsbaum-v2-model_files-96/images/pdf_preview_page1.png"
+      "imagen": "/api/gallery/projects/snowflake-christmas-tree-v2-schneeflocken-weihnachtsbaum-v2-model_files-96/images/pdf_preview_page1.png",
+      "carpeta": "src/proyect/snowflake-christmas-tree-v2-schneeflocken-weihnachtsbaum-v2-model_files - 96"
     },
     {
       "id": 97,
@@ -4805,7 +4860,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/christmas-tags-christmas-ornaments-model_files-97/images/pdf_preview_page1.png"
+      "imagen": "/api/gallery/projects/christmas-tags-christmas-ornaments-model_files-97/images/pdf_preview_page1.png",
+      "carpeta": "src/proyect/christmas-tags-christmas-ornaments-model_files - 97"
     },
     {
       "id": 98,
@@ -4830,7 +4886,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/strong-corner-bracket-model_files-98/images/pdf_preview_page1.png"
+      "imagen": "/api/gallery/projects/strong-corner-bracket-model_files-98/images/pdf_preview_page1.png",
+      "carpeta": "src/proyect/strong-corner-bracket-model_files - 98"
     },
     {
       "id": 100,
@@ -4875,7 +4932,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/spacex-starship-s25-model_files-100/images/pdf_page1_img1.jpg"
+      "imagen": "/api/gallery/projects/spacex-starship-s25-model_files-100/images/pdf_page1_img1.jpg",
+      "carpeta": "src/proyect/spacex-starship-s25-model_files - 100"
     },
     {
       "id": 101,
@@ -4935,7 +4993,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/christmas-ornaments-model_files-101/images/pdf_preview_page1.png"
+      "imagen": "/api/gallery/projects/christmas-ornaments-model_files-101/images/pdf_preview_page1.png",
+      "carpeta": "src/proyect/christmas-ornaments-model_files - 101"
     },
     {
       "id": 102,
@@ -4975,7 +5034,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/ender-3-direct-drive-all-metal-extruder-mount-model_files-102/images/pdf_page1_img1.jpg"
+      "imagen": "/api/gallery/projects/ender-3-direct-drive-all-metal-extruder-mount-model_files-102/images/pdf_page1_img1.jpg",
+      "carpeta": "src/proyect/ender-3-direct-drive-all-metal-extruder-mount-model_files - 102"
     },
     {
       "id": 103,
@@ -5005,7 +5065,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/garden-gnomes-couple-model_files-103/images/pdf_preview_page1.png"
+      "imagen": "/api/gallery/projects/garden-gnomes-couple-model_files-103/images/pdf_preview_page1.png",
+      "carpeta": "src/proyect/garden-gnomes-couple-model_files - 103"
     },
     {
       "id": 104,
@@ -5035,7 +5096,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/simple-honeycomb-mobile-stand-model_files-104/images/pdf_preview_page1.png"
+      "imagen": "/api/gallery/projects/simple-honeycomb-mobile-stand-model_files-104/images/pdf_preview_page1.png",
+      "carpeta": "src/proyect/simple-honeycomb-mobile-stand-model_files - 104"
     },
     {
       "id": 105,
@@ -5115,7 +5177,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/toddler-nativity-set-model_files-105/images/pdf_preview_page1.png"
+      "imagen": "/api/gallery/projects/toddler-nativity-set-model_files-105/images/pdf_preview_page1.png",
+      "carpeta": "src/proyect/toddler-nativity-set-model_files - 105"
     },
     {
       "id": 106,
@@ -5150,197 +5213,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/extruder-visualizer-ender-3-v3-se-model_files-106/images/pdf_preview_page1.png"
-    },
-    {
-      "id": 107,
-      "nombre": "snowflake-christmas-tree-v2-schneeflocken-weihnachtsbaum-v2-model_files",
-      "descripcion": "Proyecto importado desde snowflake-christmas-tree-v2-schneeflocken-weihnachtsbaum-v2-model_files.zip",
-      "categoria": "general",
-      "archivos": [
-        {
-          "nombre": "layer01.stl",
-          "tipo": "STL",
-          "tamano": "462.48 KB"
-        },
-        {
-          "nombre": "layer02.stl",
-          "tipo": "STL",
-          "tamano": "462.48 KB"
-        },
-        {
-          "nombre": "layer03.stl",
-          "tipo": "STL",
-          "tamano": "462.48 KB"
-        },
-        {
-          "nombre": "layer04.stl",
-          "tipo": "STL",
-          "tamano": "461.31 KB"
-        },
-        {
-          "nombre": "layer05.stl",
-          "tipo": "STL",
-          "tamano": "461.31 KB"
-        },
-        {
-          "nombre": "layer06.stl",
-          "tipo": "STL",
-          "tamano": "461.31 KB"
-        },
-        {
-          "nombre": "layer07.stl",
-          "tipo": "STL",
-          "tamano": "461.31 KB"
-        },
-        {
-          "nombre": "layer08.stl",
-          "tipo": "STL",
-          "tamano": "461.31 KB"
-        },
-        {
-          "nombre": "layer09.stl",
-          "tipo": "STL",
-          "tamano": "460.14 KB"
-        },
-        {
-          "nombre": "layer10.stl",
-          "tipo": "STL",
-          "tamano": "460.14 KB"
-        },
-        {
-          "nombre": "layer11.stl",
-          "tipo": "STL",
-          "tamano": "462.48 KB"
-        },
-        {
-          "nombre": "layer12.stl",
-          "tipo": "STL",
-          "tamano": "464.83 KB"
-        },
-        {
-          "nombre": "layer13.stl",
-          "tipo": "STL",
-          "tamano": "467.17 KB"
-        },
-        {
-          "nombre": "layer14.stl",
-          "tipo": "STL",
-          "tamano": "469.52 KB"
-        },
-        {
-          "nombre": "layer15.stl",
-          "tipo": "STL",
-          "tamano": "451.25 KB"
-        },
-        {
-          "nombre": "foot.stl",
-          "tipo": "STL",
-          "tamano": "508.29 KB"
-        },
-        {
-          "nombre": "star.stl",
-          "tipo": "STL",
-          "tamano": "605.06 KB"
-        },
-        {
-          "nombre": "layer04.stl",
-          "tipo": "STL",
-          "tamano": "338.46 KB"
-        },
-        {
-          "nombre": "layer09.stl",
-          "tipo": "STL",
-          "tamano": "337.29 KB"
-        },
-        {
-          "nombre": "layer03.stl",
-          "tipo": "STL",
-          "tamano": "339.63 KB"
-        },
-        {
-          "nombre": "layer12.stl",
-          "tipo": "STL",
-          "tamano": "341.98 KB"
-        },
-        {
-          "nombre": "layer15.stl",
-          "tipo": "STL",
-          "tamano": "333.87 KB"
-        },
-        {
-          "nombre": "layer05.stl",
-          "tipo": "STL",
-          "tamano": "338.46 KB"
-        },
-        {
-          "nombre": "foot.stl",
-          "tipo": "STL",
-          "tamano": "508.29 KB"
-        },
-        {
-          "nombre": "layer10.stl",
-          "tipo": "STL",
-          "tamano": "337.29 KB"
-        },
-        {
-          "nombre": "layer13.stl",
-          "tipo": "STL",
-          "tamano": "344.32 KB"
-        },
-        {
-          "nombre": "layer02.stl",
-          "tipo": "STL",
-          "tamano": "339.63 KB"
-        },
-        {
-          "nombre": "layer07.stl",
-          "tipo": "STL",
-          "tamano": "338.46 KB"
-        },
-        {
-          "nombre": "layer11.stl",
-          "tipo": "STL",
-          "tamano": "339.63 KB"
-        },
-        {
-          "nombre": "layer06.stl",
-          "tipo": "STL",
-          "tamano": "338.46 KB"
-        },
-        {
-          "nombre": "layer08.stl",
-          "tipo": "STL",
-          "tamano": "338.46 KB"
-        },
-        {
-          "nombre": "layer14.stl",
-          "tipo": "STL",
-          "tamano": "346.66 KB"
-        },
-        {
-          "nombre": "layer01.stl",
-          "tipo": "STL",
-          "tamano": "339.63 KB"
-        },
-        {
-          "nombre": "star.stl",
-          "tipo": "STL",
-          "tamano": "693.25 KB"
-        },
-        {
-          "nombre": "1061526-snowflake-christmas-tree-v2-schneeflocken-weihnachtsbaum-v2-6f9a3ee2-35a2-4b51-b84b-01522a43b28a.pdf",
-          "tipo": "PDF",
-          "tamano": "536.96 KB"
-        }
-      ],
-      "imagenes": [
-        "pdf_preview_page1.png"
-      ],
-      "fecha_creacion": "2025-10-14",
-      "estado": "completado",
-      "progreso": 100,
-      "imagen": "/api/gallery/projects/snowflake-christmas-tree-v2-schneeflocken-weihnachtsbaum-v2-model_files-107/images/pdf_preview_page1.png"
+      "imagen": "/api/gallery/projects/extruder-visualizer-ender-3-v3-se-model_files-106/images/pdf_preview_page1.png",
+      "carpeta": "src/proyect/extruder-visualizer-ender-3-v3-se-model_files - 106"
     },
     {
       "id": 108,
@@ -5520,7 +5394,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/christmas-tags-christmas-ornaments-model_files-108/images/pdf_preview_page1.png"
+      "imagen": "/api/gallery/projects/christmas-tags-christmas-ornaments-model_files-108/images/pdf_preview_page1.png",
+      "carpeta": "src/proyect/christmas-tags-christmas-ornaments-model_files - 108"
     },
     {
       "id": 109,
@@ -5555,7 +5430,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/bottle-cutter-with-variable-cutting-guide-no-blades-model_files-109/images/pdf_preview_page1.png"
+      "imagen": "/api/gallery/projects/bottle-cutter-with-variable-cutting-guide-no-blades-model_files-109/images/pdf_preview_page1.png",
+      "carpeta": "src/proyect/bottle-cutter-with-variable-cutting-guide-no-blades-model_files - 109"
     },
     {
       "id": 110,
@@ -5590,7 +5466,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/tolerance-tester-model_files-110/images/pdf_page1_img1.jpg"
+      "imagen": "/api/gallery/projects/tolerance-tester-model_files-110/images/pdf_page1_img1.jpg",
+      "carpeta": "src/proyect/tolerance-tester-model_files - 110"
     },
     {
       "id": 111,
@@ -5620,7 +5497,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/ender-3-pro-adxl345-mount-model_files-111/images/pdf_preview_page1.png"
+      "imagen": "/api/gallery/projects/ender-3-pro-adxl345-mount-model_files-111/images/pdf_preview_page1.png",
+      "carpeta": "src/proyect/ender-3-pro-adxl345-mount-model_files - 111"
     },
     {
       "id": 112,
@@ -5651,7 +5529,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/toothbrush-travel-case-model_files-112/images/pdf_page1_img1.jpg"
+      "imagen": "/api/gallery/projects/toothbrush-travel-case-model_files-112/images/pdf_page1_img1.jpg",
+      "carpeta": "src/proyect/toothbrush-travel-case-model_files - 112"
     },
     {
       "id": 115,
@@ -5702,7 +5581,8 @@
       "fecha_creacion": "2025-10-14",
       "estado": "completado",
       "progreso": 100,
-      "imagen": "/api/gallery/projects/pokeball-opens-and-closes-model_files-115/images/pdf_page1_img1.jpg"
+      "imagen": "/api/gallery/projects/pokeball-opens-and-closes-model_files-115/images/pdf_page1_img1.jpg",
+      "carpeta": "src/proyect/pokeball-opens-and-closes-model_files - 115"
     }
   ]
 }

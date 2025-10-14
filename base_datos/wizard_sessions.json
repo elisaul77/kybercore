@@ -16382,6 +16382,422 @@
         },
         "message": "Plating exitoso: 2 piezas combinadas"
       }
+    },
+    "temp_59_20251014_032844": {
+      "project_id": "59",
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-14T03:28:44.098748",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "250mm_Bed_Level_Test.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T03:28:44.099472"
+      },
+      "updated_at": "2025-10-14T03:30:01.299901",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T03:28:47.465921"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "economy",
+        "settings": {
+          "layer_height": 0.2,
+          "infill_density": 10,
+          "print_speed": 60,
+          "quality_preset": "normal"
+        },
+        "estimated_impact": {
+          "time_factor": 1.0,
+          "quality_level": "estándar",
+          "material_usage": "optimizado"
+        },
+        "completed_at": "2025-10-14T03:28:54.896562"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T03:29:00.475132"
+      },
+      "stl_processing": {
+        "task_id": "task_b583e61c-afe8-4fb7-8113-178ae728df9b",
+        "successful": [],
+        "failed": [
+          {
+            "filename": "250mm_Bed_Level_Test.stl",
+            "success": false,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": null,
+            "gcode_size": null,
+            "error": "Error leyendo archivo: Archivo 3D no encontrado: 250mm_Bed_Level_Test.stl",
+            "processing_time_seconds": null
+          }
+        ],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 0,
+          "failed": 1
+        },
+        "completed_at": "2025-10-14T03:30:01.281395"
+      }
+    },
+    "temp_35_20251014_033040": {
+      "project_id": "35",
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-14T03:30:40.176624",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Creality_Wifi_Box_Case_4020.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T03:30:40.176642"
+      },
+      "updated_at": "2025-10-14T03:31:17.400411",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T03:30:43.538920"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "economy",
+        "settings": {
+          "layer_height": 0.2,
+          "infill_density": 10,
+          "print_speed": 60,
+          "quality_preset": "normal"
+        },
+        "estimated_impact": {
+          "time_factor": 1.0,
+          "quality_level": "estándar",
+          "material_usage": "optimizado"
+        },
+        "completed_at": "2025-10-14T03:30:47.655504"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T03:30:53.278382"
+      },
+      "stl_processing": {
+        "task_id": "task_7f95870a-2259-415b-8eb4-771e9f7cdc20",
+        "successful": [],
+        "failed": [
+          {
+            "filename": "Creality_Wifi_Box_Case_4020.stl",
+            "success": false,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": null,
+            "gcode_size": null,
+            "error": "Error leyendo archivo: Archivo 3D no encontrado: Creality_Wifi_Box_Case_4020.stl",
+            "processing_time_seconds": null
+          }
+        ],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 0,
+          "failed": 1
+        },
+        "completed_at": "2025-10-14T03:31:17.394944"
+      }
+    },
+    "temp_59_20251014_034001": {
+      "project_id": "59",
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-14T03:40:01.965212",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "250mm_Bed_Level_Test.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T03:40:01.965276"
+      },
+      "updated_at": "2025-10-14T03:40:26.826605",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T03:40:05.278032"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "economy",
+        "settings": {
+          "layer_height": 0.2,
+          "infill_density": 10,
+          "print_speed": 60,
+          "quality_preset": "normal"
+        },
+        "estimated_impact": {
+          "time_factor": 1.0,
+          "quality_level": "estándar",
+          "material_usage": "optimizado"
+        },
+        "completed_at": "2025-10-14T03:40:08.738372"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T03:40:12.906384"
+      },
+      "stl_processing": {
+        "task_id": "task_360e133e-7849-458a-81c6-a392dbb91d41",
+        "successful": [
+          {
+            "filename": "250mm_Bed_Level_Test.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/temp_59_20251014_034001/gcode_temp_59_20251014_034001_250mm_Bed_Level_Test.gcode",
+            "gcode_size": 17374,
+            "error": null,
+            "processing_time_seconds": 0.7990715503692627
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-14T03:40:26.822533"
+      }
+    },
+    "temp_59_20251014_034213": {
+      "project_id": "59",
+      "current_step": "monitoring",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing",
+        "confirmation"
+      ],
+      "created_at": "2025-10-14T03:42:13.696750",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "250mm_Bed_Level_Test.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T03:42:13.696775"
+      },
+      "updated_at": "2025-10-14T03:43:01.134983",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T03:42:17.459346"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "economy",
+        "settings": {
+          "layer_height": 0.2,
+          "infill_density": 10,
+          "print_speed": 60,
+          "quality_preset": "normal"
+        },
+        "estimated_impact": {
+          "time_factor": 1.0,
+          "quality_level": "estándar",
+          "material_usage": "optimizado"
+        },
+        "completed_at": "2025-10-14T03:42:21.699759"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Impresora Prueba",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T03:42:25.751144"
+      },
+      "stl_processing": {
+        "task_id": "task_9744c7df-de62-42b7-8186-89a5fce2ad52",
+        "successful": [
+          {
+            "filename": "250mm_Bed_Level_Test.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/temp_59_20251014_034213/gcode_temp_59_20251014_034213_250mm_Bed_Level_Test.gcode",
+            "gcode_size": 17374,
+            "error": null,
+            "processing_time_seconds": 0.10469746589660645
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-14T03:42:33.023264"
+      },
+      "confirmed_job_id": "33bba93a-e9be-4d37-b09f-398ce56bf146",
+      "final_status": "job_sent_to_printer",
+      "completed_at": "2025-10-14T03:43:01.130272"
     }
   },
   "metadata": {
