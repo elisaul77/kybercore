@@ -3,7 +3,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from src.services.fleet_service import FleetService
 from src.models.printer import Printer
-from src.schemas.printer import PrinterCreate
+from src.schemas.printer import PrinterCreate, PrinterUpdate
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -85,7 +85,8 @@ def add_printer(printer: PrinterCreate):
     return fleet_service.add_printer(printer)
 
 @router.put("/printers/{printer_id}", response_model=Printer)
-def update_printer(printer_id: str, printer: PrinterCreate):
+def update_printer(printer_id: str, printer: PrinterUpdate):
+    """Actualiza parcialmente una impresora (solo campos enviados)"""
     updated = fleet_service.update_printer(printer_id, printer)
     if not updated:
         raise HTTPException(status_code=404, detail="Impresora no encontrada")
@@ -97,6 +98,63 @@ def delete_printer(printer_id: str):
     if not deleted:
         raise HTTPException(status_code=404, detail="Impresora no encontrada")
     return {"ok": True}
+
+# 🆕 NUEVO: Endpoint para probar conectividad de IPs
+@router.post("/printers/{printer_id}/test-ips")
+async def test_printer_ips(printer_id: str):
+    """Prueba la conectividad de ambas IPs (local y VPN) de una impresora."""
+    try:
+        printer = await fleet_service.get_printer(printer_id)
+        if not printer:
+            raise HTTPException(status_code=404, detail="Impresora no encontrada")
+        
+        local_ip = printer.local_ip or printer.ip
+        vpn_ip = printer.vpn_ip
+        
+        # Probar ambas IPs en paralelo
+        results = {
+            "printer_id": printer_id,
+            "printer_name": printer.name,
+            "local_ip": local_ip,
+            "vpn_ip": vpn_ip,
+            "local_ip_status": "not_configured",
+            "vpn_ip_status": "not_configured",
+            "active_ip": printer.active_ip,
+            "recommended_ip": None
+        }
+        
+        if local_ip:
+            local_reachable = await fleet_service.test_ip_connection(local_ip)
+            results["local_ip_status"] = "reachable" if local_reachable else "unreachable"
+        
+        if vpn_ip:
+            vpn_reachable = await fleet_service.test_ip_connection(vpn_ip)
+            results["vpn_ip_status"] = "reachable" if vpn_reachable else "unreachable"
+        
+        # Determinar IP recomendada
+        if results["local_ip_status"] == "reachable":
+            results["recommended_ip"] = local_ip
+        elif results["vpn_ip_status"] == "reachable":
+            results["recommended_ip"] = vpn_ip
+        
+        return results
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error probando IPs: {str(e)}")
+
+# 🆕 NUEVO: Endpoint simple para probar una IP individual
+@router.get("/test-ip")
+async def test_single_ip(ip: str):
+    """Prueba la conectividad de una IP específica."""
+    try:
+        reachable = await fleet_service.test_ip_connection(ip)
+        return {
+            "ip": ip,
+            "reachable": reachable,
+            "message": "Conexión exitosa" if reachable else "No se pudo conectar"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error probando IP: {str(e)}")
 
 # Endpoint para enviar comandos a impresoras
 @router.post("/printers/{printer_id}/command")

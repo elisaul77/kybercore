@@ -163,6 +163,28 @@ window.initFleetModule = async function() {
                 console.error('❌ FleetCards.deletePrinter no disponible');
             }
         };
+        
+        // 🆕 Función para editar impresora desde tarjetas
+        window.FleetCards.editPrinter = async function(printerId) {
+            console.log('✏️ Editando impresora:', printerId);
+            
+            try {
+                // Obtener datos actualizados de la impresora desde el API
+                const response = await fetch(`/api/fleet/printers/${printerId}`);
+                if (!response.ok) {
+                    throw new Error('No se pudo obtener la impresora');
+                }
+                
+                const printer = await response.json();
+                console.log('📦 Datos de impresora obtenidos:', printer);
+                
+                // Mostrar modal de edición
+                window.FleetForms.showEditPrinterModal(printer);
+            } catch (error) {
+                console.error('❌ Error obteniendo impresora:', error);
+                alert('Error: No se pudo cargar la información de la impresora');
+            }
+        };
     }
     
     // Verificar disponibilidad de elementos DOM críticos

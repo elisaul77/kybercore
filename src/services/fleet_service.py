@@ -4,7 +4,7 @@ import os
 import asyncio
 import aiohttp
 from src.models.printer import Printer
-from src.schemas.printer import PrinterCreate
+from src.schemas.printer import PrinterCreate, PrinterUpdate
 from src.services.moonraker_client import MoonrakerClient
 import logging
 
@@ -91,10 +91,88 @@ class FleetService:
         
         return printers_list
 
+    def _parse_ip_port(self, ip_field):
+        """Extrae IP y puerto del campo ip. Si no hay puerto, usa 7125 por defecto."""
+        if ':' in ip_field:
+            ip, port = ip_field.split(':')
+            return ip, int(port)
+        return ip_field, 7125
+
+    async def test_ip_connection(self, ip_address: str, timeout: float = 3.0):
+        """
+        Prueba si una IP es accesible haciendo un request rápido a Moonraker.
+        Retorna True si la conexión es exitosa, False en caso contrario.
+        """
+        if not ip_address:
+            return False
+        
+        try:
+            ip, port = self._parse_ip_port(ip_address)
+            session = await self._get_session()
+            url = f"http://{ip}:{port}/server/info"
+            
+            async with asyncio.timeout(timeout):
+                async with session.get(url) as response:
+                    return response.status == 200
+                    
+        except Exception as e:
+            logger.debug(f"IP {ip_address} no accesible: {e}")
+            return False
+
+    async def detect_active_ip(self, printer):
+        """
+        Detecta automáticamente cuál IP está disponible según la prioridad configurada.
+        Actualiza el campo active_ip de la impresora.
+        Retorna la IP activa o None si ninguna está disponible.
+        """
+        local_ip = printer.local_ip or printer.ip  # Fallback a ip legacy
+        vpn_ip = printer.vpn_ip
+        priority = getattr(printer, 'connection_priority', 'local_first')
+        
+        # Definir orden de prueba según prioridad
+        if priority == "vpn_first":
+            ips_to_test = [vpn_ip, local_ip]
+        elif priority == "auto":
+            # En modo auto, probamos ambas en paralelo y tomamos la primera que responda
+            ips_to_test = [local_ip, vpn_ip]
+            tasks = [self.test_ip_connection(ip) for ip in ips_to_test if ip]
+            if tasks:
+                results = await asyncio.gather(*tasks, return_exceptions=True)
+                for ip, result in zip([ip for ip in ips_to_test if ip], results):
+                    if result is True:
+                        printer.active_ip = ip
+                        logger.info(f"✅ IP activa detectada para {printer.name}: {ip}")
+                        return ip
+        else:  # local_first (default)
+            ips_to_test = [local_ip, vpn_ip]
+        
+        # Prueba secuencial (para local_first y vpn_first)
+        if priority != "auto":
+            for ip in ips_to_test:
+                if ip and await self.test_ip_connection(ip):
+                    printer.active_ip = ip
+                    logger.info(f"✅ IP activa detectada para {printer.name}: {ip}")
+                    return ip
+        
+        # Si ninguna IP funciona
+        printer.active_ip = None
+        logger.warning(f"⚠️ Ninguna IP disponible para {printer.name}")
+        return None
+
     async def _update_printer_status(self, printer, session):
-        """Actualiza el estado de una impresora con manejo de errores mejorado"""
-        ip, port = self._parse_ip_port(printer.ip)
-        logger.debug(f"Conectando a la impresora {printer.name} en {ip}:{port}")
+        """Actualiza el estado de una impresora con manejo de errores mejorado y switcheo automático de IP"""
+        
+        # 🔄 NUEVO: Detectar IP activa automáticamente
+        active_ip = await self.detect_active_ip(printer)
+        if not active_ip:
+            logger.warning(f"No se pudo conectar a {printer.name} - Ninguna IP disponible")
+            printer.status = "unreachable"
+            printer.realtime_data = {}
+            return
+        
+        # Usar la IP activa detectada
+        ip, port = self._parse_ip_port(active_ip)
+        logger.debug(f"Conectando a la impresora {printer.name} en {ip}:{port} (IP activa)")
         
         client = MoonrakerClient(ip, port, session)
         
@@ -231,13 +309,6 @@ class FleetService:
             if not hasattr(printer, 'realtime_data') or printer.realtime_data is None:
                 printer.realtime_data = {}
 
-    def _parse_ip_port(self, ip_field):
-        """Extrae IP y puerto del campo ip. Si no hay puerto, usa 7125 por defecto."""
-        if ':' in ip_field:
-            ip, port = ip_field.split(':')
-            return ip, int(port)
-        return ip_field, 7125
-
     async def get_printer(self, printer_id):
         """Obtiene una impresora específica y actualiza su estado"""
         printer = self.printers.get(printer_id)
@@ -262,13 +333,19 @@ class FleetService:
         self._save_printers()
         return printer
 
-    def update_printer(self, printer_id, printer_data: PrinterCreate):
-        """Actualiza una impresora existente"""
+    def update_printer(self, printer_id, printer_data: PrinterUpdate):
+        """Actualiza una impresora existente (actualización parcial permitida)"""
         if printer_id in self.printers:
             printer = self.printers[printer_id]
             update_data = printer_data.model_dump(exclude_unset=True)
             for key, value in update_data.items():
                 setattr(printer, key, value)
+            
+            # Si se actualizaron las IPs, resetear active_ip para forzar re-detección
+            if 'local_ip' in update_data or 'vpn_ip' in update_data:
+                printer.active_ip = None
+                logger.info(f"IPs actualizadas para {printer.name}, se re-detectará IP activa")
+            
             self._save_printers()
             return printer
         return None

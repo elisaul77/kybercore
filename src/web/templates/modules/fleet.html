@@ -313,3 +313,103 @@
     color: #991b1b;
 }
 </style>
+
+<!-- 🆕 Modal de Edición de Impresora -->
+<div id="edit-printer-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-t-2xl">
+            <div class="flex justify-between items-center">
+                <h3 class="text-2xl font-bold">✏️ Editar Impresora</h3>
+                <button id="close-edit-modal" class="text-white hover:text-gray-200 text-3xl leading-none">×</button>
+            </div>
+        </div>
+        
+        <!-- Formulario -->
+        <form id="edit-printer-form" class="p-6 space-y-6">
+            <input type="hidden" id="edit-printer-id">
+            
+            <!-- Información básica -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nombre</label>
+                    <input type="text" id="edit-printer-name" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Modelo</label>
+                    <input type="text" id="edit-printer-model" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+            </div>
+            
+            <!-- Configuración de Red Dual IP -->
+            <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+                <h4 class="text-lg font-semibold text-blue-900 mb-4 flex items-center gap-2">
+                    <span>🌐</span> Configuración de Red (Dual IP)
+                </h4>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                            <span>🏠</span> IP de Red Local (ej: 10.10.10.71:7126)
+                        </label>
+                        <div class="flex gap-2">
+                            <input type="text" id="edit-printer-local-ip" class="flex-1 border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="192.168.1.100:7126">
+                            <button type="button" id="test-local-ip-btn" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                                🔍 Probar
+                            </button>
+                        </div>
+                        <span id="local-ip-status" class="text-xs mt-1 block"></span>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                            <span>🔒</span> IP de VPN (ej: 10.8.0.100:7126)
+                        </label>
+                        <div class="flex gap-2">
+                            <input type="text" id="edit-printer-vpn-ip" class="flex-1 border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="10.8.0.100:7126">
+                            <button type="button" id="test-vpn-ip-btn" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                                🔍 Probar
+                            </button>
+                        </div>
+                        <span id="vpn-ip-status" class="text-xs mt-1 block"></span>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Prioridad de Conexión</label>
+                        <select id="edit-printer-priority" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="local_first">Local primero (recomendado)</option>
+                            <option value="vpn_first">VPN primero</option>
+                            <option value="auto">Automático (la más rápida)</option>
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">Define qué IP intentar conectar primero</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ubicación y Capacidades -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Ubicación</label>
+                    <input type="text" id="edit-printer-location" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Laboratorio, Oficina, etc.">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Capacidades (separadas por comas)</label>
+                    <input type="text" id="edit-printer-capabilities" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="print, pause, resume, cancel">
+                </div>
+            </div>
+            
+            <!-- Botones de acción -->
+            <div class="flex gap-3 pt-4">
+                <button type="submit" class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-medium shadow-lg">
+                    💾 Guardar Cambios
+                </button>
+                <button type="button" id="cancel-edit-btn" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">
+                    Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+

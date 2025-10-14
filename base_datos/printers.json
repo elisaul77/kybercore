@@ -4,6 +4,10 @@
         "name": "Impresora Prueba",
         "model": "Generic",
         "ip": "10.10.10.71:7126",
+        "local_ip": "10.10.10.71:7126",
+        "vpn_ip": "10.13.13.4:7126",
+        "active_ip": null,
+        "connection_priority": "auto",
         "status": "ready",
         "capabilities": [
             "print",

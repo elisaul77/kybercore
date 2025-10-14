@@ -119,6 +119,14 @@ window.FleetCards.Core = {
                         window.FleetCards.Renderer.showPrinterDetails(printerId);
                     }
                     break;
+                case 'edit':
+                    // Usar la función editPrinter del módulo FleetCards
+                    if (window.FleetCards && window.FleetCards.editPrinter) {
+                        window.FleetCards.editPrinter(printerId);
+                    } else {
+                        console.error('❌ Método editPrinter no disponible');
+                    }
+                    break;
                 case 'pause':
                     if (window.FleetCards.Commands && window.FleetCards.Commands.pausePrint) {
                         window.FleetCards.Commands.pausePrint(printerId);
@@ -157,6 +165,14 @@ window.FleetCards.Core = {
                         window.deleteFleetPrinter(printerId);
                     } else {
                         console.error('❌ Método deletePrinter no disponible');
+                    }
+                    break;
+                case 'edit':
+                    console.log('✏️ Editando impresora:', printerId);
+                    if (window.FleetCards && window.FleetCards.editPrinter) {
+                        window.FleetCards.editPrinter(printerId);
+                    } else {
+                        console.error('❌ Método editPrinter no disponible');
                     }
                     break;
                 default:

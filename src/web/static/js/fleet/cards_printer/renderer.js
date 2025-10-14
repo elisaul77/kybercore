@@ -115,8 +115,13 @@ window.FleetCards.Renderer = {
 
                         <!-- Información técnica -->
                         <div class="bg-gray-50 rounded-lg p-3 mb-4 text-xs text-gray-600">
-                            <div class="grid grid-cols-2 gap-2">
-                                <div><strong>IP:</strong> ${window.FleetCards.Utils.escapeHtml(printer.ip_address || printer.ip || 'N/A')}</div>
+                            <div class="space-y-1">
+                                ${printer.local_ip && printer.vpn_ip ? `
+                                    <div><strong>🏠 IP Local:</strong> ${window.FleetCards.Utils.escapeHtml(printer.local_ip)} ${printer.active_ip === printer.local_ip ? '<span class="text-green-600">✓ Activa</span>' : ''}</div>
+                                    <div><strong>🔒 IP VPN:</strong> ${window.FleetCards.Utils.escapeHtml(printer.vpn_ip)} ${printer.active_ip === printer.vpn_ip ? '<span class="text-green-600">✓ Activa</span>' : ''}</div>
+                                ` : `
+                                    <div><strong>IP:</strong> ${window.FleetCards.Utils.escapeHtml(printer.ip_address || printer.local_ip || printer.ip || 'N/A')}</div>
+                                `}
                                 <div><strong>ID:</strong> ${window.FleetCards.Utils.escapeHtml(printer.id.substring(0, 8))}...</div>
                             </div>
                         </div>
@@ -133,6 +138,10 @@ window.FleetCards.Renderer = {
                             <button class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
                                     data-action="show-details" data-printer-id="${printer.id}">
                                 👁️ Ver Detalles
+                            </button>
+                            <button class="bg-yellow-500 text-white py-2 px-3 rounded-lg hover:bg-yellow-600 transition-colors text-sm"
+                                    data-action="edit" data-printer-id="${printer.id}" title="Editar impresora">
+                                ✏️
                             </button>
                             <button class="bg-red-500 text-white py-2 px-3 rounded-lg hover:bg-red-600 transition-colors text-sm"
                                     data-action="delete" data-printer-id="${printer.id}" title="Eliminar impresora">
