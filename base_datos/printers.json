@@ -6,7 +6,7 @@
         "ip": "10.10.10.71:7126",
         "local_ip": "10.10.10.71:7126",
         "vpn_ip": "10.13.13.4:7126",
-        "active_ip": null,
+        "active_ip": "10.13.13.4:7126",
         "connection_priority": "auto",
         "status": "ready",
         "capabilities": [
@@ -16,5 +16,31 @@
             "cancel"
         ],
         "location": "Laboratorio"
+    },
+    "bb82edde-63fa-4148-8172-e1a2bcfbe4c3": {
+        "id": "bb82edde-63fa-4148-8172-e1a2bcfbe4c3",
+        "name": "Impresora Ender 3 V4.2.7",
+        "model": "4.2.7",
+        "ip": "10.10.10.71:7126",
+        "local_ip": "10.10.10.71:7125",
+        "vpn_ip": "10.13.13.4:7125",
+        "active_ip": "10.13.13.4:7125",
+        "connection_priority": "local_first",
+        "status": "ready",
+        "capabilities": [],
+        "location": "casa"
+    },
+    "b9cee789-efd9-433f-beeb-5d0da8af874c": {
+        "id": "b9cee789-efd9-433f-beeb-5d0da8af874c",
+        "name": "Impresora Ender 3 V1",
+        "model": "1",
+        "ip": " 10.10.10.71:7127",
+        "local_ip": " 10.10.10.71:7127",
+        "vpn_ip": " 10.13.13.4:7127",
+        "active_ip": null,
+        "connection_priority": "auto",
+        "status": "unreachable",
+        "capabilities": [],
+        "location": "Casa"
     }
 }

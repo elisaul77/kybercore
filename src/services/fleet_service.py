@@ -358,6 +358,22 @@ class FleetService:
             return deleted_printer
         return None
 
+    async def _get_printer_active_ip(self, printer):
+        """
+        Obtiene la IP activa de una impresora, detectándola si es necesario.
+        Retorna la IP activa o lanza una excepción si no hay IPs disponibles.
+        """
+        # Si ya tiene active_ip, usarla
+        if printer.active_ip:
+            return printer.active_ip
+        
+        # Si no, detectar IP activa
+        active_ip = await self.detect_active_ip(printer)
+        if not active_ip:
+            raise ValueError(f"No se pudo conectar a la impresora {printer.name} - Ninguna IP disponible")
+        
+        return active_ip
+
     async def home_printer(self, printer_id: str, axis: str):
         """Ejecuta comando de homing en un eje específico"""
         printer = self.printers.get(printer_id)
@@ -365,17 +381,20 @@ class FleetService:
             raise ValueError(f"Impresora {printer_id} no encontrada")
         
         try:
+            # 🔄 USAR IP ACTIVA en lugar de printer.ip
+            active_ip = await self._get_printer_active_ip(printer)
+            
             session = await self._get_session()
             # Comando G-code para homing
             gcode_command = f"G28 {axis}"
             
-            # Enviar comando via Moonraker API
-            url = f"http://{printer.ip}/printer/gcode/script"
+            # Enviar comando via Moonraker API usando IP activa
+            url = f"http://{active_ip}/printer/gcode/script"
             data = {"script": gcode_command}
             
             async with session.post(url, json=data) as response:
                 if response.status == 200:
-                    logger.info(f"Comando homing {axis} enviado a {printer.name}")
+                    logger.info(f"Comando homing {axis} enviado a {printer.name} via {active_ip}")
                     return {"success": True, "command": gcode_command}
                 else:
                     error_text = await response.text()
@@ -394,12 +413,15 @@ class FleetService:
             raise ValueError(f"Impresora {printer_id} no encontrada")
         
         try:
+            # 🔄 USAR IP ACTIVA
+            active_ip = await self._get_printer_active_ip(printer)
+            
             session = await self._get_session()
-            url = f"http://{printer.ip}/printer/print/pause"
+            url = f"http://{active_ip}/printer/print/pause"
             
             async with session.post(url) as response:
                 if response.status == 200:
-                    logger.info(f"Impresión pausada en {printer.name}")
+                    logger.info(f"Impresión pausada en {printer.name} via {active_ip}")
                     return {"success": True, "action": "pause"}
                 else:
                     error_text = await response.text()
@@ -418,12 +440,15 @@ class FleetService:
             raise ValueError(f"Impresora {printer_id} no encontrada")
         
         try:
+            # 🔄 USAR IP ACTIVA
+            active_ip = await self._get_printer_active_ip(printer)
+            
             session = await self._get_session()
-            url = f"http://{printer.ip}/printer/print/resume"
+            url = f"http://{active_ip}/printer/print/resume"
             
             async with session.post(url) as response:
                 if response.status == 200:
-                    logger.info(f"Impresión reanudada en {printer.name}")
+                    logger.info(f"Impresión reanudada en {printer.name} via {active_ip}")
                     return {"success": True, "action": "resume"}
                 else:
                     error_text = await response.text()
@@ -442,12 +467,15 @@ class FleetService:
             raise ValueError(f"Impresora {printer_id} no encontrada")
         
         try:
+            # 🔄 USAR IP ACTIVA
+            active_ip = await self._get_printer_active_ip(printer)
+            
             session = await self._get_session()
-            url = f"http://{printer.ip}/printer/print/cancel"
+            url = f"http://{active_ip}/printer/print/cancel"
             
             async with session.post(url) as response:
                 if response.status == 200:
-                    logger.info(f"Impresión cancelada en {printer.name}")
+                    logger.info(f"Impresión cancelada en {printer.name} via {active_ip}")
                     return {"success": True, "action": "cancel"}
                 else:
                     error_text = await response.text()
@@ -466,13 +494,16 @@ class FleetService:
             raise ValueError(f"Impresora {printer_id} no encontrada")
         
         try:
+            # 🔄 USAR IP ACTIVA
+            active_ip = await self._get_printer_active_ip(printer)
+            
             session = await self._get_session()
             # Usar la API correcta de Moonraker para reiniciar Klipper (host restart)
-            url = f"http://{printer.ip}/printer/restart"
+            url = f"http://{active_ip}/printer/restart"
             
             async with session.post(url) as response:
                 if response.status == 200:
-                    logger.info(f"Klipper reiniciado en {printer.name}")
+                    logger.info(f"Klipper reiniciado en {printer.name} via {active_ip}")
                     return {"success": True, "action": "restart_klipper"}
                 else:
                     error_text = await response.text()
@@ -491,12 +522,15 @@ class FleetService:
             raise ValueError(f"Impresora {printer_id} no encontrada")
         
         try:
+            # 🔄 USAR IP ACTIVA
+            active_ip = await self._get_printer_active_ip(printer)
+            
             session = await self._get_session()
-            url = f"http://{printer.ip}/printer/firmware_restart"
+            url = f"http://{active_ip}/printer/firmware_restart"
             
             async with session.post(url) as response:
                 if response.status == 200:
-                    logger.info(f"Firmware reiniciado en {printer.name}")
+                    logger.info(f"Firmware reiniciado en {printer.name} via {active_ip}")
                     return {"success": True, "action": "restart_firmware"}
                 else:
                     error_text = await response.text()
@@ -698,7 +732,10 @@ class FleetService:
             raise ValueError(f"Impresora con ID {printer_id} no encontrada")
         
         try:
-            ip, port = self._parse_ip_port(printer.ip)
+            # 🔄 USAR IP ACTIVA
+            active_ip = await self._get_printer_active_ip(printer)
+            ip, port = self._parse_ip_port(active_ip)
+            
             session = await self._get_session()
             client = MoonrakerClient(ip, port, session)
             
@@ -745,7 +782,10 @@ class FleetService:
             raise ValueError(f"Impresora con ID {printer_id} no encontrada")
         
         try:
-            ip, port = self._parse_ip_port(printer.ip)
+            # 🔄 USAR IP ACTIVA
+            active_ip = await self._get_printer_active_ip(printer)
+            ip, port = self._parse_ip_port(active_ip)
+            
             session = await self._get_session()
             client = MoonrakerClient(ip, port, session)
             
@@ -764,7 +804,10 @@ class FleetService:
             raise ValueError(f"Impresora con ID {printer_id} no encontrada")
         
         try:
-            ip, port = self._parse_ip_port(printer.ip)
+            # 🔄 USAR IP ACTIVA
+            active_ip = await self._get_printer_active_ip(printer)
+            ip, port = self._parse_ip_port(active_ip)
+            
             session = await self._get_session()
             client = MoonrakerClient(ip, port, session)
             
@@ -783,7 +826,10 @@ class FleetService:
             raise ValueError(f"Impresora con ID {printer_id} no encontrada")
         
         try:
-            ip, port = self._parse_ip_port(printer.ip)
+            # 🔄 USAR IP ACTIVA
+            active_ip = await self._get_printer_active_ip(printer)
+            ip, port = self._parse_ip_port(active_ip)
+            
             session = await self._get_session()
             client = MoonrakerClient(ip, port, session)
             
@@ -802,7 +848,10 @@ class FleetService:
             raise ValueError(f"Impresora con ID {printer_id} no encontrada")
         
         try:
-            ip, port = self._parse_ip_port(printer.ip)
+            # 🔄 USAR IP ACTIVA
+            active_ip = await self._get_printer_active_ip(printer)
+            ip, port = self._parse_ip_port(active_ip)
+            
             session = await self._get_session()
             client = MoonrakerClient(ip, port, session)
             
@@ -821,7 +870,10 @@ class FleetService:
             raise ValueError(f"Impresora con ID {printer_id} no encontrada")
         
         try:
-            ip, port = self._parse_ip_port(printer.ip)
+            # 🔄 USAR IP ACTIVA
+            active_ip = await self._get_printer_active_ip(printer)
+            ip, port = self._parse_ip_port(active_ip)
+            
             session = await self._get_session()
             client = MoonrakerClient(ip, port, session)
             
@@ -871,7 +923,10 @@ class FleetService:
             raise ValueError(f"Impresora {printer_id} no encontrada")
         
         try:
-            ip, port = self._parse_ip_port(printer.ip)
+            # 🔄 USAR IP ACTIVA
+            active_ip = await self._get_printer_active_ip(printer)
+            ip, port = self._parse_ip_port(active_ip)
+            
             session = await self._get_session()
             client = MoonrakerClient(ip, port, session)
             
@@ -896,7 +951,10 @@ class FleetService:
             raise ValueError(f"Impresora {printer_id} no encontrada")
         
         try:
-            ip, port = self._parse_ip_port(printer.ip)
+            # 🔄 USAR IP ACTIVA
+            active_ip = await self._get_printer_active_ip(printer)
+            ip, port = self._parse_ip_port(active_ip)
+            
             session = await self._get_session()
             client = MoonrakerClient(ip, port, session)
             
@@ -1059,7 +1117,10 @@ class FleetService:
             raise ValueError(f"Impresora {printer_id} no encontrada")
         
         try:
-            ip, port = self._parse_ip_port(printer.ip)
+            # 🔄 USAR IP ACTIVA
+            active_ip = await self._get_printer_active_ip(printer)
+            ip, port = self._parse_ip_port(active_ip)
+            
             session = await self._get_session()
             client = MoonrakerClient(ip, port, session)
             
