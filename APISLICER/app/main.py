@@ -503,7 +503,7 @@ async def slice_stl(
         # Ruta del gcode de salida
         gcode_path = f"{OUTPUT_DIR}/{job_id}.gcode"
         
-        # Determinar qué perfil usar
+        # Determinar qué perfil usar y extraer parámetros
         if custom_profile:
             # Usar perfil personalizado
             profile_path = f"{PRINTER_STL_CONFIG_DIR}/{custom_profile}.ini"
@@ -513,6 +513,29 @@ async def slice_stl(
                     detail=f"Perfil personalizado no encontrado: {custom_profile}"
                 )
             logger.info(f"Usando perfil personalizado: {profile_path}")
+            
+            # 🔥 NUEVO: Leer temperaturas del perfil personalizado
+            profile_config = configparser.ConfigParser()
+            profile_config.read(profile_path)
+            
+            # Extraer valores del perfil personalizado
+            if profile_config.has_section("print"):
+                profile_nozzle_temp = profile_config.getint("print", "temperature", fallback=nozzle_temp)
+                profile_bed_temp = profile_config.getint("print", "bed_temperature", fallback=bed_temp)
+                profile_layer_height = profile_config.getfloat("print", "layer_height", fallback=layer_height)
+                profile_fill_density = profile_config.getint("print", "fill_density", fallback=fill_density)
+                
+                logger.info(f"📋 Parámetros del perfil personalizado:")
+                logger.info(f"   🌡️  Nozzle: {profile_nozzle_temp}°C | Bed: {profile_bed_temp}°C")
+                logger.info(f"   📏 Layer: {profile_layer_height}mm | Infill: {profile_fill_density}%")
+                
+                # Usar los valores del perfil personalizado
+                nozzle_temp = profile_nozzle_temp
+                bed_temp = profile_bed_temp
+                layer_height = profile_layer_height
+                fill_density = profile_fill_density
+            else:
+                logger.warning("⚠️  Perfil personalizado no tiene sección [print], usando valores por defecto")
         else:
             # Usar perfil base
             profile_path = f"{PRINTER_CONFIG_DIR}/{printer_profile}.ini"
@@ -523,23 +546,23 @@ async def slice_stl(
                 )
             logger.info(f"Usando perfil base: {profile_path}")
         
-        # Comando de PrusaSlicer
+        # Comando de PrusaSlicer con parámetros explícitos
+        # 🔥 CAMBIO CRÍTICO: SIEMPRE agregar temperaturas explícitamente
+        # Esto garantiza que PrusaSlicer use las temperaturas correctas
         cmd = [
             "prusa-slicer",
             "--export-gcode",
             "--load", profile_path,
             "--output", gcode_path,
+            # ✅ SIEMPRE agregar parámetros críticos explícitamente
+            "--layer-height", str(layer_height),
+            "--fill-density", f"{fill_density}%",
+            "--temperature", str(nozzle_temp),
+            "--bed-temperature", str(bed_temp),
+            "--first-layer-temperature", str(nozzle_temp),  # 🔥 NUEVO: temperatura primera capa
+            "--first-layer-bed-temperature", str(bed_temp),  # 🔥 NUEVO: cama primera capa
             final_stl_path  # Usar STL rotado si aplica
         ]
-        
-        # Solo agregar parámetros si no se usa perfil personalizado
-        if not custom_profile:
-            cmd.extend([
-                "--layer-height", str(layer_height),
-                "--fill-density", f"{fill_density}%",
-                "--temperature", str(nozzle_temp),
-                "--bed-temperature", str(bed_temp)
-            ])
         
         logger.info(f"Ejecutando: {' '.join(cmd)}")
         
@@ -921,26 +944,42 @@ async def generate_profile(request: ProfileGenerationRequest):
             "PLA": {
                 "temperature": 210,
                 "bed_temperature": 60,
+                "first_layer_temperature": 215,  # 🔥 MÁS CALOR para primera capa
+                "first_layer_bed_temperature": 65,  # 🔥 MÁS CALOR para primera capa
                 "retract_length": 5,
-                "retract_speed": 40,
-                "first_layer_temperature": 210,
-                "first_layer_bed_temperature": 60
+                "retract_speed": 40
             },
             "PETG": {
                 "temperature": 235,
                 "bed_temperature": 85,
+                "first_layer_temperature": 240,  # 🔥 MÁS CALOR para primera capa
+                "first_layer_bed_temperature": 90,  # 🔥 MÁS CALOR para primera capa
                 "retract_length": 6,
-                "retract_speed": 45,
-                "first_layer_temperature": 235,
-                "first_layer_bed_temperature": 85
+                "retract_speed": 45
             },
             "ABS": {
                 "temperature": 245,
                 "bed_temperature": 100,
+                "first_layer_temperature": 250,  # 🔥 MÁS CALOR para primera capa
+                "first_layer_bed_temperature": 105,  # 🔥 MÁS CALOR para primera capa
                 "retract_length": 7,
-                "retract_speed": 50,
-                "first_layer_temperature": 245,
-                "first_layer_bed_temperature": 100
+                "retract_speed": 50
+            },
+            "TPU": {
+                "temperature": 220,
+                "bed_temperature": 50,
+                "first_layer_temperature": 225,  # 🔥 MÁS CALOR para primera capa
+                "first_layer_bed_temperature": 55,  # 🔥 MÁS CALOR para primera capa
+                "retract_length": 2,
+                "retract_speed": 25
+            },
+            "NYLON": {
+                "temperature": 260,
+                "bed_temperature": 85,
+                "first_layer_temperature": 265,  # 🔥 MÁS CALOR para primera capa
+                "first_layer_bed_temperature": 90,  # 🔥 MÁS CALOR para primera capa
+                "retract_length": 6,
+                "retract_speed": 40
             }
         }
         

@@ -2827,6 +2827,679 @@
         "estimated_completion": "2025-10-14T03:43:01.130027"
       },
       "completed_at": "2025-10-14T03:43:01.154242"
+    },
+    {
+      "job_id": "e2b8f50b-8fb0-4a64-bce3-22320c659063",
+      "status": "started",
+      "session_data": {
+        "project_id": "59",
+        "project_data": {
+          "id": 59,
+          "nombre": "CR-10 Basic bed level test by jrddupont",
+          "descripcion": "Proyecto importado desde CR-10 Basic bed level test - 2900744.zip",
+          "categoria": "general",
+          "archivos": [
+            {
+              "nombre": "250mm_Bed_Level_Test.stl",
+              "tipo": "STL",
+              "tamano": "9.26 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.09 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.10 KB"
+            }
+          ],
+          "imagenes": [
+            "7dab9deef6db4a9a3066f6761b001383.png"
+          ],
+          "fecha_creacion": "2025-10-13",
+          "estado": "completado",
+          "progreso": 100,
+          "badge": "Thingiverse",
+          "imagen": "/api/gallery/projects/cr-10-basic-bed-level-test-by-jrddupont-59/images/7dab9deef6db4a9a3066f6761b001383.png",
+          "carpeta": "src/proyect/CR-10 Basic bed level test by jrddupont - 59"
+        },
+        "current_step": "monitoring",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing",
+          "confirmation"
+        ],
+        "created_at": "2025-10-14T06:28:37.760711",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "250mm_Bed_Level_Test.stl"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-14T06:28:37.760740"
+        },
+        "updated_at": "2025-10-14T06:29:04.036775",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-14T06:28:42.225309"
+        },
+        "production_mode": {
+          "mode": "prototype",
+          "priority": "speed",
+          "settings": {
+            "layer_height": 0.3,
+            "infill_density": 15,
+            "print_speed": 80,
+            "quality_preset": "draft"
+          },
+          "estimated_impact": {
+            "time_factor": 0.7,
+            "quality_level": "estándar",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-14T06:28:46.083444"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-14T06:28:51.765263"
+        },
+        "stl_processing": {
+          "task_id": "task_db90f433-f225-4947-b1a7-36498e03b0a1",
+          "successful": [
+            {
+              "filename": "250mm_Bed_Level_Test.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": null,
+              "gcode_path": "/tmp/kybercore_processing/wizard_1760423308333_riq75wvu7/gcode_wizard_1760423308333_riq75wvu7_250mm_Bed_Level_Test.gcode",
+              "gcode_size": 17374,
+              "error": null,
+              "processing_time_seconds": 0.5710391998291016
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-14T06:29:04.032261"
+        },
+        "confirmed_job_id": "e2b8f50b-8fb0-4a64-bce3-22320c659063",
+        "final_status": "job_sent_to_printer",
+        "completed_at": "2025-10-14T06:29:26.452202"
+      },
+      "printer_response": {
+        "success": true,
+        "printer_job_id": "printer_wizard_1760423308333_riq75wvu7",
+        "message": "Impresión iniciada. 1 archivo(s) subido(s), 0 pendiente(s)",
+        "printer_id": "printer-test-1",
+        "queue_position": 48,
+        "moonraker_url": "http://10.10.10.71:7126",
+        "current_printing": "kybercore_wizard_1760423308333_riq75wvu7_gcode_wizard_1760423308333_riq75wvu7_250mm_Bed_Level_Test.gcode",
+        "uploaded_files": [
+          "kybercore_wizard_1760423308333_riq75wvu7_gcode_wizard_1760423308333_riq75wvu7_250mm_Bed_Level_Test.gcode"
+        ],
+        "pending_files": [],
+        "failed_uploads": [],
+        "estimated_completion": "2025-10-14T06:29:26.452119"
+      },
+      "completed_at": "2025-10-14T06:29:26.481663"
+    },
+    {
+      "job_id": "44c8e7b9-75c5-4e2a-a5aa-5cfdb8f75f3e",
+      "status": "started",
+      "session_data": {
+        "project_id": "30",
+        "project_data": {
+          "id": 30,
+          "nombre": "Articulating Fox - No Supports by NeonGraveStoneArt",
+          "descripcion": "Proyecto importado desde Articulating Fox - No Supports - 6817979.zip",
+          "categoria": "general",
+          "archivos": [
+            {
+              "nombre": "Fox_Multicolor.3mf",
+              "tipo": "3MF",
+              "tamano": "8107.39 KB"
+            },
+            {
+              "nombre": "Fox_singlecolor.stl",
+              "tipo": "STL",
+              "tamano": "27247.54 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.11 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.14 KB"
+            }
+          ],
+          "imagenes": [
+            "IMG_20241102_135418196_copy.jpg",
+            "IMG_20241102_135500374_copy.jpg",
+            "IMG_20241102_135613225_copy.jpg",
+            "Fox_singlecolor.png"
+          ],
+          "fecha_creacion": "2025-10-13",
+          "estado": "completado",
+          "progreso": 100,
+          "badge": "Thingiverse",
+          "imagen": "/api/gallery/projects/articulating-fox---no-supports-by-neongravestoneart-30/images/IMG_20241102_135418196_copy.jpg",
+          "carpeta": "src/proyect/Articulating Fox - No Supports by NeonGraveStoneArt - 30"
+        },
+        "current_step": "monitoring",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing",
+          "confirmation"
+        ],
+        "created_at": "2025-10-14T06:40:53.640456",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Fox_singlecolor.stl"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-14T06:40:53.640481"
+        },
+        "updated_at": "2025-10-14T06:41:20.259816",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-14T06:40:58.122860"
+        },
+        "production_mode": {
+          "mode": "prototype",
+          "priority": "economy",
+          "settings": {
+            "layer_height": 0.2,
+            "infill_density": 10,
+            "print_speed": 60,
+            "quality_preset": "normal"
+          },
+          "estimated_impact": {
+            "time_factor": 1.0,
+            "quality_level": "estándar",
+            "material_usage": "optimizado"
+          },
+          "completed_at": "2025-10-14T06:41:02.566539"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-14T06:41:06.838447"
+        },
+        "stl_processing": {
+          "task_id": "task_8cadc51f-5933-4f07-80b4-ca2c0dfa094b",
+          "successful": [
+            {
+              "filename": "Fox_singlecolor.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": null,
+              "gcode_path": "/tmp/kybercore_processing/wizard_1760424047893_jq7rf9wi7/gcode_wizard_1760424047893_jq7rf9wi7_Fox_singlecolor.gcode",
+              "gcode_size": 18693434,
+              "error": null,
+              "processing_time_seconds": 7.580661058425903
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-14T06:41:20.255536"
+        },
+        "confirmed_job_id": "44c8e7b9-75c5-4e2a-a5aa-5cfdb8f75f3e",
+        "final_status": "job_sent_to_printer",
+        "completed_at": "2025-10-14T06:42:06.654998"
+      },
+      "printer_response": {
+        "success": true,
+        "printer_job_id": "printer_wizard_1760424047893_jq7rf9wi7",
+        "message": "Impresión iniciada. 1 archivo(s) subido(s), 0 pendiente(s)",
+        "printer_id": "printer-test-1",
+        "queue_position": 51,
+        "moonraker_url": "http://10.10.10.71:7126",
+        "current_printing": "kybercore_wizard_1760424047893_jq7rf9wi7_gcode_wizard_1760424047893_jq7rf9wi7_Fox_singlecolor.gcode",
+        "uploaded_files": [
+          "kybercore_wizard_1760424047893_jq7rf9wi7_gcode_wizard_1760424047893_jq7rf9wi7_Fox_singlecolor.gcode"
+        ],
+        "pending_files": [],
+        "failed_uploads": [],
+        "estimated_completion": "2025-10-14T06:42:06.654880"
+      },
+      "completed_at": "2025-10-14T06:42:06.688185"
+    },
+    {
+      "job_id": "31ea4d57-9a28-4059-8df3-45ff92108447",
+      "status": "started",
+      "session_data": {
+        "project_id": "91",
+        "project_data": {
+          "id": 91,
+          "nombre": "Articulated Dolphin",
+          "descripcion": "",
+          "autor": "Usuario",
+          "fecha_creacion": "2025-10-14",
+          "estado": "listo",
+          "favorito": false,
+          "carpeta": "src/proyect/Articulated Dolphin - 91",
+          "imagen": "/api/gallery/projects/articulated-dolphin-91/images/stl_preview.png",
+          "badges": {
+            "estado": "Listo",
+            "tipo": "Funcional",
+            "piezas": "1 piezas"
+          },
+          "progreso": {
+            "porcentaje": 100,
+            "mensaje": "Listo para imprimir"
+          },
+          "archivos": [
+            {
+              "nombre": "Dolphin_v2.stl",
+              "tipo": "STL",
+              "tamano": "7661.70 KB"
+            }
+          ],
+          "estadisticas": {
+            "tiempo_estimado": "2-4 horas",
+            "filamento_estimado": "50-100g",
+            "complejidad": "Media"
+          },
+          "aiAnalysis": {
+            "tiempo_estimado": "3 horas",
+            "filamento_total": "75g",
+            "costo_estimado": "$2.50",
+            "recomendaciones": [
+              "Usar soporte en voladizos",
+              "Temperatura de cama: 60°C"
+            ]
+          }
+        },
+        "current_step": "monitoring",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing",
+          "confirmation"
+        ],
+        "created_at": "2025-10-15T01:03:25.590613",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Dolphin_v2.stl"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-15T01:03:25.590635"
+        },
+        "updated_at": "2025-10-15T01:11:22.694654",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-15T01:03:29.297335"
+        },
+        "production_mode": {
+          "mode": "prototype",
+          "priority": "speed",
+          "settings": {
+            "layer_height": 0.3,
+            "infill_density": 15,
+            "print_speed": 80,
+            "quality_preset": "draft"
+          },
+          "estimated_impact": {
+            "time_factor": 0.7,
+            "quality_level": "estándar",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-15T01:11:08.590072"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-15T01:11:14.454943"
+        },
+        "stl_processing": {
+          "task_id": "task_cb5def86-2947-4582-ba1c-a75fb5c8f6fa",
+          "successful": [
+            {
+              "filename": "Dolphin_v2.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": null,
+              "gcode_path": "/tmp/kybercore_processing/wizard_1760490200967_7389wrvr3/gcode_wizard_1760490200967_7389wrvr3_Dolphin_v2.gcode",
+              "gcode_size": 7267630,
+              "error": null,
+              "processing_time_seconds": 2.5860443115234375
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-15T01:11:22.690979"
+        },
+        "confirmed_job_id": "31ea4d57-9a28-4059-8df3-45ff92108447",
+        "final_status": "job_sent_to_printer",
+        "completed_at": "2025-10-15T01:12:08.167951"
+      },
+      "printer_response": {
+        "success": true,
+        "printer_job_id": "printer_wizard_1760490200967_7389wrvr3",
+        "message": "Impresión iniciada. 1 archivo(s) subido(s), 0 pendiente(s)",
+        "printer_id": "printer-test-1",
+        "queue_position": 53,
+        "moonraker_url": "http://10.10.10.71:7126",
+        "current_printing": "kybercore_wizard_1760490200967_7389wrvr3_gcode_wizard_1760490200967_7389wrvr3_Dolphin_v2.gcode",
+        "uploaded_files": [
+          "kybercore_wizard_1760490200967_7389wrvr3_gcode_wizard_1760490200967_7389wrvr3_Dolphin_v2.gcode"
+        ],
+        "pending_files": [],
+        "failed_uploads": [],
+        "estimated_completion": "2025-10-15T01:12:08.167870"
+      },
+      "completed_at": "2025-10-15T01:12:08.221010"
+    },
+    {
+      "job_id": "84df2a84-d216-42b9-9509-5867b3b01735",
+      "status": "started",
+      "session_data": {
+        "project_id": "17",
+        "project_data": {
+          "id": 17,
+          "nombre": "Articulated mouse by Olgigi",
+          "descripcion": "",
+          "autor": "Usuario",
+          "fecha_creacion": "2025-10-13",
+          "estado": "listo",
+          "favorito": false,
+          "carpeta": "src/proyect/Articulated mouse by Olgigi - 17",
+          "imagen": "/api/gallery/projects/articulated-mouse-by-olgigi-17/images/photo_2022-03-01_14.06.54.jpeg",
+          "badges": {
+            "estado": "Listo",
+            "tipo": "Funcional",
+            "piezas": "1 piezas",
+            "origen": "Thingiverse"
+          },
+          "progreso": {
+            "porcentaje": 100,
+            "mensaje": "Listo para imprimir"
+          },
+          "archivos": [
+            {
+              "nombre": "Articulated_mouse.stl",
+              "tipo": "STL",
+              "tamano": "1056.92 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.08 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.13 KB"
+            }
+          ],
+          "estadisticas": {
+            "tiempo_estimado": "2-4 horas",
+            "filamento_estimado": "50-100g",
+            "complejidad": "Media"
+          },
+          "aiAnalysis": {
+            "tiempo_estimado": "3 horas",
+            "filamento_total": "75g",
+            "costo_estimado": "$2.50",
+            "recomendaciones": [
+              "Usar soporte en voladizos",
+              "Temperatura de cama: 60°C"
+            ]
+          }
+        },
+        "current_step": "monitoring",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing",
+          "confirmation"
+        ],
+        "created_at": "2025-10-15T01:23:12.706106",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Articulated_mouse.stl"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-15T01:23:12.706401"
+        },
+        "updated_at": "2025-10-15T01:23:34.844663",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-15T01:23:18.405078"
+        },
+        "production_mode": {
+          "mode": "prototype",
+          "priority": "speed",
+          "settings": {
+            "layer_height": 0.3,
+            "infill_density": 15,
+            "print_speed": 80,
+            "quality_preset": "draft"
+          },
+          "estimated_impact": {
+            "time_factor": 0.7,
+            "quality_level": "estándar",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-15T01:23:22.269950"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-15T01:23:26.605653"
+        },
+        "stl_processing": {
+          "task_id": "task_5f36c6dd-f613-4d26-8de9-b75b847891d1",
+          "successful": [
+            {
+              "filename": "Articulated_mouse.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": null,
+              "gcode_path": "/tmp/kybercore_processing/wizard_1760491388478_5mxhep6aj/gcode_wizard_1760491388478_5mxhep6aj_Articulated_mouse.gcode",
+              "gcode_size": 4225886,
+              "error": null,
+              "processing_time_seconds": 1.5394275188446045
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-15T01:23:34.840850"
+        },
+        "confirmed_job_id": "84df2a84-d216-42b9-9509-5867b3b01735",
+        "final_status": "job_sent_to_printer",
+        "completed_at": "2025-10-15T01:24:02.506857"
+      },
+      "printer_response": {
+        "success": true,
+        "printer_job_id": "printer_wizard_1760491388478_5mxhep6aj",
+        "message": "Impresión iniciada. 1 archivo(s) subido(s), 0 pendiente(s)",
+        "printer_id": "printer-test-1",
+        "queue_position": 55,
+        "moonraker_url": "http://10.10.10.71:7126",
+        "current_printing": "kybercore_wizard_1760491388478_5mxhep6aj_gcode_wizard_1760491388478_5mxhep6aj_Articulated_mouse.gcode",
+        "uploaded_files": [
+          "kybercore_wizard_1760491388478_5mxhep6aj_gcode_wizard_1760491388478_5mxhep6aj_Articulated_mouse.gcode"
+        ],
+        "pending_files": [],
+        "failed_uploads": [],
+        "estimated_completion": "2025-10-15T01:24:02.506814"
+      },
+      "completed_at": "2025-10-15T01:24:02.535417"
     }
   ],
   "estadisticas": {

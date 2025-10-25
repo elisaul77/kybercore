@@ -1,12 +1,12 @@
 {
     "printer-test-1": {
         "id": "printer-test-1",
-        "name": "Impresora Prueba",
-        "model": "Generic",
+        "name": "Ender 3 V3 SE",
+        "model": "V3 SE",
         "ip": "10.10.10.71:7126",
         "local_ip": "10.10.10.71:7126",
         "vpn_ip": "10.13.13.4:7126",
-        "active_ip": "10.13.13.4:7126",
+        "active_ip": null,
         "connection_priority": "auto",
         "status": "ready",
         "capabilities": [
@@ -24,7 +24,7 @@
         "ip": "10.10.10.71:7126",
         "local_ip": "10.10.10.71:7125",
         "vpn_ip": "10.13.13.4:7125",
-        "active_ip": "10.13.13.4:7125",
+        "active_ip": "10.10.10.71:7125",
         "connection_priority": "local_first",
         "status": "ready",
         "capabilities": [],

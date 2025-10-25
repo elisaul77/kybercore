@@ -18172,6 +18172,2074 @@
         },
         "completed_at": "2025-10-14T04:39:14.977903"
       }
+    },
+    "wizard_1760423186347_4z31tikrl": {
+      "project_id": "91",
+      "project_data": {
+        "id": 91,
+        "nombre": "Articulated Dolphin",
+        "descripcion": "",
+        "autor": "Usuario",
+        "fecha_creacion": "2025-10-14",
+        "estado": "listo",
+        "favorito": false,
+        "carpeta": "src/proyect/Articulated Dolphin - 91",
+        "imagen": "/api/gallery/projects/articulated-dolphin-91/images/stl_preview.png",
+        "badges": {
+          "estado": "Listo",
+          "tipo": "Funcional",
+          "piezas": "1 piezas"
+        },
+        "progreso": {
+          "porcentaje": 100,
+          "mensaje": "Listo para imprimir"
+        },
+        "archivos": [
+          {
+            "nombre": "Dolphin_v2.stl",
+            "tipo": "STL",
+            "tamano": "7661.70 KB"
+          }
+        ],
+        "estadisticas": {
+          "tiempo_estimado": "2-4 horas",
+          "filamento_estimado": "50-100g",
+          "complejidad": "Media"
+        },
+        "aiAnalysis": {
+          "tiempo_estimado": "3 horas",
+          "filamento_total": "75g",
+          "costo_estimado": "$2.50",
+          "recomendaciones": [
+            "Usar soporte en voladizos",
+            "Temperatura de cama: 60°C"
+          ]
+        }
+      },
+      "current_step": "stl_processing",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment"
+      ],
+      "created_at": "2025-10-14T06:26:30.330037",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Dolphin_v2.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T06:26:30.330062"
+      },
+      "updated_at": "2025-10-14T06:27:12.815231",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T06:26:34.970638"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-14T06:26:38.782769"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T06:27:12.808218"
+      }
+    },
+    "wizard_1760423308333_riq75wvu7": {
+      "project_id": "59",
+      "project_data": {
+        "id": 59,
+        "nombre": "CR-10 Basic bed level test by jrddupont",
+        "descripcion": "Proyecto importado desde CR-10 Basic bed level test - 2900744.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "250mm_Bed_Level_Test.stl",
+            "tipo": "STL",
+            "tamano": "9.26 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.09 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.10 KB"
+          }
+        ],
+        "imagenes": [
+          "7dab9deef6db4a9a3066f6761b001383.png"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/cr-10-basic-bed-level-test-by-jrddupont-59/images/7dab9deef6db4a9a3066f6761b001383.png",
+        "carpeta": "src/proyect/CR-10 Basic bed level test by jrddupont - 59"
+      },
+      "current_step": "monitoring",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing",
+        "confirmation"
+      ],
+      "created_at": "2025-10-14T06:28:37.760711",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "250mm_Bed_Level_Test.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T06:28:37.760740"
+      },
+      "updated_at": "2025-10-14T06:29:26.460213",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T06:28:42.225309"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-14T06:28:46.083444"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T06:28:51.765263"
+      },
+      "stl_processing": {
+        "task_id": "task_db90f433-f225-4947-b1a7-36498e03b0a1",
+        "successful": [
+          {
+            "filename": "250mm_Bed_Level_Test.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/wizard_1760423308333_riq75wvu7/gcode_wizard_1760423308333_riq75wvu7_250mm_Bed_Level_Test.gcode",
+            "gcode_size": 17374,
+            "error": null,
+            "processing_time_seconds": 0.5710391998291016
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-14T06:29:04.032261"
+      },
+      "confirmed_job_id": "e2b8f50b-8fb0-4a64-bce3-22320c659063",
+      "final_status": "job_sent_to_printer",
+      "completed_at": "2025-10-14T06:29:26.452202"
+    },
+    "wizard_1760423688590_wjm7x7cht": {
+      "project_id": "32",
+      "project_data": {
+        "id": 32,
+        "nombre": "3D Hubs Marvin - Key Chain by HubsMFG",
+        "descripcion": "Proyecto importado desde 3D Hubs Marvin - Key Chain - 215703.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "20140205_Marvin_KeyChain.STL",
+            "tipo": "STL",
+            "tamano": "658.29 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.09 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.12 KB"
+          }
+        ],
+        "imagenes": [
+          "3d-hubs-3d-printed-marvin-mascot-5.png"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/3d-hubs-marvin---key-chain-by-hubsmfg-32/images/3d-hubs-3d-printed-marvin-mascot-5.png",
+        "carpeta": "src/proyect/3D Hubs Marvin - Key Chain by HubsMFG - 32"
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-14T06:34:52.905994",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "20140205_Marvin_KeyChain.STL"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T06:34:52.906031"
+      },
+      "updated_at": "2025-10-14T06:35:54.649538",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T06:34:56.584672"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-14T06:35:04.069840"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T06:35:09.515901"
+      },
+      "stl_processing": {
+        "task_id": "task_5bc40a04-615c-41d8-986a-6df0f39473e4",
+        "successful": [
+          {
+            "filename": "20140205_Marvin_KeyChain.STL",
+            "success": true,
+            "rotated": false,
+            "rotation_info": {
+              "applied": false,
+              "degrees": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "improvement": 0.0,
+              "contact_area": 0.0,
+              "original_area": 0.0
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1760423688590_wjm7x7cht/gcode_wizard_1760423688590_wjm7x7cht_20140205_Marvin_KeyChain.STL",
+            "gcode_size": 1096813,
+            "error": null,
+            "processing_time_seconds": 0.8342781066894531
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-14T06:35:54.642776"
+      }
+    },
+    "wizard_1760424047893_jq7rf9wi7": {
+      "project_id": "30",
+      "project_data": {
+        "id": 30,
+        "nombre": "Articulating Fox - No Supports by NeonGraveStoneArt",
+        "descripcion": "Proyecto importado desde Articulating Fox - No Supports - 6817979.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "Fox_Multicolor.3mf",
+            "tipo": "3MF",
+            "tamano": "8107.39 KB"
+          },
+          {
+            "nombre": "Fox_singlecolor.stl",
+            "tipo": "STL",
+            "tamano": "27247.54 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.11 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.14 KB"
+          }
+        ],
+        "imagenes": [
+          "IMG_20241102_135418196_copy.jpg",
+          "IMG_20241102_135500374_copy.jpg",
+          "IMG_20241102_135613225_copy.jpg",
+          "Fox_singlecolor.png"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/articulating-fox---no-supports-by-neongravestoneart-30/images/IMG_20241102_135418196_copy.jpg",
+        "carpeta": "src/proyect/Articulating Fox - No Supports by NeonGraveStoneArt - 30"
+      },
+      "current_step": "monitoring",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing",
+        "confirmation"
+      ],
+      "created_at": "2025-10-14T06:40:53.640456",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Fox_singlecolor.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-14T06:40:53.640481"
+      },
+      "updated_at": "2025-10-14T06:42:06.664134",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-14T06:40:58.122860"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "economy",
+        "settings": {
+          "layer_height": 0.2,
+          "infill_density": 10,
+          "print_speed": 60,
+          "quality_preset": "normal"
+        },
+        "estimated_impact": {
+          "time_factor": 1.0,
+          "quality_level": "estándar",
+          "material_usage": "optimizado"
+        },
+        "completed_at": "2025-10-14T06:41:02.566539"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-14T06:41:06.838447"
+      },
+      "stl_processing": {
+        "task_id": "task_8cadc51f-5933-4f07-80b4-ca2c0dfa094b",
+        "successful": [
+          {
+            "filename": "Fox_singlecolor.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/wizard_1760424047893_jq7rf9wi7/gcode_wizard_1760424047893_jq7rf9wi7_Fox_singlecolor.gcode",
+            "gcode_size": 18693434,
+            "error": null,
+            "processing_time_seconds": 7.580661058425903
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-14T06:41:20.255536"
+      },
+      "confirmed_job_id": "44c8e7b9-75c5-4e2a-a5aa-5cfdb8f75f3e",
+      "final_status": "job_sent_to_printer",
+      "completed_at": "2025-10-14T06:42:06.654998"
+    },
+    "wizard_1760489907949_1v92rifm5": {
+      "project_id": "70",
+      "project_data": {
+        "id": 70,
+        "nombre": "Articulating Bunny (Print in place) by NeonGraveStoneArt",
+        "descripcion": "Proyecto importado desde Articulating Bunny (Print in place) - 6524856.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "Articulating_Bunny_Big.stl",
+            "tipo": "STL",
+            "tamano": "29815.45 KB"
+          },
+          {
+            "nombre": "Articulating_Bunny_Small.stl",
+            "tipo": "STL",
+            "tamano": "29728.82 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.11 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.14 KB"
+          }
+        ],
+        "imagenes": [
+          "9c167950-8773-4411-8b01-bcfcd2544e72.jpg",
+          "ea02711a-1dda-4f36-8353-59834c2b0c7f.jpg",
+          "eb697a93-a400-487e-96c1-728ae06353d0.png",
+          "cefbbede-e112-4303-8193-1affe6534b49.png",
+          "b27dc2c2-9914-4764-a4bd-cfa4c02721b8.png",
+          "5fe3f79a-7c35-40da-85a3-9325c71a4b28.png"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/articulating-bunny-(print-in-place)-by-neongravestoneart-70/images/9c167950-8773-4411-8b01-bcfcd2544e72.jpg",
+        "carpeta": "src/proyect/Articulating Bunny (Print in place) by NeonGraveStoneArt - 70"
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-15T00:58:34.268041",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Articulating_Bunny_Big.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-15T00:58:34.268336"
+      },
+      "updated_at": "2025-10-15T01:00:51.295384",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-15T00:58:38.441127"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "economy",
+        "settings": {
+          "layer_height": 0.2,
+          "infill_density": 10,
+          "print_speed": 60,
+          "quality_preset": "normal"
+        },
+        "estimated_impact": {
+          "time_factor": 1.0,
+          "quality_level": "estándar",
+          "material_usage": "optimizado"
+        },
+        "completed_at": "2025-10-15T00:58:49.407605"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-15T00:58:57.323475"
+      },
+      "stl_processing": {
+        "task_id": "task_cb9de5b2-f96f-46c8-ae00-d04e71d491ae",
+        "successful": [],
+        "failed": [
+          {
+            "filename": "Articulating_Bunny_Big.stl",
+            "success": false,
+            "rotated": true,
+            "rotation_info": {
+              "applied": true,
+              "degrees": [
+                0.0,
+                135.0,
+                240.0
+              ],
+              "improvement": 73.55913062962313,
+              "contact_area": 87.56510941006648,
+              "original_area": 50.45260891340328
+            },
+            "gcode_path": null,
+            "gcode_size": null,
+            "error": "Error laminando archivo: Laminado falló después de 3 intentos: APISLICER HTTP 500: {\"detail\":\"\"}",
+            "processing_time_seconds": null
+          }
+        ],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 0,
+          "failed": 1
+        },
+        "completed_at": "2025-10-15T01:00:51.289993"
+      }
+    },
+    "wizard_1760490117050_0yx06qegf": {
+      "project_id": "32",
+      "project_data": {
+        "id": 32,
+        "nombre": "3D Hubs Marvin - Key Chain by HubsMFG",
+        "descripcion": "Proyecto importado desde 3D Hubs Marvin - Key Chain - 215703.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "20140205_Marvin_KeyChain.STL",
+            "tipo": "STL",
+            "tamano": "658.29 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.09 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.12 KB"
+          }
+        ],
+        "imagenes": [
+          "3d-hubs-3d-printed-marvin-mascot-5.png"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/3d-hubs-marvin---key-chain-by-hubsmfg-32/images/3d-hubs-3d-printed-marvin-mascot-5.png",
+        "carpeta": "src/proyect/3D Hubs Marvin - Key Chain by HubsMFG - 32"
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-15T01:02:02.676472",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "20140205_Marvin_KeyChain.STL"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-15T01:02:02.676522"
+      },
+      "updated_at": "2025-10-15T01:02:42.565092",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-15T01:02:07.073614"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-15T01:02:12.830964"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-15T01:02:18.171242"
+      },
+      "stl_processing": {
+        "task_id": "task_e058a6c4-f2ed-47ab-8b82-1ef3d47fd50e",
+        "successful": [
+          {
+            "filename": "20140205_Marvin_KeyChain.STL",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/wizard_1760490117050_0yx06qegf/gcode_wizard_1760490117050_0yx06qegf_20140205_Marvin_KeyChain.STL",
+            "gcode_size": 1096813,
+            "error": null,
+            "processing_time_seconds": 0.7706179618835449
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-15T01:02:42.561070"
+      }
+    },
+    "wizard_1760490200967_7389wrvr3": {
+      "project_id": "91",
+      "project_data": {
+        "id": 91,
+        "nombre": "Articulated Dolphin",
+        "descripcion": "",
+        "autor": "Usuario",
+        "fecha_creacion": "2025-10-14",
+        "estado": "listo",
+        "favorito": false,
+        "carpeta": "src/proyect/Articulated Dolphin - 91",
+        "imagen": "/api/gallery/projects/articulated-dolphin-91/images/stl_preview.png",
+        "badges": {
+          "estado": "Listo",
+          "tipo": "Funcional",
+          "piezas": "1 piezas"
+        },
+        "progreso": {
+          "porcentaje": 100,
+          "mensaje": "Listo para imprimir"
+        },
+        "archivos": [
+          {
+            "nombre": "Dolphin_v2.stl",
+            "tipo": "STL",
+            "tamano": "7661.70 KB"
+          }
+        ],
+        "estadisticas": {
+          "tiempo_estimado": "2-4 horas",
+          "filamento_estimado": "50-100g",
+          "complejidad": "Media"
+        },
+        "aiAnalysis": {
+          "tiempo_estimado": "3 horas",
+          "filamento_total": "75g",
+          "costo_estimado": "$2.50",
+          "recomendaciones": [
+            "Usar soporte en voladizos",
+            "Temperatura de cama: 60°C"
+          ]
+        }
+      },
+      "current_step": "monitoring",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing",
+        "confirmation"
+      ],
+      "created_at": "2025-10-15T01:03:25.590613",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Dolphin_v2.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-15T01:03:25.590635"
+      },
+      "updated_at": "2025-10-15T01:12:08.174196",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-15T01:03:29.297335"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-15T01:11:08.590072"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-15T01:11:14.454943"
+      },
+      "stl_processing": {
+        "task_id": "task_cb5def86-2947-4582-ba1c-a75fb5c8f6fa",
+        "successful": [
+          {
+            "filename": "Dolphin_v2.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/wizard_1760490200967_7389wrvr3/gcode_wizard_1760490200967_7389wrvr3_Dolphin_v2.gcode",
+            "gcode_size": 7267630,
+            "error": null,
+            "processing_time_seconds": 2.5860443115234375
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-15T01:11:22.690979"
+      },
+      "confirmed_job_id": "31ea4d57-9a28-4059-8df3-45ff92108447",
+      "final_status": "job_sent_to_printer",
+      "completed_at": "2025-10-15T01:12:08.167951"
+    },
+    "wizard_1760491388478_5mxhep6aj": {
+      "project_id": "17",
+      "project_data": {
+        "id": 17,
+        "nombre": "Articulated mouse by Olgigi",
+        "descripcion": "",
+        "autor": "Usuario",
+        "fecha_creacion": "2025-10-13",
+        "estado": "listo",
+        "favorito": false,
+        "carpeta": "src/proyect/Articulated mouse by Olgigi - 17",
+        "imagen": "/api/gallery/projects/articulated-mouse-by-olgigi-17/images/photo_2022-03-01_14.06.54.jpeg",
+        "badges": {
+          "estado": "Listo",
+          "tipo": "Funcional",
+          "piezas": "1 piezas",
+          "origen": "Thingiverse"
+        },
+        "progreso": {
+          "porcentaje": 100,
+          "mensaje": "Listo para imprimir"
+        },
+        "archivos": [
+          {
+            "nombre": "Articulated_mouse.stl",
+            "tipo": "STL",
+            "tamano": "1056.92 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.08 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.13 KB"
+          }
+        ],
+        "estadisticas": {
+          "tiempo_estimado": "2-4 horas",
+          "filamento_estimado": "50-100g",
+          "complejidad": "Media"
+        },
+        "aiAnalysis": {
+          "tiempo_estimado": "3 horas",
+          "filamento_total": "75g",
+          "costo_estimado": "$2.50",
+          "recomendaciones": [
+            "Usar soporte en voladizos",
+            "Temperatura de cama: 60°C"
+          ]
+        }
+      },
+      "current_step": "monitoring",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing",
+        "confirmation"
+      ],
+      "created_at": "2025-10-15T01:23:12.706106",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Articulated_mouse.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-15T01:23:12.706401"
+      },
+      "updated_at": "2025-10-15T01:24:02.511210",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-15T01:23:18.405078"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-15T01:23:22.269950"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-15T01:23:26.605653"
+      },
+      "stl_processing": {
+        "task_id": "task_5f36c6dd-f613-4d26-8de9-b75b847891d1",
+        "successful": [
+          {
+            "filename": "Articulated_mouse.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/wizard_1760491388478_5mxhep6aj/gcode_wizard_1760491388478_5mxhep6aj_Articulated_mouse.gcode",
+            "gcode_size": 4225886,
+            "error": null,
+            "processing_time_seconds": 1.5394275188446045
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-15T01:23:34.840850"
+      },
+      "confirmed_job_id": "84df2a84-d216-42b9-9509-5867b3b01735",
+      "final_status": "job_sent_to_printer",
+      "completed_at": "2025-10-15T01:24:02.506857"
+    },
+    "wizard_1761376905637_ck33xxjky": {
+      "project_id": "87",
+      "project_data": {
+        "id": 87,
+        "nombre": "Flexi Triceratop by burt_23",
+        "descripcion": "Proyecto importado desde Flexi Triceratop - 2802438.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "Flexi_Triceratop.stl",
+            "tipo": "STL",
+            "tamano": "801.29 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.08 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.13 KB"
+          }
+        ],
+        "imagenes": [
+          "IMG_9821.JPG",
+          "88bb5b75b7ba933cda1662aecb2f03d0.png"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/flexi-triceratop-by-burt_23-87/images/IMG_9821.JPG",
+        "carpeta": "src/proyect/Flexi Triceratop by burt_23 - 87"
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-25T07:21:54.732178",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Flexi_Triceratop.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-25T07:21:54.732811"
+      },
+      "updated_at": "2025-10-25T07:27:59.599735",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-25T07:21:59.512298"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-25T07:27:26.881572"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-25T07:27:35.950427"
+      },
+      "stl_processing": {
+        "task_id": "task_1fd2f87d-967a-4f0f-9836-c96998f8e71a",
+        "successful": [
+          {
+            "filename": "Flexi_Triceratop.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": {
+              "applied": false,
+              "degrees": [
+                180.0,
+                0.0,
+                0.0
+              ],
+              "improvement": 0.0026664174809673167,
+              "contact_area": 0.0,
+              "original_area": 0.0
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761376905637_ck33xxjky/gcode_wizard_1761376905637_ck33xxjky_Flexi_Triceratop.gcode",
+            "gcode_size": 4727711,
+            "error": null,
+            "processing_time_seconds": 1.4440221786499023
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-25T07:27:59.596028"
+      }
+    },
+    "wizard_1761377577153_djjcgaqha": {
+      "project_id": "53",
+      "project_data": {
+        "id": 53,
+        "nombre": "Flying Helicopter Toy (OLD) by 3DBROOKLYN",
+        "descripcion": "Proyecto importado desde Flying Helicopter Toy (OLD) - 1885007.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "Helicopter_Front.stl",
+            "tipo": "STL",
+            "tamano": "193.25 KB"
+          },
+          {
+            "nombre": "Helicopter_Back.stl",
+            "tipo": "STL",
+            "tamano": "708.68 KB"
+          },
+          {
+            "nombre": "Helicopter_Blades.stl",
+            "tipo": "STL",
+            "tamano": "2771.66 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.10 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.12 KB"
+          }
+        ],
+        "imagenes": [
+          "Helicopter_Group.png",
+          "Helicopter_Render.png",
+          "Helicopter.png",
+          "8ea42e10f560f20b3928765afc2a69b1.png",
+          "c9bed12a14e0f39c0e0f918710c19f79.png",
+          "cdd75501b1dfcbaac760a877030d11c8.png"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/flying-helicopter-toy-(old)-by-3dbrooklyn-53/images/Helicopter_Group.png",
+        "carpeta": "src/proyect/Flying Helicopter Toy (OLD) by 3DBROOKLYN - 53"
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-25T07:33:06.214771",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Helicopter_Front.stl",
+          "Helicopter_Back.stl",
+          "Helicopter_Blades.stl"
+        ],
+        "total_pieces": 3,
+        "total_estimated_filament_grams": 36.900000000000006,
+        "total_estimated_time_hours": 2.25,
+        "completed_at": "2025-10-25T07:33:06.214807"
+      },
+      "updated_at": "2025-10-25T07:34:48.892293",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-25T07:33:12.351583"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-25T07:33:17.589000"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-25T07:33:24.152309"
+      },
+      "plating_info": {
+        "enabled": true,
+        "rotation_applied_first": true,
+        "original_files": [
+          "Helicopter_Front.stl",
+          "Helicopter_Back.stl",
+          "Helicopter_Blades.stl"
+        ],
+        "combined_file": "combined_plating.stl",
+        "algorithm": "bin-packing",
+        "metadata": {
+          "pieces_count": 3,
+          "nested_count": 1,
+          "positions": [
+            {
+              "filename": "rotated_Helicopter_Front.stl",
+              "x": 3.0,
+              "y": 3.0,
+              "z": 0.0,
+              "nested_in": null
+            },
+            {
+              "filename": "rotated_Helicopter_Back.stl",
+              "x": 3.0,
+              "y": 43.0,
+              "z": 0.0,
+              "nested_in": null
+            },
+            {
+              "filename": "rotated_Helicopter_Blades.stl",
+              "x": 14.0,
+              "y": 48.0,
+              "z": 0.0,
+              "nested_in": "rotated_Helicopter_Back.stl"
+            }
+          ],
+          "bed_size": [
+            220.0,
+            220.0
+          ],
+          "spacing": 3.0,
+          "algorithm": "bin-packing",
+          "utilization_3d_percent": 0.6932849838255244,
+          "combined_file_size": 3761584,
+          "combined_file_path": "/tmp/kybercore_processing/wizard_1761377577153_djjcgaqha/combined_plating.stl",
+          "nesting_used": true,
+          "nesting_success_rate": 33.33333333333333
+        },
+        "message": "Nesting exitoso: 1/3 piezas anidadas"
+      },
+      "stl_processing": {
+        "task_id": "task_e27e9e41-daa7-40bb-b96f-7894f2706f86",
+        "successful": [
+          {
+            "filename": "combined_plating.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761377577153_djjcgaqha/gcode_wizard_1761377577153_djjcgaqha_combined_plating.gcode",
+            "gcode_size": 4088752,
+            "error": null,
+            "processing_time_seconds": 2.525264024734497
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0,
+          "plating_used": true,
+          "original_files_count": 3,
+          "combined_file": "combined_plating.stl"
+        },
+        "completed_at": "2025-10-25T07:34:48.878165"
+      }
+    },
+    "wizard_1761397734509_7uapot2ud": {
+      "project_id": "32",
+      "project_data": {
+        "id": 32,
+        "nombre": "3D Hubs Marvin - Key Chain by HubsMFG",
+        "descripcion": "Proyecto importado desde 3D Hubs Marvin - Key Chain - 215703.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "20140205_Marvin_KeyChain.STL",
+            "tipo": "STL",
+            "tamano": "658.29 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.09 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.12 KB"
+          }
+        ],
+        "imagenes": [
+          "3d-hubs-3d-printed-marvin-mascot-5.png"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/3d-hubs-marvin---key-chain-by-hubsmfg-32/images/3d-hubs-3d-printed-marvin-mascot-5.png",
+        "carpeta": "src/proyect/3D Hubs Marvin - Key Chain by HubsMFG - 32"
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-25T13:08:59.257966",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "20140205_Marvin_KeyChain.STL"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-25T13:08:59.659774"
+      },
+      "updated_at": "2025-10-25T13:10:10.862112",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-25T13:09:03.979226"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-25T13:09:09.477177"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-25T13:09:19.802345"
+      },
+      "stl_processing": {
+        "task_id": "task_5b00fd5e-7bc4-4fce-9f1a-fc2c2de22a21",
+        "successful": [
+          {
+            "filename": "20140205_Marvin_KeyChain.STL",
+            "success": true,
+            "rotated": false,
+            "rotation_info": {
+              "applied": false,
+              "degrees": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "improvement": 0.0,
+              "contact_area": 0.0,
+              "original_area": 0.0
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761397734509_7uapot2ud/gcode_wizard_1761397734509_7uapot2ud_20140205_Marvin_KeyChain.STL",
+            "gcode_size": 1096816,
+            "error": null,
+            "processing_time_seconds": 0.8550989627838135
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-25T13:10:10.857951"
+      }
+    },
+    "wizard_1761397909961_6b1quf192": {
+      "project_id": "32",
+      "project_data": {
+        "id": 32,
+        "nombre": "3D Hubs Marvin - Key Chain by HubsMFG",
+        "descripcion": "Proyecto importado desde 3D Hubs Marvin - Key Chain - 215703.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "20140205_Marvin_KeyChain.STL",
+            "tipo": "STL",
+            "tamano": "658.29 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.09 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.12 KB"
+          }
+        ],
+        "imagenes": [
+          "3d-hubs-3d-printed-marvin-mascot-5.png"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/3d-hubs-marvin---key-chain-by-hubsmfg-32/images/3d-hubs-3d-printed-marvin-mascot-5.png",
+        "carpeta": "src/proyect/3D Hubs Marvin - Key Chain by HubsMFG - 32"
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-25T13:11:58.391294",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "20140205_Marvin_KeyChain.STL"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-25T13:11:58.391348"
+      },
+      "updated_at": "2025-10-25T13:12:20.228030",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-25T13:12:01.478736"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-25T13:12:05.607587"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-25T13:12:12.815024"
+      },
+      "stl_processing": {
+        "task_id": "task_ebefc65e-5421-4d37-ae82-ab197e9e1f8c",
+        "successful": [
+          {
+            "filename": "20140205_Marvin_KeyChain.STL",
+            "success": true,
+            "rotated": false,
+            "rotation_info": {
+              "applied": false,
+              "degrees": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "improvement": 0.0,
+              "contact_area": 0.0,
+              "original_area": 0.0
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761397909961_6b1quf192/gcode_wizard_1761397909961_6b1quf192_20140205_Marvin_KeyChain.STL",
+            "gcode_size": 1096705,
+            "error": null,
+            "processing_time_seconds": 0.9934744834899902
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-25T13:12:20.224121"
+      }
+    },
+    "wizard_1761417446940_a9qjkqxkn": {
+      "project_id": "9",
+      "project_data": {
+        "id": 9,
+        "nombre": "3D Printed Case for Arduino Uno, Leonardo. by ZygmuntW",
+        "descripcion": "",
+        "autor": "Usuario",
+        "fecha_creacion": "2025-10-13",
+        "estado": "listo",
+        "favorito": false,
+        "carpeta": "src/proyect/3D Printed Case for Arduino Uno, Leonardo. by ZygmuntW - 9",
+        "imagen": "/api/gallery/projects/3d-printed-case-for-arduino-uno,-leonardo.-by-zygmuntw-9/images/_DSC2857.jpg",
+        "badges": {
+          "estado": "Listo",
+          "tipo": "Funcional",
+          "piezas": "8 piezas",
+          "origen": "Thingiverse"
+        },
+        "progreso": {
+          "porcentaje": 100,
+          "mensaje": "Listo para imprimir"
+        },
+        "archivos": [
+          {
+            "nombre": "uno_case_base.stl",
+            "tipo": "STL",
+            "tamano": "1334.02 KB"
+          },
+          {
+            "nombre": "uno_case_lid.stl",
+            "tipo": "STL",
+            "tamano": "1379.23 KB"
+          },
+          {
+            "nombre": "leonardo_case_base.stl",
+            "tipo": "STL",
+            "tamano": "1333.86 KB"
+          },
+          {
+            "nombre": "leonardo_case_lid.stl",
+            "tipo": "STL",
+            "tamano": "1324.92 KB"
+          },
+          {
+            "nombre": "reset_button.stl",
+            "tipo": "STL",
+            "tamano": "1215.25 KB"
+          },
+          {
+            "nombre": "leonardo_case_slim_base.stl",
+            "tipo": "STL",
+            "tamano": "1326.62 KB"
+          },
+          {
+            "nombre": "leonardo_case_slim_lid.stl",
+            "tipo": "STL",
+            "tamano": "1429.88 KB"
+          },
+          {
+            "nombre": "leonardo_reset_button_slim.stl",
+            "tipo": "STL",
+            "tamano": "1214.21 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.11 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.12 KB"
+          }
+        ],
+        "estadisticas": {
+          "tiempo_estimado": "2-4 horas",
+          "filamento_estimado": "50-100g",
+          "complejidad": "Media"
+        },
+        "aiAnalysis": {
+          "tiempo_estimado": "3 horas",
+          "filamento_total": "75g",
+          "costo_estimado": "$2.50",
+          "recomendaciones": [
+            "Usar soporte en voladizos",
+            "Temperatura de cama: 60°C"
+          ]
+        }
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-25T18:37:42.414552",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "uno_case_base.stl",
+          "uno_case_lid.stl"
+        ],
+        "total_pieces": 2,
+        "total_estimated_filament_grams": 24.6,
+        "total_estimated_time_hours": 1.5,
+        "completed_at": "2025-10-25T18:37:42.414576"
+      },
+      "updated_at": "2025-10-25T18:38:08.599696",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-25T18:37:46.413885"
+      },
+      "production_mode": {
+        "mode": "prototype",
+        "priority": "speed",
+        "settings": {
+          "layer_height": 0.3,
+          "infill_density": 15,
+          "print_speed": 80,
+          "quality_preset": "draft"
+        },
+        "estimated_impact": {
+          "time_factor": 0.7,
+          "quality_level": "estándar",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-25T18:37:52.056012"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-25T18:37:57.057078"
+      },
+      "plating_info": {
+        "enabled": true,
+        "rotation_applied_first": true,
+        "original_files": [
+          "uno_case_base.stl",
+          "uno_case_lid.stl"
+        ],
+        "combined_file": "combined_plating.stl",
+        "algorithm": "bin-packing",
+        "metadata": {
+          "pieces_count": 2,
+          "positions": [
+            {
+              "x": 1.5,
+              "y": 1.5,
+              "rotation": 0.0
+            },
+            {
+              "x": 80.8,
+              "y": 1.5,
+              "rotation": 0.0
+            }
+          ],
+          "mesh_info": [
+            {
+              "filename": "rotated_uno_case_base.stl",
+              "path": "/tmp/kybercore_processing/wizard_1761417446940_a9qjkqxkn/rotated_uno_case_base.stl",
+              "dimensions": {
+                "x": 76.3,
+                "y": 76.3,
+                "z": 10.5
+              },
+              "bounds": [
+                [
+                  -38.15,
+                  -38.15,
+                  0.0
+                ],
+                [
+                  38.15,
+                  38.15,
+                  10.5
+                ]
+              ],
+              "volume": 19232.27753343384
+            },
+            {
+              "filename": "rotated_uno_case_lid.stl",
+              "path": "/tmp/kybercore_processing/wizard_1761417446940_a9qjkqxkn/rotated_uno_case_lid.stl",
+              "dimensions": {
+                "x": 76.3,
+                "y": 76.3,
+                "z": 14.86
+              },
+              "bounds": [
+                [
+                  -38.15,
+                  -38.15,
+                  0.0
+                ],
+                [
+                  38.15,
+                  38.15,
+                  14.86
+                ]
+              ],
+              "volume": 22319.431421353434
+            }
+          ],
+          "bed_size": [
+            220.0,
+            220.0
+          ],
+          "spacing": 3.0,
+          "algorithm": "bin-packing",
+          "total_area_used": 11643.38,
+          "bed_area": 48400.0,
+          "utilization_percent": 24.056570247933884,
+          "combined_file_size": 846884,
+          "combined_file_path": "/tmp/kybercore_processing/wizard_1761417446940_a9qjkqxkn/combined_plating.stl",
+          "nesting_used": false
+        },
+        "message": "Plating exitoso: 2 piezas combinadas"
+      },
+      "stl_processing": {
+        "task_id": "task_85ff175d-d4e6-4329-8339-a74e743cd7dc",
+        "successful": [
+          {
+            "filename": "combined_plating.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": null,
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761417446940_a9qjkqxkn/gcode_wizard_1761417446940_a9qjkqxkn_combined_plating.gcode",
+            "gcode_size": 6220798,
+            "error": null,
+            "processing_time_seconds": 2.0730834007263184
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0,
+          "plating_used": true,
+          "original_files_count": 2,
+          "combined_file": "combined_plating.stl"
+        },
+        "completed_at": "2025-10-25T18:38:08.596031"
+      }
     }
   },
   "metadata": {
