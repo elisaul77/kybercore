@@ -9,6 +9,7 @@ import tempfile
 import uuid
 from pathlib import Path
 import logging
+from logging.handlers import RotatingFileHandler
 from datetime import datetime
 import configparser
 from typing import Optional, Dict, Any, Tuple
@@ -16,9 +17,41 @@ import numpy as np
 import trimesh
 from scipy.spatial import ConvexHull
 import math
+import sys
 
-logging.basicConfig(level=logging.INFO)
+# Configurar logging a archivos y consola
+log_dir = Path("/app/logs")
+log_dir.mkdir(exist_ok=True)
+log_file = log_dir / "apislicer.log"
+
+# Formato de logs
+log_format = logging.Formatter(
+    fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+
+# Handler para archivo con rotación (10MB, 3 archivos)
+file_handler = RotatingFileHandler(
+    log_file,
+    maxBytes=10 * 1024 * 1024,  # 10 MB
+    backupCount=3,
+    encoding='utf-8'
+)
+file_handler.setFormatter(log_format)
+file_handler.setLevel(logging.INFO)
+
+# Handler para consola
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setFormatter(log_format)
+console_handler.setLevel(logging.INFO)
+
+# Configurar root logger
+logging.basicConfig(level=logging.INFO, handlers=[file_handler, console_handler])
 logger = logging.getLogger(__name__)
+
+logger.info("📋 Logging configurado para APISLICER")
+logger.info(f"📁 Logs guardándose en: {log_file}")
+logger.info("🔄 Rotación: 10MB × 3 archivos")
 
 app = FastAPI(title="3D Slicer API", description="API para laminar archivos STL y generar gcode")
 

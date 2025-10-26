@@ -13,6 +13,10 @@ from src.controllers import fleet_controller, recommender_controller, analysis_c
 # Importar routers del sistema de pedidos
 from src.api.routers import customers, orders, production, metrics
 
+# Configurar logging a archivos
+from src.config.logging_config import setup_logging
+setup_logging(service_name="kybercore", log_level="INFO")
+
 # Cargar variables de entorno desde .env
 env_path = Path(__file__).parent.parent.parent / '.env'
 if env_path.exists():

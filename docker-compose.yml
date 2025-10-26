@@ -7,6 +7,7 @@ services:
       - "8000:8000"
     volumes:
       - ./:/app
+      - ./logs:/app/logs  # Logs en carpeta del proyecto
     logging:
       driver: "json-file"
       options:
@@ -28,16 +29,7 @@ services:
           memory: 256M
           cpus: '0.25'
     # Comando optimizado con parámetros válidos de Uvicorn
-    command: [
-      "uvicorn", "src.api.main:app", 
-      "--host", "0.0.0.0", 
-      "--port", "8000",
-      "--workers", "1",
-      "--backlog", "32",
-      "--timeout-keep-alive", "5",
-      "--timeout-graceful-shutdown", "10",
-      "--log-level", "info"
-    ]
+    command: ["/bin/bash", "/app/start.sh"]
     restart: unless-stopped
     # Configuración de salud del contenedor
     healthcheck:
@@ -61,10 +53,12 @@ services:
     ports:
       - "8001:8000" # host:container (usamos 8001 para evitar conflicto con kybercore en 8000)
     volumes:
-      - ./APISLICER/app:/app
+      - ./APISLICER/start.sh:/app/start.sh  # Script de arranque
+      - ./APISLICER/app:/app/app  # Código de la aplicación en subdirectorio
       - ./APISLICER/config:/app/config
       - ./APISLICER/output:/app/output
       - ./APISLICER/uploads:/app/uploads
+      - ./logs:/app/logs  # Logs en carpeta del proyecto
     environment:
       - PYTHONUNBUFFERED=1
       - DISPLAY=:99

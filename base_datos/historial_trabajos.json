@@ -5376,6 +5376,175 @@
         "estimated_completion": "2025-10-26T17:38:44.056720"
       },
       "completed_at": "2025-10-26T17:38:44.093438"
+    },
+    {
+      "job_id": "2e88cae0-d7f6-473a-846d-ee45ab921760",
+      "status": "started",
+      "session_data": {
+        "project_id": "59",
+        "project_data": {
+          "id": 59,
+          "nombre": "CR-10 Basic bed level test by jrddupont",
+          "descripcion": "Proyecto importado desde CR-10 Basic bed level test - 2900744.zip",
+          "categoria": "general",
+          "archivos": [
+            {
+              "nombre": "250mm_Bed_Level_Test.stl",
+              "tipo": "STL",
+              "tamano": "9.26 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.09 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.10 KB"
+            }
+          ],
+          "imagenes": [
+            "7dab9deef6db4a9a3066f6761b001383.png"
+          ],
+          "fecha_creacion": "2025-10-13",
+          "estado": "completado",
+          "progreso": 100,
+          "badge": "Thingiverse",
+          "imagen": "/api/gallery/projects/cr-10-basic-bed-level-test-by-jrddupont-59/images/7dab9deef6db4a9a3066f6761b001383.png",
+          "carpeta": "src/proyect/CR-10 Basic bed level test by jrddupont - 59"
+        },
+        "current_step": "monitoring",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing",
+          "confirmation"
+        ],
+        "created_at": "2025-10-26T20:55:51.996332",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "250mm_Bed_Level_Test.stl"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-26T20:55:51.996361"
+        },
+        "updated_at": "2025-10-26T20:56:27.685489",
+        "material_selection": {
+          "material_type": "PETG",
+          "color": "Transparente",
+          "brand": "Overture",
+          "selected_material_data": {
+            "id": "fil_003",
+            "tipo": "PETG",
+            "color": "Transparente",
+            "marca": "Overture",
+            "stock_actual": 900,
+            "stock_minimo": 200,
+            "precio_por_kg": 28.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 4.35,
+          "completed_at": "2025-10-26T20:55:57.760481"
+        },
+        "production_mode": {
+          "mode": "factory",
+          "priority": "quality",
+          "settings": {
+            "layer_height": 0.1,
+            "infill_density": 25,
+            "print_speed": 40,
+            "quality_preset": "fine"
+          },
+          "estimated_impact": {
+            "time_factor": 1.3,
+            "quality_level": "alta",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-26T20:56:02.854452"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-26T20:56:08.544006"
+        },
+        "stl_processing": {
+          "task_id": "task_e6c78fd5-0b09-413f-84c9-85de513e9b31",
+          "successful": [
+            {
+              "filename": "250mm_Bed_Level_Test.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 0.0,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": "/tmp/kybercore_processing/wizard_1761512145004_gn4trl4xv/gcode_wizard_1761512145004_gn4trl4xv_rotated_250mm_Bed_Level_Test.gcode",
+              "gcode_size": 19922,
+              "error": null,
+              "processing_time_seconds": 0.027162551879882812
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-26T20:56:19.634260"
+        },
+        "confirmed_job_id": "2e88cae0-d7f6-473a-846d-ee45ab921760",
+        "final_status": "job_sent_to_printer",
+        "completed_at": "2025-10-26T20:57:28.992766"
+      },
+      "printer_response": {
+        "success": true,
+        "printer_job_id": "printer_wizard_1761512145004_gn4trl4xv",
+        "message": "Impresión iniciada. 1 archivo(s) subido(s), 0 pendiente(s)",
+        "printer_id": "printer-test-1",
+        "queue_position": 87,
+        "moonraker_url": "http://10.10.10.71:7126",
+        "current_printing": "kybercore_wizard_1761512145004_gn4trl4xv_gcode_wizard_1761512145004_gn4trl4xv_rotated_250mm_Bed_Level_Test.gcode",
+        "uploaded_files": [
+          "kybercore_wizard_1761512145004_gn4trl4xv_gcode_wizard_1761512145004_gn4trl4xv_rotated_250mm_Bed_Level_Test.gcode"
+        ],
+        "pending_files": [],
+        "failed_uploads": [],
+        "estimated_completion": "2025-10-26T20:57:28.992657"
+      },
+      "completed_at": "2025-10-26T20:57:29.039798"
     }
   ],
   "estadisticas": {

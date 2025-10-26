@@ -26676,6 +26676,612 @@
       "confirmed_job_id": "42c3c126-fb8a-46ab-9cdc-36a7e3379f86",
       "final_status": "job_sent_to_printer",
       "completed_at": "2025-10-26T17:38:44.056796"
+    },
+    "wizard_1761503049931_62yarnamv": {
+      "project_id": "36",
+      "project_data": {
+        "id": 36,
+        "nombre": "Lego Calibration Cube by EnginEli",
+        "descripcion": "Proyecto importado desde Lego Calibration Cube - 4645349.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "LegoCalibrationCube.stl",
+            "tipo": "STL",
+            "tamano": "307.21 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.09 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.10 KB"
+          }
+        ],
+        "imagenes": [
+          "IMG_20201106_122015_331.jpg",
+          "IMG_20201106_173359.jpg"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/lego-calibration-cube-by-engineli-36/images/IMG_20201106_122015_331.jpg",
+        "carpeta": "src/proyect/Lego Calibration Cube by EnginEli - 36"
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-26T18:24:13.490495",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "LegoCalibrationCube.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-26T18:24:13.490566"
+      },
+      "updated_at": "2025-10-26T18:24:47.088459",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-26T18:24:18.492490"
+      },
+      "production_mode": {
+        "mode": "factory",
+        "priority": "quality",
+        "settings": {
+          "layer_height": 0.1,
+          "infill_density": 25,
+          "print_speed": 40,
+          "quality_preset": "fine"
+        },
+        "estimated_impact": {
+          "time_factor": 1.3,
+          "quality_level": "alta",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-26T18:24:24.300306"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-26T18:24:28.630546"
+      },
+      "stl_processing": {
+        "task_id": "task_4cf07ba4-a8d5-425b-a530-4fd180cdf88f",
+        "successful": [
+          {
+            "filename": "LegoCalibrationCube.stl",
+            "success": true,
+            "rotated": true,
+            "rotation_info": {
+              "applied": true,
+              "degrees": [
+                180.0,
+                90.0,
+                0.0
+              ],
+              "improvement": 81.18069803529791,
+              "contact_area": 391.3082797430543,
+              "original_area": 215.97680326124973
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761503049931_62yarnamv/gcode_wizard_1761503049931_62yarnamv_rotated_LegoCalibrationCube.gcode",
+            "gcode_size": 1252283,
+            "error": null,
+            "processing_time_seconds": 0.15256118774414062
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-26T18:24:37.614480"
+      }
+    },
+    "wizard_1761503152221_x8hlxjdmx": {
+      "project_id": "36",
+      "project_data": {
+        "id": 36,
+        "nombre": "Lego Calibration Cube by EnginEli",
+        "descripcion": "Proyecto importado desde Lego Calibration Cube - 4645349.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "LegoCalibrationCube.stl",
+            "tipo": "STL",
+            "tamano": "307.21 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.09 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.10 KB"
+          }
+        ],
+        "imagenes": [
+          "IMG_20201106_122015_331.jpg",
+          "IMG_20201106_173359.jpg"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/lego-calibration-cube-by-engineli-36/images/IMG_20201106_122015_331.jpg",
+        "carpeta": "src/proyect/Lego Calibration Cube by EnginEli - 36"
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-26T18:25:56.196521",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "LegoCalibrationCube.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-26T18:25:56.196565"
+      },
+      "updated_at": "2025-10-26T18:26:30.948348",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-26T18:26:01.517055"
+      },
+      "production_mode": {
+        "mode": "factory",
+        "priority": "quality",
+        "settings": {
+          "layer_height": 0.1,
+          "infill_density": 25,
+          "print_speed": 40,
+          "quality_preset": "fine"
+        },
+        "estimated_impact": {
+          "time_factor": 1.3,
+          "quality_level": "alta",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-26T18:26:12.059511"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-26T18:26:19.784908"
+      },
+      "stl_processing": {
+        "task_id": "task_1702d12f-92c1-4bc1-8bc6-30848d405962",
+        "successful": [
+          {
+            "filename": "LegoCalibrationCube.stl",
+            "success": true,
+            "rotated": true,
+            "rotation_info": {
+              "applied": true,
+              "degrees": [
+                180.0,
+                90.0,
+                0.0
+              ],
+              "improvement": 81.18069803529791,
+              "contact_area": 391.3082797430543,
+              "original_area": 215.97680326124973
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761503152221_x8hlxjdmx/gcode_wizard_1761503152221_x8hlxjdmx_rotated_LegoCalibrationCube.gcode",
+            "gcode_size": 1252283,
+            "error": null,
+            "processing_time_seconds": 0.07317566871643066
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-26T18:26:26.221468"
+      }
+    },
+    "wizard_1761508323960_hq0prak5r": {
+      "project_id": "17",
+      "project_data": {
+        "id": 17,
+        "nombre": "Articulated mouse by Olgigi",
+        "descripcion": "",
+        "autor": "Usuario",
+        "fecha_creacion": "2025-10-13",
+        "estado": "listo",
+        "favorito": false,
+        "carpeta": "src/proyect/Articulated mouse by Olgigi - 17",
+        "imagen": "/api/gallery/projects/articulated-mouse-by-olgigi-17/images/photo_2022-03-01_14.06.54.jpeg",
+        "badges": {
+          "estado": "Listo",
+          "tipo": "Funcional",
+          "piezas": "1 piezas",
+          "origen": "Thingiverse"
+        },
+        "progreso": {
+          "porcentaje": 100,
+          "mensaje": "Listo para imprimir"
+        },
+        "archivos": [
+          {
+            "nombre": "Articulated_mouse.stl",
+            "tipo": "STL",
+            "tamano": "1056.92 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.08 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.13 KB"
+          }
+        ],
+        "estadisticas": {
+          "tiempo_estimado": "2-4 horas",
+          "filamento_estimado": "50-100g",
+          "complejidad": "Media"
+        },
+        "aiAnalysis": {
+          "tiempo_estimado": "3 horas",
+          "filamento_total": "75g",
+          "costo_estimado": "$2.50",
+          "recomendaciones": [
+            "Usar soporte en voladizos",
+            "Temperatura de cama: 60°C"
+          ]
+        }
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-26T19:52:06.847094",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "Articulated_mouse.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-26T19:52:06.847203"
+      },
+      "updated_at": "2025-10-26T20:06:38.561019",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-26T19:52:19.255922"
+      },
+      "production_mode": {
+        "mode": "factory",
+        "priority": "quality",
+        "settings": {
+          "layer_height": 0.1,
+          "infill_density": 25,
+          "print_speed": 40,
+          "quality_preset": "fine"
+        },
+        "estimated_impact": {
+          "time_factor": 1.3,
+          "quality_level": "alta",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-26T19:52:33.631277"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-26T19:52:46.147918"
+      },
+      "stl_processing": {
+        "task_id": "task_e8789390-c230-4aba-bf29-2927826d647e",
+        "successful": [
+          {
+            "filename": "Articulated_mouse.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": {
+              "applied": false,
+              "degrees": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "improvement": 0.0,
+              "contact_area": 0.0,
+              "original_area": 0.0
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761508323960_hq0prak5r/gcode_wizard_1761508323960_hq0prak5r_rotated_Articulated_mouse.gcode",
+            "gcode_size": 7496680,
+            "error": null,
+            "processing_time_seconds": 0.23328948020935059
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-26T20:06:28.118514"
+      }
+    },
+    "wizard_1761512145004_gn4trl4xv": {
+      "project_id": "59",
+      "project_data": {
+        "id": 59,
+        "nombre": "CR-10 Basic bed level test by jrddupont",
+        "descripcion": "Proyecto importado desde CR-10 Basic bed level test - 2900744.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "250mm_Bed_Level_Test.stl",
+            "tipo": "STL",
+            "tamano": "9.26 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.09 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.10 KB"
+          }
+        ],
+        "imagenes": [
+          "7dab9deef6db4a9a3066f6761b001383.png"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/cr-10-basic-bed-level-test-by-jrddupont-59/images/7dab9deef6db4a9a3066f6761b001383.png",
+        "carpeta": "src/proyect/CR-10 Basic bed level test by jrddupont - 59"
+      },
+      "current_step": "monitoring",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing",
+        "confirmation"
+      ],
+      "created_at": "2025-10-26T20:55:51.996332",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "250mm_Bed_Level_Test.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-26T20:55:51.996361"
+      },
+      "updated_at": "2025-10-26T20:57:28.999510",
+      "material_selection": {
+        "material_type": "PETG",
+        "color": "Transparente",
+        "brand": "Overture",
+        "selected_material_data": {
+          "id": "fil_003",
+          "tipo": "PETG",
+          "color": "Transparente",
+          "marca": "Overture",
+          "stock_actual": 900,
+          "stock_minimo": 200,
+          "precio_por_kg": 28.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 4.35,
+        "completed_at": "2025-10-26T20:55:57.760481"
+      },
+      "production_mode": {
+        "mode": "factory",
+        "priority": "quality",
+        "settings": {
+          "layer_height": 0.1,
+          "infill_density": 25,
+          "print_speed": 40,
+          "quality_preset": "fine"
+        },
+        "estimated_impact": {
+          "time_factor": 1.3,
+          "quality_level": "alta",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-26T20:56:02.854452"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-26T20:56:08.544006"
+      },
+      "stl_processing": {
+        "task_id": "task_e6c78fd5-0b09-413f-84c9-85de513e9b31",
+        "successful": [
+          {
+            "filename": "250mm_Bed_Level_Test.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": {
+              "applied": false,
+              "degrees": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "improvement": 0.0,
+              "contact_area": 0.0,
+              "original_area": 0.0
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761512145004_gn4trl4xv/gcode_wizard_1761512145004_gn4trl4xv_rotated_250mm_Bed_Level_Test.gcode",
+            "gcode_size": 19922,
+            "error": null,
+            "processing_time_seconds": 0.027162551879882812
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-26T20:56:19.634260"
+      },
+      "confirmed_job_id": "2e88cae0-d7f6-473a-846d-ee45ab921760",
+      "final_status": "job_sent_to_printer",
+      "completed_at": "2025-10-26T20:57:28.992766"
     }
   },
   "metadata": {

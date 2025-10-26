@@ -62,18 +62,20 @@ RUN curl -L -o /opt/PrusaSlicer.AppImage \
 # Crear directorios necesarios
 RUN mkdir -p /app/uploads /app/output /app/config/printer_configs
 
+# Copiar script de arranque primero
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
 # Copiar configuraciones y aplicación
 COPY config/ /app/config/
-COPY app/ /app/
+COPY app/ /app/app/
 
-# AppImage permisos ya configurados arriba
+# Variables de entorno para headless
+ENV DISPLAY=:99
+ENV PYTHONPATH=/app/app
 
 # Exponer puerto
 EXPOSE 8000
 
-# Variables de entorno para headless
-ENV DISPLAY=:99
-ENV PYTHONPATH=/app
-
-# Comando de inicio
-CMD ["sh", "-c", "Xvfb :99 -screen 0 1024x768x24 & python3 main.py"]
+# Comando de inicio usando el script que logea a archivo
+CMD ["/bin/bash", "/app/start.sh"]
