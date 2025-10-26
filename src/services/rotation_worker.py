@@ -725,8 +725,28 @@ class RotationWorker:
                     # === PARÁMETROS BÁSICOS ===
                     layer_height = profile_config.get('layer_height', 0.2)
                     fill_density = profile_config.get('fill_density', 20)
-                    nozzle_temp = profile_config.get('nozzle_temperature', 210)
-                    bed_temp = profile_config.get('bed_temperature', 60)
+                    
+                    # 🔥 TEMPERATURAS: Determinar según el tipo de material
+                    material_type = profile_config.get('material_type', 'PLA').upper()
+                    
+                    # Tabla de temperaturas por material
+                    material_temps = {
+                        'PLA': {'nozzle': 210, 'bed': 60},
+                        'PETG': {'nozzle': 235, 'bed': 85},
+                        'ABS': {'nozzle': 245, 'bed': 100},
+                        'TPU': {'nozzle': 220, 'bed': 50},
+                        'NYLON': {'nozzle': 260, 'bed': 85}
+                    }
+                    
+                    # Obtener temperaturas del material o usar las del perfil como fallback
+                    if material_type in material_temps:
+                        nozzle_temp = material_temps[material_type]['nozzle']
+                        bed_temp = material_temps[material_type]['bed']
+                        logger.info(f"      🌡️  Temperaturas {material_type}: {nozzle_temp}°C / {bed_temp}°C")
+                    else:
+                        nozzle_temp = profile_config.get('nozzle_temperature', 210)
+                        bed_temp = profile_config.get('bed_temperature', 60)
+                        logger.warning(f"      ⚠️  Material '{material_type}' desconocido, usando defaults: {nozzle_temp}°C / {bed_temp}°C")
                     
                     # === PARÁMETROS DE IA ===
                     infill_pattern = profile_config.get('infill_pattern', 'honeycomb')

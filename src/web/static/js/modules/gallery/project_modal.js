@@ -4326,9 +4326,9 @@ async function analyzeWithAI() {
             session_id: currentWizardSessionId,
             printer_model: selectedPrinterData?.printer_model || 'Creality Ender-3 V3 SE',
             material_config: {
-                type: selectedMaterialData.material_type || 'PLA',
-                color: selectedMaterialData.material_color || 'white',
-                brand: selectedMaterialData.material_brand || 'Generic'
+                type: selectedMaterialData.tipo || 'PLA',  // 🔥 FIX: usar 'tipo' (español)
+                color: selectedMaterialData.color || 'white',
+                brand: selectedMaterialData.marca || 'Generic'  // 🔥 FIX: usar 'marca' (español)
             },
             production_config: {
                 mode: selectedProductionModeData.mode,

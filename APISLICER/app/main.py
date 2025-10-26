@@ -448,57 +448,57 @@ def apply_rotation_to_stl(input_path: str, output_path: str, rotation_matrix: np
 @app.post("/slice")
 async def slice_stl(
     file: UploadFile = File(...),
-    layer_height: float = 0.2,
-    fill_density: int = 20,
-    nozzle_temp: int = 210,
-    bed_temp: int = 60,
-    printer_profile: str = "ender3",
-    custom_profile: str = None,  # job_id para perfil personalizado
-    auto_rotate: bool = False,  # Nueva opción para auto-rotación
+    layer_height: float = Form(0.2),
+    fill_density: int = Form(20),
+    nozzle_temp: int = Form(210),
+    bed_temp: int = Form(60),
+    printer_profile: str = Form("ender3"),
+    custom_profile: str = Form(None),  # job_id para perfil personalizado
+    auto_rotate: bool = Form(False),  # Nueva opción para auto-rotación
     
     # ✨ PARÁMETROS BÁSICOS DE IA
-    infill_pattern: str = "honeycomb",
-    support_type: str = "none",
-    support_density: int = 15,
-    brim_width: float = 0.0,
-    perimeters: int = 3,
-    first_layer_height: float = None,
-    print_speed: int = 60,
+    infill_pattern: str = Form("honeycomb"),
+    support_type: str = Form("none"),
+    support_density: int = Form(15),
+    brim_width: float = Form(0.0),
+    perimeters: int = Form(3),
+    first_layer_height: float = Form(None),
+    print_speed: int = Form(60),
     
     # 🔥 PARÁMETROS DE CALIDAD - FASE 1 (CRÍTICOS)
-    gcode_resolution: float = 0.005,           # Resolución de curvas (más bajo = más suave)
-    external_perimeter_speed: int = 25,        # Velocidad perímetros externos (más lento = mejor acabado)
-    top_solid_layers: int = 6,                 # Capas sólidas superiores (más = sin huecos)
-    bottom_solid_layers: int = 6,              # Capas sólidas inferiores (más = sin huecos)
-    extra_perimeters: bool = True,             # Añadir perímetros en paredes inclinadas
-    gap_fill_enabled: bool = True,             # Rellenar espacios entre perímetros
-    gap_fill_speed: int = 15,                  # Velocidad de relleno de gaps (lento = preciso)
-    seam_position: str = "aligned",            # Posición de costura (aligned/rear/nearest/random)
+    gcode_resolution: float = Form(0.005),           # Resolución de curvas (más bajo = más suave)
+    external_perimeter_speed: int = Form(25),        # Velocidad perímetros externos (más lento = mejor acabado)
+    top_solid_layers: int = Form(6),                 # Capas sólidas superiores (más = sin huecos)
+    bottom_solid_layers: int = Form(6),              # Capas sólidas inferiores (más = sin huecos)
+    extra_perimeters: bool = Form(True),             # Añadir perímetros en paredes inclinadas
+    gap_fill_enabled: bool = Form(True),             # Rellenar espacios entre perímetros
+    gap_fill_speed: int = Form(15),                  # Velocidad de relleno de gaps (lento = preciso)
+    seam_position: str = Form("aligned"),            # Posición de costura (aligned/rear/nearest/random)
     
     # 🔶 PARÁMETROS DE CALIDAD - FASE 2 (IMPORTANTES)
-    avoid_crossing_perimeters: bool = True,    # Evitar cruzar perímetros en viajes
-    perimeter_generator: str = "arachne",      # Generador de perímetros (arachne/classic)
-    infill_overlap: float = 30.0,              # Solapamiento relleno-perímetros (%)
+    avoid_crossing_perimeters: bool = Form(True),    # Evitar cruzar perímetros en viajes
+    perimeter_generator: str = Form("arachne"),      # Generador de perímetros (arachne/classic)
+    infill_overlap: float = Form(30.0),              # Solapamiento relleno-perímetros (%)
     
     # 🌉 PARÁMETROS DE PUENTES Y VOLADIZOS
-    bridge_speed: int = 50,                    # Velocidad de puentes
-    bridge_flow_ratio: float = 0.9,            # Ratio de flujo en puentes (< 1 = tensar)
-    bridge_fan_speed: int = 100,               # Velocidad ventilador en puentes (%)
-    overhangs: bool = True,                    # Habilitar ajuste de voladizos
-    enable_dynamic_overhang_speeds: bool = True, # Velocidad dinámica en voladizos
+    bridge_speed: int = Form(50),                    # Velocidad de puentes
+    bridge_flow_ratio: float = Form(0.9),            # Ratio de flujo en puentes (< 1 = tensar)
+    bridge_fan_speed: int = Form(100),               # Velocidad ventilador en puentes (%)
+    overhangs: bool = Form(True),                    # Habilitar ajuste de voladizos
+    enable_dynamic_overhang_speeds: bool = Form(True), # Velocidad dinámica en voladizos
     
     # 💨 PARÁMETROS DE VENTILADOR (PLA por defecto)
-    min_fan_speed: int = 70,                   # Velocidad mínima ventilador (%)
-    max_fan_speed: int = 100,                  # Velocidad máxima ventilador (%)
-    disable_fan_first_layers: int = 1,         # Desactivar ventilador en primeras N capas
+    min_fan_speed: int = Form(70),                   # Velocidad mínima ventilador (%)
+    max_fan_speed: int = Form(100),                  # Velocidad máxima ventilador (%)
+    disable_fan_first_layers: int = Form(1),         # Desactivar ventilador en primeras N capas
     
     # 📏 PARÁMETROS AVANZADOS DE EXTRUSIÓN
-    external_perimeter_extrusion_width: float = 105.0,  # Ancho extrusión perímetros externos (%)
-    top_infill_extrusion_width: float = 105.0,          # Ancho extrusión capas superiores (%)
+    external_perimeter_extrusion_width: float = Form(105.0),  # Ancho extrusión perímetros externos (%)
+    top_infill_extrusion_width: float = Form(105.0),          # Ancho extrusión capas superiores (%)
     
     # 🎯 PARÁMETROS DE PRECISIÓN
-    thin_walls: bool = True,                   # Detectar y manejar paredes delgadas
-    resolution: float = 0.0                    # Simplificación STL (0 = sin simplificar)
+    thin_walls: bool = Form(True),                   # Detectar y manejar paredes delgadas
+    resolution: float = Form(0.0)                    # Simplificación STL (0 = sin simplificar)
 ):
     """
     Recibe un archivo STL y devuelve el gcode laminado.
@@ -512,6 +512,9 @@ async def slice_stl(
     
     # Generar ID único para este trabajo
     job_id = str(uuid.uuid4())
+    
+    # 🔍 DEBUG: Log temperaturas recibidas
+    logger.info(f"🔍 TEMPERATURAS RECIBIDAS en /slice: nozzle={nozzle_temp}°C, bed={bed_temp}°C")
     
     try:
         # Guardar archivo STL temporal
@@ -558,28 +561,32 @@ async def slice_stl(
                 )
             logger.info(f"Usando perfil personalizado: {profile_path}")
             
-            # 🔥 NUEVO: Leer temperaturas del perfil personalizado
+            # 🔥 NUEVO: Leer parámetros del perfil personalizado SOLO si no vienen como parámetros explícitos
             profile_config = configparser.ConfigParser()
             profile_config.read(profile_path)
             
             # Extraer valores del perfil personalizado
             if profile_config.has_section("print"):
-                profile_nozzle_temp = profile_config.getint("print", "temperature", fallback=nozzle_temp)
-                profile_bed_temp = profile_config.getint("print", "bed_temperature", fallback=bed_temp)
+                # IMPORTANTE: Los parámetros recibidos del endpoint (rotation_worker) tienen PRIORIDAD
+                # Solo usar los del perfil como fallback si vienen con valores por defecto
+                
+                # Para temperaturas: SIEMPRE usar las recibidas (rotation_worker ya aplicó material_temps)
+                # NO sobrescribir nozzle_temp y bed_temp del parámetro
+                
+                # Para layer_height y fill_density: usar del perfil solo si son valores por defecto
                 profile_layer_height = profile_config.getfloat("print", "layer_height", fallback=layer_height)
                 profile_fill_density = profile_config.getint("print", "fill_density", fallback=fill_density)
                 
-                logger.info(f"📋 Parámetros del perfil personalizado:")
-                logger.info(f"   🌡️  Nozzle: {profile_nozzle_temp}°C | Bed: {profile_bed_temp}°C")
-                logger.info(f"   📏 Layer: {profile_layer_height}mm | Infill: {profile_fill_density}%")
+                logger.info(f"📋 Parámetros combinados (endpoint + perfil):")
+                logger.info(f"   🌡️  Temperaturas del endpoint: Nozzle: {nozzle_temp}°C | Bed: {bed_temp}°C")
+                logger.info(f"   📏 Geometría del perfil: Layer: {profile_layer_height}mm | Infill: {profile_fill_density}%")
                 
-                # Usar los valores del perfil personalizado
-                nozzle_temp = profile_nozzle_temp
-                bed_temp = profile_bed_temp
+                # Usar geometría del perfil, pero mantener temperaturas del endpoint
                 layer_height = profile_layer_height
                 fill_density = profile_fill_density
+                # ❌ NO sobrescribir: nozzle_temp y bed_temp (mantener los del endpoint)
             else:
-                logger.warning("⚠️  Perfil personalizado no tiene sección [print], usando valores por defecto")
+                logger.warning("⚠️  Perfil personalizado no tiene sección [print], usando valores del endpoint")
         else:
             # Usar perfil base
             profile_path = f"{PRINTER_CONFIG_DIR}/{printer_profile}.ini"
@@ -611,8 +618,8 @@ async def slice_stl(
             "--fill-pattern", infill_pattern,
             "--temperature", str(nozzle_temp),
             "--bed-temperature", str(bed_temp),
-            "--first-layer-temperature", str(nozzle_temp),
-            "--first-layer-bed-temperature", str(bed_temp),
+            "--first-layer-temperature", str(nozzle_temp + 5),  # 🔥 +5°C para mejor adherencia
+            "--first-layer-bed-temperature", str(bed_temp + 5),  # 🔥 +5°C para mejor adherencia
             
             # ===== PERÍMETROS Y PAREDES =====
             "--perimeters", str(perimeters),
@@ -719,7 +726,9 @@ async def slice_stl(
         logger.info(f"      • Externa: {external_perimeter_extrusion_width}%")
         logger.info(f"      • Top: {top_infill_extrusion_width}%")
         
-        logger.info(f"   🌡️  Temperaturas: {nozzle_temp}/{bed_temp}°C")
+        logger.info(f"   🌡️  Temperaturas:")
+        logger.info(f"      • Normal: {nozzle_temp}°C / {bed_temp}°C")
+        logger.info(f"      • Primera capa: {nozzle_temp + 5}°C / {bed_temp + 5}°C 🔥")
         
         logger.info(f"Ejecutando: {' '.join(cmd[:10])}... ({len(cmd)} parámetros)")
 
