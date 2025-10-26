@@ -24994,6 +24994,222 @@
         },
         "completed_at": "2025-10-26T15:35:31.495946"
       }
+    },
+    "wizard_1761493378744_hdp0n2pig": {
+      "project_id": "52",
+      "project_data": {
+        "id": 52,
+        "nombre": "Mario Rings by bigovereasy",
+        "descripcion": "Proyecto importado desde Mario Rings - 5981058.zip",
+        "categoria": "general",
+        "archivos": [
+          {
+            "nombre": "ring1_whole.stl",
+            "tipo": "STL",
+            "tamano": "303.01 KB"
+          },
+          {
+            "nombre": "ring2.stl",
+            "tipo": "STL",
+            "tamano": "272.84 KB"
+          },
+          {
+            "nombre": "ring3_whole.stl",
+            "tipo": "STL",
+            "tamano": "771.96 KB"
+          },
+          {
+            "nombre": "ring1_question.stl",
+            "tipo": "STL",
+            "tamano": "4.38 KB"
+          },
+          {
+            "nombre": "ring3_eye.stl",
+            "tipo": "STL",
+            "tamano": "42.46 KB"
+          },
+          {
+            "nombre": "ring3_ivory.stl",
+            "tipo": "STL",
+            "tamano": "327.04 KB"
+          },
+          {
+            "nombre": "ring3.stl",
+            "tipo": "STL",
+            "tamano": "365.12 KB"
+          },
+          {
+            "nombre": "ring3_red.stl",
+            "tipo": "STL",
+            "tamano": "418.25 KB"
+          },
+          {
+            "nombre": "ring4.stl",
+            "tipo": "STL",
+            "tamano": "150.28 KB"
+          },
+          {
+            "nombre": "ring4_star.stl",
+            "tipo": "STL",
+            "tamano": "838.56 KB"
+          },
+          {
+            "nombre": "ring1.stl",
+            "tipo": "STL",
+            "tamano": "290.51 KB"
+          },
+          {
+            "nombre": "read_this.txt",
+            "tipo": "Archivo",
+            "tamano": "0.38 KB"
+          },
+          {
+            "nombre": "README.txt",
+            "tipo": "Archivo",
+            "tamano": "0.08 KB"
+          },
+          {
+            "nombre": "LICENSE.txt",
+            "tipo": "Archivo",
+            "tamano": "0.14 KB"
+          }
+        ],
+        "imagenes": [
+          "a7814642-842f-46c8-a98a-a385d35d3556.jpg",
+          "ca2bc527-7e6f-4130-bfdc-a63e1274c276.jpg",
+          "d6143079-9079-4bb2-9e7e-ecf02642dbbf.png",
+          "74c926de-ad52-4ae9-8406-dca93e286ea7.png",
+          "61f91b9c-0a3d-4087-9421-7e403807df9e.png",
+          "1d52ae78-d6f1-407b-b2fc-df190ff887b8.png",
+          "93f71414-36b3-44c4-b042-84962c1db8e3.png",
+          "2588a5a7-8a35-497f-b6e2-2591b30c9e13.png",
+          "8fe644b6-9857-40bc-b1cb-a7cb574add2c.png",
+          "3239aad2-7de5-4187-a72d-72b07b27c153.png",
+          "4c39b517-c08b-476c-a986-e504cd597f5f.png",
+          "40b8e83f-2039-41f8-a9b0-0b895196e859.png",
+          "66ecbbba-f79f-4f3c-ac23-0f9dab59151f.png"
+        ],
+        "fecha_creacion": "2025-10-13",
+        "estado": "completado",
+        "progreso": 100,
+        "badge": "Thingiverse",
+        "imagen": "/api/gallery/projects/mario-rings-by-bigovereasy-52/images/a7814642-842f-46c8-a98a-a385d35d3556.jpg",
+        "carpeta": "src/proyect/Mario Rings by bigovereasy - 52"
+      },
+      "current_step": "monitoring",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing",
+        "confirmation"
+      ],
+      "created_at": "2025-10-26T15:43:02.980866",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "ring1_whole.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-26T15:43:02.981377"
+      },
+      "updated_at": "2025-10-26T15:43:50.676825",
+      "material_selection": {
+        "material_type": "PLA",
+        "color": "Negro",
+        "brand": "Prusament",
+        "selected_material_data": {
+          "id": "fil_001",
+          "tipo": "PLA",
+          "color": "Negro",
+          "marca": "Prusament",
+          "stock_actual": 800,
+          "stock_minimo": 200,
+          "precio_por_kg": 25.99,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.9,
+        "completed_at": "2025-10-26T15:43:06.553306"
+      },
+      "production_mode": {
+        "mode": "factory",
+        "priority": "quality",
+        "settings": {
+          "layer_height": 0.1,
+          "infill_density": 25,
+          "print_speed": 40,
+          "quality_preset": "fine"
+        },
+        "estimated_impact": {
+          "time_factor": 1.3,
+          "quality_level": "alta",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-26T15:43:11.750083"
+      },
+      "printer_assignment": {
+        "printer_id": "printer-test-1",
+        "printer_name": "Ender 3 V3 SE",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7126",
+        "confirmed_at": "2025-10-26T15:43:16.204936"
+      },
+      "stl_processing": {
+        "task_id": "task_5ea5e2aa-c065-417b-a321-355c3d0f9a10",
+        "successful": [
+          {
+            "filename": "ring1_whole.stl",
+            "success": true,
+            "rotated": true,
+            "rotation_info": {
+              "applied": true,
+              "degrees": [
+                0.0,
+                90.0,
+                0.0
+              ],
+              "improvement": 43.254589499605835,
+              "contact_area": 224.86074277372188,
+              "original_area": 156.9658211713633
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761493378744_hdp0n2pig/gcode_wizard_1761493378744_hdp0n2pig_rotated_ring1_whole.gcode",
+            "gcode_size": 872798,
+            "error": null,
+            "processing_time_seconds": 0.07126188278198242
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-26T15:43:24.040618"
+      },
+      "confirmed_job_id": "8bc4ae3f-ebcc-435a-8194-afc24f3c19cb",
+      "final_status": "job_sent_to_printer",
+      "completed_at": "2025-10-26T15:43:50.670830"
     }
   },
   "metadata": {
