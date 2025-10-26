@@ -1,0 +1,10 @@
+{
+    "enable_prime_tower": "1",
+    "flush_into_infill": "1",
+    "from": "User",
+    "inherits": "0.20mm Standard @MyKlipper",
+    "is_custom_defined": "0",
+    "name": "0.20mm Standard @MyK- Ender 3  V3 SE",
+    "print_settings_id": "0.20mm Standard @MyK- Ender 3  V3 SE",
+    "version": "2.2.0.4"
+}

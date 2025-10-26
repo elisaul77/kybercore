@@ -22,6 +22,9 @@ lxml==5.3.0           # Requerido por trimesh para parsear archivos 3MF (XML)
 scipy==1.14.1         # Análisis científico (binary_fill_holes, ConvexHull)
 scikit-learn==1.5.2   # Machine Learning (DBSCAN clustering, PCA)
 
+# 🤖 Google Gemini AI Dependencies
+pydantic-settings>=2.0.0    # Settings management con .env support
+
 # 📄 PDF Processing Dependencies
 PyPDF2==3.0.1         # Extracción de contenido de PDFs
 Pillow==10.4.0        # Procesamiento de imágenes extraídas de PDFs
@@ -30,3 +33,4 @@ pdf2image==1.17.0     # Conversión de páginas PDF a imágenes (requiere popple
 # 🎨 STL Rendering Dependencies
 matplotlib==3.9.2     # Renderizado 3D de STLs a imágenes
 pyvista==0.43.10      # Alternativa avanzada para renderizado 3D (opcional)
+openai>=1.12.0  # OpenAI API client

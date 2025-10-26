@@ -1,0 +1,19 @@
+{
+    "brim_object_gap": "0",
+    "brim_width": "2",
+    "from": "User",
+    "inherits": "0.20mm Standard @Creality Ender3V3SE 0.4",
+    "is_custom_defined": "0",
+    "name": "0.20mm Standard @Creality Ender3V3SE 0.4 - PLA",
+    "print_settings_id": "0.20mm Standard @Creality Ender3V3SE 0.4 - PLA",
+    "skirt_loops": "2",
+    "slow_down_layers": "2",
+    "sparse_infill_density": "7%",
+    "sparse_infill_pattern": "honeycomb",
+    "support_style": "tree_strong",
+    "support_top_z_distance": "0.2",
+    "support_type": "tree(auto)",
+    "version": "2.2.0.4",
+    "wall_loops": "4",
+    "wall_sequence": "outer wall/inner wall"
+}

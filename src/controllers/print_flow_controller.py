@@ -15,6 +15,7 @@ import uuid
 import logging
 import aiohttp
 import asyncio
+import traceback
 from pathlib import Path
 
 # Configurar logging
@@ -1052,7 +1053,8 @@ async def process_with_rotation(
             files=selected_pieces,
             rotation_config=req.rotation_config,
             profile_config=req.profile_config,
-            plating_config=plating_config_dict
+            plating_config=plating_config_dict,
+            enable_gcode_generation=req.enable_gcode_generation  # 🆕 Pasar parámetro
         )
         
         return JSONResponse(
@@ -2433,11 +2435,16 @@ async def get_wizard_session(session_id: str):
 # ENDPOINT: GENERAR PERFIL PERSONALIZADO
 # ===============================
 
-@router.post("/slicer/generate-profile")
+@router.post("/print/slicer/generate-profile")
 async def generate_custom_profile(request: Request):
     """
-    Genera un perfil personalizado para el slicer basado en la configuración
-    de material, modo de producción e impresora seleccionados.
+    Genera un perfil personalizado para el slicer basado en:
+    1. Análisis geométrico STL con IA
+    2. Configuración de material
+    3. Modo de producción
+    4. Capacidades de la impresora
+    
+    🤖 ENHANCED: Integra Google Gemini AI para optimización inteligente de perfiles.
     
     Este endpoint procesa la solicitud y devuelve un perfil listo para usar
     en el procesamiento STL con APISLICER.
@@ -2447,87 +2454,258 @@ async def generate_custom_profile(request: Request):
         
         # Validar datos recibidos
         job_id = data.get('job_id')
-        printer_model = data.get('printer_model')
+        printer_model = data.get('printer_model', 'Creality Ender-3 V3 SE')  # Default si no se especifica
         material_config = data.get('material_config', {})
         production_config = data.get('production_config', {})
         printer_config = data.get('printer_config', {})
+        enable_ai = data.get('enable_ai', True)  # 🤖 Activar IA por defecto
         
-        if not all([job_id, printer_model, material_config, production_config]):
+        if not all([job_id, material_config, production_config]):
             raise HTTPException(
                 status_code=400, 
-                detail="Faltan datos requeridos: job_id, printer_model, material_config, production_config"
+                detail="Faltan datos requeridos: job_id, material_config, production_config"
             )
         
-        logger.info(f"Generando perfil personalizado para job_id: {job_id}")
+        logger.info(f"🤖 Generando perfil personalizado {'CON IA' if enable_ai else 'SIN IA'} para job_id: {job_id}")
         logger.info(f"  Impresora: {printer_model}")
         logger.info(f"  Material: {material_config.get('type')} {material_config.get('color')}")
         logger.info(f"  Modo: {production_config.get('mode')} - Prioridad: {production_config.get('priority')}")
         
-        # Determinar configuraciones según el modo de producción y prioridad
-        layer_heights = {
-            "prototype": {"speed": 0.3, "quality": 0.2, "economy": 0.28, "consistency": 0.25},
-            "factory": {"speed": 0.25, "quality": 0.15, "economy": 0.25, "consistency": 0.2}
-        }
+        # === PASO 1: ANALIZAR STL SI IA ESTÁ ACTIVADA ===
+        stl_analysis = None
+        ai_optimization = None
         
-        infill_densities = {
-            "prototype": {"speed": 15, "quality": 25, "economy": 10, "consistency": 20},
-            "factory": {"speed": 20, "quality": 35, "economy": 15, "consistency": 25}
-        }
+        logger.info(f"🔍 enable_ai = {enable_ai}")
         
-        print_speeds = {
-            "prototype": {"speed": 80, "quality": 50, "economy": 60, "consistency": 60},
-            "factory": {"speed": 70, "quality": 40, "economy": 55, "consistency": 50}
-        }
+        if enable_ai:
+            logger.info("✅ Entrando al bloque de IA...")
+            try:
+                # Obtener primera pieza STL del session
+                session_id = data.get('session_id')
+                logger.info(f"🔍 session_id = {session_id}")
+                
+                if session_id:
+                    # Buscar STL en /tmp/kybercore_processing/{session_id}/
+                    session_dir = Path(f"/tmp/kybercore_processing/{session_id}")
+                    logger.info(f"🔍 Buscando STL en: {session_dir}")
+                    
+                    if not session_dir.exists():
+                        logger.warning(f"⚠️ Directorio no existe: {session_dir}")
+                    
+                    # Buscar STL con extensión case-insensitive (.stl o .STL)
+                    stl_files = list(session_dir.glob("*.stl")) + list(session_dir.glob("*.STL"))
+                    # Filtrar solo archivos que empiecen con "rotated_" (versión procesada)
+                    stl_files = [f for f in stl_files if f.name.startswith('rotated_')]
+                    logger.info(f"🔍 Archivos STL encontrados: {len(stl_files)}")
+                    if stl_files:
+                        logger.info(f"📋 Archivos disponibles: {[f.name for f in stl_files]}")
+                    
+                    if stl_files:
+                        stl_path = str(stl_files[0])
+                        logger.info(f"📐 Analizando geometría STL: {stl_files[0].name}")
+                        
+                        # Importar módulos de IA
+                        from src.services.ai_assistant import STLGeometryAnalyzer, OpenAIProfileOptimizer
+                        
+                        # Analizar geometría
+                        analyzer = STLGeometryAnalyzer()
+                        stl_analysis = analyzer.analyze_stl(stl_path)
+                        
+                        logger.info(f"✅ Análisis STL completado:")
+                        logger.info(f"  - Complejidad: {stl_analysis.complexity_score:.1f}/10")
+                        logger.info(f"  - Volumen: {stl_analysis.volume:.2f} cm³")
+                        logger.info(f"  - Detalles finos: {'SÍ' if stl_analysis.has_fine_details else 'NO'}")
+                        logger.info(f"  - Requiere soportes: {'SÍ' if stl_analysis.requires_supports else 'NO'}")
+                        
+                        # === PASO 2: OPTIMIZAR CON GEMINI AI ===
+                        material_type = material_config.get('type', 'PLA')
+                        
+                        # Construir capacidades de impresora
+                        printer_capabilities = {
+                            'max_speed_x': printer_config.get('max_speed_x', 250),
+                            'max_speed_y': printer_config.get('max_speed_y', 250),
+                            'max_accel': printer_config.get('max_acceleration', 2500),
+                            'nozzle_diameter': printer_config.get('nozzle_diameter', 0.4),
+                            'min_layer_height': 0.08,
+                            'max_layer_height': 0.32,
+                            'printer_name': printer_model
+                        }
+                        
+                        # Cargar perfil base de Orca Slicer (opcional)
+                        base_profile = None
+                        try:
+                            from src.config.settings import settings
+                            orca_profile_path = settings.ORCA_PROFILES_DIR / settings.ORCA_PRODUCTION_PROFILE
+                            if orca_profile_path.exists():
+                                with open(orca_profile_path, 'r', encoding='utf-8') as f:
+                                    base_profile = json.load(f)
+                                logger.info(f"📄 Perfil base Orca Slicer cargado: {settings.ORCA_PRODUCTION_PROFILE}")
+                        except Exception as e:
+                            logger.warning(f"⚠️ No se pudo cargar perfil base de Orca Slicer: {e}")
+                        
+                        # Optimizar con OpenAI
+                        logger.info("🤖 Llamando a OpenAI para optimización...")
+                        optimizer = OpenAIProfileOptimizer()
+                        ai_optimization = optimizer.optimize_profile(
+                            stl_analysis=stl_analysis,
+                            material=material_type,
+                            printer_capabilities=printer_capabilities,
+                            base_profile=base_profile
+                        )
+                        
+                        logger.info(f"✨ Optimización IA completada (Confianza: {ai_optimization.get('ai_confidence', 0):.0%})")
+                        logger.info(f"📊 Resumen: {ai_optimization.get('analysis_summary', '')[:100]}...")
+                        logger.info(f"💡 Mejoras aplicadas: {len(ai_optimization.get('improvements', []))}")
+                        
+            except Exception as e:
+                logger.error(f"❌ Error en análisis IA: {type(e).__name__}: {str(e)}")
+                logger.error(f"   Traceback: {traceback.format_exc()}")
+                ai_optimization = None
         
-        # Obtener configuraciones específicas
-        mode = production_config.get('mode', 'prototype')
-        priority = production_config.get('priority', 'speed')
+        # === PASO 3: GENERAR PERFIL (IA o HEURÍSTICAS) ===
         
-        layer_height = layer_heights.get(mode, {}).get(priority, 0.2)
-        infill_density = infill_densities.get(mode, {}).get(priority, 20)
-        print_speed = print_speeds.get(mode, {}).get(priority, 60)
-        
-        # Configuración de temperaturas según el material
-        material_temperatures = {
-            "PLA": {"nozzle": 210, "bed": 60},
-            "PETG": {"nozzle": 240, "bed": 80},
-            "ABS": {"nozzle": 250, "bed": 100},
-            "TPU": {"nozzle": 220, "bed": 50},
-            "Nylon": {"nozzle": 260, "bed": 85}
-        }
-        
-        material_type = material_config.get('type', 'PLA')
-        temps = material_temperatures.get(material_type, {"nozzle": 210, "bed": 60})
-        
-        # Crear el perfil personalizado
-        profile_data = {
-            "job_id": job_id,
-            "profile_name": f"custom_{job_id}.ini",
-            "printer_model": printer_model,
-            "material": f"{material_type} {material_config.get('color', '')}",
-            "production_mode": mode,
-            "priority": priority,
-            "base_printer": printer_config.get('printer_name', printer_model),
-            "settings": {
-                "layer_height": layer_height,
-                "fill_density": infill_density,
-                "print_speed": print_speed,
-                "nozzle_temperature": temps["nozzle"],
-                "bed_temperature": temps["bed"],
-                "material_type": material_type,
-                "material_color": material_config.get('color', 'white'),
-                "material_brand": material_config.get('brand', 'Generic'),
-                "bed_adhesion": printer_config.get('bed_adhesion', True),
-                "supports": production_config.get('supports', 'auto'),
-                "brim": production_config.get('brim', True) if mode == 'factory' else False
-            },
-            "generated_at": datetime.now().isoformat(),
-            "status": "ready"
-        }
-        
-        logger.info(f"Perfil generado exitosamente: {profile_data['profile_name']}")
-        logger.info(f"  Layer Height: {layer_height}mm | Infill: {infill_density}% | Speed: {print_speed}mm/s")
-        logger.info(f"  Nozzle: {temps['nozzle']}°C | Bed: {temps['bed']}°C")
+        if ai_optimization and 'profile' in ai_optimization:
+            # Usar perfil optimizado por IA
+            logger.info("🎯 Usando perfil optimizado por IA")
+            ai_profile = ai_optimization['profile']
+            
+            # Configuración de temperaturas según el material (AI puede haberlas ajustado)
+            material_temperatures = {
+                "PLA": {"nozzle": 210, "bed": 60},
+                "PETG": {"nozzle": 240, "bed": 80},
+                "ABS": {"nozzle": 250, "bed": 100},
+                "TPU": {"nozzle": 220, "bed": 50},
+                "Nylon": {"nozzle": 260, "bed": 85}
+            }
+            
+            material_type = material_config.get('type', 'PLA')
+            default_temps = material_temperatures.get(material_type, {"nozzle": 210, "bed": 60})
+            
+            # Merge IA profile con defaults
+            profile_data = {
+                "job_id": job_id,
+                "profile_name": f"ai_optimized_{job_id}.ini",
+                "printer_model": printer_model,
+                "material": f"{material_type} {material_config.get('color', '')}",
+                "production_mode": production_config.get('mode', 'prototype'),
+                "priority": production_config.get('priority', 'quality'),
+                "base_printer": printer_config.get('printer_name', printer_model),
+                "ai_enabled": True,
+                "ai_confidence": ai_optimization.get('ai_confidence', 0),
+                "settings": {
+                    "layer_height": ai_profile.get('layer_height', 0.2),
+                    "first_layer_height": ai_profile.get('first_layer_height', 0.24),
+                    "fill_density": ai_profile.get('infill_density', 20),
+                    "infill_pattern": ai_profile.get('infill_pattern', 'honeycomb'),
+                    "perimeters": ai_profile.get('perimeters', 4),
+                    "top_solid_layers": ai_profile.get('top_solid_layers', 5),
+                    "bottom_solid_layers": ai_profile.get('bottom_solid_layers', 5),
+                    "print_speed": ai_profile.get('print_speed', 60),
+                    "first_layer_speed": ai_profile.get('first_layer_speed', 25),
+                    "perimeter_speed": ai_profile.get('perimeter_speed', 50),
+                    "infill_speed": ai_profile.get('infill_speed', 70),
+                    "travel_speed": ai_profile.get('travel_speed', 150),
+                    "nozzle_temperature": ai_profile.get('nozzle_temperature', default_temps["nozzle"]),
+                    "bed_temperature": ai_profile.get('bed_temperature', default_temps["bed"]),
+                    "retraction_length": ai_profile.get('retraction_length', 1.2),
+                    "retraction_speed": ai_profile.get('retraction_speed', 40),
+                    "z_hop": ai_profile.get('z_hop', 0.4),
+                    "support_type": ai_profile.get('support_type', 'none'),
+                    "support_density": ai_profile.get('support_density', 15),
+                    "brim_width": ai_profile.get('brim_width', 0),
+                    "cooling_fan_speed": ai_profile.get('cooling_fan_speed', 100),
+                    "first_layer_fan_speed": ai_profile.get('first_layer_fan_speed', 0),
+                    "material_type": material_type,
+                    "material_color": material_config.get('color', 'white'),
+                    "material_brand": material_config.get('brand', 'Generic'),
+                },
+                "ai_analysis": {
+                    "stl_analysis": stl_analysis.to_dict() if stl_analysis else None,
+                    "summary": ai_optimization.get('analysis_summary', ''),
+                    "improvements": ai_optimization.get('improvements', []),
+                    "warnings": ai_optimization.get('warnings', [])
+                },
+                "generated_at": datetime.now().isoformat(),
+                "status": "ready"
+            }
+            
+            logger.info(f"✨ Perfil IA generado exitosamente: {profile_data['profile_name']}")
+            logger.info(f"  Layer Height: {profile_data['settings']['layer_height']}mm")
+            logger.info(f"  Infill: {profile_data['settings']['fill_density']}% ({profile_data['settings']['infill_pattern']})")
+            logger.info(f"  Speed: {profile_data['settings']['print_speed']}mm/s")
+            logger.info(f"  Nozzle: {profile_data['settings']['nozzle_temperature']}°C | Bed: {profile_data['settings']['bed_temperature']}°C")
+            logger.info(f"  Soportes: {profile_data['settings']['support_type']}")
+            
+        else:
+            # Fallback: usar heurísticas tradicionales
+            logger.info("📐 Usando heurísticas tradicionales (sin IA)")
+            
+            # Determinar configuraciones según el modo de producción y prioridad
+            layer_heights = {
+                "prototype": {"speed": 0.3, "quality": 0.2, "economy": 0.28, "consistency": 0.25},
+                "factory": {"speed": 0.25, "quality": 0.15, "economy": 0.25, "consistency": 0.2}
+            }
+            
+            infill_densities = {
+                "prototype": {"speed": 15, "quality": 25, "economy": 10, "consistency": 20},
+                "factory": {"speed": 20, "quality": 35, "economy": 15, "consistency": 25}
+            }
+            
+            print_speeds = {
+                "prototype": {"speed": 80, "quality": 50, "economy": 60, "consistency": 60},
+                "factory": {"speed": 70, "quality": 40, "economy": 55, "consistency": 50}
+            }
+            
+            # Obtener configuraciones específicas
+            mode = production_config.get('mode', 'prototype')
+            priority = production_config.get('priority', 'speed')
+            
+            layer_height = layer_heights.get(mode, {}).get(priority, 0.2)
+            infill_density = infill_densities.get(mode, {}).get(priority, 20)
+            print_speed = print_speeds.get(mode, {}).get(priority, 60)
+            
+            # Configuración de temperaturas según el material
+            material_temperatures = {
+                "PLA": {"nozzle": 210, "bed": 60},
+                "PETG": {"nozzle": 240, "bed": 80},
+                "ABS": {"nozzle": 250, "bed": 100},
+                "TPU": {"nozzle": 220, "bed": 50},
+                "Nylon": {"nozzle": 260, "bed": 85}
+            }
+            
+            material_type = material_config.get('type', 'PLA')
+            temps = material_temperatures.get(material_type, {"nozzle": 210, "bed": 60})
+            
+            # Crear el perfil tradicional
+            profile_data = {
+                "job_id": job_id,
+                "profile_name": f"custom_{job_id}.ini",
+                "printer_model": printer_model,
+                "material": f"{material_type} {material_config.get('color', '')}",
+                "production_mode": mode,
+                "priority": priority,
+                "base_printer": printer_config.get('printer_name', printer_model),
+                "ai_enabled": False,
+                "settings": {
+                    "layer_height": layer_height,
+                    "fill_density": infill_density,
+                    "print_speed": print_speed,
+                    "nozzle_temperature": temps["nozzle"],
+                    "bed_temperature": temps["bed"],
+                    "material_type": material_type,
+                    "material_color": material_config.get('color', 'white'),
+                    "material_brand": material_config.get('brand', 'Generic'),
+                    "bed_adhesion": printer_config.get('bed_adhesion', True),
+                    "supports": production_config.get('supports', 'auto'),
+                    "brim": production_config.get('brim', True) if mode == 'factory' else False
+                },
+                "generated_at": datetime.now().isoformat(),
+                "status": "ready"
+            }
+            
+            logger.info(f"Perfil generado exitosamente: {profile_data['profile_name']}")
+            logger.info(f"  Layer Height: {layer_height}mm | Infill: {infill_density}% | Speed: {print_speed}mm/s")
+            logger.info(f"  Nozzle: {temps['nozzle']}°C | Bed: {temps['bed']}°C")
         
         return JSONResponse(content={
             "success": True,
@@ -2537,10 +2715,155 @@ async def generate_custom_profile(request: Request):
     except HTTPException as he:
         raise he
     except Exception as e:
-        logger.error(f"Error generando perfil personalizado: {str(e)}")
+        logger.error(f"❌ Error generando perfil personalizado: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
         raise HTTPException(
             status_code=500,
             detail=f"Error interno generando perfil: {str(e)}"
+        )
+
+
+# ===============================
+# ENDPOINT PARA GENERAR G-CODE CON PERFIL IA
+# ===============================
+
+@router.post("/print/generate-gcode")
+async def generate_gcode_with_profile(request: Request):
+    """
+    Genera G-code usando el perfil optimizado por IA.
+    Este endpoint se llama DESPUÉS del análisis IA para laminar con el perfil correcto.
+    
+    Request body:
+        - session_id: ID de sesión del wizard
+        - profile_data: Datos del perfil generado por IA
+        - ai_enabled: Si se usó IA o perfil tradicional
+        
+    Returns:
+        Información sobre el G-code generado
+    """
+    try:
+        from src.services.rotation_worker import rotation_worker
+        
+        data = await request.json()
+        session_id = data.get('session_id')
+        profile_data = data.get('profile_data')
+        ai_enabled = data.get('ai_enabled', False)
+        
+        if not session_id:
+            raise HTTPException(status_code=400, detail="session_id requerido")
+        
+        logger.info(f"⚙️ Generando G-code para sesión: {session_id} (IA: {ai_enabled})")
+        
+        # 🔥 LOG DE VERIFICACIÓN: Mostrar estructura completa de profile_data
+        logger.info(f"📦 Profile data recibido:")
+        logger.info(f"   Type: {type(profile_data)}")
+        logger.info(f"   Keys: {profile_data.keys() if isinstance(profile_data, dict) else 'N/A'}")
+        if isinstance(profile_data, dict) and 'settings' in profile_data:
+            logger.info(f"   Settings keys: {profile_data['settings'].keys()}")
+            logger.info(f"   Settings: {profile_data['settings']}")
+        
+        # Cargar sesión para obtener archivos STL procesados
+        session_data = load_wizard_session(session_id)
+        if not session_data:
+            raise HTTPException(status_code=404, detail="Sesión no encontrada")
+        
+        # Buscar archivos STL rotados en el directorio temporal
+        session_dir = Path(f"/tmp/kybercore_processing/{session_id}")
+        if not session_dir.exists():
+            raise HTTPException(status_code=404, detail="Directorio de sesión no encontrado")
+        
+        # Buscar archivos STL rotados
+        stl_files = list(session_dir.glob("rotated_*.stl")) + list(session_dir.glob("rotated_*.STL"))
+        
+        if not stl_files:
+            raise HTTPException(status_code=404, detail="No se encontraron archivos STL procesados")
+        
+        logger.info(f"📋 Encontrados {len(stl_files)} archivos STL para laminar")
+        
+        # Crear perfil de configuración para el slicer
+        profile_config = profile_data.get('settings', {}) if profile_data else {}
+        
+        # 🔥 LOG DE VERIFICACIÓN: Mostrar parámetros que se van a usar
+        logger.info(f"📋 Perfil de laminación:")
+        logger.info(f"   AI enabled: {ai_enabled}")
+        logger.info(f"   Layer height: {profile_config.get('layer_height', 'N/A')}mm")
+        logger.info(f"   Fill density: {profile_config.get('fill_density', 'N/A')}%")
+        logger.info(f"   Infill pattern: {profile_config.get('infill_pattern', 'N/A')}")
+        logger.info(f"   Support type: {profile_config.get('support_type', 'N/A')}")
+        logger.info(f"   Nozzle temp: {profile_config.get('nozzle_temperature', 'N/A')}°C")
+        logger.info(f"   Bed temp: {profile_config.get('bed_temperature', 'N/A')}°C")
+        
+        # Generar G-code para cada archivo STL
+        from src.services.rotation_worker import rotation_worker
+        import asyncio
+        
+        gcode_files = []
+        for stl_file in stl_files:
+            logger.info(f"   ⚙️ Laminando: {stl_file.name}")
+            
+            # Leer archivo STL
+            with open(stl_file, 'rb') as f:
+                stl_bytes = f.read()
+            
+            # Llamar al slicer
+            gcode_bytes = await rotation_worker._slice_file_with_retry(
+                file_bytes=stl_bytes,
+                filename=stl_file.name,
+                profile_config=profile_config
+            )
+            
+            # Guardar G-code
+            gcode_filename = stl_file.name.replace('.stl', '.gcode').replace('.STL', '.gcode')
+            gcode_path = session_dir / f"gcode_{session_id}_{gcode_filename}"
+            
+            with open(gcode_path, 'wb') as f:
+                f.write(gcode_bytes)
+            
+            gcode_files.append({
+                'filename': gcode_filename,
+                'path': str(gcode_path),
+                'size': len(gcode_bytes)
+            })
+            
+            logger.info(f"   ✅ G-code generado: {len(gcode_bytes)} bytes")
+        
+        # ✅ CRÍTICO: Actualizar la sesión con las rutas de G-code generadas
+        stl_processing = session_data.get("stl_processing", {})
+        successful_files = stl_processing.get("successful", [])
+        
+        # Actualizar cada archivo con su ruta de G-code
+        for gcode_info in gcode_files:
+            # Buscar el archivo STL correspondiente y actualizar su gcode_path
+            stl_name = gcode_info['filename'].replace('gcode_' + session_id + '_', '').replace('.gcode', '.stl')
+            
+            for file_data in successful_files:
+                if file_data.get('filename', '').replace('.stl', '') in gcode_info['filename']:
+                    file_data['gcode_path'] = gcode_info['path']
+                    file_data['gcode_size'] = gcode_info['size']
+                    logger.info(f"   📝 Actualizado gcode_path para {file_data['filename']}")
+                    break
+        
+        # Guardar sesión actualizada
+        session_data["stl_processing"] = stl_processing
+        save_wizard_session(session_id, session_data)
+        logger.info(f"✅ Sesión actualizada con {len(gcode_files)} ruta(s) de G-code")
+        
+        return JSONResponse(content={
+            "success": True,
+            "session_id": session_id,
+            "gcode_files": gcode_files,
+            "ai_enabled": ai_enabled,
+            "message": f"G-code generado exitosamente para {len(gcode_files)} archivo(s)"
+        })
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error generando G-code: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error generando G-code: {str(e)}"
         )
 
 

@@ -1,0 +1,16 @@
+{
+    "filament_settings_id": [
+        "Creality Generic ABS - Copiar"
+    ],
+    "from": "User",
+    "inherits": "Creality Generic ABS",
+    "is_custom_defined": "0",
+    "name": "Creality Generic ABS - Copiar",
+    "nozzle_temperature": [
+        "235"
+    ],
+    "nozzle_temperature_initial_layer": [
+        "235"
+    ],
+    "version": "2.1.1.0"
+}

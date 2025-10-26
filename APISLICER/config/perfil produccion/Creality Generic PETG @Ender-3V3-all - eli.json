@@ -1,0 +1,28 @@
+{
+    "close_fan_the_first_x_layers": [
+        "1"
+    ],
+    "fan_max_speed": [
+        "50"
+    ],
+    "filament_settings_id": [
+        "Creality Generic PETG @Ender-3V3-all - eli"
+    ],
+    "from": "User",
+    "full_fan_speed_layer": [
+        "3"
+    ],
+    "inherits": "Creality Generic PETG @Ender-3V3-all",
+    "is_custom_defined": "0",
+    "name": "Creality Generic PETG @Ender-3V3-all - eli",
+    "nozzle_temperature": [
+        "240"
+    ],
+    "nozzle_temperature_initial_layer": [
+        "245"
+    ],
+    "slow_down_for_layer_cooling": [
+        "0"
+    ],
+    "version": "2.1.1.0"
+}

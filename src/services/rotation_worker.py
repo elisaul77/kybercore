@@ -55,7 +55,8 @@ class RotationWorker:
         files: List[str],
         rotation_config: Dict[str, Any],
         profile_config: Dict[str, Any],
-        plating_config: Optional[Dict[str, Any]] = None
+        plating_config: Optional[Dict[str, Any]] = None,
+        enable_gcode_generation: bool = True  # 🆕 Nuevo parámetro
     ) -> None:
         """
         Procesa múltiples archivos en paralelo con control de concurrencia.
@@ -265,7 +266,8 @@ class RotationWorker:
                             session_dir=session_dir,
                             rotation_config=rotation_config,
                             profile_config=profile_config,
-                            task_id=task_id
+                            task_id=task_id,
+                            enable_gcode_generation=enable_gcode_generation  # 🆕 Pasar parámetro
                         )
                         return result
                     finally:
@@ -367,7 +369,8 @@ class RotationWorker:
         session_dir: Path,
         rotation_config: Dict[str, Any],
         profile_config: Dict[str, Any],
-        task_id: str
+        task_id: str,
+        enable_gcode_generation: bool = True  # Nuevo parámetro
     ) -> FileProcessingResult:
         """
         Procesa un archivo individual: rotar → laminar → guardar.
@@ -545,35 +548,42 @@ class RotationWorker:
                 else:
                     logger.info(f"   ○ Auto-rotación deshabilitada")
             
-            # 3. Laminar archivo (rotado o original)
-            try:
-                logger.info(f"   ⚙️  Laminando archivo...")
-                
-                gcode_bytes = await self._slice_file_with_retry(
-                    file_bytes=file_to_slice,
-                    filename=filename,
-                    profile_config=profile_config
-                )
-                
-                # Guardar G-code
-                gcode_filename = filename.replace('.stl', '.gcode')
-                gcode_path = session_dir / f"gcode_{session_id}_{gcode_filename}"
-                
-                with open(gcode_path, 'wb') as f:
-                    f.write(gcode_bytes)
-                
-                logger.info(f"   ✓ G-code generado: {len(gcode_bytes)} bytes")
-                
-            except Exception as e:
-                error_msg = f"Error laminando archivo: {str(e)}"
-                logger.error(f"   ✗ {error_msg}")
-                return FileProcessingResult(
-                    filename=filename,
-                    success=False,
-                    rotated=rotation_info is not None and rotation_info.get("applied", False),
-                    rotation_info=rotation_info,
-                    error=error_msg
-                )
+            # 3. Laminar archivo (rotado o original) - OPCIONAL
+            gcode_path = None
+            gcode_size = 0
+            
+            if enable_gcode_generation:
+                try:
+                    logger.info(f"   ⚙️  Laminando archivo...")
+                    
+                    gcode_bytes = await self._slice_file_with_retry(
+                        file_bytes=file_to_slice,
+                        filename=filename,
+                        profile_config=profile_config
+                    )
+                    
+                    # Guardar G-code
+                    gcode_filename = filename.replace('.stl', '.gcode')
+                    gcode_path = session_dir / f"gcode_{session_id}_{gcode_filename}"
+                    
+                    with open(gcode_path, 'wb') as f:
+                        f.write(gcode_bytes)
+                    
+                    gcode_size = len(gcode_bytes)
+                    logger.info(f"   ✓ G-code generado: {gcode_size} bytes")
+                    
+                except Exception as e:
+                    error_msg = f"Error laminando archivo: {str(e)}"
+                    logger.error(f"   ✗ {error_msg}")
+                    return FileProcessingResult(
+                        filename=filename,
+                        success=False,
+                        rotated=rotation_info is not None and rotation_info.get("applied", False),
+                        rotation_info=rotation_info,
+                        error=error_msg
+                    )
+            else:
+                logger.info(f"   ⏸️  Laminación omitida (enable_gcode_generation=False)")
             
             # Calcular tiempo de procesamiento
             processing_time = time.time() - file_start_time
@@ -585,8 +595,8 @@ class RotationWorker:
                 success=True,
                 rotated=rotation_info is not None and rotation_info.get("applied", False),
                 rotation_info=rotation_info,
-                gcode_path=str(gcode_path),
-                gcode_size=len(gcode_bytes),
+                gcode_path=str(gcode_path) if gcode_path else None,
+                gcode_size=gcode_size,
                 processing_time_seconds=processing_time
             )
             
@@ -696,7 +706,7 @@ class RotationWorker:
         Args:
             file_bytes: Contenido del archivo STL (rotado o original)
             filename: Nombre del archivo
-            profile_config: Configuración del perfil de laminado
+            profile_config: Configuración del perfil de laminado con parámetros de IA
             
         Returns:
             Bytes del archivo G-code generado
@@ -708,9 +718,133 @@ class RotationWorker:
                 async with aiohttp.ClientSession() as session:
                     data = aiohttp.FormData()
                     data.add_field('file', file_bytes, filename=filename, content_type='application/octet-stream')
-                    data.add_field('custom_profile', profile_config.get('job_id', ''))
+                    
+                    # 🔥 ENVIAR TODOS LOS PARÁMETROS DE CALIDAD
+                    # Extraer parámetros del perfil de IA o usar defaults optimizados
+                    
+                    # === PARÁMETROS BÁSICOS ===
+                    layer_height = profile_config.get('layer_height', 0.2)
+                    fill_density = profile_config.get('fill_density', 20)
+                    nozzle_temp = profile_config.get('nozzle_temperature', 210)
+                    bed_temp = profile_config.get('bed_temperature', 60)
+                    
+                    # === PARÁMETROS DE IA ===
+                    infill_pattern = profile_config.get('infill_pattern', 'honeycomb')
+                    support_type = profile_config.get('support_type', 'none')
+                    support_density = profile_config.get('support_density', 15)
+                    brim_width = profile_config.get('brim_width', 0)
+                    perimeters = profile_config.get('perimeters', 3)
+                    first_layer_height = profile_config.get('first_layer_height', layer_height * 1.2)
+                    print_speed = profile_config.get('print_speed', 60)
+                    
+                    # === PARÁMETROS DE CALIDAD - FASE 1 ===
+                    gcode_resolution = profile_config.get('gcode_resolution', 0.005)
+                    external_perimeter_speed = profile_config.get('external_perimeter_speed', 25)
+                    top_solid_layers = profile_config.get('top_solid_layers', 6)
+                    bottom_solid_layers = profile_config.get('bottom_solid_layers', 6)
+                    extra_perimeters = profile_config.get('extra_perimeters', True)
+                    gap_fill_enabled = profile_config.get('gap_fill_enabled', True)
+                    gap_fill_speed = profile_config.get('gap_fill_speed', 15)
+                    seam_position = profile_config.get('seam_position', 'aligned')
+                    
+                    # === PARÁMETROS DE CALIDAD - FASE 2 ===
+                    # NOTA: elephant_foot_compensation removido - no soportado en PrusaSlicer CLI
+                    avoid_crossing_perimeters = profile_config.get('avoid_crossing_perimeters', True)
+                    perimeter_generator = profile_config.get('perimeter_generator', 'arachne')
+                    infill_overlap = profile_config.get('infill_overlap', 30.0)
+                    
+                    # === PUENTES Y VOLADIZOS ===
+                    bridge_speed = profile_config.get('bridge_speed', 50)
+                    bridge_flow_ratio = profile_config.get('bridge_flow_ratio', 0.9)
+                    bridge_fan_speed = profile_config.get('bridge_fan_speed', 100)
+                    overhangs = profile_config.get('overhangs', True)
+                    enable_dynamic_overhang_speeds = profile_config.get('enable_dynamic_overhang_speeds', True)
+                    
+                    # === VENTILADOR ===
+                    min_fan_speed = profile_config.get('min_fan_speed', 70)
+                    max_fan_speed = profile_config.get('max_fan_speed', 100)
+                    disable_fan_first_layers = profile_config.get('disable_fan_first_layers', 1)
+                    
+                    # === EXTRUSIÓN AVANZADA ===
+                    external_perimeter_extrusion_width = profile_config.get('external_perimeter_extrusion_width', 105.0)
+                    top_infill_extrusion_width = profile_config.get('top_infill_extrusion_width', 105.0)
+                    
+                    # === PRECISIÓN ===
+                    thin_walls = profile_config.get('thin_walls', True)
+                    resolution = profile_config.get('resolution', 0.0)
+                    
+                    # === ENVIAR PARÁMETROS BÁSICOS ===
+                    data.add_field('layer_height', str(layer_height))
+                    data.add_field('fill_density', str(int(fill_density)))
+                    data.add_field('nozzle_temp', str(int(nozzle_temp)))
+                    data.add_field('bed_temp', str(int(bed_temp)))
+                    
+                    # === ENVIAR PARÁMETROS DE IA ===
+                    data.add_field('infill_pattern', infill_pattern)
+                    data.add_field('support_type', support_type)
+                    data.add_field('support_density', str(int(support_density)))
+                    data.add_field('brim_width', str(float(brim_width)))
+                    data.add_field('perimeters', str(int(perimeters)))
+                    data.add_field('first_layer_height', str(first_layer_height))
+                    data.add_field('print_speed', str(int(print_speed)))
+                    
+                    # === ENVIAR PARÁMETROS DE CALIDAD FASE 1 ===
+                    data.add_field('gcode_resolution', str(gcode_resolution))
+                    data.add_field('external_perimeter_speed', str(int(external_perimeter_speed)))
+                    data.add_field('top_solid_layers', str(int(top_solid_layers)))
+                    data.add_field('bottom_solid_layers', str(int(bottom_solid_layers)))
+                    data.add_field('extra_perimeters', str(extra_perimeters).lower())
+                    data.add_field('gap_fill_enabled', str(gap_fill_enabled).lower())
+                    data.add_field('gap_fill_speed', str(int(gap_fill_speed)))
+                    data.add_field('seam_position', seam_position)
+                    
+                    # === ENVIAR PARÁMETROS DE CALIDAD FASE 2 ===
+                    # elephant_foot_compensation removido - no soportado
+                    data.add_field('avoid_crossing_perimeters', str(avoid_crossing_perimeters).lower())
+                    data.add_field('perimeter_generator', perimeter_generator)
+                    data.add_field('infill_overlap', str(infill_overlap))
+                    
+                    # === ENVIAR PUENTES Y VOLADIZOS ===
+                    data.add_field('bridge_speed', str(int(bridge_speed)))
+                    data.add_field('bridge_flow_ratio', str(bridge_flow_ratio))
+                    data.add_field('bridge_fan_speed', str(int(bridge_fan_speed)))
+                    data.add_field('overhangs', str(overhangs).lower())
+                    data.add_field('enable_dynamic_overhang_speeds', str(enable_dynamic_overhang_speeds).lower())
+                    
+                    # === ENVIAR VENTILADOR ===
+                    data.add_field('min_fan_speed', str(int(min_fan_speed)))
+                    data.add_field('max_fan_speed', str(int(max_fan_speed)))
+                    data.add_field('disable_fan_first_layers', str(int(disable_fan_first_layers)))
+                    
+                    # === ENVIAR EXTRUSIÓN AVANZADA ===
+                    data.add_field('external_perimeter_extrusion_width', str(external_perimeter_extrusion_width))
+                    data.add_field('top_infill_extrusion_width', str(top_infill_extrusion_width))
+                    
+                    # === ENVIAR PRECISIÓN ===
+                    data.add_field('thin_walls', str(thin_walls).lower())
+                    data.add_field('resolution', str(resolution))
+                    
+                    # Log detallado de parámetros
+                    logger.info(f"   📤 Enviando TODOS los parámetros a APISLICER:")
+                    logger.info(f"      � Capas: {layer_height}mm / {first_layer_height}mm")
+                    logger.info(f"      🔹 Perímetros: {perimeters} + Top: {top_solid_layers} + Bottom: {bottom_solid_layers}")
+                    logger.info(f"      � Infill: {fill_density}% ({infill_pattern}) + Overlap: {infill_overlap}%")
+                    logger.info(f"      � Velocidades: ext={external_perimeter_speed}, print={print_speed}")
+                    logger.info(f"      🎯 Calidad: gcode_res={gcode_resolution}, seam={seam_position}")
+                    logger.info(f"      🌉 Puentes: speed={bridge_speed}, flow={bridge_flow_ratio}")
+                    logger.info(f"      💨 Ventilador: {min_fan_speed}-{max_fan_speed}%")
+                    logger.info(f"      🔹 brim={brim_width}mm, perimeters={perimeters}")
+                    logger.info(f"      🔹 speed={print_speed}mm/s, nozzle={nozzle_temp}°C, bed={bed_temp}°C")
                     
                     timeout = aiohttp.ClientTimeout(total=180)
+                    
+                    # Log adicional antes de enviar
+                    logger.info("=" * 80)
+                    logger.info("PASO 3: ENVIANDO PARAMETROS A APISLICER")
+                    logger.info(f"layer_height={layer_height}, perimeters={perimeters}, infill={fill_density}%")
+                    logger.info(f"gcode_resolution={gcode_resolution}, bridge_speed={bridge_speed}")
+                    logger.info("=" * 80)
+                    
                     async with session.post(
                         'http://apislicer:8000/slice',
                         data=data,

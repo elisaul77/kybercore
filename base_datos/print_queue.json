@@ -5776,12 +5776,2265 @@
       "started_at": "2025-10-15T01:24:02.499539",
       "queue_position": 55,
       "queued_at": "2025-10-15T01:24:02.500907"
+    },
+    {
+      "job_id": "f3a709e9-936f-4c17-a7da-a17046e2acaf",
+      "session_id": "wizard_1761450602978_pfjpnzkz6",
+      "project_id": "9",
+      "status": "queued",
+      "priority": "normal",
+      "estimated_start_time": "2025-10-26T04:11:22.829903",
+      "created_at": "2025-10-26T04:11:22.829944",
+      "user_notes": "",
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "wizard_data": {
+        "project_id": "9",
+        "project_data": {
+          "id": 9,
+          "nombre": "3D Printed Case for Arduino Uno, Leonardo. by ZygmuntW",
+          "descripcion": "",
+          "autor": "Usuario",
+          "fecha_creacion": "2025-10-13",
+          "estado": "listo",
+          "favorito": false,
+          "carpeta": "src/proyect/3D Printed Case for Arduino Uno, Leonardo. by ZygmuntW - 9",
+          "imagen": "/api/gallery/projects/3d-printed-case-for-arduino-uno,-leonardo.-by-zygmuntw-9/images/_DSC2857.jpg",
+          "badges": {
+            "estado": "Listo",
+            "tipo": "Funcional",
+            "piezas": "8 piezas",
+            "origen": "Thingiverse"
+          },
+          "progreso": {
+            "porcentaje": 100,
+            "mensaje": "Listo para imprimir"
+          },
+          "archivos": [
+            {
+              "nombre": "uno_case_base.stl",
+              "tipo": "STL",
+              "tamano": "1334.02 KB"
+            },
+            {
+              "nombre": "uno_case_lid.stl",
+              "tipo": "STL",
+              "tamano": "1379.23 KB"
+            },
+            {
+              "nombre": "leonardo_case_base.stl",
+              "tipo": "STL",
+              "tamano": "1333.86 KB"
+            },
+            {
+              "nombre": "leonardo_case_lid.stl",
+              "tipo": "STL",
+              "tamano": "1324.92 KB"
+            },
+            {
+              "nombre": "reset_button.stl",
+              "tipo": "STL",
+              "tamano": "1215.25 KB"
+            },
+            {
+              "nombre": "leonardo_case_slim_base.stl",
+              "tipo": "STL",
+              "tamano": "1326.62 KB"
+            },
+            {
+              "nombre": "leonardo_case_slim_lid.stl",
+              "tipo": "STL",
+              "tamano": "1429.88 KB"
+            },
+            {
+              "nombre": "leonardo_reset_button_slim.stl",
+              "tipo": "STL",
+              "tamano": "1214.21 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.11 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.12 KB"
+            }
+          ],
+          "estadisticas": {
+            "tiempo_estimado": "2-4 horas",
+            "filamento_estimado": "50-100g",
+            "complejidad": "Media"
+          },
+          "aiAnalysis": {
+            "tiempo_estimado": "3 horas",
+            "filamento_total": "75g",
+            "costo_estimado": "$2.50",
+            "recomendaciones": [
+              "Usar soporte en voladizos",
+              "Temperatura de cama: 60°C"
+            ]
+          }
+        },
+        "current_step": "validation",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing"
+        ],
+        "created_at": "2025-10-26T03:50:07.128310",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "uno_case_base.stl"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-26T03:50:07.128354"
+        },
+        "updated_at": "2025-10-26T03:50:46.553518",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-26T03:50:11.750907"
+        },
+        "production_mode": {
+          "mode": "factory",
+          "priority": "quality",
+          "settings": {
+            "layer_height": 0.1,
+            "infill_density": 25,
+            "print_speed": 40,
+            "quality_preset": "fine"
+          },
+          "estimated_impact": {
+            "time_factor": 1.3,
+            "quality_level": "alta",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-26T03:50:16.906634"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-26T03:50:30.936124"
+        },
+        "stl_processing": {
+          "task_id": "task_fadc62e2-8503-414a-87b0-bbea7910863e",
+          "successful": [
+            {
+              "filename": "uno_case_base.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 0.0,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": "/tmp/kybercore_processing/wizard_1761450602978_pfjpnzkz6/gcode_wizard_1761450602978_pfjpnzkz6_uno_case_base.gcode",
+              "gcode_size": 2135004,
+              "error": null,
+              "processing_time_seconds": 1.6959209442138672
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-26T03:50:46.546451"
+        }
+      },
+      "queue_position": 56,
+      "queued_at": "2025-10-26T04:11:22.840514"
+    },
+    {
+      "job_id": "wizard_1761450602978_pfjpnzkz6",
+      "printer_id": "printer-test-1",
+      "moonraker_url": "http://10.10.10.71:7126",
+      "status": "printing",
+      "current_file": "kybercore_wizard_1761450602978_pfjpnzkz6_gcode_wizard_1761450602978_pfjpnzkz6_uno_case_base.gcode",
+      "all_files": [
+        {
+          "original_filename": "uno_case_base.stl",
+          "gcode_filename": "kybercore_wizard_1761450602978_pfjpnzkz6_gcode_wizard_1761450602978_pfjpnzkz6_uno_case_base.gcode",
+          "gcode_path": "/tmp/kybercore_processing/wizard_1761450602978_pfjpnzkz6/gcode_wizard_1761450602978_pfjpnzkz6_uno_case_base.gcode",
+          "file_info": {
+            "filename": "uno_case_base.stl",
+            "success": true,
+            "rotated": false,
+            "rotation_info": {
+              "applied": false,
+              "degrees": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "improvement": 0.0,
+              "contact_area": 0.0,
+              "original_area": 0.0
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761450602978_pfjpnzkz6/gcode_wizard_1761450602978_pfjpnzkz6_uno_case_base.gcode",
+            "gcode_size": 2135004,
+            "error": null,
+            "processing_time_seconds": 1.6959209442138672
+          }
+        }
+      ],
+      "failed_uploads": [],
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "started_at": "2025-10-26T04:11:28.034984",
+      "queue_position": 57,
+      "queued_at": "2025-10-26T04:11:28.038081"
+    },
+    {
+      "job_id": "6c67a4f4-8415-4487-80e5-63eb68e8af4b",
+      "session_id": "wizard_1761491040631_1ijelw36a",
+      "project_id": "51",
+      "status": "queued",
+      "priority": "normal",
+      "estimated_start_time": "2025-10-26T15:11:47.989786",
+      "created_at": "2025-10-26T15:11:47.989807",
+      "user_notes": "",
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "wizard_data": {
+        "project_id": "51",
+        "project_data": {
+          "id": 51,
+          "nombre": "Micro Catapult by LukeTansell",
+          "descripcion": "Proyecto importado desde Micro Catapult - 1763518.zip",
+          "categoria": "general",
+          "archivos": [
+            {
+              "nombre": "Micro_Catapult_v1.1.STL",
+              "tipo": "STL",
+              "tamano": "701.94 KB"
+            },
+            {
+              "nombre": "Micro_Catapult_INC._TOL..STL",
+              "tipo": "STL",
+              "tamano": "715.32 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.08 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.12 KB"
+            }
+          ],
+          "imagenes": [
+            "DSC_0131.JPG",
+            "DSC_0125.JPG",
+            "DSC_0122.JPG",
+            "a825788409412cf0fe01e7808701cf1a.png",
+            "20160910_173341.jpg",
+            "800489297abdbddf2d9b0103b77eeab1.png"
+          ],
+          "fecha_creacion": "2025-10-13",
+          "estado": "completado",
+          "progreso": 100,
+          "badge": "Thingiverse",
+          "imagen": "/api/gallery/projects/micro-catapult-by-luketansell-51/images/DSC_0131.JPG",
+          "carpeta": "src/proyect/Micro Catapult by LukeTansell - 51"
+        },
+        "current_step": "validation",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing"
+        ],
+        "created_at": "2025-10-26T15:04:03.617403",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Micro_Catapult_v1.1.STL"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-26T15:04:03.617429"
+        },
+        "updated_at": "2025-10-26T15:04:23.069567",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-26T15:04:07.328335"
+        },
+        "production_mode": {
+          "mode": "factory",
+          "priority": "quality",
+          "settings": {
+            "layer_height": 0.1,
+            "infill_density": 25,
+            "print_speed": 40,
+            "quality_preset": "fine"
+          },
+          "estimated_impact": {
+            "time_factor": 1.3,
+            "quality_level": "alta",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-26T15:04:11.786483"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-26T15:04:16.240114"
+        },
+        "stl_processing": {
+          "task_id": "task_2b492ed4-906a-4fd4-b01f-93fe0d5584bb",
+          "successful": [
+            {
+              "filename": "Micro_Catapult_v1.1.STL",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 0.0,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": null,
+              "gcode_size": 0,
+              "error": null,
+              "processing_time_seconds": 0.09454989433288574
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-26T15:04:23.064075"
+        }
+      },
+      "queue_position": 58,
+      "queued_at": "2025-10-26T15:11:47.993987"
+    },
+    {
+      "job_id": "0a7da96f-7dfc-4fbe-ba75-1ff98d5607f6",
+      "session_id": "wizard_1761491040631_1ijelw36a",
+      "project_id": "51",
+      "status": "queued",
+      "priority": "normal",
+      "estimated_start_time": "2025-10-26T15:14:48.118327",
+      "created_at": "2025-10-26T15:14:48.118350",
+      "user_notes": "",
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "wizard_data": {
+        "project_id": "51",
+        "project_data": {
+          "id": 51,
+          "nombre": "Micro Catapult by LukeTansell",
+          "descripcion": "Proyecto importado desde Micro Catapult - 1763518.zip",
+          "categoria": "general",
+          "archivos": [
+            {
+              "nombre": "Micro_Catapult_v1.1.STL",
+              "tipo": "STL",
+              "tamano": "701.94 KB"
+            },
+            {
+              "nombre": "Micro_Catapult_INC._TOL..STL",
+              "tipo": "STL",
+              "tamano": "715.32 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.08 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.12 KB"
+            }
+          ],
+          "imagenes": [
+            "DSC_0131.JPG",
+            "DSC_0125.JPG",
+            "DSC_0122.JPG",
+            "a825788409412cf0fe01e7808701cf1a.png",
+            "20160910_173341.jpg",
+            "800489297abdbddf2d9b0103b77eeab1.png"
+          ],
+          "fecha_creacion": "2025-10-13",
+          "estado": "completado",
+          "progreso": 100,
+          "badge": "Thingiverse",
+          "imagen": "/api/gallery/projects/micro-catapult-by-luketansell-51/images/DSC_0131.JPG",
+          "carpeta": "src/proyect/Micro Catapult by LukeTansell - 51"
+        },
+        "current_step": "validation",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing"
+        ],
+        "created_at": "2025-10-26T15:04:03.617403",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Micro_Catapult_v1.1.STL"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-26T15:04:03.617429"
+        },
+        "updated_at": "2025-10-26T15:04:23.069567",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-26T15:04:07.328335"
+        },
+        "production_mode": {
+          "mode": "factory",
+          "priority": "quality",
+          "settings": {
+            "layer_height": 0.1,
+            "infill_density": 25,
+            "print_speed": 40,
+            "quality_preset": "fine"
+          },
+          "estimated_impact": {
+            "time_factor": 1.3,
+            "quality_level": "alta",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-26T15:04:11.786483"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-26T15:04:16.240114"
+        },
+        "stl_processing": {
+          "task_id": "task_2b492ed4-906a-4fd4-b01f-93fe0d5584bb",
+          "successful": [
+            {
+              "filename": "Micro_Catapult_v1.1.STL",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 0.0,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": null,
+              "gcode_size": 0,
+              "error": null,
+              "processing_time_seconds": 0.09454989433288574
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-26T15:04:23.064075"
+        }
+      },
+      "queue_position": 59,
+      "queued_at": "2025-10-26T15:14:48.121204"
+    },
+    {
+      "job_id": "6e1bd239-1df6-4e34-9b7f-39340dcbae5d",
+      "session_id": "wizard_1761491040631_1ijelw36a",
+      "project_id": "51",
+      "status": "queued",
+      "priority": "normal",
+      "estimated_start_time": "2025-10-26T15:17:02.956043",
+      "created_at": "2025-10-26T15:17:02.956060",
+      "user_notes": "",
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "wizard_data": {
+        "project_id": "51",
+        "project_data": {
+          "id": 51,
+          "nombre": "Micro Catapult by LukeTansell",
+          "descripcion": "Proyecto importado desde Micro Catapult - 1763518.zip",
+          "categoria": "general",
+          "archivos": [
+            {
+              "nombre": "Micro_Catapult_v1.1.STL",
+              "tipo": "STL",
+              "tamano": "701.94 KB"
+            },
+            {
+              "nombre": "Micro_Catapult_INC._TOL..STL",
+              "tipo": "STL",
+              "tamano": "715.32 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.08 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.12 KB"
+            }
+          ],
+          "imagenes": [
+            "DSC_0131.JPG",
+            "DSC_0125.JPG",
+            "DSC_0122.JPG",
+            "a825788409412cf0fe01e7808701cf1a.png",
+            "20160910_173341.jpg",
+            "800489297abdbddf2d9b0103b77eeab1.png"
+          ],
+          "fecha_creacion": "2025-10-13",
+          "estado": "completado",
+          "progreso": 100,
+          "badge": "Thingiverse",
+          "imagen": "/api/gallery/projects/micro-catapult-by-luketansell-51/images/DSC_0131.JPG",
+          "carpeta": "src/proyect/Micro Catapult by LukeTansell - 51"
+        },
+        "current_step": "validation",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing"
+        ],
+        "created_at": "2025-10-26T15:04:03.617403",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Micro_Catapult_v1.1.STL"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-26T15:04:03.617429"
+        },
+        "updated_at": "2025-10-26T15:04:23.069567",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-26T15:04:07.328335"
+        },
+        "production_mode": {
+          "mode": "factory",
+          "priority": "quality",
+          "settings": {
+            "layer_height": 0.1,
+            "infill_density": 25,
+            "print_speed": 40,
+            "quality_preset": "fine"
+          },
+          "estimated_impact": {
+            "time_factor": 1.3,
+            "quality_level": "alta",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-26T15:04:11.786483"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-26T15:04:16.240114"
+        },
+        "stl_processing": {
+          "task_id": "task_2b492ed4-906a-4fd4-b01f-93fe0d5584bb",
+          "successful": [
+            {
+              "filename": "Micro_Catapult_v1.1.STL",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 0.0,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": null,
+              "gcode_size": 0,
+              "error": null,
+              "processing_time_seconds": 0.09454989433288574
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-26T15:04:23.064075"
+        }
+      },
+      "queue_position": 60,
+      "queued_at": "2025-10-26T15:17:02.957714"
+    },
+    {
+      "job_id": "fbad7f2c-8bed-42e7-ae2f-a2b46e9300b0",
+      "session_id": "wizard_1761491040631_1ijelw36a",
+      "project_id": "51",
+      "status": "queued",
+      "priority": "normal",
+      "estimated_start_time": "2025-10-26T15:17:53.888948",
+      "created_at": "2025-10-26T15:17:53.888965",
+      "user_notes": "",
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "wizard_data": {
+        "project_id": "51",
+        "project_data": {
+          "id": 51,
+          "nombre": "Micro Catapult by LukeTansell",
+          "descripcion": "Proyecto importado desde Micro Catapult - 1763518.zip",
+          "categoria": "general",
+          "archivos": [
+            {
+              "nombre": "Micro_Catapult_v1.1.STL",
+              "tipo": "STL",
+              "tamano": "701.94 KB"
+            },
+            {
+              "nombre": "Micro_Catapult_INC._TOL..STL",
+              "tipo": "STL",
+              "tamano": "715.32 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.08 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.12 KB"
+            }
+          ],
+          "imagenes": [
+            "DSC_0131.JPG",
+            "DSC_0125.JPG",
+            "DSC_0122.JPG",
+            "a825788409412cf0fe01e7808701cf1a.png",
+            "20160910_173341.jpg",
+            "800489297abdbddf2d9b0103b77eeab1.png"
+          ],
+          "fecha_creacion": "2025-10-13",
+          "estado": "completado",
+          "progreso": 100,
+          "badge": "Thingiverse",
+          "imagen": "/api/gallery/projects/micro-catapult-by-luketansell-51/images/DSC_0131.JPG",
+          "carpeta": "src/proyect/Micro Catapult by LukeTansell - 51"
+        },
+        "current_step": "validation",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing"
+        ],
+        "created_at": "2025-10-26T15:04:03.617403",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Micro_Catapult_v1.1.STL"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-26T15:04:03.617429"
+        },
+        "updated_at": "2025-10-26T15:04:23.069567",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-26T15:04:07.328335"
+        },
+        "production_mode": {
+          "mode": "factory",
+          "priority": "quality",
+          "settings": {
+            "layer_height": 0.1,
+            "infill_density": 25,
+            "print_speed": 40,
+            "quality_preset": "fine"
+          },
+          "estimated_impact": {
+            "time_factor": 1.3,
+            "quality_level": "alta",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-26T15:04:11.786483"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-26T15:04:16.240114"
+        },
+        "stl_processing": {
+          "task_id": "task_2b492ed4-906a-4fd4-b01f-93fe0d5584bb",
+          "successful": [
+            {
+              "filename": "Micro_Catapult_v1.1.STL",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 0.0,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": null,
+              "gcode_size": 0,
+              "error": null,
+              "processing_time_seconds": 0.09454989433288574
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-26T15:04:23.064075"
+        }
+      },
+      "queue_position": 61,
+      "queued_at": "2025-10-26T15:17:53.890873"
+    },
+    {
+      "job_id": "4d9e254b-e84e-401a-b5bc-845cb54571a1",
+      "session_id": "wizard_1761491040631_1ijelw36a",
+      "project_id": "51",
+      "status": "queued",
+      "priority": "normal",
+      "estimated_start_time": "2025-10-26T15:18:02.783293",
+      "created_at": "2025-10-26T15:18:02.783325",
+      "user_notes": "",
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "wizard_data": {
+        "project_id": "51",
+        "project_data": {
+          "id": 51,
+          "nombre": "Micro Catapult by LukeTansell",
+          "descripcion": "Proyecto importado desde Micro Catapult - 1763518.zip",
+          "categoria": "general",
+          "archivos": [
+            {
+              "nombre": "Micro_Catapult_v1.1.STL",
+              "tipo": "STL",
+              "tamano": "701.94 KB"
+            },
+            {
+              "nombre": "Micro_Catapult_INC._TOL..STL",
+              "tipo": "STL",
+              "tamano": "715.32 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.08 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.12 KB"
+            }
+          ],
+          "imagenes": [
+            "DSC_0131.JPG",
+            "DSC_0125.JPG",
+            "DSC_0122.JPG",
+            "a825788409412cf0fe01e7808701cf1a.png",
+            "20160910_173341.jpg",
+            "800489297abdbddf2d9b0103b77eeab1.png"
+          ],
+          "fecha_creacion": "2025-10-13",
+          "estado": "completado",
+          "progreso": 100,
+          "badge": "Thingiverse",
+          "imagen": "/api/gallery/projects/micro-catapult-by-luketansell-51/images/DSC_0131.JPG",
+          "carpeta": "src/proyect/Micro Catapult by LukeTansell - 51"
+        },
+        "current_step": "validation",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing"
+        ],
+        "created_at": "2025-10-26T15:04:03.617403",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Micro_Catapult_v1.1.STL"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-26T15:04:03.617429"
+        },
+        "updated_at": "2025-10-26T15:04:23.069567",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-26T15:04:07.328335"
+        },
+        "production_mode": {
+          "mode": "factory",
+          "priority": "quality",
+          "settings": {
+            "layer_height": 0.1,
+            "infill_density": 25,
+            "print_speed": 40,
+            "quality_preset": "fine"
+          },
+          "estimated_impact": {
+            "time_factor": 1.3,
+            "quality_level": "alta",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-26T15:04:11.786483"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-26T15:04:16.240114"
+        },
+        "stl_processing": {
+          "task_id": "task_2b492ed4-906a-4fd4-b01f-93fe0d5584bb",
+          "successful": [
+            {
+              "filename": "Micro_Catapult_v1.1.STL",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 0.0,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": null,
+              "gcode_size": 0,
+              "error": null,
+              "processing_time_seconds": 0.09454989433288574
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-26T15:04:23.064075"
+        }
+      },
+      "queue_position": 62,
+      "queued_at": "2025-10-26T15:18:02.787750"
+    },
+    {
+      "job_id": "feae6fb3-4650-441b-a477-97ef141fc092",
+      "session_id": "wizard_1761491040631_1ijelw36a",
+      "project_id": "51",
+      "status": "queued",
+      "priority": "normal",
+      "estimated_start_time": "2025-10-26T15:18:18.699819",
+      "created_at": "2025-10-26T15:18:18.699845",
+      "user_notes": "",
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "wizard_data": {
+        "project_id": "51",
+        "project_data": {
+          "id": 51,
+          "nombre": "Micro Catapult by LukeTansell",
+          "descripcion": "Proyecto importado desde Micro Catapult - 1763518.zip",
+          "categoria": "general",
+          "archivos": [
+            {
+              "nombre": "Micro_Catapult_v1.1.STL",
+              "tipo": "STL",
+              "tamano": "701.94 KB"
+            },
+            {
+              "nombre": "Micro_Catapult_INC._TOL..STL",
+              "tipo": "STL",
+              "tamano": "715.32 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.08 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.12 KB"
+            }
+          ],
+          "imagenes": [
+            "DSC_0131.JPG",
+            "DSC_0125.JPG",
+            "DSC_0122.JPG",
+            "a825788409412cf0fe01e7808701cf1a.png",
+            "20160910_173341.jpg",
+            "800489297abdbddf2d9b0103b77eeab1.png"
+          ],
+          "fecha_creacion": "2025-10-13",
+          "estado": "completado",
+          "progreso": 100,
+          "badge": "Thingiverse",
+          "imagen": "/api/gallery/projects/micro-catapult-by-luketansell-51/images/DSC_0131.JPG",
+          "carpeta": "src/proyect/Micro Catapult by LukeTansell - 51"
+        },
+        "current_step": "validation",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing"
+        ],
+        "created_at": "2025-10-26T15:04:03.617403",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Micro_Catapult_v1.1.STL"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-26T15:04:03.617429"
+        },
+        "updated_at": "2025-10-26T15:04:23.069567",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-26T15:04:07.328335"
+        },
+        "production_mode": {
+          "mode": "factory",
+          "priority": "quality",
+          "settings": {
+            "layer_height": 0.1,
+            "infill_density": 25,
+            "print_speed": 40,
+            "quality_preset": "fine"
+          },
+          "estimated_impact": {
+            "time_factor": 1.3,
+            "quality_level": "alta",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-26T15:04:11.786483"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-26T15:04:16.240114"
+        },
+        "stl_processing": {
+          "task_id": "task_2b492ed4-906a-4fd4-b01f-93fe0d5584bb",
+          "successful": [
+            {
+              "filename": "Micro_Catapult_v1.1.STL",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 0.0,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": null,
+              "gcode_size": 0,
+              "error": null,
+              "processing_time_seconds": 0.09454989433288574
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-26T15:04:23.064075"
+        }
+      },
+      "queue_position": 63,
+      "queued_at": "2025-10-26T15:18:18.703493"
+    },
+    {
+      "job_id": "d1841b2d-455b-4f64-b0d6-a0d49e8f3d90",
+      "session_id": "wizard_1761491905837_zkydxk3kg",
+      "project_id": "51",
+      "status": "queued",
+      "priority": "normal",
+      "estimated_start_time": "2025-10-26T15:19:21.896565",
+      "created_at": "2025-10-26T15:19:21.896579",
+      "user_notes": "",
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "wizard_data": {
+        "project_id": "51",
+        "project_data": {
+          "id": 51,
+          "nombre": "Micro Catapult by LukeTansell",
+          "descripcion": "Proyecto importado desde Micro Catapult - 1763518.zip",
+          "categoria": "general",
+          "archivos": [
+            {
+              "nombre": "Micro_Catapult_v1.1.STL",
+              "tipo": "STL",
+              "tamano": "701.94 KB"
+            },
+            {
+              "nombre": "Micro_Catapult_INC._TOL..STL",
+              "tipo": "STL",
+              "tamano": "715.32 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.08 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.12 KB"
+            }
+          ],
+          "imagenes": [
+            "DSC_0131.JPG",
+            "DSC_0125.JPG",
+            "DSC_0122.JPG",
+            "a825788409412cf0fe01e7808701cf1a.png",
+            "20160910_173341.jpg",
+            "800489297abdbddf2d9b0103b77eeab1.png"
+          ],
+          "fecha_creacion": "2025-10-13",
+          "estado": "completado",
+          "progreso": 100,
+          "badge": "Thingiverse",
+          "imagen": "/api/gallery/projects/micro-catapult-by-luketansell-51/images/DSC_0131.JPG",
+          "carpeta": "src/proyect/Micro Catapult by LukeTansell - 51"
+        },
+        "current_step": "validation",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing"
+        ],
+        "created_at": "2025-10-26T15:18:29.045126",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Micro_Catapult_v1.1.STL"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-26T15:18:29.045248"
+        },
+        "updated_at": "2025-10-26T15:18:47.210781",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-26T15:18:33.199450"
+        },
+        "production_mode": {
+          "mode": "factory",
+          "priority": "quality",
+          "settings": {
+            "layer_height": 0.1,
+            "infill_density": 25,
+            "print_speed": 40,
+            "quality_preset": "fine"
+          },
+          "estimated_impact": {
+            "time_factor": 1.3,
+            "quality_level": "alta",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-26T15:18:39.045728"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-26T15:18:43.233893"
+        },
+        "stl_processing": {
+          "task_id": "task_c92ec14f-a593-4dc8-b929-1ec2c4e670c5",
+          "successful": [
+            {
+              "filename": "Micro_Catapult_v1.1.STL",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 0.0,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": null,
+              "gcode_size": 0,
+              "error": null,
+              "processing_time_seconds": 0.11133050918579102
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-26T15:18:47.204187"
+        }
+      },
+      "queue_position": 64,
+      "queued_at": "2025-10-26T15:19:21.898000"
+    },
+    {
+      "job_id": "154f804a-6cfc-4185-bc39-74b5b176fabb",
+      "session_id": "wizard_1761491905837_zkydxk3kg",
+      "project_id": "51",
+      "status": "queued",
+      "priority": "normal",
+      "estimated_start_time": "2025-10-26T15:22:01.187555",
+      "created_at": "2025-10-26T15:22:01.187571",
+      "user_notes": "",
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "wizard_data": {
+        "project_id": "51",
+        "project_data": {
+          "id": 51,
+          "nombre": "Micro Catapult by LukeTansell",
+          "descripcion": "Proyecto importado desde Micro Catapult - 1763518.zip",
+          "categoria": "general",
+          "archivos": [
+            {
+              "nombre": "Micro_Catapult_v1.1.STL",
+              "tipo": "STL",
+              "tamano": "701.94 KB"
+            },
+            {
+              "nombre": "Micro_Catapult_INC._TOL..STL",
+              "tipo": "STL",
+              "tamano": "715.32 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.08 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.12 KB"
+            }
+          ],
+          "imagenes": [
+            "DSC_0131.JPG",
+            "DSC_0125.JPG",
+            "DSC_0122.JPG",
+            "a825788409412cf0fe01e7808701cf1a.png",
+            "20160910_173341.jpg",
+            "800489297abdbddf2d9b0103b77eeab1.png"
+          ],
+          "fecha_creacion": "2025-10-13",
+          "estado": "completado",
+          "progreso": 100,
+          "badge": "Thingiverse",
+          "imagen": "/api/gallery/projects/micro-catapult-by-luketansell-51/images/DSC_0131.JPG",
+          "carpeta": "src/proyect/Micro Catapult by LukeTansell - 51"
+        },
+        "current_step": "validation",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing"
+        ],
+        "created_at": "2025-10-26T15:18:29.045126",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Micro_Catapult_v1.1.STL"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-26T15:18:29.045248"
+        },
+        "updated_at": "2025-10-26T15:18:47.210781",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-26T15:18:33.199450"
+        },
+        "production_mode": {
+          "mode": "factory",
+          "priority": "quality",
+          "settings": {
+            "layer_height": 0.1,
+            "infill_density": 25,
+            "print_speed": 40,
+            "quality_preset": "fine"
+          },
+          "estimated_impact": {
+            "time_factor": 1.3,
+            "quality_level": "alta",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-26T15:18:39.045728"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-26T15:18:43.233893"
+        },
+        "stl_processing": {
+          "task_id": "task_c92ec14f-a593-4dc8-b929-1ec2c4e670c5",
+          "successful": [
+            {
+              "filename": "Micro_Catapult_v1.1.STL",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 0.0,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": null,
+              "gcode_size": 0,
+              "error": null,
+              "processing_time_seconds": 0.11133050918579102
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-26T15:18:47.204187"
+        }
+      },
+      "queue_position": 65,
+      "queued_at": "2025-10-26T15:22:01.189116"
+    },
+    {
+      "job_id": "5faae412-7f03-4461-ade5-08d3913e5724",
+      "session_id": "wizard_1761492195559_exr72k8g6",
+      "project_id": "52",
+      "status": "queued",
+      "priority": "normal",
+      "estimated_start_time": "2025-10-26T15:24:20.275524",
+      "created_at": "2025-10-26T15:24:20.275537",
+      "user_notes": "",
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "wizard_data": {
+        "project_id": "52",
+        "project_data": {
+          "id": 52,
+          "nombre": "Mario Rings by bigovereasy",
+          "descripcion": "Proyecto importado desde Mario Rings - 5981058.zip",
+          "categoria": "general",
+          "archivos": [
+            {
+              "nombre": "ring1_whole.stl",
+              "tipo": "STL",
+              "tamano": "303.01 KB"
+            },
+            {
+              "nombre": "ring2.stl",
+              "tipo": "STL",
+              "tamano": "272.84 KB"
+            },
+            {
+              "nombre": "ring3_whole.stl",
+              "tipo": "STL",
+              "tamano": "771.96 KB"
+            },
+            {
+              "nombre": "ring1_question.stl",
+              "tipo": "STL",
+              "tamano": "4.38 KB"
+            },
+            {
+              "nombre": "ring3_eye.stl",
+              "tipo": "STL",
+              "tamano": "42.46 KB"
+            },
+            {
+              "nombre": "ring3_ivory.stl",
+              "tipo": "STL",
+              "tamano": "327.04 KB"
+            },
+            {
+              "nombre": "ring3.stl",
+              "tipo": "STL",
+              "tamano": "365.12 KB"
+            },
+            {
+              "nombre": "ring3_red.stl",
+              "tipo": "STL",
+              "tamano": "418.25 KB"
+            },
+            {
+              "nombre": "ring4.stl",
+              "tipo": "STL",
+              "tamano": "150.28 KB"
+            },
+            {
+              "nombre": "ring4_star.stl",
+              "tipo": "STL",
+              "tamano": "838.56 KB"
+            },
+            {
+              "nombre": "ring1.stl",
+              "tipo": "STL",
+              "tamano": "290.51 KB"
+            },
+            {
+              "nombre": "read_this.txt",
+              "tipo": "Archivo",
+              "tamano": "0.38 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.08 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.14 KB"
+            }
+          ],
+          "imagenes": [
+            "a7814642-842f-46c8-a98a-a385d35d3556.jpg",
+            "ca2bc527-7e6f-4130-bfdc-a63e1274c276.jpg",
+            "d6143079-9079-4bb2-9e7e-ecf02642dbbf.png",
+            "74c926de-ad52-4ae9-8406-dca93e286ea7.png",
+            "61f91b9c-0a3d-4087-9421-7e403807df9e.png",
+            "1d52ae78-d6f1-407b-b2fc-df190ff887b8.png",
+            "93f71414-36b3-44c4-b042-84962c1db8e3.png",
+            "2588a5a7-8a35-497f-b6e2-2591b30c9e13.png",
+            "8fe644b6-9857-40bc-b1cb-a7cb574add2c.png",
+            "3239aad2-7de5-4187-a72d-72b07b27c153.png",
+            "4c39b517-c08b-476c-a986-e504cd597f5f.png",
+            "40b8e83f-2039-41f8-a9b0-0b895196e859.png",
+            "66ecbbba-f79f-4f3c-ac23-0f9dab59151f.png"
+          ],
+          "fecha_creacion": "2025-10-13",
+          "estado": "completado",
+          "progreso": 100,
+          "badge": "Thingiverse",
+          "imagen": "/api/gallery/projects/mario-rings-by-bigovereasy-52/images/a7814642-842f-46c8-a98a-a385d35d3556.jpg",
+          "carpeta": "src/proyect/Mario Rings by bigovereasy - 52"
+        },
+        "current_step": "validation",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing"
+        ],
+        "created_at": "2025-10-26T15:23:20.119599",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "ring4.stl"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-26T15:23:20.119635"
+        },
+        "updated_at": "2025-10-26T15:23:40.404063",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-26T15:23:24.153172"
+        },
+        "production_mode": {
+          "mode": "factory",
+          "priority": "quality",
+          "settings": {
+            "layer_height": 0.1,
+            "infill_density": 25,
+            "print_speed": 40,
+            "quality_preset": "fine"
+          },
+          "estimated_impact": {
+            "time_factor": 1.3,
+            "quality_level": "alta",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-26T15:23:28.373981"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-26T15:23:33.123786"
+        },
+        "stl_processing": {
+          "task_id": "task_9f7e5e51-2295-4129-ae2f-5c2f14df81d6",
+          "successful": [
+            {
+              "filename": "ring4.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 0.0,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": null,
+              "gcode_size": 0,
+              "error": null,
+              "processing_time_seconds": 0.05015873908996582
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-26T15:23:40.397469"
+        }
+      },
+      "queue_position": 66,
+      "queued_at": "2025-10-26T15:24:20.277387"
+    },
+    {
+      "job_id": "708dc2db-cf48-48cc-9b2c-1d26e002363e",
+      "session_id": "wizard_1761492195559_exr72k8g6",
+      "project_id": "52",
+      "status": "queued",
+      "priority": "normal",
+      "estimated_start_time": "2025-10-26T15:34:54.820906",
+      "created_at": "2025-10-26T15:34:54.820922",
+      "user_notes": "",
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "wizard_data": {
+        "project_id": "52",
+        "project_data": {
+          "id": 52,
+          "nombre": "Mario Rings by bigovereasy",
+          "descripcion": "Proyecto importado desde Mario Rings - 5981058.zip",
+          "categoria": "general",
+          "archivos": [
+            {
+              "nombre": "ring1_whole.stl",
+              "tipo": "STL",
+              "tamano": "303.01 KB"
+            },
+            {
+              "nombre": "ring2.stl",
+              "tipo": "STL",
+              "tamano": "272.84 KB"
+            },
+            {
+              "nombre": "ring3_whole.stl",
+              "tipo": "STL",
+              "tamano": "771.96 KB"
+            },
+            {
+              "nombre": "ring1_question.stl",
+              "tipo": "STL",
+              "tamano": "4.38 KB"
+            },
+            {
+              "nombre": "ring3_eye.stl",
+              "tipo": "STL",
+              "tamano": "42.46 KB"
+            },
+            {
+              "nombre": "ring3_ivory.stl",
+              "tipo": "STL",
+              "tamano": "327.04 KB"
+            },
+            {
+              "nombre": "ring3.stl",
+              "tipo": "STL",
+              "tamano": "365.12 KB"
+            },
+            {
+              "nombre": "ring3_red.stl",
+              "tipo": "STL",
+              "tamano": "418.25 KB"
+            },
+            {
+              "nombre": "ring4.stl",
+              "tipo": "STL",
+              "tamano": "150.28 KB"
+            },
+            {
+              "nombre": "ring4_star.stl",
+              "tipo": "STL",
+              "tamano": "838.56 KB"
+            },
+            {
+              "nombre": "ring1.stl",
+              "tipo": "STL",
+              "tamano": "290.51 KB"
+            },
+            {
+              "nombre": "read_this.txt",
+              "tipo": "Archivo",
+              "tamano": "0.38 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.08 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.14 KB"
+            }
+          ],
+          "imagenes": [
+            "a7814642-842f-46c8-a98a-a385d35d3556.jpg",
+            "ca2bc527-7e6f-4130-bfdc-a63e1274c276.jpg",
+            "d6143079-9079-4bb2-9e7e-ecf02642dbbf.png",
+            "74c926de-ad52-4ae9-8406-dca93e286ea7.png",
+            "61f91b9c-0a3d-4087-9421-7e403807df9e.png",
+            "1d52ae78-d6f1-407b-b2fc-df190ff887b8.png",
+            "93f71414-36b3-44c4-b042-84962c1db8e3.png",
+            "2588a5a7-8a35-497f-b6e2-2591b30c9e13.png",
+            "8fe644b6-9857-40bc-b1cb-a7cb574add2c.png",
+            "3239aad2-7de5-4187-a72d-72b07b27c153.png",
+            "4c39b517-c08b-476c-a986-e504cd597f5f.png",
+            "40b8e83f-2039-41f8-a9b0-0b895196e859.png",
+            "66ecbbba-f79f-4f3c-ac23-0f9dab59151f.png"
+          ],
+          "fecha_creacion": "2025-10-13",
+          "estado": "completado",
+          "progreso": 100,
+          "badge": "Thingiverse",
+          "imagen": "/api/gallery/projects/mario-rings-by-bigovereasy-52/images/a7814642-842f-46c8-a98a-a385d35d3556.jpg",
+          "carpeta": "src/proyect/Mario Rings by bigovereasy - 52"
+        },
+        "current_step": "validation",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing"
+        ],
+        "created_at": "2025-10-26T15:23:20.119599",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "ring4.stl"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-26T15:23:20.119635"
+        },
+        "updated_at": "2025-10-26T15:23:40.404063",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-26T15:23:24.153172"
+        },
+        "production_mode": {
+          "mode": "factory",
+          "priority": "quality",
+          "settings": {
+            "layer_height": 0.1,
+            "infill_density": 25,
+            "print_speed": 40,
+            "quality_preset": "fine"
+          },
+          "estimated_impact": {
+            "time_factor": 1.3,
+            "quality_level": "alta",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-26T15:23:28.373981"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-26T15:23:33.123786"
+        },
+        "stl_processing": {
+          "task_id": "task_9f7e5e51-2295-4129-ae2f-5c2f14df81d6",
+          "successful": [
+            {
+              "filename": "ring4.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 0.0,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": null,
+              "gcode_size": 0,
+              "error": null,
+              "processing_time_seconds": 0.05015873908996582
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-26T15:23:40.397469"
+        }
+      },
+      "queue_position": 67,
+      "queued_at": "2025-10-26T15:34:54.822922"
+    },
+    {
+      "job_id": "437819af-3846-4fd8-9162-300a2805de3d",
+      "session_id": "wizard_1761492904300_stcifqv7l",
+      "project_id": "51",
+      "status": "queued",
+      "priority": "normal",
+      "estimated_start_time": "2025-10-26T15:36:01.780564",
+      "created_at": "2025-10-26T15:36:01.780578",
+      "user_notes": "",
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "wizard_data": {
+        "project_id": "51",
+        "project_data": {
+          "id": 51,
+          "nombre": "Micro Catapult by LukeTansell",
+          "descripcion": "Proyecto importado desde Micro Catapult - 1763518.zip",
+          "categoria": "general",
+          "archivos": [
+            {
+              "nombre": "Micro_Catapult_v1.1.STL",
+              "tipo": "STL",
+              "tamano": "701.94 KB"
+            },
+            {
+              "nombre": "Micro_Catapult_INC._TOL..STL",
+              "tipo": "STL",
+              "tamano": "715.32 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.08 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.12 KB"
+            }
+          ],
+          "imagenes": [
+            "DSC_0131.JPG",
+            "DSC_0125.JPG",
+            "DSC_0122.JPG",
+            "a825788409412cf0fe01e7808701cf1a.png",
+            "20160910_173341.jpg",
+            "800489297abdbddf2d9b0103b77eeab1.png"
+          ],
+          "fecha_creacion": "2025-10-13",
+          "estado": "completado",
+          "progreso": 100,
+          "badge": "Thingiverse",
+          "imagen": "/api/gallery/projects/micro-catapult-by-luketansell-51/images/DSC_0131.JPG",
+          "carpeta": "src/proyect/Micro Catapult by LukeTansell - 51"
+        },
+        "current_step": "validation",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing"
+        ],
+        "created_at": "2025-10-26T15:35:08.456565",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Micro_Catapult_v1.1.STL"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-26T15:35:08.456591"
+        },
+        "updated_at": "2025-10-26T15:35:39.343307",
+        "material_selection": {
+          "material_type": "PLA",
+          "color": "Negro",
+          "brand": "Prusament",
+          "selected_material_data": {
+            "id": "fil_001",
+            "tipo": "PLA",
+            "color": "Negro",
+            "marca": "Prusament",
+            "stock_actual": 800,
+            "stock_minimo": 200,
+            "precio_por_kg": 25.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.9,
+          "completed_at": "2025-10-26T15:35:12.073884"
+        },
+        "production_mode": {
+          "mode": "factory",
+          "priority": "quality",
+          "settings": {
+            "layer_height": 0.1,
+            "infill_density": 25,
+            "print_speed": 40,
+            "quality_preset": "fine"
+          },
+          "estimated_impact": {
+            "time_factor": 1.3,
+            "quality_level": "alta",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-26T15:35:17.795319"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-26T15:35:23.095996"
+        },
+        "stl_processing": {
+          "task_id": "task_6f62e4b1-a527-44d1-954b-175189a041ff",
+          "successful": [
+            {
+              "filename": "Micro_Catapult_v1.1.STL",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 0.0,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": null,
+              "gcode_size": 0,
+              "error": null,
+              "processing_time_seconds": 0.1285707950592041
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-26T15:35:31.495946"
+        }
+      },
+      "queue_position": 68,
+      "queued_at": "2025-10-26T15:36:01.782655"
     }
   ],
   "metadata": {
     "version": "1.0",
     "created": "2025-09-14",
     "description": "Cola de trabajos de impresión pendientes y en proceso",
-    "next_queue_position": 56
+    "next_queue_position": 69
   }
 }

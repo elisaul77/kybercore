@@ -113,6 +113,7 @@ class ProcessWithRotationRequest(BaseModel):
     rotation_config: Dict[str, Any]
     plating_config: Optional[PlatingConfig] = PlatingConfig()  # 🆕 NUEVO
     profile_config: Dict[str, Any]
+    enable_gcode_generation: bool = True  # 🆕 Control de generación G-code
     
     class Config:
         schema_extra = {

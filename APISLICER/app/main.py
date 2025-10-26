@@ -454,7 +454,51 @@ async def slice_stl(
     bed_temp: int = 60,
     printer_profile: str = "ender3",
     custom_profile: str = None,  # job_id para perfil personalizado
-    auto_rotate: bool = False  # Nueva opción para auto-rotación
+    auto_rotate: bool = False,  # Nueva opción para auto-rotación
+    
+    # ✨ PARÁMETROS BÁSICOS DE IA
+    infill_pattern: str = "honeycomb",
+    support_type: str = "none",
+    support_density: int = 15,
+    brim_width: float = 0.0,
+    perimeters: int = 3,
+    first_layer_height: float = None,
+    print_speed: int = 60,
+    
+    # 🔥 PARÁMETROS DE CALIDAD - FASE 1 (CRÍTICOS)
+    gcode_resolution: float = 0.005,           # Resolución de curvas (más bajo = más suave)
+    external_perimeter_speed: int = 25,        # Velocidad perímetros externos (más lento = mejor acabado)
+    top_solid_layers: int = 6,                 # Capas sólidas superiores (más = sin huecos)
+    bottom_solid_layers: int = 6,              # Capas sólidas inferiores (más = sin huecos)
+    extra_perimeters: bool = True,             # Añadir perímetros en paredes inclinadas
+    gap_fill_enabled: bool = True,             # Rellenar espacios entre perímetros
+    gap_fill_speed: int = 15,                  # Velocidad de relleno de gaps (lento = preciso)
+    seam_position: str = "aligned",            # Posición de costura (aligned/rear/nearest/random)
+    
+    # 🔶 PARÁMETROS DE CALIDAD - FASE 2 (IMPORTANTES)
+    avoid_crossing_perimeters: bool = True,    # Evitar cruzar perímetros en viajes
+    perimeter_generator: str = "arachne",      # Generador de perímetros (arachne/classic)
+    infill_overlap: float = 30.0,              # Solapamiento relleno-perímetros (%)
+    
+    # 🌉 PARÁMETROS DE PUENTES Y VOLADIZOS
+    bridge_speed: int = 50,                    # Velocidad de puentes
+    bridge_flow_ratio: float = 0.9,            # Ratio de flujo en puentes (< 1 = tensar)
+    bridge_fan_speed: int = 100,               # Velocidad ventilador en puentes (%)
+    overhangs: bool = True,                    # Habilitar ajuste de voladizos
+    enable_dynamic_overhang_speeds: bool = True, # Velocidad dinámica en voladizos
+    
+    # 💨 PARÁMETROS DE VENTILADOR (PLA por defecto)
+    min_fan_speed: int = 70,                   # Velocidad mínima ventilador (%)
+    max_fan_speed: int = 100,                  # Velocidad máxima ventilador (%)
+    disable_fan_first_layers: int = 1,         # Desactivar ventilador en primeras N capas
+    
+    # 📏 PARÁMETROS AVANZADOS DE EXTRUSIÓN
+    external_perimeter_extrusion_width: float = 105.0,  # Ancho extrusión perímetros externos (%)
+    top_infill_extrusion_width: float = 105.0,          # Ancho extrusión capas superiores (%)
+    
+    # 🎯 PARÁMETROS DE PRECISIÓN
+    thin_walls: bool = True,                   # Detectar y manejar paredes delgadas
+    resolution: float = 0.0                    # Simplificación STL (0 = sin simplificar)
 ):
     """
     Recibe un archivo STL y devuelve el gcode laminado.
@@ -547,24 +591,138 @@ async def slice_stl(
             logger.info(f"Usando perfil base: {profile_path}")
         
         # Comando de PrusaSlicer con parámetros explícitos
-        # 🔥 CAMBIO CRÍTICO: SIEMPRE agregar temperaturas explícitamente
-        # Esto garantiza que PrusaSlicer use las temperaturas correctas
+        # 🔥 TODOS LOS PARÁMETROS DE CALIDAD IMPLEMENTADOS
+        
+        # Calcular first_layer_height si no se especificó
+        if first_layer_height is None:
+            first_layer_height = layer_height * 1.2
+        
+        # Construir comando base
         cmd = [
             "prusa-slicer",
             "--export-gcode",
             "--load", profile_path,
             "--output", gcode_path,
-            # ✅ SIEMPRE agregar parámetros críticos explícitamente
+            
+            # ===== PARÁMETROS BÁSICOS =====
             "--layer-height", str(layer_height),
+            "--first-layer-height", str(first_layer_height),
             "--fill-density", f"{fill_density}%",
+            "--fill-pattern", infill_pattern,
             "--temperature", str(nozzle_temp),
             "--bed-temperature", str(bed_temp),
-            "--first-layer-temperature", str(nozzle_temp),  # 🔥 NUEVO: temperatura primera capa
-            "--first-layer-bed-temperature", str(bed_temp),  # 🔥 NUEVO: cama primera capa
-            final_stl_path  # Usar STL rotado si aplica
+            "--first-layer-temperature", str(nozzle_temp),
+            "--first-layer-bed-temperature", str(bed_temp),
+            
+            # ===== PERÍMETROS Y PAREDES =====
+            "--perimeters", str(perimeters),
+            "--top-solid-layers", str(top_solid_layers),
+            "--bottom-solid-layers", str(bottom_solid_layers),
+            
+            # ===== VELOCIDADES =====
+            "--perimeter-speed", str(int(print_speed * 0.8)),
+            "--external-perimeter-speed", str(external_perimeter_speed),
+            "--infill-speed", str(print_speed),
+            "--travel-speed", str(int(print_speed * 2.5)),
+            "--first-layer-speed", str(int(print_speed * 0.3)),  # 30% para primera capa
+            "--gap-fill-speed", str(gap_fill_speed),
+            
+            # ===== CALIDAD Y PRECISIÓN =====
+            "--gcode-resolution", str(gcode_resolution),
+            "--seam-position", seam_position,
+            "--brim-width", str(brim_width),
+            "--infill-overlap", f"{infill_overlap}%",
+            # NOTA: elephant-foot-compensation no es válido en PrusaSlicer 2.8.1
+            # Usar elefant_foot_compensation (sin guión) en el perfil .ini en su lugar
+            
+            # ===== PUENTES Y VOLADIZOS =====
+            "--bridge-speed", str(bridge_speed),
+            "--bridge-flow-ratio", str(bridge_flow_ratio),
+            "--bridge-fan-speed", str(bridge_fan_speed),
+            
+            # ===== VENTILADOR =====
+            "--min-fan-speed", str(min_fan_speed),
+            "--max-fan-speed", str(max_fan_speed),
+            "--disable-fan-first-layers", str(disable_fan_first_layers),
+            
+            # ===== EXTRUSIÓN AVANZADA =====
+            "--external-perimeter-extrusion-width", f"{external_perimeter_extrusion_width}%",
+            "--top-infill-extrusion-width", f"{top_infill_extrusion_width}%",
+            
+            # ===== PRECISIÓN AVANZADA =====
+            "--resolution", str(resolution),
         ]
         
-        logger.info(f"Ejecutando: {' '.join(cmd)}")
+        # ===== PARÁMETROS BOOLEANOS (FLAGS) =====
+        if extra_perimeters:
+            cmd.append("--extra-perimeters")
+        
+        if gap_fill_enabled:
+            cmd.append("--gap-fill-enabled")
+        
+        if avoid_crossing_perimeters:
+            cmd.append("--avoid-crossing-perimeters")
+        
+        if overhangs:
+            cmd.append("--overhangs")
+        
+        if enable_dynamic_overhang_speeds:
+            cmd.append("--enable-dynamic-overhang-speeds")
+        
+        if thin_walls:
+            cmd.append("--thin-walls")
+        
+        # ===== GENERADOR DE PERÍMETROS =====
+        if perimeter_generator:
+            cmd.extend(["--perimeter-generator", perimeter_generator])
+        
+        # Agregar archivo STL al final
+        cmd.append(final_stl_path)
+        
+        logger.info(f"✨ TODOS los parámetros de calidad aplicados:")
+        logger.info(f"   � Capas: {layer_height}mm / {first_layer_height}mm (primera)")
+        logger.info(f"   🔹 Perímetros: {perimeters} + Top: {top_solid_layers} + Bottom: {bottom_solid_layers}")
+        logger.info(f"   🔹 Extra perímetros: {'✅' if extra_perimeters else '❌'}")
+        logger.info(f"   📦 Infill: {fill_density}% ({infill_pattern}) + Overlap: {infill_overlap}%")
+        logger.info(f"   🎨 Brim: {brim_width}mm + Costura: {seam_position}")
+        
+        logger.info(f"   � Velocidades:")
+        logger.info(f"      • Externa: {external_perimeter_speed}mm/s (perímetro visible)")
+        logger.info(f"      • Interna: {int(print_speed * 0.8)}mm/s (perímetro interno)")
+        logger.info(f"      • Infill: {print_speed}mm/s")
+        logger.info(f"      • Viaje: {int(print_speed * 2.5)}mm/s")
+        logger.info(f"      • Primera capa: {int(print_speed * 0.3)}mm/s")
+        logger.info(f"      • Gap fill: {gap_fill_speed}mm/s")
+        
+        logger.info(f"   🎯 Calidad:")
+        logger.info(f"      • G-code resolution: {gcode_resolution}mm (curvas)")
+        logger.info(f"      • Gap fill: {'✅' if gap_fill_enabled else '❌'}")
+        logger.info(f"      • Avoid crossing: {'✅' if avoid_crossing_perimeters else '❌'}")
+        logger.info(f"      • Thin walls: {'✅' if thin_walls else '❌'}")
+        logger.info(f"      • Perimeter gen: {perimeter_generator}")
+        logger.info(f"      • Infill overlap: {infill_overlap}%")
+        
+        logger.info(f"   🌉 Puentes:")
+        logger.info(f"      • Velocidad: {bridge_speed}mm/s")
+        logger.info(f"      • Flow ratio: {bridge_flow_ratio}")
+        logger.info(f"      • Ventilador: {bridge_fan_speed}%")
+        
+        logger.info(f"   � Voladizos:")
+        logger.info(f"      • Overhangs: {'✅' if overhangs else '❌'}")
+        logger.info(f"      • Dynamic speeds: {'✅' if enable_dynamic_overhang_speeds else '❌'}")
+        
+        logger.info(f"   💨 Ventilador:")
+        logger.info(f"      • Min/Max: {min_fan_speed}% / {max_fan_speed}%")
+        logger.info(f"      • Desactivar primeras {disable_fan_first_layers} capas")
+        
+        logger.info(f"   🔧 Extrusión:")
+        logger.info(f"      • Externa: {external_perimeter_extrusion_width}%")
+        logger.info(f"      • Top: {top_infill_extrusion_width}%")
+        
+        logger.info(f"   🌡️  Temperaturas: {nozzle_temp}/{bed_temp}°C")
+        
+        logger.info(f"Ejecutando: {' '.join(cmd[:10])}... ({len(cmd)} parámetros)")
+
         
         # Ejecutar PrusaSlicer
         result = subprocess.run(cmd, capture_output=True, text=True)

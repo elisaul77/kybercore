@@ -1,0 +1,22 @@
+{
+    "filament_settings_id": [
+        "Creality Generic PLA -4.1.7"
+    ],
+    "filament_wipe": [
+        "1"
+    ],
+    "filament_wipe_distance": [
+        "5"
+    ],
+    "from": "User",
+    "inherits": "Creality Generic PLA",
+    "is_custom_defined": "0",
+    "name": "Creality Generic PLA -4.1.7",
+    "nozzle_temperature": [
+        "210"
+    ],
+    "nozzle_temperature_initial_layer": [
+        "210"
+    ],
+    "version": "2.2.0.4"
+}

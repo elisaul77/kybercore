@@ -1314,6 +1314,10 @@ function showSelectedConfiguration() {
     configContainer.classList.remove('hidden');
 }
 
+// 🌐 Exponer funciones al scope global para onclick
+window.selectProductionMode = selectProductionMode;
+window.selectPriority = selectPriority;
+
 async function confirmProductionMode() {
     if (!selectedProductionModeData || !selectedProductionModeData.priority) {
         showToast('Atención', 'Selecciona un modo y prioridad primero', 'warning');
@@ -1344,6 +1348,7 @@ async function confirmProductionMode() {
             showToast('Configuración Aplicada', 
                 `Modo ${result.configuration.mode} con prioridad ${result.configuration.priority}`, 'success');
             
+            // ✅ AVANZAR AUTOMÁTICAMENTE al siguiente paso (printer_assignment)
             setTimeout(() => {
                 loadPrintFlowStep(null, null, result.next_step.step, { 
                     completed_steps: ['piece_selection', 'material_selection', 'production_mode'],
@@ -4028,6 +4033,56 @@ function loadStepActionButtons(step) {
     let buttonsHTML = '';
     
     switch(step) {
+        case 'stl_processing':
+            // Botones para procesamiento STL con opción de IA
+            buttonsHTML = '<div class="flex flex-col gap-4">';
+            
+            // Checkbox para habilitar IA
+            buttonsHTML += `
+                <div class="flex items-center gap-3 bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg border border-purple-200">
+                    <input 
+                        type="checkbox" 
+                        id="enable-ai-optimization" 
+                        class="h-5 w-5 text-purple-600 rounded border-gray-300 focus:ring-purple-500">
+                    <label for="enable-ai-optimization" class="text-sm font-medium text-gray-700">
+                        ✨ Usar IA para optimizar perfil de impresión
+                    </label>
+                </div>
+            `;
+            
+            // Botón para procesar con/sin IA
+            if (selectedProductionModeData && selectedMaterialData) {
+                buttonsHTML += `
+                    <button 
+                        onclick="processSTLWithOptionalAI()" 
+                        id="btn-process-stl"
+                        class="px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg hover:from-green-700 hover:to-blue-700 transition-all transform hover:scale-105 shadow-lg font-semibold flex items-center gap-2">
+                        <span id="process-button-text">🚀 Procesar y Generar G-code</span>
+                        <span id="process-button-loader" class="hidden">
+                            <svg class="inline animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Procesando...
+                        </span>
+                    </button>
+                `;
+                console.log('✅ Botón de procesamiento STL con IA añadido');
+            }
+            buttonsHTML += '</div>';
+            break;
+            
+        case 'validation':
+            // Solo botón para continuar (el procesamiento ya se hizo en step 5)
+            buttonsHTML = `
+                <button 
+                    onclick="nextPrintFlowStep()" 
+                    class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center gap-2 shadow-md hover:shadow-lg">
+                    Continuar a Confirmación →
+                </button>
+            `;
+            break;
+            
         case 'confirmation':
             // Solo mostrar botón de confirmar si la impresora está lista
             const printerStatus = window.currentPrinterStatus;
@@ -4206,6 +4261,568 @@ async function previousPrintFlowStep() {
         showToast('Error', 'No se pudo navegar hacia atrás', 'error');
     }
 }
+
+// ===============================
+// 🤖 FUNCIONES DE IA - GOOGLE GEMINI
+// ===============================
+
+let aiAnalysisData = null;
+
+async function analyzeWithAI() {
+    console.log('🎯 [AI] Función analyzeWithAI() llamada');
+    
+    if (!currentWizardSessionId) {
+        console.error('❌ [AI] No hay session ID');
+        showToast('Error', 'Sesión no válida', 'error');
+        return;
+    }
+    
+    if (!selectedProductionModeData || !selectedMaterialData) {
+        console.warn('⚠️ [AI] Faltan datos:', {
+            productionMode: !!selectedProductionModeData,
+            material: !!selectedMaterialData
+        });
+        showToast('Atención', 'Completa el modo de producción y material antes de usar IA', 'warning');
+        return;
+    }
+    
+    console.log('🤖 [AI] Iniciando análisis con IA...', {
+        sessionId: currentWizardSessionId,
+        material: selectedMaterialData,
+        productionMode: selectedProductionModeData
+    });
+    
+    const button = document.getElementById('btn-analyze-ai');
+    const buttonText = document.getElementById('ai-button-text');
+    const buttonLoader = document.getElementById('ai-button-loader');
+    const resultsContainer = document.getElementById('ai-results-container');
+    
+    // El botón es opcional (puede no estar en el DOM si se llama programáticamente)
+    const hasButton = button && buttonText && buttonLoader;
+    
+    if (hasButton) {
+        console.log('✅ [AI] Botón encontrado, iniciando proceso...');
+    } else {
+        console.log('ℹ️ [AI] Llamada programática (sin botón UI)');
+    }
+    
+    let profileData = null; // Variable para retornar los datos
+    
+    try {
+        // Deshabilitar botón y mostrar loader (solo si existe)
+        if (hasButton) {
+            button.disabled = true;
+            button.classList.add('opacity-75', 'cursor-not-allowed');
+            buttonText.classList.add('hidden');
+            buttonLoader.classList.remove('hidden');
+        }
+        
+        showToast('🤖 Analizando', 'OpenAI GPT-3.5 está analizando la geometría del modelo...', 'info');
+        
+        console.log('🚀 [AI] Preparando request a /api/print/slicer/generate-profile');
+        
+        const requestPayload = {
+            job_id: currentWizardSessionId,
+            session_id: currentWizardSessionId,
+            printer_model: selectedPrinterData?.printer_model || 'Creality Ender-3 V3 SE',
+            material_config: {
+                type: selectedMaterialData.material_type || 'PLA',
+                color: selectedMaterialData.material_color || 'white',
+                brand: selectedMaterialData.material_brand || 'Generic'
+            },
+            production_config: {
+                mode: selectedProductionModeData.mode,
+                priority: selectedProductionModeData.priority
+            },
+            printer_config: {
+                printer_name: selectedPrinterData?.printer_model || 'Creality Ender-3 V3 SE',
+                max_speed_x: 250,
+                max_speed_y: 250,
+                max_acceleration: 2500,
+                nozzle_diameter: 0.4
+            },
+            enable_ai: true  // 🤖 Activar IA
+        };
+        
+        console.log('📦 [AI] Payload:', requestPayload);
+        
+        // Llamar al endpoint de generación de perfil con IA
+        const response = await fetch('/api/print/slicer/generate-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestPayload)
+        });
+        
+        console.log('📡 [AI] Response status:', response.status);
+        
+        profileData = await response.json();  // Asignar a variable externa
+        
+        console.log('📥 [AI] Response data:', profileData);
+        
+        if (profileData.success && profileData.ai_enabled) {
+            aiAnalysisData = profileData;
+            displayAIResults(profileData);
+            showToast('✨ Análisis Completado', `Confianza: ${(profileData.ai_confidence * 100).toFixed(0)}%`, 'success');
+        } else if (profileData.success && !profileData.ai_enabled) {
+            showToast('⚠️ Fallback Activado', 'Usando perfil heurístico (IA no disponible)', 'warning');
+            displayFallbackMessage();
+        } else {
+            throw new Error(profileData.message || 'Error en análisis IA');
+        }
+        
+    } catch (error) {
+        console.error('Error en análisis IA:', error);
+        showToast('Error', 'Error al analizar con IA: ' + error.message, 'error');
+        displayErrorMessage();
+    } finally {
+        // Restaurar botón (solo si existe)
+        if (hasButton) {
+            button.disabled = false;
+            button.classList.remove('opacity-75', 'cursor-not-allowed');
+            buttonText.classList.remove('hidden');
+            buttonLoader.classList.add('hidden');
+        }
+    }
+    
+    // Retornar los datos del perfil generado
+    return profileData;
+}
+
+// 🌐 Exponer función al scope global para onclick
+window.analyzeWithAI = analyzeWithAI;
+
+function displayAIResults(data) {
+    const container = document.getElementById('ai-results-container');
+    if (!container) return;
+    
+    const aiAnalysis = data.ai_analysis || {};
+    const stlAnalysis = aiAnalysis.stl_analysis || {};
+    const improvements = aiAnalysis.improvements || [];
+    const warnings = aiAnalysis.warnings || [];
+    const summary = aiAnalysis.summary || 'Análisis completado';
+    const confidence = data.ai_confidence || 0;
+    
+    // Determinar color del badge según confianza
+    let confidenceBadgeClass = 'bg-green-100 text-green-800';
+    let confidenceIcon = '✅';
+    if (confidence < 0.7) {
+        confidenceBadgeClass = 'bg-yellow-100 text-yellow-800';
+        confidenceIcon = '⚠️';
+    } else if (confidence < 0.9) {
+        confidenceBadgeClass = 'bg-blue-100 text-blue-800';
+        confidenceIcon = '✓';
+    }
+    
+    const html = `
+        <div class="mt-6 bg-white rounded-lg border-2 border-purple-300 shadow-lg overflow-hidden animate-fade-in">
+            <!-- Header con confianza -->
+            <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold flex items-center">
+                        <span class="text-2xl mr-2">🤖</span>
+                        Análisis IA Completado
+                    </h3>
+                    <div class="${confidenceBadgeClass} px-4 py-2 rounded-full font-bold">
+                        ${confidenceIcon} Confianza: ${(confidence * 100).toFixed(0)}%
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resumen del análisis -->
+            <div class="p-4 bg-gray-50 border-b">
+                <h4 class="font-semibold text-gray-900 mb-2">📊 Resumen del Análisis:</h4>
+                <p class="text-gray-700 text-sm leading-relaxed">${summary}</p>
+            </div>
+            
+            <!-- Análisis STL (si está disponible) -->
+            ${stlAnalysis.volume ? `
+            <div class="p-4 border-b">
+                <h4 class="font-semibold text-gray-900 mb-3">📐 Geometría STL:</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                    <div class="bg-blue-50 p-2 rounded">
+                        <div class="text-xs text-gray-600">Volumen</div>
+                        <div class="font-bold text-blue-900">${stlAnalysis.volume.toFixed(2)} cm³</div>
+                    </div>
+                    <div class="bg-purple-50 p-2 rounded">
+                        <div class="text-xs text-gray-600">Complejidad</div>
+                        <div class="font-bold text-purple-900">${stlAnalysis.complexity_score.toFixed(1)}/10</div>
+                    </div>
+                    <div class="bg-${stlAnalysis.has_severe_overhangs ? 'red' : 'green'}-50 p-2 rounded">
+                        <div class="text-xs text-gray-600">Overhangs</div>
+                        <div class="font-bold text-${stlAnalysis.has_severe_overhangs ? 'red' : 'green'}-900">
+                            ${stlAnalysis.has_severe_overhangs ? 'Sí ⚠️' : 'No ✓'}
+                        </div>
+                    </div>
+                    <div class="bg-${stlAnalysis.is_stable ? 'green' : 'yellow'}-50 p-2 rounded">
+                        <div class="text-xs text-gray-600">Estabilidad</div>
+                        <div class="font-bold text-${stlAnalysis.is_stable ? 'green' : 'yellow'}-900">
+                            ${stlAnalysis.is_stable ? 'Estable ✓' : 'Revisar ⚠️'}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            ` : ''}
+            
+            <!-- Mejoras aplicadas -->
+            ${improvements.length > 0 ? `
+            <div class="p-4 border-b">
+                <h4 class="font-semibold text-gray-900 mb-3">💡 Mejoras Aplicadas:</h4>
+                <ul class="space-y-2">
+                    ${improvements.map(improvement => `
+                        <li class="flex items-start text-sm">
+                            <span class="text-green-500 mr-2 mt-0.5">✓</span>
+                            <span class="text-gray-700">${improvement}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>
+            ` : ''}
+            
+            <!-- Advertencias -->
+            ${warnings.length > 0 ? `
+            <div class="p-4 bg-yellow-50">
+                <h4 class="font-semibold text-yellow-900 mb-3">⚠️ Advertencias Importantes:</h4>
+                <ul class="space-y-2">
+                    ${warnings.map(warning => `
+                        <li class="flex items-start text-sm">
+                            <span class="text-yellow-600 mr-2 mt-0.5">⚠</span>
+                            <span class="text-yellow-800">${warning}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>
+            ` : ''}
+            
+            <!-- Perfil optimizado (resumen) -->
+            <div class="p-4 bg-gradient-to-r from-purple-50 to-blue-50">
+                <h4 class="font-semibold text-gray-900 mb-3">⚙️ Perfil Optimizado:</h4>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                    <div>
+                        <span class="text-gray-600">Layer Height:</span>
+                        <span class="font-bold text-gray-900 ml-1">${data.settings.layer_height}mm</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Infill:</span>
+                        <span class="font-bold text-gray-900 ml-1">${data.settings.fill_density}%</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Velocidad:</span>
+                        <span class="font-bold text-gray-900 ml-1">${data.settings.print_speed}mm/s</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Perímetros:</span>
+                        <span class="font-bold text-gray-900 ml-1">${data.settings.perimeters || 4}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Soportes:</span>
+                        <span class="font-bold text-gray-900 ml-1">${data.settings.support_type || 'auto'}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Brim:</span>
+                        <span class="font-bold text-gray-900 ml-1">${data.settings.brim_width || 0}mm</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Botón para continuar -->
+            <div class="p-4 bg-white flex justify-center">
+                <button onclick="continueWithAIProfile()" 
+                        class="bg-gradient-to-r from-green-600 to-blue-600 text-white px-8 py-3 rounded-lg hover:from-green-700 hover:to-blue-700 transition-all transform hover:scale-105 shadow-lg font-semibold">
+                    🚀 Continuar con este Perfil Optimizado
+                </button>
+            </div>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+}
+
+function displayFallbackMessage() {
+    const container = document.getElementById('ai-results-container');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="mt-6 bg-yellow-50 border-2 border-yellow-300 rounded-lg p-6 text-center">
+            <div class="text-4xl mb-3">⚠️</div>
+            <h4 class="font-bold text-yellow-900 mb-2">IA No Disponible</h4>
+            <p class="text-yellow-800 text-sm mb-4">
+                Se está usando un perfil optimizado con heurísticas básicas.
+                El sistema de IA no está disponible en este momento.
+            </p>
+            <button onclick="continueWithoutAI()" 
+                    class="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700 transition-colors">
+                Continuar con Perfil Básico
+            </button>
+        </div>
+    `;
+}
+
+function displayErrorMessage() {
+    const container = document.getElementById('ai-results-container');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="mt-6 bg-red-50 border-2 border-red-300 rounded-lg p-6 text-center">
+            <div class="text-4xl mb-3">❌</div>
+            <h4 class="font-bold text-red-900 mb-2">Error en Análisis IA</h4>
+            <p class="text-red-800 text-sm mb-4">
+                No se pudo completar el análisis con IA.
+                Puedes continuar con un perfil estándar.
+            </p>
+            <button onclick="continueWithoutAI()" 
+                    class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                Continuar sin IA
+            </button>
+        </div>
+    `;
+}
+
+async function continueWithAIProfile() {
+    if (!aiAnalysisData) {
+        showToast('Error', 'No hay datos de análisis IA', 'error');
+        return;
+    }
+    
+    showToast('Continuando', 'Usando perfil optimizado con IA...', 'success');
+    
+    // Guardar datos de IA en la sesión para usarlos después
+    window.aiProfileData = aiAnalysisData;
+    
+    // Continuar al siguiente paso
+    setTimeout(() => {
+        loadPrintFlowStep(null, null, 'printer_assignment', { 
+            completed_steps: ['piece_selection', 'material_selection', 'production_mode'],
+            data: { 
+                production_config: selectedProductionModeData,
+                ai_profile: aiAnalysisData,
+                project_name: 'Proyecto'
+            }
+        });
+    }, 1000);
+}
+
+async function continueWithoutAI() {
+    showToast('Continuando', 'Usando perfil estándar...', 'info');
+    
+    setTimeout(() => {
+        loadPrintFlowStep(null, null, 'printer_assignment', { 
+            completed_steps: ['piece_selection', 'material_selection', 'production_mode'],
+            data: { 
+                production_config: selectedProductionModeData,
+                project_name: 'Proyecto'
+            }
+        });
+    }, 1000);
+}
+
+// ===============================
+// FUNCIÓN PARA ESPERAR A QUE UNA TAREA BACKGROUND TERMINE
+// ===============================
+
+async function waitForTaskCompletion(taskId, sessionId, maxAttempts = 30, pollInterval = 500) {
+    console.log(`⏳ [POLLING] Esperando a que la tarea ${taskId} termine...`);
+    
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            // Consultar el estado del task
+            const response = await fetch(`/api/print/task-status/${taskId}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            if (response.ok) {
+                const taskStatus = await response.json();
+                console.log(`📊 [POLLING] Intento ${attempt}/${maxAttempts} - Estado: ${taskStatus.status}`);
+                
+                if (taskStatus.status === 'completed') {
+                    console.log('✅ [POLLING] Tarea completada exitosamente');
+                    return taskStatus;
+                }
+                
+                if (taskStatus.status === 'failed') {
+                    throw new Error(`Tarea falló: ${taskStatus.error || 'Error desconocido'}`);
+                }
+                
+                // Si está en progreso, esperar y reintentar
+                if (taskStatus.status === 'processing' || taskStatus.status === 'pending') {
+                    await new Promise(resolve => setTimeout(resolve, pollInterval));
+                    continue;
+                }
+            }
+            
+            // Si no hay respuesta válida, esperar y reintentar
+            await new Promise(resolve => setTimeout(resolve, pollInterval));
+            
+        } catch (error) {
+            console.error(`❌ [POLLING] Error en intento ${attempt}:`, error);
+            if (attempt === maxAttempts) {
+                throw new Error('Timeout esperando a que el procesamiento termine');
+            }
+            await new Promise(resolve => setTimeout(resolve, pollInterval));
+        }
+    }
+    
+    throw new Error('Timeout: El procesamiento no terminó en el tiempo esperado');
+}
+
+// ===============================
+// FUNCIÓN PARA PROCESAMIENTO STL CON IA OPCIONAL
+// ===============================
+
+async function processSTLWithOptionalAI() {
+    console.log('🎯 [STL+IA] Iniciando procesamiento con IA opcional...');
+    
+    const aiEnabled = document.getElementById('enable-ai-optimization')?.checked || false;
+    console.log(`🤖 [STL+IA] IA habilitada: ${aiEnabled}`);
+    
+    // Cambiar botón a estado de carga
+    const processButton = document.getElementById('btn-process-stl');
+    const buttonText = document.getElementById('process-button-text');
+    const buttonLoader = document.getElementById('process-button-loader');
+    
+    if (processButton && buttonText && buttonLoader) {
+        processButton.disabled = true;
+        buttonText.classList.add('hidden');
+        buttonLoader.classList.remove('hidden');
+    }
+    
+    try {
+        // Paso 1: Procesar STL (rotación, etc.) SIN generar G-code
+        console.log('📐 [STL+IA] Paso 1: Procesando geometría STL...');
+        const rotationResponse = await fetch('/api/print/process-with-rotation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                session_id: currentWizardSessionId,
+                rotation_config: {
+                    enabled: true,
+                    method: "auto",
+                    improvement_threshold: 5.0
+                },
+                profile_config: {
+                    printer_model: selectedPrinterData?.printer_model || 'Creality Ender-3 V3 SE',
+                    material: selectedMaterialData?.type || 'PLA',
+                    production_mode: selectedProductionModeData?.mode || 'factory'
+                },
+                enable_gcode_generation: false  // NO generar G-code todavía
+            })
+        });
+        
+        if (!rotationResponse.ok) {
+            throw new Error('Error en procesamiento STL');
+        }
+        
+        const rotationResult = await rotationResponse.json();
+        const taskId = rotationResult.task_id;
+        console.log(`✅ [STL+IA] Tarea aceptada: ${taskId}`);
+        
+        // 🔄 ESPERAR a que el procesamiento termine antes de continuar
+        console.log('⏳ [STL+IA] Esperando a que el STL rotado esté listo...');
+        await waitForTaskCompletion(taskId, currentWizardSessionId);
+        console.log('✅ [STL+IA] Geometría STL procesada y guardada');
+        
+        // Paso 2: Generar perfil (con o sin IA)
+        let profileData = null;
+        if (aiEnabled) {
+            console.log('🤖 [STL+IA] Paso 2a: Generando perfil con IA...');
+            profileData = await analyzeWithAI();
+        } else {
+            console.log('📐 [STL+IA] Paso 2b: Generando perfil tradicional...');
+            profileData = await generateTraditionalProfile();
+        }
+        
+        // Paso 3: Generar G-code con el perfil optimizado
+        console.log('⚙️ [STL+IA] Paso 3: Generando G-code con perfil optimizado...');
+        const gcodeResponse = await fetch('/api/print/generate-gcode', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                session_id: currentWizardSessionId,
+                profile_data: profileData,
+                ai_enabled: aiEnabled
+            })
+        });
+        
+        if (!gcodeResponse.ok) {
+            throw new Error('Error generando G-code');
+        }
+        
+        const gcodeResult = await gcodeResponse.json();
+        console.log('✅ [STL+IA] G-code generado exitosamente');
+        
+        // Paso 4: Avanzar a validation
+        showToast('Completado', 
+            aiEnabled ? 'STL procesado y G-code generado con IA' : 'STL procesado y G-code generado', 
+            'success');
+            
+        setTimeout(() => {
+            loadPrintFlowStep(null, null, 'validation', {
+                completed_steps: ['piece_selection', 'material_selection', 'production_mode', 'printer_assignment', 'stl_processing'],
+                data: { 
+                    ai_used: aiEnabled,
+                    profile_data: profileData
+                }
+            });
+        }, 1000);
+        
+    } catch (error) {
+        console.error('❌ [STL+IA] Error en procesamiento:', error);
+        showToast('Error', `Error en procesamiento: ${error.message}`, 'error');
+    } finally {
+        // Restaurar botón
+        if (processButton && buttonText && buttonLoader) {
+            processButton.disabled = false;
+            buttonText.classList.remove('hidden');
+            buttonLoader.classList.add('hidden');
+        }
+    }
+}
+
+async function generateTraditionalProfile() {
+    console.log('📐 [TRADITIONAL] Generando perfil con heurísticas...');
+    
+    const response = await fetch('/api/print/slicer/generate-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            job_id: currentWizardSessionId,
+            session_id: currentWizardSessionId,
+            printer_model: selectedPrinterData?.printer_model || 'Creality Ender-3 V3 SE',
+            material_config: selectedMaterialData,
+            production_config: selectedProductionModeData,
+            printer_config: selectedPrinterData || {},
+            enable_ai: false  // Usar heurísticas tradicionales
+        })
+    });
+    
+    if (!response.ok) {
+        throw new Error('Error generando perfil tradicional');
+    }
+    
+    const result = await response.json();
+    console.log('✅ [TRADITIONAL] Perfil tradicional generado');
+    return result;
+}
+
+// ===============================
+// FUNCIÓN PARA AVANZAR PASOS MANUALMENTE
+// ===============================
+
+function nextPrintFlowStep() {
+    console.log('🎯 [WIZARD] Avanzando manualmente al siguiente paso...');
+    
+    // Desde validation (paso 6) ir a confirmation (paso 7)
+    loadPrintFlowStep(null, null, 'confirmation', { 
+        completed_steps: ['piece_selection', 'material_selection', 'production_mode', 'printer_assignment', 'stl_processing', 'validation'],
+        data: { 
+            project_name: 'Proyecto'
+        }
+    });
+}
+
+// ===============================
+// FIN FUNCIONES DE IA
+// ===============================
 
 // Inicializar el modal cuando el DOM esté listo
 let projectModal;
