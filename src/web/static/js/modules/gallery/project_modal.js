@@ -4821,6 +4821,61 @@ function nextPrintFlowStep() {
 }
 
 // ===============================
+// FUNCIONES PARA PASO DE MONITOREO
+// ===============================
+
+/**
+ * Actualiza los datos de monitoreo en tiempo real
+ */
+async function updateMonitoringData() {
+    if (!currentWizardSessionId) {
+        showToast('Error', 'No hay sesión activa', 'error');
+        return;
+    }
+    
+    try {
+        console.log('🔄 Actualizando datos de monitoreo...');
+        showToast('Actualizando', 'Obteniendo estado actual...', 'info');
+        
+        // Recargar el paso de monitoreo para obtener datos frescos
+        await loadPrintFlowStep(null, null, 'monitoring', {
+            completed_steps: ['piece_selection', 'material_selection', 'production_mode', 'printer_assignment', 'stl_processing', 'validation', 'confirmation'],
+            refresh: true
+        });
+        
+        showToast('Actualizado', 'Datos de monitoreo actualizados', 'success');
+        
+    } catch (error) {
+        console.error('❌ Error actualizando datos de monitoreo:', error);
+        showToast('Error', 'No se pudo actualizar el monitoreo', 'error');
+    }
+}
+
+/**
+ * Cierra el modal del asistente de impresión
+ */
+function closePrintFlowModal() {
+    console.log('🚪 Cerrando modal del asistente de impresión...');
+    
+    // Usar la función existente para cerrar el wizard
+    closePrintFlowWizard();
+    
+    // Mensaje de confirmación
+    showToast('Asistente Cerrado', 'Puedes volver a abrir el proyecto desde la galería', 'success');
+    
+    // Opcional: Recargar la galería para reflejar cambios
+    if (typeof loadProjects === 'function') {
+        setTimeout(() => {
+            loadProjects();
+        }, 500);
+    }
+}
+
+// ===============================
+// FIN FUNCIONES DE MONITOREO
+// ===============================
+
+// ===============================
 // FIN FUNCIONES DE IA
 // ===============================
 
