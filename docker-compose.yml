@@ -53,6 +53,11 @@ services:
     build:
       context: ./APISLICER
     container_name: apislicer-slicer-api
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     ports:
       - "8001:8000" # host:container (usamos 8001 para evitar conflicto con kybercore en 8000)
     volumes:
