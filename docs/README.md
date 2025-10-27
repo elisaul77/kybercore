@@ -1,95 +1,67 @@
-# Documentación KyberCore
+# 📚 Documentación de KyberCore
 
-## 📚 Contenido
+Índice principal de documentación del proyecto.
 
-### `architecture/` - Arquitectura del Sistema
-- **[Sistema de Auto-Rotación](architecture/auto-rotation-system.md)** - Documentación completa del sistema de optimización de orientación STL
-- **[Flujo de Auto-Rotación](architecture/flujo_auto_rotacion.mmd)** - Diagrama de secuencia Mermaid del flujo completo
-- **[Diagramas APISLICER](architecture/apislicer-diagrams.md)** - Arquitectura del servicio de slicing
-- Diagramas de flujo (Mermaid)
-- Diagramas de secuencia del wizard
-- Arquitectura de componentes
+## 🏗️ Arquitectura
 
-### `api/` - Documentación de APIs
-- **KyberCore API** - API principal del orquestador
-- **APISLICER API** - API de slicing STL → G-code
-- Endpoints y ejemplos
+- [Visión General](architecture/README.md)
+- [Sistema de Routing](architecture/routing.md)
+- [Plan de Refactorización](architecture/refactoring-plan.md)
 
-### `guides/` - Guías de Usuario
-- **[Guía Rápida: Auto-Rotación](guides/auto-rotation-quickstart.md)** - Inicio rápido para desarrolladores
-- **[Guía del Wizard](guides/wizard-test-guide.md)** - Testing del wizard de impresión
-- **[Guía del Visor G-code](guides/gcode-viewer-guide.md)** - Uso del visualizador 3D
-- Instalación y configuración
-- Troubleshooting común
+## ✨ Características (Features)
 
-### `research/` - Investigación y Propuestas
-- **[Investigación Principal](research/investigacion.md)** - Investigación académica y justificación
-- Propuestas técnicas
-- Análisis de viabilidad
+### 🤖 Inteligencia Artificial
+- [Sistema de IA](features/ai/README.md) - Generación de perfiles con OpenAI
 
-## 🆕 Últimas Actualizaciones
+### 📦 Sistema de Pedidos
+- [Gestión de Pedidos](features/orders/README.md) - Sistema de órdenes de clientes
 
-### [Sistema de Auto-Rotación v1.0.0](CHANGELOG-auto-rotation.md) - 2024-10-04
-- ✨ **Optimización Automática** de orientación STL
-- 🎚️ **Umbral Dinámico** ajustable (0-20%)
-- 🤖 **Algoritmo Dual**: Exploración estratégica + Gradient Descent
-- 💾 **Persistencia Temporal** de archivos rotados
-- 📊 **Trazabilidad Completa** del proceso
+### 🎨 Auto-Plating
+- [Organización Automática](features/auto-plating/README.md) - Plating inteligente
 
-**[Ver Changelog Completo →](CHANGELOG-auto-rotation.md)**
+### 👁️ Visualizadores
+- [G-code Viewer](features/viewers/gcode-viewer.md) - Visualización de G-code 3D
+- [STL Viewer](../guides/stl-viewer.md) - Visualización de modelos STL
 
-## 📖 Documentos Principales
+### 🧙 Print Wizard
+- [Asistente de Impresión](features/wizard/README.md) - Flujo de 7 pasos
 
-| Documento | Descripción | Última Actualización |
-|-----------|-------------|---------------------|
-| [Sistema de Auto-Rotación](architecture/auto-rotation-system.md) | Arquitectura completa con diagramas Mermaid | 2024-10-04 |
-| [Guía Rápida Auto-Rotación](guides/auto-rotation-quickstart.md) | Testing, debugging y troubleshooting | 2024-10-04 |
-| [Changelog Auto-Rotación](CHANGELOG-auto-rotation.md) | Historial de cambios y features | 2024-10-04 |
-| [Guía del Wizard](guides/wizard-test-guide.md) | Testing del flujo completo | 2024-10-03 |
-| [Visor G-code](guides/gcode-viewer-guide.md) | Visualización 3D de G-code | 2024-10-02 |
+### 🔄 Sistema de Feedback (Propuesta)
+- [Feedback + Reinforcement Learning](features/feedback-system/proposal.md)
 
-## 🔗 Enlaces Útiles
+## 📖 Guías
 
-- [README Principal](../README.md)
-- [Contribuir](../CONTRIBUTING.md)
-- [Roadmap](../README.md#roadmap)
-- [Issues](https://github.com/kybercore/kybercore/issues)
+- [Getting Started](guides/getting-started.md) - Inicio rápido
+- [Flujo de Impresión](guides/flujo-impresion.md) - Proceso completo
+- [Migración OpenAI](guides/migracion-openai.md) - Cómo migrar a OpenAI
+- [OpenAI Prompts](guides/openai-prompts.md) - Prompts utilizados
+- [STL Viewer](guides/stl-viewer.md) - Uso del visor STL
+- [Testing IA Parameters](guides/testing-ia-parameters.md) - Probar parámetros
+
+## 🔧 API
+
+- [Endpoints](api/README.md) - Lista de endpoints disponibles
+- [Ejemplos](api/examples.md) - Ejemplos de uso
+
+## 🔬 Investigación
+
+- [Documento de Investigación](research/investigacion.md) - Investigación original
+
+## 🧪 Testing
+
+- [Guía de Testing](../tests/README.md) - Cómo ejecutar tests
+- [Tests HTML](../tests/html/README.md) - Demos y verificaciones
+
+---
 
 ## 📝 Convenciones
 
-- Los diagramas usan Mermaid (formato `.mmd`)
-- La documentación está en Markdown
-- Los ejemplos de código incluyen comentarios
-- Los diagramas de secuencia usan autonumber
-- Los changelog siguen [Keep a Changelog](https://keepachangelog.com/)
+- **Un archivo por característica principal**
+- **README.md en cada carpeta** para contexto
+- **Links relativos** para navegación interna
+- **Emojis consistentes** para identificación rápida
 
-## 🎯 Navegación Rápida
+## 🚀 Contribuir
 
-### Para Usuarios
-1. [Instalación](../README.md#instalación)
-2. [Guía de Inicio Rápido](guides/auto-rotation-quickstart.md#para-usuarios)
-3. [Usar Auto-Rotación](architecture/auto-rotation-system.md#casos-de-uso)
+Ver [CONTRIBUTING.md](../CONTRIBUTING.md) para guías de contribución.
 
-### Para Desarrolladores
-1. [Arquitectura General](architecture/)
-2. [Guía de Desarrollo](guides/auto-rotation-quickstart.md#para-desarrolladores)
-3. [Testing](guides/auto-rotation-quickstart.md#testing)
-4. [Debugging](guides/auto-rotation-quickstart.md#debugging)
-
-### Para Investigadores
-1. [Investigación Académica](research/investigacion.md)
-2. [Algoritmos de Optimización](architecture/auto-rotation-system.md#algoritmos-de-optimización)
-3. [Métricas](CHANGELOG-auto-rotation.md#métricas-de-mejora)
-
-## 🔍 Búsqueda Rápida
-
-| Busco... | Documento |
-|----------|-----------|
-| Cómo usar auto-rotación | [Casos de Uso](architecture/auto-rotation-system.md#casos-de-uso) |
-| Endpoints de la API | [API y Endpoints](architecture/auto-rotation-system.md#api-y-endpoints) |
-| Problemas comunes | [Troubleshooting](architecture/auto-rotation-system.md#troubleshooting) |
-| Testing | [Guía Rápida](guides/auto-rotation-quickstart.md#testing) |
-| Arquitectura | [Sistema Completo](architecture/auto-rotation-system.md) |
-| Flujo detallado | [Diagrama Mermaid](architecture/flujo_auto_rotacion.mmd) |
-
-```

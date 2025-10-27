@@ -98,11 +98,18 @@ src/web/static/img/job_results/*
 tests/html/local_*.html
 tests/html/debug_*.html
 
-# Archivos temporales
+# Archivos temporales (NUNCA COMMITEAR)
 *.tmp
 *.bak
 *~
 .DS_Store
+=*.*
+
+# Archivos de prueba temporales en raíz (deberían estar en tests/)
+/test_*.html
+/test_*.py
+/*_demo.html
+/*_verification.html
 
 # Uploads y outputs (excepto ejemplos)
 APISLICER/uploads/*.stl
