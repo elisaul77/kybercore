@@ -6053,6 +6053,183 @@
         "estimated_completion": "2025-10-27T04:59:12.496887"
       },
       "completed_at": "2025-10-27T04:59:12.557905"
+    },
+    {
+      "job_id": "ad1dedad-0836-460e-8515-e0a2698e3900",
+      "status": "started",
+      "session_data": {
+        "project_id": "30",
+        "project_data": {
+          "id": 30,
+          "nombre": "Articulating Fox - No Supports by NeonGraveStoneArt",
+          "descripcion": "Proyecto importado desde Articulating Fox - No Supports - 6817979.zip",
+          "categoria": "general",
+          "archivos": [
+            {
+              "nombre": "Fox_Multicolor.3mf",
+              "tipo": "3MF",
+              "tamano": "8107.39 KB"
+            },
+            {
+              "nombre": "Fox_singlecolor.stl",
+              "tipo": "STL",
+              "tamano": "27247.54 KB"
+            },
+            {
+              "nombre": "README.txt",
+              "tipo": "Archivo",
+              "tamano": "0.11 KB"
+            },
+            {
+              "nombre": "LICENSE.txt",
+              "tipo": "Archivo",
+              "tamano": "0.14 KB"
+            }
+          ],
+          "imagenes": [
+            "IMG_20241102_135418196_copy.jpg",
+            "IMG_20241102_135500374_copy.jpg",
+            "IMG_20241102_135613225_copy.jpg",
+            "Fox_singlecolor.png"
+          ],
+          "fecha_creacion": "2025-10-13",
+          "estado": "completado",
+          "progreso": 100,
+          "badge": "Thingiverse",
+          "imagen": "/api/gallery/projects/articulating-fox---no-supports-by-neongravestoneart-30/images/IMG_20241102_135418196_copy.jpg",
+          "carpeta": "src/proyect/Articulating Fox - No Supports by NeonGraveStoneArt - 30"
+        },
+        "current_step": "monitoring",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing",
+          "confirmation"
+        ],
+        "created_at": "2025-10-28T02:23:00.637787",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "Fox_singlecolor.stl"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-28T02:23:00.638055"
+        },
+        "updated_at": "2025-10-28T02:23:56.216943",
+        "material_selection": {
+          "material_type": "PETG",
+          "color": "Transparente",
+          "brand": "Overture",
+          "selected_material_data": {
+            "id": "fil_003",
+            "tipo": "PETG",
+            "color": "Transparente",
+            "marca": "Overture",
+            "stock_actual": 900,
+            "stock_minimo": 200,
+            "precio_por_kg": 28.99,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 4.35,
+          "completed_at": "2025-10-28T02:23:05.120641"
+        },
+        "production_mode": {
+          "mode": "factory",
+          "priority": "quality",
+          "settings": {
+            "layer_height": 0.1,
+            "infill_density": 25,
+            "print_speed": 40,
+            "quality_preset": "fine"
+          },
+          "estimated_impact": {
+            "time_factor": 1.3,
+            "quality_level": "alta",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-28T02:23:10.141073"
+        },
+        "printer_assignment": {
+          "printer_id": "printer-test-1",
+          "printer_name": "Ender 3 V3 SE",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7126",
+          "confirmed_at": "2025-10-28T02:23:16.030604"
+        },
+        "stl_processing": {
+          "task_id": "task_0f752023-5c27-4263-83db-d7167ddc3172",
+          "successful": [
+            {
+              "filename": "Fox_singlecolor.stl",
+              "success": true,
+              "rotated": false,
+              "rotation_info": {
+                "applied": false,
+                "degrees": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "improvement": 0.0,
+                "contact_area": 0.0,
+                "original_area": 0.0
+              },
+              "gcode_path": "/tmp/kybercore_processing/wizard_1761618176282_e6w4eqln5/gcode_wizard_1761618176282_e6w4eqln5_rotated_Fox_singlecolor.gcode",
+              "gcode_size": 34918299,
+              "error": null,
+              "processing_time_seconds": 3.7460947036743164
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-28T02:23:33.079484"
+        },
+        "confirmed_job_id": "ad1dedad-0836-460e-8515-e0a2698e3900",
+        "final_status": "job_sent_to_printer",
+        "completed_at": "2025-10-28T02:32:20.751105"
+      },
+      "printer_response": {
+        "success": true,
+        "printer_job_id": "printer_wizard_1761618176282_e6w4eqln5",
+        "message": "Impresión iniciada. 1 archivo(s) subido(s), 0 pendiente(s)",
+        "printer_id": "printer-test-1",
+        "queue_position": 95,
+        "moonraker_url": "http://10.10.10.71:7126",
+        "current_printing": "kybercore_wizard_1761618176282_e6w4eqln5_gcode_wizard_1761618176282_e6w4eqln5_rotated_Fox_singlecolor.gcode",
+        "uploaded_files": [
+          "kybercore_wizard_1761618176282_e6w4eqln5_gcode_wizard_1761618176282_e6w4eqln5_rotated_Fox_singlecolor.gcode"
+        ],
+        "pending_files": [],
+        "failed_uploads": [],
+        "estimated_completion": "2025-10-28T02:32:20.749714"
+      },
+      "completed_at": "2025-10-28T02:32:20.825266"
     }
   ],
   "estadisticas": {
