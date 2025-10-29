@@ -2614,12 +2614,17 @@ async def generate_custom_profile(request: Request):
             # 🔥 IMPORTANTE: Si hay análisis de soportes previo, USAR esos valores
             final_support_type = ai_profile.get('support_type', 'none')
             final_support_density = ai_profile.get('support_density', 15)
+            final_buildplate_only = True  # Por defecto
             
             if support_analysis_from_session and support_analysis_from_session.get('auto_detected'):
                 # Sobrescribir con valores del análisis geométrico
                 final_support_type = support_analysis_from_session.get('type', final_support_type)
                 final_support_density = support_analysis_from_session.get('density', final_support_density)
+                final_buildplate_only = support_analysis_from_session.get('buildplate_only', True)  # 🔥 NUEVO
+                
+                buildplate_mode = "solo desde la base" if final_buildplate_only else "en todas partes (geometría compleja)"
                 logger.info(f"🔥 USANDO soportes del análisis geométrico: {final_support_type} @ {final_support_density}%")
+                logger.info(f"   Modo: {buildplate_mode}")
             else:
                 logger.info(f"📋 USANDO soportes del perfil IA: {final_support_type} @ {final_support_density}%")
             
@@ -2653,6 +2658,7 @@ async def generate_custom_profile(request: Request):
                     "z_hop": ai_profile.get('z_hop', 0.4),
                     "support_type": final_support_type,  # 🔥 Usar valor final
                     "support_density": final_support_density,  # 🔥 Usar valor final
+                    "support_buildplate_only": final_buildplate_only,  # 🔥 NUEVO campo
                     "brim_width": ai_profile.get('brim_width', 0),
                     "cooling_fan_speed": ai_profile.get('cooling_fan_speed', 100),
                     "first_layer_fan_speed": ai_profile.get('first_layer_fan_speed', 0),
@@ -2721,11 +2727,16 @@ async def generate_custom_profile(request: Request):
             # 🔥 IMPORTANTE: Cargar análisis de soportes si existe (incluso sin IA)
             final_support_type = 'none'
             final_support_density = 15
+            final_buildplate_only = True  # Por defecto
             
             if support_analysis_from_session and support_analysis_from_session.get('auto_detected'):
                 final_support_type = support_analysis_from_session.get('type', 'none')
                 final_support_density = support_analysis_from_session.get('density', 15)
+                final_buildplate_only = support_analysis_from_session.get('buildplate_only', True)  # 🔥 NUEVO
+                
+                buildplate_mode = "solo desde la base" if final_buildplate_only else "en todas partes (geometría compleja)"
                 logger.info(f"🔥 USANDO soportes del análisis geométrico: {final_support_type} @ {final_support_density}%")
+                logger.info(f"   Modo: {buildplate_mode}")
             
             # Crear el perfil tradicional
             profile_data = {
@@ -2745,6 +2756,7 @@ async def generate_custom_profile(request: Request):
                     "bed_temperature": temps["bed"],
                     "support_type": final_support_type,  # 🔥 Usar valor del análisis
                     "support_density": final_support_density,  # 🔥 Usar valor del análisis
+                    "support_buildplate_only": final_buildplate_only,  # 🔥 NUEVO campo
                     "material_type": material_type,
                     "material_color": material_config.get('color', 'white'),
                     "material_brand": material_config.get('brand', 'Generic'),

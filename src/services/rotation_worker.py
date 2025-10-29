@@ -678,6 +678,7 @@ class RotationWorker:
                             session_data['support_analysis'] = {
                                 'type': recommended_type,
                                 'density': recommended_density,
+                                'buildplate_only': support_analysis.get('buildplate_only', True),  # 🔥 NUEVO
                                 'auto_detected': True,
                                 'overhang_percentage': support_analysis.get('overhang_analysis', {}).get('overhang_percentage', 0),
                                 'recommendations': support_analysis.get('recommendations', [])
@@ -700,6 +701,7 @@ class RotationWorker:
                             session_data['support_analysis'] = {
                                 'type': 'none',
                                 'density': 0,
+                                'buildplate_only': True,  # 🔥 Por defecto True cuando no hay soportes
                                 'auto_detected': True,
                                 'overhang_percentage': 0,
                                 'recommendations': ['✅ El modelo puede imprimirse sin soportes']
@@ -986,6 +988,7 @@ class RotationWorker:
                     infill_pattern = profile_config.get('infill_pattern', 'honeycomb')
                     support_type = profile_config.get('support_type', 'none')
                     support_density = profile_config.get('support_density', 15)
+                    support_buildplate_only = profile_config.get('support_buildplate_only', True)  # 🔥 NUEVO
                     brim_width = profile_config.get('brim_width', 0)
                     perimeters = profile_config.get('perimeters', 3)
                     first_layer_height = profile_config.get('first_layer_height', layer_height * 1.2)
@@ -1043,6 +1046,7 @@ class RotationWorker:
                     data.add_field('infill_pattern', infill_pattern)
                     data.add_field('support_type', support_type)
                     data.add_field('support_density', str(int(support_density)))
+                    data.add_field('support_buildplate_only', str(support_buildplate_only).lower())  # 🔥 NUEVO
                     data.add_field('brim_width', str(float(brim_width)))
                     data.add_field('perimeters', str(int(perimeters)))
                     data.add_field('first_layer_height', str(first_layer_height))

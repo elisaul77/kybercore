@@ -499,6 +499,7 @@ async def slice_stl(
     infill_pattern: str = Form("honeycomb"),
     support_type: str = Form("none"),
     support_density: int = Form(15),
+    support_buildplate_only: bool = Form(True),  # 🔥 NUEVO: True = solo desde base, False = todas partes
     brim_width: float = Form(0.0),
     perimeters: int = Form(3),
     first_layer_height: float = Form(None),
@@ -678,19 +679,27 @@ async def slice_stl(
         
         # Agregar parámetros de soporte si están habilitados
         if support_type != "none":
-            # Mapeo de tipos
+            # Mapeo de tipos a patrones VÁLIDOS de PrusaSlicer CLI
+            # NOTA: "tree" (organic) no tiene soporte directo en CLI, usar honeycomb como alternativa
             support_pattern_map = {
                 "linear": "rectilinear",
                 "grid": "rectilinear-grid", 
-                "tree": "organic",
+                "tree": "honeycomb",  # 🔥 Tree no soportado, usar honeycomb (similar)
                 "honeycomb": "honeycomb"
             }
             prusaslicer_pattern = support_pattern_map.get(support_type, "rectilinear")
             
+            logger.info(f"      🔍 DEBUG support_type recibido: '{support_type}'")
+            logger.info(f"      🔍 DEBUG prusaslicer_pattern mapeado: '{prusaslicer_pattern}'")
+            
             # Agregar parámetros de soporte
             # IMPORTANTE: --support-material es un FLAG (no acepta valor)
             cmd.append("--support-material")
-            cmd.append("--support-material-buildplate-only")  # 🔥 Solo soportes desde la base (no entre piezas)
+            
+            # 🔥 CONDICIONAL: Solo agregar buildplate-only si está habilitado
+            if support_buildplate_only:
+                cmd.append("--support-material-buildplate-only")
+            
             cmd.extend([
                 "--support-material-pattern", prusaslicer_pattern,
                 "--support-material-spacing", str(2.5),  # mm entre líneas de soporte
@@ -700,7 +709,9 @@ async def slice_stl(
                 "--support-material-contact-distance", "0.2",  # Distancia de contacto (facilita remoción)
             ])
             
+            buildplate_mode = "solo desde la base" if support_buildplate_only else "en todas partes (geometría compleja)"
             logger.info(f"      🔥 Soportes mapeados: '{support_type}' -> '{prusaslicer_pattern}'")
+            logger.info(f"      📍 Modo: {buildplate_mode}")
         # Si support_type == "none", simplemente no agregamos --support-material (está deshabilitado por defecto)
         
         # Continuar con velocidades
@@ -818,7 +829,8 @@ async def slice_stl(
         logger.info(f"      • Densidad: {support_density}%")
         logger.info(f"      • Habilitado: {'✅ SÍ' if support_type != 'none' else '❌ NO'}")
         if support_type != 'none':
-            logger.info(f"      • Modo: Solo desde la base (buildplate-only)")
+            buildplate_mode = "Solo desde la base" if support_buildplate_only else "En todas partes (geometría compleja)"
+            logger.info(f"      • Modo: {buildplate_mode}")
         
         logger.info(f"Ejecutando: {' '.join(cmd[:10])}... ({len(cmd)} parámetros)")
         logger.info(f"   🔍 DEBUG: Últimos 5 parámetros: {cmd[-5:]}")
