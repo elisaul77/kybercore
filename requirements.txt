@@ -34,3 +34,8 @@ pdf2image==1.17.0     # Conversión de páginas PDF a imágenes (requiere popple
 matplotlib==3.9.2     # Renderizado 3D de STLs a imágenes
 pyvista==0.43.10      # Alternativa avanzada para renderizado 3D (opcional)
 openai>=1.12.0  # OpenAI API client
+
+# 🖥️ Print Monitor Dashboard Dependencies
+flask==3.0.3          # Framework web ligero para dashboard
+flask-socketio==5.4.1 # WebSocket support para updates en tiempo real
+python-socketio==5.11.0 # SocketIO client/server

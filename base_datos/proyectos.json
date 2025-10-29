@@ -1,7 +1,7 @@
 {
   "estadisticas": {
-    "total_proyectos": 89,
-    "total_stls": 683,
+    "total_proyectos": 90,
+    "total_stls": 684,
     "completados": 87,
     "en_progreso": 0,
     "tasa_exito": 90.6
@@ -5583,6 +5583,47 @@
       "progreso": 100,
       "imagen": "/api/gallery/projects/pokeball-opens-and-closes-model_files-115/images/pdf_page1_img1.jpg",
       "carpeta": "src/proyect/pokeball-opens-and-closes-model_files - 115"
+    },
+    {
+      "id": 116,
+      "nombre": "5015 Proyecto",
+      "descripcion": "Es la tapa del ventilador\r\n",
+      "autor": "Usuario",
+      "fecha_creacion": "2025-10-29",
+      "estado": "listo",
+      "favorito": false,
+      "carpeta": "src/proyect/5015 Proyecto - 116",
+      "imagen": "/api/gallery/projects/5015-proyecto-116/images/stl_preview.png",
+      "badges": {
+        "estado": "Listo",
+        "tipo": "Herramientas",
+        "piezas": "1 piezas"
+      },
+      "progreso": {
+        "porcentaje": 100,
+        "mensaje": "Listo para imprimir"
+      },
+      "archivos": [
+        {
+          "nombre": "5015-selftap.stl",
+          "tipo": "STL",
+          "tamano": "588.95 KB"
+        }
+      ],
+      "estadisticas": {
+        "tiempo_estimado": "2-4 horas",
+        "filamento_estimado": "50-100g",
+        "complejidad": "Media"
+      },
+      "aiAnalysis": {
+        "tiempo_estimado": "3 horas",
+        "filamento_total": "75g",
+        "costo_estimado": "$2.50",
+        "recomendaciones": [
+          "Usar soporte en voladizos",
+          "Temperatura de cama: 60°C"
+        ]
+      }
     }
   ]
 }

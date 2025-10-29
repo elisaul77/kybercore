@@ -1017,6 +1017,13 @@ async def process_with_rotation(
         if not session_data:
             raise HTTPException(status_code=404, detail="Sesión no encontrada")
         
+        # Obtener printer_id de la sesión si no viene en el request
+        printer_id = req.printer_id
+        if not printer_id:
+            printer_assignment = session_data.get("printer_assignment", {})
+            printer_id = printer_assignment.get("printer_id")
+            logger.info(f"   printer_id obtenido de sesión: {printer_id}")
+        
         # Obtener archivos a procesar
         piece_selection = session_data.get("piece_selection", {})
         selected_pieces = piece_selection.get("selected_pieces", [])
@@ -1053,6 +1060,7 @@ async def process_with_rotation(
             files=selected_pieces,
             rotation_config=req.rotation_config,
             profile_config=req.profile_config,
+            printer_id=printer_id,  # 🆕 Pasar printer_id
             plating_config=plating_config_dict,
             enable_gcode_generation=req.enable_gcode_generation  # 🆕 Pasar parámetro
         )
@@ -2016,10 +2024,19 @@ async def send_job_to_printer(job_id, settings):
         if not printer_config:
             return {"success": False, "error": f"Impresora {printer_id} no encontrada"}
         
-        # Obtener IP y puerto de Moonraker
-        printer_ip = printer_config.get("ip", "")
+        # 🔧 Obtener IP usando prioridad: active_ip > local_ip > vpn_ip > ip
+        printer_ip = (
+            printer_config.get("active_ip") or 
+            printer_config.get("local_ip") or 
+            printer_config.get("vpn_ip") or 
+            printer_config.get("ip", "")
+        )
+        
         if not printer_ip:
             return {"success": False, "error": f"IP no configurada para impresora {printer_id}"}
+        
+        # Limpiar espacios en blanco de la IP
+        printer_ip = printer_ip.strip()
         
         # Si no tiene protocolo, agregar http://
         if not printer_ip.startswith("http"):

@@ -489,6 +489,12 @@ async def slice_stl(
     custom_profile: str = Form(None),  # job_id para perfil personalizado
     auto_rotate: bool = Form(False),  # Nueva opción para auto-rotación
     
+    # 🖨️ PARÁMETROS ESPECÍFICOS DE IMPRESORA (RETRACCIÓN)
+    retract_length: float = Form(6.0),               # Longitud de retracción (mm)
+    retract_speed: int = Form(40),                   # Velocidad de retracción (mm/s)
+    retract_lift: float = Form(0.3),                 # Z-hop al retraer (mm)
+
+    
     # ✨ PARÁMETROS BÁSICOS DE IA
     infill_pattern: str = Form("honeycomb"),
     support_type: str = Form("none"),
@@ -654,6 +660,12 @@ async def slice_stl(
             "--first-layer-temperature", str(nozzle_temp + 5),  # 🔥 +5°C para mejor adherencia
             "--first-layer-bed-temperature", str(bed_temp + 5),  # 🔥 +5°C para mejor adherencia
             
+            # ===== RETRACCIÓN (ESPECÍFICO DE IMPRESORA) =====
+            "--retract-length", str(retract_length),
+            "--retract-speed", str(retract_speed),
+            "--retract-lift", str(retract_lift),
+
+            
             # ===== PERÍMETROS Y PAREDES =====
             "--perimeters", str(perimeters),
             "--top-solid-layers", str(top_solid_layers),
@@ -762,6 +774,11 @@ async def slice_stl(
         logger.info(f"   🌡️  Temperaturas:")
         logger.info(f"      • Normal: {nozzle_temp}°C / {bed_temp}°C")
         logger.info(f"      • Primera capa: {nozzle_temp + 5}°C / {bed_temp + 5}°C 🔥")
+        
+        logger.info(f"   🔧 Retracción:")
+        logger.info(f"      • Length: {retract_length}mm")
+        logger.info(f"      • Speed: {retract_speed}mm/s")
+        logger.info(f"      • Z-hop: {retract_lift}mm")
         
         logger.info(f"Ejecutando: {' '.join(cmd[:10])}... ({len(cmd)} parámetros)")
 

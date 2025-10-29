@@ -48,6 +48,79 @@ class RotationWorker:
         
         logger.info(f"RotationWorker inicializado: max_concurrent={max_concurrent}, max_retries={max_retries}")
     
+    def load_printer_properties(self, printer_id: Optional[str]) -> Dict[str, Any]:
+        """
+        Carga las propiedades específicas de una impresora desde printers.json
+        
+        Args:
+            printer_id: ID de la impresora
+            
+        Returns:
+            Dict con propiedades de la impresora o valores por defecto si no se encuentra
+        """
+        default_properties = {
+            'extruder_type': 'bowden',
+            'max_print_speed': 150,
+            'max_travel_speed': 300,
+            'max_acceleration': 500,
+            'retraction': {
+                'length': 6.0,
+                'speed': 40,
+                'z_hop': 0.3
+            },
+            'build_volume': {'x': 220, 'y': 220, 'z': 250},
+            'nozzle_diameter': 0.4,
+            'supported_materials': ['PLA', 'PETG', 'ABS']
+        }
+        
+        if not printer_id:
+            logger.warning("⚠️  No se proporcionó printer_id, usando propiedades por defecto")
+            return default_properties
+        
+        try:
+            printers_file = Path(__file__).parent.parent.parent / 'base_datos' / 'printers.json'
+            
+            if not printers_file.exists():
+                logger.error(f"❌ No se encontró printers.json en {printers_file}")
+                return default_properties
+            
+            with open(printers_file, 'r', encoding='utf-8') as f:
+                printers = json.load(f)
+            
+            if printer_id not in printers:
+                logger.warning(f"⚠️  Impresora '{printer_id}' no encontrada en printers.json")
+                return default_properties
+            
+            printer = printers[printer_id]
+            
+            # Extraer propiedades relevantes
+            properties = {
+                'extruder_type': printer.get('extruder_type', default_properties['extruder_type']),
+                'max_print_speed': printer.get('max_print_speed', default_properties['max_print_speed']),
+                'max_travel_speed': printer.get('max_travel_speed', default_properties['max_travel_speed']),
+                'max_acceleration': printer.get('max_acceleration', default_properties['max_acceleration']),
+                'retraction': printer.get('retraction', default_properties['retraction']),
+                'build_volume': printer.get('build_volume', default_properties['build_volume']),
+                'nozzle_diameter': printer.get('nozzle_diameter', default_properties['nozzle_diameter']),
+                'supported_materials': printer.get('supported_materials', default_properties['supported_materials']),
+                'name': printer.get('name', 'Unknown'),
+                'model': printer.get('model', 'Unknown')
+            }
+            
+            logger.info(
+                f"✅ Propiedades cargadas para {printer_id}: "
+                f"extrusor={properties['extruder_type']}, "
+                f"max_speed={properties['max_print_speed']}mm/s, "
+                f"retraction={properties['retraction']['length']}mm"
+            )
+            
+            return properties
+            
+        except Exception as e:
+            logger.error(f"❌ Error cargando propiedades de impresora: {str(e)}")
+            return default_properties
+
+    
     async def process_batch(
         self, 
         task_id: str,
@@ -55,6 +128,7 @@ class RotationWorker:
         files: List[str],
         rotation_config: Dict[str, Any],
         profile_config: Dict[str, Any],
+        printer_id: Optional[str] = None,  # 🆕 ID de impresora para propiedades específicas
         plating_config: Optional[Dict[str, Any]] = None,
         enable_gcode_generation: bool = True  # 🆕 Nuevo parámetro
     ) -> None:
@@ -68,12 +142,24 @@ class RotationWorker:
             files: Lista de nombres de archivos a procesar
             rotation_config: Configuración de auto-rotación
             profile_config: Configuración del perfil de laminado
+            printer_id: (Opcional) ID de la impresora para cargar propiedades específicas
             plating_config: (Opcional) Configuración de auto-plating para combinar piezas
         """
         start_time = time.time()
         
         try:
             logger.info(f"📦 Iniciando procesamiento batch: task_id={task_id}, archivos={len(files)}")
+            
+            # 🖨️ Cargar propiedades de la impresora
+            printer_properties = self.load_printer_properties(printer_id)
+            logger.info(
+                f"🖨️  Impresora: {printer_properties['name']} ({printer_properties['model']}) - "
+                f"Extrusor: {printer_properties['extruder_type']}, "
+                f"Max Speed: {printer_properties['max_print_speed']}mm/s"
+            )
+            
+            # 🔥 Enriquecer profile_config con propiedades de impresora
+            profile_config['printer_properties'] = printer_properties
             
             # Normalizar lista de archivos (puede venir como strings o dicts)
             normalized_files = []
@@ -748,6 +834,65 @@ class RotationWorker:
                         bed_temp = profile_config.get('bed_temperature', 60)
                         logger.warning(f"      ⚠️  Material '{material_type}' desconocido, usando defaults: {nozzle_temp}°C / {bed_temp}°C")
                     
+                    # 🖨️ PARÁMETROS ESPECÍFICOS DE IMPRESORA
+                    printer_properties = profile_config.get('printer_properties', {})
+                    
+                    # Obtener información de la impresora (nombre, modelo, tipo)
+                    printer_name = printer_properties.get('name', 'Unknown') if printer_properties else 'Unknown'
+                    printer_model = printer_properties.get('model', 'Unknown') if printer_properties else 'Unknown'
+                    extruder_type = printer_properties.get('extruder_type', 'bowden') if printer_properties else 'bowden'
+                    max_print_speed = printer_properties.get('max_print_speed', 150) if printer_properties else 150
+                    
+                    # Defaults según tipo de extrusor
+                    default_retract_length = 1.0 if extruder_type == 'direct_drive' else 6.0
+                    default_retract_speed = 45 if extruder_type == 'direct_drive' else 40
+                    default_retract_lift = 0.2 if extruder_type == 'direct_drive' else 0.3
+                    
+                    # Retract Length
+                    retract_length = profile_config.get('retract_length') or profile_config.get('retraction_length')
+                    if retract_length is not None:
+                        logger.info(f"      🤖 Usando retract_length de IA: {retract_length}mm")
+                    elif printer_properties and 'retraction' in printer_properties:
+                        retract_length = printer_properties['retraction'].get('length', default_retract_length)
+                        logger.info(f"      🔧 Usando retract_length de impresora: {retract_length}mm")
+                    else:
+                        retract_length = default_retract_length
+                        logger.info(f"      ⚙️  Usando retract_length por defecto ({extruder_type}): {retract_length}mm")
+                    
+                    # Retract Speed
+                    retract_speed = profile_config.get('retract_speed') or profile_config.get('retraction_speed')
+                    if retract_speed is not None:
+                        logger.info(f"      🤖 Usando retract_speed de IA: {retract_speed}mm/s")
+                    elif printer_properties and 'retraction' in printer_properties:
+                        retract_speed = printer_properties['retraction'].get('speed', default_retract_speed)
+                        logger.info(f"      🔧 Usando retract_speed de impresora: {retract_speed}mm/s")
+                    else:
+                        retract_speed = default_retract_speed
+                        logger.info(f"      ⚙️  Usando retract_speed por defecto ({extruder_type}): {retract_speed}mm/s")
+                    
+                    # Retract Lift (Z-hop)
+                    retract_lift = profile_config.get('retract_lift') or profile_config.get('z_hop')
+                    if retract_lift is not None:
+                        logger.info(f"      🤖 Usando retract_lift de IA: {retract_lift}mm")
+                    elif printer_properties and 'retraction' in printer_properties:
+                        retract_lift = printer_properties['retraction'].get('z_hop', default_retract_lift)
+                        logger.info(f"      🔧 Usando retract_lift de impresora: {retract_lift}mm")
+                    else:
+                        retract_lift = default_retract_lift
+                        logger.info(f"      ⚙️  Usando retract_lift por defecto ({extruder_type}): {retract_lift}mm")
+                    
+                    # Log final con información completa y congruente
+                    logger.info(
+                        f"      🖨️  Configuración final - Impresora: {printer_name} ({printer_model})"
+                    )
+                    logger.info(
+                        f"         Tipo: {extruder_type}, Max Speed: {max_print_speed}mm/s"
+                    )
+                    logger.info(
+                        f"         Retracción: {retract_length}mm @ {retract_speed}mm/s (z_hop={retract_lift}mm)"
+                    )
+
+                    
                     # === PARÁMETROS DE IA ===
                     infill_pattern = profile_config.get('infill_pattern', 'honeycomb')
                     support_type = profile_config.get('support_type', 'none')
@@ -798,6 +943,12 @@ class RotationWorker:
                     data.add_field('fill_density', str(int(fill_density)))
                     data.add_field('nozzle_temp', str(int(nozzle_temp)))
                     data.add_field('bed_temp', str(int(bed_temp)))
+                    
+                    # 🖨️ === ENVIAR PARÁMETROS DE RETRACCIÓN (ESPECÍFICOS DE IMPRESORA) ===
+                    data.add_field('retract_length', str(retract_length))
+                    data.add_field('retract_speed', str(int(retract_speed)))
+                    data.add_field('retract_lift', str(retract_lift))
+
                     
                     # === ENVIAR PARÁMETROS DE IA ===
                     data.add_field('infill_pattern', infill_pattern)
