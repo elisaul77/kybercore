@@ -671,7 +671,40 @@ async def slice_stl(
             "--top-solid-layers", str(top_solid_layers),
             "--bottom-solid-layers", str(bottom_solid_layers),
             
-            # ===== VELOCIDADES =====
+            # ===== SOPORTES =====
+            # Mapear tipos de soporte a nombres válidos de PrusaSlicer
+            # "linear" -> "rectilinear", "grid" -> "rectilinear-grid", "tree" -> "organic"
+        ]
+        
+        # Agregar parámetros de soporte si están habilitados
+        if support_type != "none":
+            # Mapeo de tipos
+            support_pattern_map = {
+                "linear": "rectilinear",
+                "grid": "rectilinear-grid", 
+                "tree": "organic",
+                "honeycomb": "honeycomb"
+            }
+            prusaslicer_pattern = support_pattern_map.get(support_type, "rectilinear")
+            
+            # Agregar parámetros de soporte
+            # IMPORTANTE: --support-material es un FLAG (no acepta valor)
+            cmd.append("--support-material")
+            cmd.append("--support-material-buildplate-only")  # 🔥 Solo soportes desde la base (no entre piezas)
+            cmd.extend([
+                "--support-material-pattern", prusaslicer_pattern,
+                "--support-material-spacing", str(2.5),  # mm entre líneas de soporte
+                "--support-material-threshold", "45",  # Ángulo crítico 45°
+                "--support-material-interface-layers", "3",  # 3 capas de interface
+                "--support-material-interface-spacing", "0.2",  # Espaciado de interface
+                "--support-material-contact-distance", "0.2",  # Distancia de contacto (facilita remoción)
+            ])
+            
+            logger.info(f"      🔥 Soportes mapeados: '{support_type}' -> '{prusaslicer_pattern}'")
+        # Si support_type == "none", simplemente no agregamos --support-material (está deshabilitado por defecto)
+        
+        # Continuar con velocidades
+        cmd.extend([
             "--perimeter-speed", str(int(print_speed * 0.8)),
             "--external-perimeter-speed", str(external_perimeter_speed),
             "--infill-speed", str(print_speed),
@@ -703,7 +736,7 @@ async def slice_stl(
             
             # ===== PRECISIÓN AVANZADA =====
             "--resolution", str(resolution),
-        ]
+        ])
         
         # ===== PARÁMETROS BOOLEANOS (FLAGS) =====
         if extra_perimeters:
@@ -780,7 +813,15 @@ async def slice_stl(
         logger.info(f"      • Speed: {retract_speed}mm/s")
         logger.info(f"      • Z-hop: {retract_lift}mm")
         
+        logger.info(f"   🏗️  SOPORTES:")
+        logger.info(f"      • Tipo: {support_type}")
+        logger.info(f"      • Densidad: {support_density}%")
+        logger.info(f"      • Habilitado: {'✅ SÍ' if support_type != 'none' else '❌ NO'}")
+        if support_type != 'none':
+            logger.info(f"      • Modo: Solo desde la base (buildplate-only)")
+        
         logger.info(f"Ejecutando: {' '.join(cmd[:10])}... ({len(cmd)} parámetros)")
+        logger.info(f"   🔍 DEBUG: Últimos 5 parámetros: {cmd[-5:]}")
 
         
         # Ejecutar PrusaSlicer

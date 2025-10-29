@@ -22,6 +22,7 @@ from src.controllers.print_flow_controller import (
     load_wizard_session, save_wizard_session, find_stl_file_path
 )
 from src.services.plating_service import plating_service
+from src.services.support_analyzer import support_analyzer
 import logging
 
 logger = logging.getLogger(__name__)
@@ -634,7 +635,95 @@ class RotationWorker:
                 else:
                     logger.info(f"   ○ Auto-rotación deshabilitada")
             
-            # 3. Laminar archivo (rotado o original) - OPCIONAL
+            # 3. 🧠 ANÁLISIS INTELIGENTE DE SOPORTES (antes del slicing)
+            support_analysis = None
+            
+            # Verificar si el análisis automático está habilitado
+            enable_auto_support_analysis = profile_config.get('enable_auto_support_analysis', True)
+            current_support = profile_config.get('support_type', 'none')
+            
+            # Solo analizar si:
+            # 1. El análisis automático está habilitado, Y
+            # 2. El usuario no ha especificado soportes manualmente (support_type == 'none')
+            should_analyze = enable_auto_support_analysis and current_support == 'none'
+            
+            if should_analyze:
+                try:
+                    logger.info(f"   🧠 Analizando necesidad de soportes (auto-detección habilitada)...")
+                    
+                    # Guardar temporalmente el STL para análisis
+                    temp_stl_path = session_dir / f"temp_analysis_{filename}"
+                    with open(temp_stl_path, 'wb') as f:
+                        f.write(file_to_slice)
+                    
+                    # Ejecutar análisis de soportes
+                    support_analysis = await asyncio.to_thread(
+                        support_analyzer.analyze_stl,
+                        str(temp_stl_path)
+                    )
+                    
+                    # Aplicar recomendaciones al profile_config
+                    if support_analysis and support_analysis.get('needs_support', False):
+                        recommended_type = support_analysis.get('support_type', 'none')
+                        recommended_density = support_analysis.get('support_density', 0)
+                        
+                        # Aplicar recomendación de IA automáticamente
+                        profile_config['support_type'] = recommended_type
+                        profile_config['support_density'] = recommended_density
+                        logger.info(f"      ✅ Aplicando soportes recomendados: {recommended_type} @ {recommended_density}%")
+                        
+                        # 🔥 GUARDAR resultados del análisis en la sesión para que la IA los use
+                        session_data = load_wizard_session(session_id)
+                        if session_data:
+                            session_data['support_analysis'] = {
+                                'type': recommended_type,
+                                'density': recommended_density,
+                                'auto_detected': True,
+                                'overhang_percentage': support_analysis.get('overhang_analysis', {}).get('overhang_percentage', 0),
+                                'recommendations': support_analysis.get('recommendations', [])
+                            }
+                            save_wizard_session(session_id, session_data)
+                            logger.info(f"      💾 Análisis de soportes guardado en sesión")
+                        
+                        # Mostrar recomendaciones clave
+                        recommendations = support_analysis.get('recommendations', [])
+                        if recommendations:
+                            logger.info(f"      📋 Recomendaciones:")
+                            for rec in recommendations[:3]:  # Mostrar solo las 3 más importantes
+                                logger.info(f"         {rec}")
+                    else:
+                        logger.info(f"      ✅ No se requieren soportes para este modelo")
+                        
+                        # Guardar que NO se necesitan soportes
+                        session_data = load_wizard_session(session_id)
+                        if session_data:
+                            session_data['support_analysis'] = {
+                                'type': 'none',
+                                'density': 0,
+                                'auto_detected': True,
+                                'overhang_percentage': 0,
+                                'recommendations': ['✅ El modelo puede imprimirse sin soportes']
+                            }
+                            save_wizard_session(session_id, session_data)
+                            logger.info(f"      💾 Resultado guardado: Sin soportes necesarios")
+                    
+                    # Limpiar archivo temporal
+                    temp_stl_path.unlink(missing_ok=True)
+                    
+                except Exception as e:
+                    logger.warning(f"   ⚠️  Error en análisis de soportes (continuando): {str(e)}")
+                    # No detener el proceso si falla el análisis
+            
+            elif current_support != 'none':
+                # Usuario especificó soportes manualmente
+                logger.info(f"   👤 Usuario configuró soportes manualmente: {current_support}")
+                logger.info(f"      ℹ️  Análisis automático omitido (respetando configuración manual)")
+            
+            else:
+                # Análisis automático deshabilitado
+                logger.info(f"   ⏸️  Análisis automático de soportes deshabilitado")
+            
+            # 4. Laminar archivo (rotado o original) - OPCIONAL
             gcode_path = None
             gcode_size = 0
             

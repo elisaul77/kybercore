@@ -28902,6 +28902,992 @@
       "confirmed_job_id": "c3dfc77c-7031-4d1f-b53a-4a85a0822035",
       "final_status": "job_sent_to_printer",
       "completed_at": "2025-10-29T07:18:24.886297"
+    },
+    "wizard_1761723913793_5v9svgcje": {
+      "project_id": "116",
+      "project_data": {
+        "id": 116,
+        "nombre": "5015 Proyecto",
+        "descripcion": "Es la tapa del ventilador\r\n",
+        "autor": "Usuario",
+        "fecha_creacion": "2025-10-29",
+        "estado": "listo",
+        "favorito": false,
+        "carpeta": "src/proyect/5015 Proyecto - 116",
+        "imagen": "/api/gallery/projects/5015-proyecto-116/images/stl_preview.png",
+        "badges": {
+          "estado": "Listo",
+          "tipo": "Herramientas",
+          "piezas": "1 piezas"
+        },
+        "progreso": {
+          "porcentaje": 100,
+          "mensaje": "Listo para imprimir"
+        },
+        "archivos": [
+          {
+            "nombre": "5015-selftap.stl",
+            "tipo": "STL",
+            "tamano": "588.95 KB"
+          }
+        ],
+        "estadisticas": {
+          "tiempo_estimado": "2-4 horas",
+          "filamento_estimado": "50-100g",
+          "complejidad": "Media"
+        },
+        "aiAnalysis": {
+          "tiempo_estimado": "3 horas",
+          "filamento_total": "75g",
+          "costo_estimado": "$2.50",
+          "recomendaciones": [
+            "Usar soporte en voladizos",
+            "Temperatura de cama: 60°C"
+          ]
+        }
+      },
+      "current_step": "monitoring",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing",
+        "confirmation"
+      ],
+      "created_at": "2025-10-29T07:45:17.537197",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "5015-selftap.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-29T07:45:17.537218"
+      },
+      "updated_at": "2025-10-29T07:46:50.598969",
+      "material_selection": {
+        "material_type": "ABS",
+        "color": "Blanco",
+        "brand": "Hatchbox",
+        "selected_material_data": {
+          "id": "fil_002",
+          "tipo": "ABS",
+          "color": "Blanco",
+          "marca": "Hatchbox",
+          "stock_actual": 300,
+          "stock_minimo": 200,
+          "precio_por_kg": 22.5,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.38,
+        "completed_at": "2025-10-29T07:45:22.992750"
+      },
+      "production_mode": {
+        "mode": "factory",
+        "priority": "quality",
+        "settings": {
+          "layer_height": 0.1,
+          "infill_density": 25,
+          "print_speed": 40,
+          "quality_preset": "fine"
+        },
+        "estimated_impact": {
+          "time_factor": 1.3,
+          "quality_level": "alta",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-29T07:45:26.937094"
+      },
+      "printer_assignment": {
+        "printer_id": "bb82edde-63fa-4148-8172-e1a2bcfbe4c3",
+        "printer_name": "Impresora Ender 3 V4.2.7",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7125",
+        "confirmed_at": "2025-10-29T07:45:31.316392"
+      },
+      "stl_processing": {
+        "task_id": "task_7e6b868e-32e5-4c79-ba56-a774dc33506c",
+        "successful": [
+          {
+            "filename": "5015-selftap.stl",
+            "success": true,
+            "rotated": true,
+            "rotation_info": {
+              "applied": true,
+              "degrees": [
+                0.0,
+                90.0,
+                0.0
+              ],
+              "improvement": 871.6298734695158,
+              "contact_area": 516.9071722835923,
+              "original_area": 53.20000819219459
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761723913793_5v9svgcje/gcode_wizard_1761723913793_5v9svgcje_rotated_5015-selftap.gcode",
+            "gcode_size": 4170033,
+            "error": null,
+            "processing_time_seconds": 0.1716303825378418
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-29T07:45:51.165429"
+      },
+      "confirmed_job_id": "d9449ada-734a-4336-add2-ee3e99b7a4dd",
+      "final_status": "job_sent_to_printer",
+      "completed_at": "2025-10-29T07:46:50.582269"
+    },
+    "wizard_1761724096705_lzc4h2o74": {
+      "project_id": "116",
+      "project_data": {
+        "id": 116,
+        "nombre": "5015 Proyecto",
+        "descripcion": "Es la tapa del ventilador\r\n",
+        "autor": "Usuario",
+        "fecha_creacion": "2025-10-29",
+        "estado": "listo",
+        "favorito": false,
+        "carpeta": "src/proyect/5015 Proyecto - 116",
+        "imagen": "/api/gallery/projects/5015-proyecto-116/images/stl_preview.png",
+        "badges": {
+          "estado": "Listo",
+          "tipo": "Herramientas",
+          "piezas": "1 piezas"
+        },
+        "progreso": {
+          "porcentaje": 100,
+          "mensaje": "Listo para imprimir"
+        },
+        "archivos": [
+          {
+            "nombre": "5015-selftap.stl",
+            "tipo": "STL",
+            "tamano": "588.95 KB"
+          }
+        ],
+        "estadisticas": {
+          "tiempo_estimado": "2-4 horas",
+          "filamento_estimado": "50-100g",
+          "complejidad": "Media"
+        },
+        "aiAnalysis": {
+          "tiempo_estimado": "3 horas",
+          "filamento_total": "75g",
+          "costo_estimado": "$2.50",
+          "recomendaciones": [
+            "Usar soporte en voladizos",
+            "Temperatura de cama: 60°C"
+          ]
+        }
+      },
+      "current_step": "validation",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing"
+      ],
+      "created_at": "2025-10-29T07:48:21.360670",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "5015-selftap.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-29T07:48:21.360694"
+      },
+      "updated_at": "2025-10-29T07:48:56.185270",
+      "material_selection": {
+        "material_type": "ABS",
+        "color": "Blanco",
+        "brand": "Hatchbox",
+        "selected_material_data": {
+          "id": "fil_002",
+          "tipo": "ABS",
+          "color": "Blanco",
+          "marca": "Hatchbox",
+          "stock_actual": 300,
+          "stock_minimo": 200,
+          "precio_por_kg": 22.5,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.38,
+        "completed_at": "2025-10-29T07:48:25.866948"
+      },
+      "production_mode": {
+        "mode": "factory",
+        "priority": "quality",
+        "settings": {
+          "layer_height": 0.1,
+          "infill_density": 25,
+          "print_speed": 40,
+          "quality_preset": "fine"
+        },
+        "estimated_impact": {
+          "time_factor": 1.3,
+          "quality_level": "alta",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-29T07:48:30.171926"
+      },
+      "printer_assignment": {
+        "printer_id": "bb82edde-63fa-4148-8172-e1a2bcfbe4c3",
+        "printer_name": "Impresora Ender 3 V4.2.7",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7125",
+        "confirmed_at": "2025-10-29T07:48:34.838038"
+      },
+      "stl_processing": {
+        "task_id": "task_891a041f-8f9b-4b9e-ad49-8b473d15d97e",
+        "successful": [
+          {
+            "filename": "5015-selftap.stl",
+            "success": true,
+            "rotated": true,
+            "rotation_info": {
+              "applied": true,
+              "degrees": [
+                0.0,
+                90.0,
+                0.0
+              ],
+              "improvement": 871.6298734695158,
+              "contact_area": 516.9071722835923,
+              "original_area": 53.20000819219459
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761724096705_lzc4h2o74/gcode_wizard_1761724096705_lzc4h2o74_rotated_5015-selftap.gcode",
+            "gcode_size": 4170033,
+            "error": null,
+            "processing_time_seconds": 0.15203523635864258
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-29T07:48:46.102204"
+      }
+    },
+    "wizard_1761724304394_l0wpxvarp": {
+      "project_id": "116",
+      "project_data": {
+        "id": 116,
+        "nombre": "5015 Proyecto",
+        "descripcion": "Es la tapa del ventilador\r\n",
+        "autor": "Usuario",
+        "fecha_creacion": "2025-10-29",
+        "estado": "listo",
+        "favorito": false,
+        "carpeta": "src/proyect/5015 Proyecto - 116",
+        "imagen": "/api/gallery/projects/5015-proyecto-116/images/stl_preview.png",
+        "badges": {
+          "estado": "Listo",
+          "tipo": "Herramientas",
+          "piezas": "1 piezas"
+        },
+        "progreso": {
+          "porcentaje": 100,
+          "mensaje": "Listo para imprimir"
+        },
+        "archivos": [
+          {
+            "nombre": "5015-selftap.stl",
+            "tipo": "STL",
+            "tamano": "588.95 KB"
+          }
+        ],
+        "estadisticas": {
+          "tiempo_estimado": "2-4 horas",
+          "filamento_estimado": "50-100g",
+          "complejidad": "Media"
+        },
+        "aiAnalysis": {
+          "tiempo_estimado": "3 horas",
+          "filamento_total": "75g",
+          "costo_estimado": "$2.50",
+          "recomendaciones": [
+            "Usar soporte en voladizos",
+            "Temperatura de cama: 60°C"
+          ]
+        }
+      },
+      "current_step": "monitoring",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing",
+        "confirmation"
+      ],
+      "created_at": "2025-10-29T07:51:48.091471",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "5015-selftap.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-29T07:51:48.091497"
+      },
+      "updated_at": "2025-10-29T07:53:17.409404",
+      "material_selection": {
+        "material_type": "ABS",
+        "color": "Blanco",
+        "brand": "Hatchbox",
+        "selected_material_data": {
+          "id": "fil_002",
+          "tipo": "ABS",
+          "color": "Blanco",
+          "marca": "Hatchbox",
+          "stock_actual": 300,
+          "stock_minimo": 200,
+          "precio_por_kg": 22.5,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.38,
+        "completed_at": "2025-10-29T07:51:52.926756"
+      },
+      "production_mode": {
+        "mode": "factory",
+        "priority": "quality",
+        "settings": {
+          "layer_height": 0.1,
+          "infill_density": 25,
+          "print_speed": 40,
+          "quality_preset": "fine"
+        },
+        "estimated_impact": {
+          "time_factor": 1.3,
+          "quality_level": "alta",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-29T07:51:57.033648"
+      },
+      "printer_assignment": {
+        "printer_id": "bb82edde-63fa-4148-8172-e1a2bcfbe4c3",
+        "printer_name": "Impresora Ender 3 V4.2.7",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7125",
+        "confirmed_at": "2025-10-29T07:52:01.090104"
+      },
+      "stl_processing": {
+        "task_id": "task_cabb9ab1-3462-43c6-9aa6-3df6247cf836",
+        "successful": [
+          {
+            "filename": "5015-selftap.stl",
+            "success": true,
+            "rotated": true,
+            "rotation_info": {
+              "applied": true,
+              "degrees": [
+                0.0,
+                90.0,
+                0.0
+              ],
+              "improvement": 871.6298734695158,
+              "contact_area": 516.9071722835923,
+              "original_area": 53.20000819219459
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761724304394_l0wpxvarp/gcode_wizard_1761724304394_l0wpxvarp_rotated_5015-selftap.gcode",
+            "gcode_size": 4170033,
+            "error": null,
+            "processing_time_seconds": 0.15484833717346191
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-29T07:52:28.897727"
+      },
+      "confirmed_job_id": "e175ae86-823e-47d6-8056-a54ca12c8f72",
+      "final_status": "job_sent_to_printer",
+      "completed_at": "2025-10-29T07:53:17.402858"
+    },
+    "wizard_1761724832964_wxf4vsg6b": {
+      "project_id": "116",
+      "project_data": {
+        "id": 116,
+        "nombre": "5015 Proyecto",
+        "descripcion": "Es la tapa del ventilador\r\n",
+        "autor": "Usuario",
+        "fecha_creacion": "2025-10-29",
+        "estado": "listo",
+        "favorito": false,
+        "carpeta": "src/proyect/5015 Proyecto - 116",
+        "imagen": "/api/gallery/projects/5015-proyecto-116/images/stl_preview.png",
+        "badges": {
+          "estado": "Listo",
+          "tipo": "Herramientas",
+          "piezas": "1 piezas"
+        },
+        "progreso": {
+          "porcentaje": 100,
+          "mensaje": "Listo para imprimir"
+        },
+        "archivos": [
+          {
+            "nombre": "5015-selftap.stl",
+            "tipo": "STL",
+            "tamano": "588.95 KB"
+          }
+        ],
+        "estadisticas": {
+          "tiempo_estimado": "2-4 horas",
+          "filamento_estimado": "50-100g",
+          "complejidad": "Media"
+        },
+        "aiAnalysis": {
+          "tiempo_estimado": "3 horas",
+          "filamento_total": "75g",
+          "costo_estimado": "$2.50",
+          "recomendaciones": [
+            "Usar soporte en voladizos",
+            "Temperatura de cama: 60°C"
+          ]
+        }
+      },
+      "current_step": "monitoring",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing",
+        "confirmation"
+      ],
+      "created_at": "2025-10-29T08:00:37.346927",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "5015-selftap.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-29T08:00:37.346950"
+      },
+      "updated_at": "2025-10-29T08:03:07.122700",
+      "material_selection": {
+        "material_type": "ABS",
+        "color": "Blanco",
+        "brand": "Hatchbox",
+        "selected_material_data": {
+          "id": "fil_002",
+          "tipo": "ABS",
+          "color": "Blanco",
+          "marca": "Hatchbox",
+          "stock_actual": 300,
+          "stock_minimo": 200,
+          "precio_por_kg": 22.5,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.38,
+        "completed_at": "2025-10-29T08:00:42.567307"
+      },
+      "production_mode": {
+        "mode": "factory",
+        "priority": "quality",
+        "settings": {
+          "layer_height": 0.1,
+          "infill_density": 25,
+          "print_speed": 40,
+          "quality_preset": "fine"
+        },
+        "estimated_impact": {
+          "time_factor": 1.3,
+          "quality_level": "alta",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-29T08:00:48.052989"
+      },
+      "printer_assignment": {
+        "printer_id": "bb82edde-63fa-4148-8172-e1a2bcfbe4c3",
+        "printer_name": "Impresora Ender 3 V4.2.7",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7125",
+        "confirmed_at": "2025-10-29T08:00:51.850658"
+      },
+      "support_analysis": {
+        "type": "linear",
+        "density": 30,
+        "auto_detected": true,
+        "overhang_percentage": 80.84402469062958,
+        "recommendations": [
+          "📏 Usar soportes LINEALES con densidad 30%",
+          "   Ventaja: Mayor estabilidad para áreas grandes",
+          "⚠️  80.8% del modelo son voladizos - Considerar rotar el modelo",
+          "⚠️  Voladizos extremos detectados (>135°) - Aumentar densidad de soportes",
+          "💡 Sugerencia: Probar auto-rotación para reducir área de voladizos",
+          "🔧 Interface Z: 0.2mm (facilita remoción de soportes)"
+        ]
+      },
+      "stl_processing": {
+        "task_id": "task_e3f06356-fdba-4575-ab73-e95c015830e7",
+        "successful": [
+          {
+            "filename": "5015-selftap.stl",
+            "success": true,
+            "rotated": true,
+            "rotation_info": {
+              "applied": true,
+              "degrees": [
+                0.0,
+                90.0,
+                0.0
+              ],
+              "improvement": 871.6298734695158,
+              "contact_area": 516.9071722835923,
+              "original_area": 53.20000819219459
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761724832964_wxf4vsg6b/gcode_wizard_1761724832964_wxf4vsg6b_rotated_5015-selftap.gcode",
+            "gcode_size": 4170033,
+            "error": null,
+            "processing_time_seconds": 0.1968684196472168
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-29T08:01:11.917563"
+      },
+      "confirmed_job_id": "586a3da0-4903-4845-88d0-51c3b5859342",
+      "final_status": "job_sent_to_printer",
+      "completed_at": "2025-10-29T08:03:07.115413"
+    },
+    "wizard_1761725754783_omvtlqhj7": {
+      "project_id": "116",
+      "project_data": {
+        "id": 116,
+        "nombre": "5015 Proyecto",
+        "descripcion": "Es la tapa del ventilador\r\n",
+        "autor": "Usuario",
+        "fecha_creacion": "2025-10-29",
+        "estado": "listo",
+        "favorito": false,
+        "carpeta": "src/proyect/5015 Proyecto - 116",
+        "imagen": "/api/gallery/projects/5015-proyecto-116/images/stl_preview.png",
+        "badges": {
+          "estado": "Listo",
+          "tipo": "Herramientas",
+          "piezas": "1 piezas"
+        },
+        "progreso": {
+          "porcentaje": 100,
+          "mensaje": "Listo para imprimir"
+        },
+        "archivos": [
+          {
+            "nombre": "5015-selftap.stl",
+            "tipo": "STL",
+            "tamano": "588.95 KB"
+          }
+        ],
+        "estadisticas": {
+          "tiempo_estimado": "2-4 horas",
+          "filamento_estimado": "50-100g",
+          "complejidad": "Media"
+        },
+        "aiAnalysis": {
+          "tiempo_estimado": "3 horas",
+          "filamento_total": "75g",
+          "costo_estimado": "$2.50",
+          "recomendaciones": [
+            "Usar soporte en voladizos",
+            "Temperatura de cama: 60°C"
+          ]
+        }
+      },
+      "current_step": "monitoring",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing",
+        "confirmation"
+      ],
+      "created_at": "2025-10-29T08:15:58.893520",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "5015-selftap.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-29T08:15:58.893550"
+      },
+      "updated_at": "2025-10-29T08:17:01.422215",
+      "material_selection": {
+        "material_type": "ABS",
+        "color": "Blanco",
+        "brand": "Hatchbox",
+        "selected_material_data": {
+          "id": "fil_002",
+          "tipo": "ABS",
+          "color": "Blanco",
+          "marca": "Hatchbox",
+          "stock_actual": 300,
+          "stock_minimo": 200,
+          "precio_por_kg": 22.5,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.38,
+        "completed_at": "2025-10-29T08:16:02.952159"
+      },
+      "production_mode": {
+        "mode": "factory",
+        "priority": "quality",
+        "settings": {
+          "layer_height": 0.1,
+          "infill_density": 25,
+          "print_speed": 40,
+          "quality_preset": "fine"
+        },
+        "estimated_impact": {
+          "time_factor": 1.3,
+          "quality_level": "alta",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-29T08:16:07.484428"
+      },
+      "printer_assignment": {
+        "printer_id": "bb82edde-63fa-4148-8172-e1a2bcfbe4c3",
+        "printer_name": "Impresora Ender 3 V4.2.7",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7125",
+        "confirmed_at": "2025-10-29T08:16:12.323723"
+      },
+      "support_analysis": {
+        "type": "linear",
+        "density": 30,
+        "auto_detected": true,
+        "overhang_percentage": 80.84402469062958,
+        "recommendations": [
+          "📏 Usar soportes LINEALES con densidad 30%",
+          "   Ventaja: Mayor estabilidad para áreas grandes",
+          "⚠️  80.8% del modelo son voladizos - Considerar rotar el modelo",
+          "⚠️  Voladizos extremos detectados (>135°) - Aumentar densidad de soportes",
+          "💡 Sugerencia: Probar auto-rotación para reducir área de voladizos",
+          "🔧 Interface Z: 0.2mm (facilita remoción de soportes)"
+        ]
+      },
+      "stl_processing": {
+        "task_id": "task_1b9dc825-9125-402b-9089-af03d9bab4fe",
+        "successful": [
+          {
+            "filename": "5015-selftap.stl",
+            "success": true,
+            "rotated": true,
+            "rotation_info": {
+              "applied": true,
+              "degrees": [
+                0.0,
+                90.0,
+                0.0
+              ],
+              "improvement": 871.6298734695158,
+              "contact_area": 516.9071722835923,
+              "original_area": 53.20000819219459
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761725754783_omvtlqhj7/gcode_wizard_1761725754783_omvtlqhj7_rotated_5015-selftap.gcode",
+            "gcode_size": 4170033,
+            "error": null,
+            "processing_time_seconds": 0.18805646896362305
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-29T08:16:28.683185"
+      },
+      "confirmed_job_id": "a0818191-50ca-40f8-8b99-2ce0093a6fc2",
+      "final_status": "job_sent_to_printer",
+      "completed_at": "2025-10-29T08:17:01.414740"
+    },
+    "wizard_1761726374800_26837m0oj": {
+      "project_id": "116",
+      "project_data": {
+        "id": 116,
+        "nombre": "5015 Proyecto",
+        "descripcion": "Es la tapa del ventilador\r\n",
+        "autor": "Usuario",
+        "fecha_creacion": "2025-10-29",
+        "estado": "listo",
+        "favorito": false,
+        "carpeta": "src/proyect/5015 Proyecto - 116",
+        "imagen": "/api/gallery/projects/5015-proyecto-116/images/stl_preview.png",
+        "badges": {
+          "estado": "Listo",
+          "tipo": "Herramientas",
+          "piezas": "1 piezas"
+        },
+        "progreso": {
+          "porcentaje": 100,
+          "mensaje": "Listo para imprimir"
+        },
+        "archivos": [
+          {
+            "nombre": "5015-selftap.stl",
+            "tipo": "STL",
+            "tamano": "588.95 KB"
+          }
+        ],
+        "estadisticas": {
+          "tiempo_estimado": "2-4 horas",
+          "filamento_estimado": "50-100g",
+          "complejidad": "Media"
+        },
+        "aiAnalysis": {
+          "tiempo_estimado": "3 horas",
+          "filamento_total": "75g",
+          "costo_estimado": "$2.50",
+          "recomendaciones": [
+            "Usar soporte en voladizos",
+            "Temperatura de cama: 60°C"
+          ]
+        }
+      },
+      "current_step": "monitoring",
+      "completed_steps": [
+        "piece_selection",
+        "material_selection",
+        "production_mode",
+        "printer_assignment",
+        "stl_processing",
+        "confirmation"
+      ],
+      "created_at": "2025-10-29T08:26:18.345718",
+      "status": "active",
+      "piece_selection": {
+        "selection_type": "specific_pieces",
+        "selected_pieces": [
+          "5015-selftap.stl"
+        ],
+        "total_pieces": 1,
+        "total_estimated_filament_grams": 12.3,
+        "total_estimated_time_hours": 0.75,
+        "completed_at": "2025-10-29T08:26:18.345759"
+      },
+      "updated_at": "2025-10-29T11:52:14.824672",
+      "material_selection": {
+        "material_type": "ABS",
+        "color": "Blanco",
+        "brand": "Hatchbox",
+        "selected_material_data": {
+          "id": "fil_002",
+          "tipo": "ABS",
+          "color": "Blanco",
+          "marca": "Hatchbox",
+          "stock_actual": 300,
+          "stock_minimo": 200,
+          "precio_por_kg": 22.5,
+          "temperatura_extrusor": 200,
+          "temperatura_cama": 60
+        },
+        "quantity_needed": 150.0,
+        "stock_sufficient": true,
+        "estimated_cost": 3.38,
+        "completed_at": "2025-10-29T08:26:23.058653"
+      },
+      "production_mode": {
+        "mode": "factory",
+        "priority": "quality",
+        "settings": {
+          "layer_height": 0.1,
+          "infill_density": 25,
+          "print_speed": 40,
+          "quality_preset": "fine"
+        },
+        "estimated_impact": {
+          "time_factor": 1.3,
+          "quality_level": "alta",
+          "material_usage": "estándar"
+        },
+        "completed_at": "2025-10-29T08:26:27.008086"
+      },
+      "printer_assignment": {
+        "printer_id": "bb82edde-63fa-4148-8172-e1a2bcfbe4c3",
+        "printer_name": "Impresora Ender 3 V4.2.7",
+        "assignment_type": "manual",
+        "printer_capabilities": {
+          "volumen_impresion": {
+            "x": 220,
+            "y": 220,
+            "z": 250
+          },
+          "materiales_soportados": [
+            "PLA",
+            "PETG",
+            "ABS"
+          ],
+          "precision": 0.1,
+          "velocidad_maxima": 100
+        },
+        "printer_ip": "10.10.10.71:7125",
+        "confirmed_at": "2025-10-29T08:26:32.823705"
+      },
+      "support_analysis": {
+        "type": "linear",
+        "density": 30,
+        "auto_detected": true,
+        "overhang_percentage": 80.84402469062958,
+        "recommendations": [
+          "📏 Usar soportes LINEALES con densidad 30%",
+          "   Ventaja: Mayor estabilidad para áreas grandes",
+          "⚠️  80.8% del modelo son voladizos - Considerar rotar el modelo",
+          "⚠️  Voladizos extremos detectados (>135°) - Aumentar densidad de soportes",
+          "💡 Sugerencia: Probar auto-rotación para reducir área de voladizos",
+          "🔧 Interface Z: 0.2mm (facilita remoción de soportes)"
+        ]
+      },
+      "stl_processing": {
+        "task_id": "task_1303dffe-d0b8-4ae5-a87f-b81078e29f54",
+        "successful": [
+          {
+            "filename": "5015-selftap.stl",
+            "success": true,
+            "rotated": true,
+            "rotation_info": {
+              "applied": true,
+              "degrees": [
+                0.0,
+                90.0,
+                0.0
+              ],
+              "improvement": 871.6298734695158,
+              "contact_area": 516.9071722835923,
+              "original_area": 53.20000819219459
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761726374800_26837m0oj/gcode_wizard_1761726374800_26837m0oj_rotated_5015-selftap.gcode",
+            "gcode_size": 5598303,
+            "error": null,
+            "processing_time_seconds": 0.28366851806640625
+          }
+        ],
+        "failed": [],
+        "processing_summary": {
+          "total_files": 1,
+          "successful": 1,
+          "failed": 0
+        },
+        "completed_at": "2025-10-29T11:50:56.705351"
+      },
+      "confirmed_job_id": "efb38704-667f-4bcf-ad95-b0111490da7b",
+      "final_status": "job_sent_to_printer",
+      "completed_at": "2025-10-29T11:52:14.818455"
     }
   },
   "metadata": {
