@@ -1684,6 +1684,42 @@ async function loadSTLProcessingStep() {
                 </div>
             </div>
 
+            <!-- 🧠 Configuración de Análisis Inteligente de Soportes -->
+            <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-200">
+                <h4 class="font-medium text-blue-900 mb-3">🧠 Análisis Inteligente de Soportes</h4>
+                <div class="space-y-3">
+                    <label class="flex items-start space-x-3 cursor-pointer">
+                        <input type="checkbox" id="enable-auto-support-analysis-step5" class="mt-1 w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500" checked>
+                        <div class="flex-1">
+                            <div class="font-medium text-gray-900">Detectar automáticamente necesidad de soportes</div>
+                            <div class="text-sm text-gray-600">La IA analiza la geometría de cada pieza para determinar si necesita soportes y qué tipo es óptimo.</div>
+                        </div>
+                    </label>
+                    
+                    <div id="support-analysis-info" class="ml-8 text-xs text-gray-600 bg-white p-3 rounded border border-blue-100">
+                        <div class="flex items-start space-x-2">
+                            <span class="text-blue-500">ℹ️</span>
+                            <div>
+                                <strong>Qué analiza la IA:</strong>
+                                <ul class="list-disc list-inside mt-1 space-y-0.5">
+                                    <li><strong>Voladizos (overhangs):</strong> Detecta superficies con ángulo > 45° que necesitan soporte</li>
+                                    <li><strong>Islas flotantes:</strong> Identifica partes del modelo sin contacto con la base</li>
+                                    <li><strong>Tipo de soporte óptimo:</strong> Recomienda tree, linear o grid según geometría</li>
+                                    <li><strong>Densidad de soporte:</strong> Calcula el % óptimo (10-30%) según área crítica</li>
+                                    <li><strong>Regiones críticas:</strong> Identifica zonas específicas que requieren atención</li>
+                                </ul>
+                                <div class="mt-2 p-2 bg-green-50 border border-green-200 rounded">
+                                    <strong class="text-green-800">✅ Ventaja:</strong> <span class="text-green-700">Si la pieza no necesita soportes, la IA automáticamente los desactiva, ahorrando material y tiempo.</span>
+                                </div>
+                                <div class="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
+                                    <strong class="text-yellow-800">⚠️ Nota:</strong> <span class="text-yellow-700">Si desactivas esta opción o especificas soportes manualmente en el perfil, tu configuración tendrá prioridad.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Lista de archivos a procesar -->
             <div class="space-y-2">
                 <h4 class="font-medium text-gray-900">📁 Archivos a procesar:</h4>
@@ -1730,6 +1766,9 @@ async function startSTLProcessing() {
         // 🔬 Capturar configuración de nesting 3D
         const enableNesting3D = document.getElementById('enable-nesting-3d-step5')?.checked || false;
         
+        // 🧠 Capturar configuración de análisis automático de soportes
+        const enableAutoSupportAnalysis = document.getElementById('enable-auto-support-analysis-step5')?.checked ?? true;
+        
         if (autoPlatingEnabled) {
             console.log('🎨 Auto-plating habilitado - Las piezas se combinarán en el plato');
             if (enableNesting3D) {
@@ -1737,6 +1776,13 @@ async function startSTLProcessing() {
                 showToast('Nesting 3D', 'Sistema avanzado de anidación activado', 'info');
             }
             showToast('Auto-Plating', 'Las piezas se organizarán automáticamente en el plato', 'info');
+        }
+        
+        if (enableAutoSupportAnalysis) {
+            console.log('🧠 Análisis automático de soportes habilitado');
+            showToast('IA Soportes', 'Sistema inteligente detectará necesidad de soportes', 'info');
+        } else {
+            console.log('⏸️  Análisis automático de soportes deshabilitado');
         }
 
         // Paso 1: Generar perfil personalizado
@@ -1812,7 +1858,8 @@ async function startSTLProcessing() {
                 },
                 profile_config: {
                     job_id: profileResult.job_id,
-                    printer_model: profileRequest.printer_model
+                    printer_model: profileRequest.printer_model,
+                    enable_auto_support_analysis: enableAutoSupportAnalysis  // 🧠 Análisis inteligente de soportes
                 }
             })
         });

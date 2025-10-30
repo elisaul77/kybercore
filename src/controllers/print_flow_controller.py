@@ -1017,6 +1017,13 @@ async def process_with_rotation(
         if not session_data:
             raise HTTPException(status_code=404, detail="Sesión no encontrada")
         
+        # Obtener printer_id de la sesión si no viene en el request
+        printer_id = req.printer_id
+        if not printer_id:
+            printer_assignment = session_data.get("printer_assignment", {})
+            printer_id = printer_assignment.get("printer_id")
+            logger.info(f"   printer_id obtenido de sesión: {printer_id}")
+        
         # Obtener archivos a procesar
         piece_selection = session_data.get("piece_selection", {})
         selected_pieces = piece_selection.get("selected_pieces", [])
@@ -1053,6 +1060,7 @@ async def process_with_rotation(
             files=selected_pieces,
             rotation_config=req.rotation_config,
             profile_config=req.profile_config,
+            printer_id=printer_id,  # 🆕 Pasar printer_id
             plating_config=plating_config_dict,
             enable_gcode_generation=req.enable_gcode_generation  # 🆕 Pasar parámetro
         )
@@ -2016,10 +2024,19 @@ async def send_job_to_printer(job_id, settings):
         if not printer_config:
             return {"success": False, "error": f"Impresora {printer_id} no encontrada"}
         
-        # Obtener IP y puerto de Moonraker
-        printer_ip = printer_config.get("ip", "")
+        # 🔧 Obtener IP usando prioridad: active_ip > local_ip > vpn_ip > ip
+        printer_ip = (
+            printer_config.get("active_ip") or 
+            printer_config.get("local_ip") or 
+            printer_config.get("vpn_ip") or 
+            printer_config.get("ip", "")
+        )
+        
         if not printer_ip:
             return {"success": False, "error": f"IP no configurada para impresora {printer_id}"}
+        
+        # Limpiar espacios en blanco de la IP
+        printer_ip = printer_ip.strip()
         
         # Si no tiene protocolo, agregar http://
         if not printer_ip.startswith("http"):
@@ -2484,6 +2501,18 @@ async def generate_custom_profile(request: Request):
                 session_id = data.get('session_id')
                 logger.info(f"🔍 session_id = {session_id}")
                 
+                # 🔥 CARGAR análisis de soportes guardado previamente
+                support_analysis_from_session = None
+                if session_id:
+                    session_data = load_wizard_session(session_id)
+                    if session_data and 'support_analysis' in session_data:
+                        support_analysis_from_session = session_data['support_analysis']
+                        logger.info(f"📦 Análisis de soportes cargado de sesión:")
+                        logger.info(f"   Tipo: {support_analysis_from_session.get('type')}")
+                        logger.info(f"   Densidad: {support_analysis_from_session.get('density')}%")
+                        logger.info(f"   Auto-detectado: {support_analysis_from_session.get('auto_detected')}")
+                        logger.info(f"   Voladizos: {support_analysis_from_session.get('overhang_percentage')}%")
+                
                 if session_id:
                     # Buscar STL en /tmp/kybercore_processing/{session_id}/
                     session_dir = Path(f"/tmp/kybercore_processing/{session_id}")
@@ -2582,6 +2611,23 @@ async def generate_custom_profile(request: Request):
             default_temps = material_temperatures.get(material_type, {"nozzle": 210, "bed": 60})
             
             # Merge IA profile con defaults
+            # 🔥 IMPORTANTE: Si hay análisis de soportes previo, USAR esos valores
+            final_support_type = ai_profile.get('support_type', 'none')
+            final_support_density = ai_profile.get('support_density', 15)
+            final_buildplate_only = True  # Por defecto
+            
+            if support_analysis_from_session and support_analysis_from_session.get('auto_detected'):
+                # Sobrescribir con valores del análisis geométrico
+                final_support_type = support_analysis_from_session.get('type', final_support_type)
+                final_support_density = support_analysis_from_session.get('density', final_support_density)
+                final_buildplate_only = support_analysis_from_session.get('buildplate_only', True)  # 🔥 NUEVO
+                
+                buildplate_mode = "solo desde la base" if final_buildplate_only else "en todas partes (geometría compleja)"
+                logger.info(f"🔥 USANDO soportes del análisis geométrico: {final_support_type} @ {final_support_density}%")
+                logger.info(f"   Modo: {buildplate_mode}")
+            else:
+                logger.info(f"📋 USANDO soportes del perfil IA: {final_support_type} @ {final_support_density}%")
+            
             profile_data = {
                 "job_id": job_id,
                 "profile_name": f"ai_optimized_{job_id}.ini",
@@ -2610,8 +2656,9 @@ async def generate_custom_profile(request: Request):
                     "retraction_length": ai_profile.get('retraction_length', 1.2),
                     "retraction_speed": ai_profile.get('retraction_speed', 40),
                     "z_hop": ai_profile.get('z_hop', 0.4),
-                    "support_type": ai_profile.get('support_type', 'none'),
-                    "support_density": ai_profile.get('support_density', 15),
+                    "support_type": final_support_type,  # 🔥 Usar valor final
+                    "support_density": final_support_density,  # 🔥 Usar valor final
+                    "support_buildplate_only": final_buildplate_only,  # 🔥 NUEVO campo
                     "brim_width": ai_profile.get('brim_width', 0),
                     "cooling_fan_speed": ai_profile.get('cooling_fan_speed', 100),
                     "first_layer_fan_speed": ai_profile.get('first_layer_fan_speed', 0),
@@ -2623,7 +2670,8 @@ async def generate_custom_profile(request: Request):
                     "stl_analysis": stl_analysis.to_dict() if stl_analysis else None,
                     "summary": ai_optimization.get('analysis_summary', ''),
                     "improvements": ai_optimization.get('improvements', []),
-                    "warnings": ai_optimization.get('warnings', [])
+                    "warnings": ai_optimization.get('warnings', []),
+                    "support_analysis": support_analysis_from_session  # 🔥 Incluir análisis de soportes
                 },
                 "generated_at": datetime.now().isoformat(),
                 "status": "ready"
@@ -2676,6 +2724,20 @@ async def generate_custom_profile(request: Request):
             material_type = material_config.get('type', 'PLA')
             temps = material_temperatures.get(material_type, {"nozzle": 210, "bed": 60})
             
+            # 🔥 IMPORTANTE: Cargar análisis de soportes si existe (incluso sin IA)
+            final_support_type = 'none'
+            final_support_density = 15
+            final_buildplate_only = True  # Por defecto
+            
+            if support_analysis_from_session and support_analysis_from_session.get('auto_detected'):
+                final_support_type = support_analysis_from_session.get('type', 'none')
+                final_support_density = support_analysis_from_session.get('density', 15)
+                final_buildplate_only = support_analysis_from_session.get('buildplate_only', True)  # 🔥 NUEVO
+                
+                buildplate_mode = "solo desde la base" if final_buildplate_only else "en todas partes (geometría compleja)"
+                logger.info(f"🔥 USANDO soportes del análisis geométrico: {final_support_type} @ {final_support_density}%")
+                logger.info(f"   Modo: {buildplate_mode}")
+            
             # Crear el perfil tradicional
             profile_data = {
                 "job_id": job_id,
@@ -2692,6 +2754,9 @@ async def generate_custom_profile(request: Request):
                     "print_speed": print_speed,
                     "nozzle_temperature": temps["nozzle"],
                     "bed_temperature": temps["bed"],
+                    "support_type": final_support_type,  # 🔥 Usar valor del análisis
+                    "support_density": final_support_density,  # 🔥 Usar valor del análisis
+                    "support_buildplate_only": final_buildplate_only,  # 🔥 NUEVO campo
                     "material_type": material_type,
                     "material_color": material_config.get('color', 'white'),
                     "material_brand": material_config.get('brand', 'Generic'),

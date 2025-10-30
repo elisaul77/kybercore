@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor Corrientes Motores TMC2209</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px 0;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 0 0 10px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .status-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        
+        .status-item {
+            text-align: center;
+        }
+        
+        .status-label {
+            font-size: 0.85em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+        
+        .status-value {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .chart-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            height: 400px;
+        }
+        
+        .motors-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .motor-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .motor-card:hover {
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+        
+        @media (max-width: 1200px) {
+            .motors-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .motors-grid {
+                grid-template-columns: 1fr;
+            }
+            .status-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .motor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+        
+        .motor-name {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        .motor-icon {
+            font-size: 1.8em;
+        }
+        
+        .current-value {
+            font-size: 2.2em;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+        }
+        
+        .current-bar {
+            height: 35px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+            flex-shrink: 0;
+        }
+        
+        .current-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 0.5s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.95em;
+            color: #fff;
+            will-change: width;
+        }
+        
+        .motor-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-top: auto;
+            padding-top: 10px;
+        }
+        
+        .connection-status {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 0.9em;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        .connected {
+            background: #4CAF50;
+            color: #fff;
+        }
+        
+        .disconnected {
+            background: #f44336;
+            color: #fff;
+        }
+        
+        .update-counter {
+            text-align: center;
+            padding: 10px;
+            opacity: 0.7;
+            font-size: 0.85em;
+        }
+        
+        .alert-high {
+            background: linear-gradient(90deg, #FF5722, #FF9800) !important;
+        }
+        
+        .alert-low {
+            background: linear-gradient(90deg, #2196F3, #03A9F4) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-status" id="connectionStatus">Conectando...</div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>⚡ Monitor de Corrientes TMC2209</h1>
+            <p>Monitoreo en Tiempo Real de Motores Paso a Paso</p>
+        </div>
+        
+        <div class="status-bar">
+        <div class="status-item">
+            <div class="status-label">Estado</div>
+            <div class="status-value" id="printerState">---</div>
+        </div>
+        <div class="status-item">
+            <div class="status-label">Velocidad XYZ</div>
+            <div class="status-value" id="velocity">0 mm/s</div>
+        </div>
+        <div class="status-item">
+            <div class="status-label">Velocidad Extrusor</div>
+            <div class="status-value" id="extruderVelocity">0 mm/s</div>
+        </div>
+        <div class="status-item">
+            <div class="status-label">Última actualización</div>
+            <div class="status-value" id="lastUpdate">---</div>
+        </div>
+    </div>
+    
+    <div class="chart-container">
+        <div id="motorChart"></div>
+    </div>
+    
+    <div class="motors-grid">
+        <div class="motor-card">
+            <div class="motor-header">
+                <span class="motor-name">Motor X</span>
+                <span class="motor-icon">↔️</span>
+            </div>
+            <div class="current-value" id="currentX">0/31</div>
+            <div class="current-bar">
+                <div class="current-fill" id="barX" style="width: 0%">0%</div>
+            </div>
+            <div class="motor-details">
+                <span>Run: <span id="runCurrentX">0.608</span>A</span>
+                <span id="stealthX">🔇 Stealth</span>
+            </div>
+        </div>
+        
+        <div class="motor-card">
+            <div class="motor-header">
+                <span class="motor-name">Motor Y</span>
+                <span class="motor-icon">↕️</span>
+            </div>
+            <div class="current-value" id="currentY">0/31</div>
+            <div class="current-bar">
+                <div class="current-fill" id="barY" style="width: 0%">0%</div>
+            </div>
+            <div class="motor-details">
+                <span>Run: <span id="runCurrentY">0.608</span>A</span>
+                <span id="stealthY">🔇 Stealth</span>
+            </div>
+        </div>
+        
+        <div class="motor-card">
+            <div class="motor-header">
+                <span class="motor-name">Motor Z</span>
+                <span class="motor-icon">⬆️</span>
+            </div>
+            <div class="current-value" id="currentZ">0/31</div>
+            <div class="current-bar">
+                <div class="current-fill" id="barZ" style="width: 0%">0%</div>
+            </div>
+            <div class="motor-details">
+                <span>Run: <span id="runCurrentZ">0.608</span>A</span>
+                <span id="stealthZ">🔇 Stealth</span>
+            </div>
+        </div>
+        
+        <div class="motor-card">
+            <div class="motor-header">
+                <span class="motor-name">Extrusor</span>
+                <span class="motor-icon">🔄</span>
+            </div>
+            <div class="current-value" id="currentE">0/31</div>
+            <div class="current-bar">
+                <div class="current-fill" id="barE" style="width: 0%">0%</div>
+            </div>
+            <div class="motor-details">
+                <span>Run: <span id="runCurrentE">0.500</span>A</span>
+                <span id="stealthE">🔇 Stealth</span>
+            </div>
+        </div>
+        </div>
+        
+        <div class="update-counter" id="updateCounter">Actualizaciones: 0</div>
+    </div>
+    
+    <script>
+        const socket = io();
+        let updateCount = 0;
+        let lastUpdateTime = 0;
+        const UPDATE_THROTTLE = 300; // Mínimo 300ms entre actualizaciones del DOM
+        
+        // Configuración inicial de la gráfica
+        const layout = {
+            title: {
+                text: 'Corrientes RMS de Motores (cs_actual 0-31)',
+                font: { size: 16 }
+            },
+            xaxis: {
+                title: 'Tiempo',
+                showgrid: true,
+                gridcolor: '#ddd',
+                fixedrange: true
+            },
+            yaxis: {
+                title: 'cs_actual',
+                range: [0, 35],
+                showgrid: true,
+                gridcolor: '#ddd',
+                fixedrange: true
+            },
+            paper_bgcolor: 'rgba(255,255,255,0.95)',
+            plot_bgcolor: 'rgba(255,255,255,0.95)',
+            font: {
+                family: 'Segoe UI, sans-serif',
+                size: 11,
+                color: '#333'
+            },
+            legend: {
+                x: 0.02,
+                y: 0.98,
+                bgcolor: 'rgba(255,255,255,0.9)',
+                bordercolor: '#999',
+                borderwidth: 1
+            },
+            margin: {
+                l: 50,
+                r: 20,
+                t: 50,
+                b: 50
+            },
+            autosize: true
+        };
+        
+        const config = {
+            responsive: true,
+            displayModeBar: false,
+            displaylogo: false,
+            staticPlot: false
+        };
+        
+        // Inicializar gráfica vacía
+        Plotly.newPlot('motorChart', [], layout, config);
+        
+        // Forzar resize cuando cambia el tamaño de ventana
+        window.addEventListener('resize', () => {
+            Plotly.Plots.resize('motorChart');
+        });
+        
+        // Conexión establecida
+        socket.on('connect', () => {
+            console.log('✅ WebSocket conectado');
+            document.getElementById('connectionStatus').textContent = '✅ Conectado';
+            document.getElementById('connectionStatus').className = 'connection-status connected';
+            socket.emit('start_monitor');
+        });
+        
+        // Conexión perdida
+        socket.on('disconnect', () => {
+            console.log('❌ WebSocket desconectado');
+            document.getElementById('connectionStatus').textContent = '❌ Desconectado';
+            document.getElementById('connectionStatus').className = 'connection-status disconnected';
+        });
+        
+        // Actualización de datos
+        socket.on('motor_update', (data) => {
+            console.log('📡 Datos recibidos:', data);
+            updateCount++;
+            
+            // Throttle: solo actualizar DOM si ha pasado suficiente tiempo
+            const now = Date.now();
+            if (now - lastUpdateTime < UPDATE_THROTTLE) {
+                console.log('⏭️  Actualización omitida por throttle');
+                return; // Saltar esta actualización
+            }
+            lastUpdateTime = now;
+            
+            console.log('✅ Actualizando DOM...', updateCount);
+            document.getElementById('updateCounter').textContent = `Actualizaciones: ${updateCount}`;
+            
+            // Actualizar estado
+            document.getElementById('printerState').textContent = data.motion.state;
+            document.getElementById('velocity').textContent = `${data.motion.velocity} mm/s`;
+            document.getElementById('extruderVelocity').textContent = `${data.motion.extruder_velocity} mm/s`;
+            document.getElementById('lastUpdate').textContent = data.timestamp;
+            
+            // Actualizar tarjetas de motores
+            updateMotorCard('X', data.current.X);
+            updateMotorCard('Y', data.current.Y);
+            updateMotorCard('Z', data.current.Z);
+            updateMotorCard('E', data.current.E);
+            
+            // Actualizar gráfica
+            updateChart(data.chart);
+        });
+        
+        function updateMotorCard(motor, motorData) {
+            // Usar requestAnimationFrame para actualizaciones más suaves
+            requestAnimationFrame(() => {
+                document.getElementById(`current${motor}`).textContent = `${motorData.cs_actual}/31`;
+                document.getElementById(`runCurrent${motor}`).textContent = motorData.run_current;
+                document.getElementById(`stealth${motor}`).textContent = motorData.stealth ? '🔇 Stealth' : '🔊 SpreadCycle';
+                
+                const bar = document.getElementById(`bar${motor}`);
+                const currentWidth = parseFloat(bar.style.width) || 0;
+                
+                // Solo actualizar si el cambio es significativo (>1%)
+                if (Math.abs(currentWidth - motorData.percentage) > 0.5) {
+                    bar.style.width = `${motorData.percentage}%`;
+                    bar.textContent = `${motorData.percentage}%`;
+                }
+                
+                // Alertas de corriente
+                bar.className = 'current-fill';
+                if (motorData.percentage > 90) {
+                    bar.classList.add('alert-high');
+                } else if (motorData.percentage < 30) {
+                    bar.classList.add('alert-low');
+                }
+            });
+        }
+        
+        function updateChart(chartData) {
+            // Usar requestAnimationFrame para sincronizar con el repaint del navegador
+            requestAnimationFrame(() => {
+                const traces = [
+                    {
+                        x: chartData.time,
+                        y: chartData.motors.X,
+                        name: 'Motor X',
+                        mode: 'lines',
+                        line: { color: '#FF5722', width: 2 }
+                    },
+                    {
+                        x: chartData.time,
+                        y: chartData.motors.Y,
+                        name: 'Motor Y',
+                        mode: 'lines',
+                        line: { color: '#4CAF50', width: 2 }
+                    },
+                    {
+                        x: chartData.time,
+                        y: chartData.motors.Z,
+                        name: 'Motor Z',
+                        mode: 'lines',
+                        line: { color: '#2196F3', width: 2 }
+                    },
+                    {
+                        x: chartData.time,
+                        y: chartData.motors.E,
+                        name: 'Extrusor',
+                        mode: 'lines',
+                        line: { color: '#FF9800', width: 2 }
+                    }
+                ];
+                
+                // Usar Plotly.react con animación mínima
+                Plotly.react('motorChart', traces, layout, {
+                    ...config,
+                    staticPlot: false,
+                    displayModeBar: false
+                });
+            });
+        }
+    </script>
+</body>
+</html>

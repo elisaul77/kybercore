@@ -22,6 +22,7 @@ from src.controllers.print_flow_controller import (
     load_wizard_session, save_wizard_session, find_stl_file_path
 )
 from src.services.plating_service import plating_service
+from src.services.support_analyzer import support_analyzer
 import logging
 
 logger = logging.getLogger(__name__)
@@ -48,6 +49,79 @@ class RotationWorker:
         
         logger.info(f"RotationWorker inicializado: max_concurrent={max_concurrent}, max_retries={max_retries}")
     
+    def load_printer_properties(self, printer_id: Optional[str]) -> Dict[str, Any]:
+        """
+        Carga las propiedades específicas de una impresora desde printers.json
+        
+        Args:
+            printer_id: ID de la impresora
+            
+        Returns:
+            Dict con propiedades de la impresora o valores por defecto si no se encuentra
+        """
+        default_properties = {
+            'extruder_type': 'bowden',
+            'max_print_speed': 150,
+            'max_travel_speed': 300,
+            'max_acceleration': 500,
+            'retraction': {
+                'length': 6.0,
+                'speed': 40,
+                'z_hop': 0.3
+            },
+            'build_volume': {'x': 220, 'y': 220, 'z': 250},
+            'nozzle_diameter': 0.4,
+            'supported_materials': ['PLA', 'PETG', 'ABS']
+        }
+        
+        if not printer_id:
+            logger.warning("⚠️  No se proporcionó printer_id, usando propiedades por defecto")
+            return default_properties
+        
+        try:
+            printers_file = Path(__file__).parent.parent.parent / 'base_datos' / 'printers.json'
+            
+            if not printers_file.exists():
+                logger.error(f"❌ No se encontró printers.json en {printers_file}")
+                return default_properties
+            
+            with open(printers_file, 'r', encoding='utf-8') as f:
+                printers = json.load(f)
+            
+            if printer_id not in printers:
+                logger.warning(f"⚠️  Impresora '{printer_id}' no encontrada en printers.json")
+                return default_properties
+            
+            printer = printers[printer_id]
+            
+            # Extraer propiedades relevantes
+            properties = {
+                'extruder_type': printer.get('extruder_type', default_properties['extruder_type']),
+                'max_print_speed': printer.get('max_print_speed', default_properties['max_print_speed']),
+                'max_travel_speed': printer.get('max_travel_speed', default_properties['max_travel_speed']),
+                'max_acceleration': printer.get('max_acceleration', default_properties['max_acceleration']),
+                'retraction': printer.get('retraction', default_properties['retraction']),
+                'build_volume': printer.get('build_volume', default_properties['build_volume']),
+                'nozzle_diameter': printer.get('nozzle_diameter', default_properties['nozzle_diameter']),
+                'supported_materials': printer.get('supported_materials', default_properties['supported_materials']),
+                'name': printer.get('name', 'Unknown'),
+                'model': printer.get('model', 'Unknown')
+            }
+            
+            logger.info(
+                f"✅ Propiedades cargadas para {printer_id}: "
+                f"extrusor={properties['extruder_type']}, "
+                f"max_speed={properties['max_print_speed']}mm/s, "
+                f"retraction={properties['retraction']['length']}mm"
+            )
+            
+            return properties
+            
+        except Exception as e:
+            logger.error(f"❌ Error cargando propiedades de impresora: {str(e)}")
+            return default_properties
+
+    
     async def process_batch(
         self, 
         task_id: str,
@@ -55,6 +129,7 @@ class RotationWorker:
         files: List[str],
         rotation_config: Dict[str, Any],
         profile_config: Dict[str, Any],
+        printer_id: Optional[str] = None,  # 🆕 ID de impresora para propiedades específicas
         plating_config: Optional[Dict[str, Any]] = None,
         enable_gcode_generation: bool = True  # 🆕 Nuevo parámetro
     ) -> None:
@@ -68,12 +143,24 @@ class RotationWorker:
             files: Lista de nombres de archivos a procesar
             rotation_config: Configuración de auto-rotación
             profile_config: Configuración del perfil de laminado
+            printer_id: (Opcional) ID de la impresora para cargar propiedades específicas
             plating_config: (Opcional) Configuración de auto-plating para combinar piezas
         """
         start_time = time.time()
         
         try:
             logger.info(f"📦 Iniciando procesamiento batch: task_id={task_id}, archivos={len(files)}")
+            
+            # 🖨️ Cargar propiedades de la impresora
+            printer_properties = self.load_printer_properties(printer_id)
+            logger.info(
+                f"🖨️  Impresora: {printer_properties['name']} ({printer_properties['model']}) - "
+                f"Extrusor: {printer_properties['extruder_type']}, "
+                f"Max Speed: {printer_properties['max_print_speed']}mm/s"
+            )
+            
+            # 🔥 Enriquecer profile_config con propiedades de impresora
+            profile_config['printer_properties'] = printer_properties
             
             # Normalizar lista de archivos (puede venir como strings o dicts)
             normalized_files = []
@@ -548,7 +635,97 @@ class RotationWorker:
                 else:
                     logger.info(f"   ○ Auto-rotación deshabilitada")
             
-            # 3. Laminar archivo (rotado o original) - OPCIONAL
+            # 3. 🧠 ANÁLISIS INTELIGENTE DE SOPORTES (antes del slicing)
+            support_analysis = None
+            
+            # Verificar si el análisis automático está habilitado
+            enable_auto_support_analysis = profile_config.get('enable_auto_support_analysis', True)
+            current_support = profile_config.get('support_type', 'none')
+            
+            # Solo analizar si:
+            # 1. El análisis automático está habilitado, Y
+            # 2. El usuario no ha especificado soportes manualmente (support_type == 'none')
+            should_analyze = enable_auto_support_analysis and current_support == 'none'
+            
+            if should_analyze:
+                try:
+                    logger.info(f"   🧠 Analizando necesidad de soportes (auto-detección habilitada)...")
+                    
+                    # Guardar temporalmente el STL para análisis
+                    temp_stl_path = session_dir / f"temp_analysis_{filename}"
+                    with open(temp_stl_path, 'wb') as f:
+                        f.write(file_to_slice)
+                    
+                    # Ejecutar análisis de soportes
+                    support_analysis = await asyncio.to_thread(
+                        support_analyzer.analyze_stl,
+                        str(temp_stl_path)
+                    )
+                    
+                    # Aplicar recomendaciones al profile_config
+                    if support_analysis and support_analysis.get('needs_support', False):
+                        recommended_type = support_analysis.get('support_type', 'none')
+                        recommended_density = support_analysis.get('support_density', 0)
+                        
+                        # Aplicar recomendación de IA automáticamente
+                        profile_config['support_type'] = recommended_type
+                        profile_config['support_density'] = recommended_density
+                        logger.info(f"      ✅ Aplicando soportes recomendados: {recommended_type} @ {recommended_density}%")
+                        
+                        # 🔥 GUARDAR resultados del análisis en la sesión para que la IA los use
+                        session_data = load_wizard_session(session_id)
+                        if session_data:
+                            session_data['support_analysis'] = {
+                                'type': recommended_type,
+                                'density': recommended_density,
+                                'buildplate_only': support_analysis.get('buildplate_only', True),  # 🔥 NUEVO
+                                'auto_detected': True,
+                                'overhang_percentage': support_analysis.get('overhang_analysis', {}).get('overhang_percentage', 0),
+                                'recommendations': support_analysis.get('recommendations', [])
+                            }
+                            save_wizard_session(session_id, session_data)
+                            logger.info(f"      💾 Análisis de soportes guardado en sesión")
+                        
+                        # Mostrar recomendaciones clave
+                        recommendations = support_analysis.get('recommendations', [])
+                        if recommendations:
+                            logger.info(f"      📋 Recomendaciones:")
+                            for rec in recommendations[:3]:  # Mostrar solo las 3 más importantes
+                                logger.info(f"         {rec}")
+                    else:
+                        logger.info(f"      ✅ No se requieren soportes para este modelo")
+                        
+                        # Guardar que NO se necesitan soportes
+                        session_data = load_wizard_session(session_id)
+                        if session_data:
+                            session_data['support_analysis'] = {
+                                'type': 'none',
+                                'density': 0,
+                                'buildplate_only': True,  # 🔥 Por defecto True cuando no hay soportes
+                                'auto_detected': True,
+                                'overhang_percentage': 0,
+                                'recommendations': ['✅ El modelo puede imprimirse sin soportes']
+                            }
+                            save_wizard_session(session_id, session_data)
+                            logger.info(f"      💾 Resultado guardado: Sin soportes necesarios")
+                    
+                    # Limpiar archivo temporal
+                    temp_stl_path.unlink(missing_ok=True)
+                    
+                except Exception as e:
+                    logger.warning(f"   ⚠️  Error en análisis de soportes (continuando): {str(e)}")
+                    # No detener el proceso si falla el análisis
+            
+            elif current_support != 'none':
+                # Usuario especificó soportes manualmente
+                logger.info(f"   👤 Usuario configuró soportes manualmente: {current_support}")
+                logger.info(f"      ℹ️  Análisis automático omitido (respetando configuración manual)")
+            
+            else:
+                # Análisis automático deshabilitado
+                logger.info(f"   ⏸️  Análisis automático de soportes deshabilitado")
+            
+            # 4. Laminar archivo (rotado o original) - OPCIONAL
             gcode_path = None
             gcode_size = 0
             
@@ -748,10 +925,70 @@ class RotationWorker:
                         bed_temp = profile_config.get('bed_temperature', 60)
                         logger.warning(f"      ⚠️  Material '{material_type}' desconocido, usando defaults: {nozzle_temp}°C / {bed_temp}°C")
                     
+                    # 🖨️ PARÁMETROS ESPECÍFICOS DE IMPRESORA
+                    printer_properties = profile_config.get('printer_properties', {})
+                    
+                    # Obtener información de la impresora (nombre, modelo, tipo)
+                    printer_name = printer_properties.get('name', 'Unknown') if printer_properties else 'Unknown'
+                    printer_model = printer_properties.get('model', 'Unknown') if printer_properties else 'Unknown'
+                    extruder_type = printer_properties.get('extruder_type', 'bowden') if printer_properties else 'bowden'
+                    max_print_speed = printer_properties.get('max_print_speed', 150) if printer_properties else 150
+                    
+                    # Defaults según tipo de extrusor
+                    default_retract_length = 1.0 if extruder_type == 'direct_drive' else 6.0
+                    default_retract_speed = 45 if extruder_type == 'direct_drive' else 40
+                    default_retract_lift = 0.2 if extruder_type == 'direct_drive' else 0.3
+                    
+                    # Retract Length
+                    retract_length = profile_config.get('retract_length') or profile_config.get('retraction_length')
+                    if retract_length is not None:
+                        logger.info(f"      🤖 Usando retract_length de IA: {retract_length}mm")
+                    elif printer_properties and 'retraction' in printer_properties:
+                        retract_length = printer_properties['retraction'].get('length', default_retract_length)
+                        logger.info(f"      🔧 Usando retract_length de impresora: {retract_length}mm")
+                    else:
+                        retract_length = default_retract_length
+                        logger.info(f"      ⚙️  Usando retract_length por defecto ({extruder_type}): {retract_length}mm")
+                    
+                    # Retract Speed
+                    retract_speed = profile_config.get('retract_speed') or profile_config.get('retraction_speed')
+                    if retract_speed is not None:
+                        logger.info(f"      🤖 Usando retract_speed de IA: {retract_speed}mm/s")
+                    elif printer_properties and 'retraction' in printer_properties:
+                        retract_speed = printer_properties['retraction'].get('speed', default_retract_speed)
+                        logger.info(f"      🔧 Usando retract_speed de impresora: {retract_speed}mm/s")
+                    else:
+                        retract_speed = default_retract_speed
+                        logger.info(f"      ⚙️  Usando retract_speed por defecto ({extruder_type}): {retract_speed}mm/s")
+                    
+                    # Retract Lift (Z-hop)
+                    retract_lift = profile_config.get('retract_lift') or profile_config.get('z_hop')
+                    if retract_lift is not None:
+                        logger.info(f"      🤖 Usando retract_lift de IA: {retract_lift}mm")
+                    elif printer_properties and 'retraction' in printer_properties:
+                        retract_lift = printer_properties['retraction'].get('z_hop', default_retract_lift)
+                        logger.info(f"      🔧 Usando retract_lift de impresora: {retract_lift}mm")
+                    else:
+                        retract_lift = default_retract_lift
+                        logger.info(f"      ⚙️  Usando retract_lift por defecto ({extruder_type}): {retract_lift}mm")
+                    
+                    # Log final con información completa y congruente
+                    logger.info(
+                        f"      🖨️  Configuración final - Impresora: {printer_name} ({printer_model})"
+                    )
+                    logger.info(
+                        f"         Tipo: {extruder_type}, Max Speed: {max_print_speed}mm/s"
+                    )
+                    logger.info(
+                        f"         Retracción: {retract_length}mm @ {retract_speed}mm/s (z_hop={retract_lift}mm)"
+                    )
+
+                    
                     # === PARÁMETROS DE IA ===
                     infill_pattern = profile_config.get('infill_pattern', 'honeycomb')
                     support_type = profile_config.get('support_type', 'none')
                     support_density = profile_config.get('support_density', 15)
+                    support_buildplate_only = profile_config.get('support_buildplate_only', True)  # 🔥 NUEVO
                     brim_width = profile_config.get('brim_width', 0)
                     perimeters = profile_config.get('perimeters', 3)
                     first_layer_height = profile_config.get('first_layer_height', layer_height * 1.2)
@@ -799,10 +1036,17 @@ class RotationWorker:
                     data.add_field('nozzle_temp', str(int(nozzle_temp)))
                     data.add_field('bed_temp', str(int(bed_temp)))
                     
+                    # 🖨️ === ENVIAR PARÁMETROS DE RETRACCIÓN (ESPECÍFICOS DE IMPRESORA) ===
+                    data.add_field('retract_length', str(retract_length))
+                    data.add_field('retract_speed', str(int(retract_speed)))
+                    data.add_field('retract_lift', str(retract_lift))
+
+                    
                     # === ENVIAR PARÁMETROS DE IA ===
                     data.add_field('infill_pattern', infill_pattern)
                     data.add_field('support_type', support_type)
                     data.add_field('support_density', str(int(support_density)))
+                    data.add_field('support_buildplate_only', str(support_buildplate_only).lower())  # 🔥 NUEVO
                     data.add_field('brim_width', str(float(brim_width)))
                     data.add_field('perimeters', str(int(perimeters)))
                     data.add_field('first_layer_height', str(first_layer_height))

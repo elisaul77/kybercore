@@ -489,10 +489,17 @@ async def slice_stl(
     custom_profile: str = Form(None),  # job_id para perfil personalizado
     auto_rotate: bool = Form(False),  # Nueva opción para auto-rotación
     
+    # 🖨️ PARÁMETROS ESPECÍFICOS DE IMPRESORA (RETRACCIÓN)
+    retract_length: float = Form(6.0),               # Longitud de retracción (mm)
+    retract_speed: int = Form(40),                   # Velocidad de retracción (mm/s)
+    retract_lift: float = Form(0.3),                 # Z-hop al retraer (mm)
+
+    
     # ✨ PARÁMETROS BÁSICOS DE IA
     infill_pattern: str = Form("honeycomb"),
     support_type: str = Form("none"),
     support_density: int = Form(15),
+    support_buildplate_only: bool = Form(True),  # 🔥 NUEVO: True = solo desde base, False = todas partes
     brim_width: float = Form(0.0),
     perimeters: int = Form(3),
     first_layer_height: float = Form(None),
@@ -654,12 +661,79 @@ async def slice_stl(
             "--first-layer-temperature", str(nozzle_temp + 5),  # 🔥 +5°C para mejor adherencia
             "--first-layer-bed-temperature", str(bed_temp + 5),  # 🔥 +5°C para mejor adherencia
             
+            # ===== RETRACCIÓN (ESPECÍFICO DE IMPRESORA) =====
+            "--retract-length", str(retract_length),
+            "--retract-speed", str(retract_speed),
+            "--retract-lift", str(retract_lift),
+
+            
             # ===== PERÍMETROS Y PAREDES =====
             "--perimeters", str(perimeters),
             "--top-solid-layers", str(top_solid_layers),
             "--bottom-solid-layers", str(bottom_solid_layers),
             
-            # ===== VELOCIDADES =====
+            # ===== SOPORTES =====
+            # Mapear tipos de soporte a nombres válidos de PrusaSlicer
+            # "linear" -> "rectilinear", "grid" -> "rectilinear-grid", "tree" -> "organic"
+        ]
+        
+        # Agregar parámetros de soporte si están habilitados
+        if support_type != "none":
+            # 🌳 MAPEO CORRECTO según documentación oficial PrusaSlicer:
+            # - "tree" usa --support-material-style organic (no es un pattern)
+            # - "linear"/"grid"/"honeycomb" usan --support-material-pattern
+            
+            # Determinar si es organic (tree) o usa pattern
+            if support_type == "tree":
+                # Soportes orgánicos tipo árbol
+                support_style = "organic"
+                prusaslicer_pattern = None  # No se usa pattern con organic
+            else:
+                # Soportes tradicionales con pattern
+                support_style = "grid"  # Por defecto grid (estable)
+                support_pattern_map = {
+                    "linear": "rectilinear",
+                    "grid": "rectilinear-grid", 
+                    "honeycomb": "honeycomb"
+                }
+                prusaslicer_pattern = support_pattern_map.get(support_type, "rectilinear")
+            
+            logger.info(f"      🔍 DEBUG support_type recibido: '{support_type}'")
+            if support_type == "tree":
+                logger.info(f"      🌳 Usando soportes orgánicos (tree): --support-material-style {support_style}")
+            else:
+                logger.info(f"      🔍 Usando pattern: '{prusaslicer_pattern}' con style '{support_style}'")
+            
+            # Agregar parámetros de soporte
+            # IMPORTANTE: --support-material es un FLAG (no acepta valor)
+            cmd.append("--support-material")
+            
+            # 🌳 ESTILO: organic para tree, grid para otros
+            cmd.extend(["--support-material-style", support_style])
+            
+            # 🔥 CONDICIONAL: Solo agregar buildplate-only si está habilitado
+            if support_buildplate_only:
+                cmd.append("--support-material-buildplate-only")
+            
+            # Pattern solo se usa para estilos no-organic
+            if prusaslicer_pattern:
+                cmd.extend(["--support-material-pattern", prusaslicer_pattern])
+            
+            # Parámetros comunes de soporte
+            cmd.extend([
+                "--support-material-spacing", str(2.5),  # mm entre líneas de soporte
+                "--support-material-threshold", "45",  # Ángulo crítico 45°
+                "--support-material-interface-layers", "3",  # 3 capas de interface
+                "--support-material-interface-spacing", "0.2",  # Espaciado de interface
+                "--support-material-contact-distance", "0.2",  # Distancia de contacto (facilita remoción)
+            ])
+            
+            buildplate_mode = "solo desde la base" if support_buildplate_only else "en todas partes (geometría compleja)"
+            logger.info(f"      📍 Modo: {buildplate_mode}")
+        # Si support_type == "none", simplemente no agregamos --support-material (está deshabilitado por defecto)
+        
+        # Continuar con velocidades
+        cmd.extend([
             "--perimeter-speed", str(int(print_speed * 0.8)),
             "--external-perimeter-speed", str(external_perimeter_speed),
             "--infill-speed", str(print_speed),
@@ -691,7 +765,7 @@ async def slice_stl(
             
             # ===== PRECISIÓN AVANZADA =====
             "--resolution", str(resolution),
-        ]
+        ])
         
         # ===== PARÁMETROS BOOLEANOS (FLAGS) =====
         if extra_perimeters:
@@ -763,7 +837,21 @@ async def slice_stl(
         logger.info(f"      • Normal: {nozzle_temp}°C / {bed_temp}°C")
         logger.info(f"      • Primera capa: {nozzle_temp + 5}°C / {bed_temp + 5}°C 🔥")
         
+        logger.info(f"   🔧 Retracción:")
+        logger.info(f"      • Length: {retract_length}mm")
+        logger.info(f"      • Speed: {retract_speed}mm/s")
+        logger.info(f"      • Z-hop: {retract_lift}mm")
+        
+        logger.info(f"   🏗️  SOPORTES:")
+        logger.info(f"      • Tipo: {support_type}")
+        logger.info(f"      • Densidad: {support_density}%")
+        logger.info(f"      • Habilitado: {'✅ SÍ' if support_type != 'none' else '❌ NO'}")
+        if support_type != 'none':
+            buildplate_mode = "Solo desde la base" if support_buildplate_only else "En todas partes (geometría compleja)"
+            logger.info(f"      • Modo: {buildplate_mode}")
+        
         logger.info(f"Ejecutando: {' '.join(cmd[:10])}... ({len(cmd)} parámetros)")
+        logger.info(f"   🔍 DEBUG: Últimos 5 parámetros: {cmd[-5:]}")
 
         
         # Ejecutar PrusaSlicer
