@@ -679,29 +679,48 @@ async def slice_stl(
         
         # Agregar parámetros de soporte si están habilitados
         if support_type != "none":
-            # Mapeo de tipos a patrones VÁLIDOS de PrusaSlicer CLI
-            # NOTA: "tree" (organic) no tiene soporte directo en CLI, usar honeycomb como alternativa
-            support_pattern_map = {
-                "linear": "rectilinear",
-                "grid": "rectilinear-grid", 
-                "tree": "honeycomb",  # 🔥 Tree no soportado, usar honeycomb (similar)
-                "honeycomb": "honeycomb"
-            }
-            prusaslicer_pattern = support_pattern_map.get(support_type, "rectilinear")
+            # 🌳 MAPEO CORRECTO según documentación oficial PrusaSlicer:
+            # - "tree" usa --support-material-style organic (no es un pattern)
+            # - "linear"/"grid"/"honeycomb" usan --support-material-pattern
+            
+            # Determinar si es organic (tree) o usa pattern
+            if support_type == "tree":
+                # Soportes orgánicos tipo árbol
+                support_style = "organic"
+                prusaslicer_pattern = None  # No se usa pattern con organic
+            else:
+                # Soportes tradicionales con pattern
+                support_style = "grid"  # Por defecto grid (estable)
+                support_pattern_map = {
+                    "linear": "rectilinear",
+                    "grid": "rectilinear-grid", 
+                    "honeycomb": "honeycomb"
+                }
+                prusaslicer_pattern = support_pattern_map.get(support_type, "rectilinear")
             
             logger.info(f"      🔍 DEBUG support_type recibido: '{support_type}'")
-            logger.info(f"      🔍 DEBUG prusaslicer_pattern mapeado: '{prusaslicer_pattern}'")
+            if support_type == "tree":
+                logger.info(f"      🌳 Usando soportes orgánicos (tree): --support-material-style {support_style}")
+            else:
+                logger.info(f"      🔍 Usando pattern: '{prusaslicer_pattern}' con style '{support_style}'")
             
             # Agregar parámetros de soporte
             # IMPORTANTE: --support-material es un FLAG (no acepta valor)
             cmd.append("--support-material")
             
+            # 🌳 ESTILO: organic para tree, grid para otros
+            cmd.extend(["--support-material-style", support_style])
+            
             # 🔥 CONDICIONAL: Solo agregar buildplate-only si está habilitado
             if support_buildplate_only:
                 cmd.append("--support-material-buildplate-only")
             
+            # Pattern solo se usa para estilos no-organic
+            if prusaslicer_pattern:
+                cmd.extend(["--support-material-pattern", prusaslicer_pattern])
+            
+            # Parámetros comunes de soporte
             cmd.extend([
-                "--support-material-pattern", prusaslicer_pattern,
                 "--support-material-spacing", str(2.5),  # mm entre líneas de soporte
                 "--support-material-threshold", "45",  # Ángulo crítico 45°
                 "--support-material-interface-layers", "3",  # 3 capas de interface
@@ -710,7 +729,6 @@ async def slice_stl(
             ])
             
             buildplate_mode = "solo desde la base" if support_buildplate_only else "en todas partes (geometría compleja)"
-            logger.info(f"      🔥 Soportes mapeados: '{support_type}' -> '{prusaslicer_pattern}'")
             logger.info(f"      📍 Modo: {buildplate_mode}")
         # Si support_type == "none", simplemente no agregamos --support-material (está deshabilitado por defecto)
         
