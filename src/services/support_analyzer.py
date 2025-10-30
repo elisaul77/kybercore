@@ -256,52 +256,67 @@ class SupportAnalyzer:
         critical_area = overhang_info.get("critical_area_mm2", 0)
         max_angle = overhang_info.get("max_angle", 0)
         
-        # 🔥 DETECCIÓN INTELIGENTE: ¿La pieza tiene partes sobre otras partes?
-        # Indicadores de complejidad que requieren soportes en todas partes:
-        has_floating_islands = len(islands) > 0
-        very_high_overhang = overhang_pct > 50  # >50% de voladizos sugiere geometría compleja
-        extreme_angles = max_angle > 135  # Ángulos >135° sugieren partes invertidas/complejas
-        large_critical_area = critical_area > 150  # Gran área crítica sugiere múltiples niveles
+        # 🔥 DETECCIÓN INTELIGENTE ULTRA-CONSERVADORA
+        # REGLA: Casi SIEMPRE usar buildplate-only
+        # Solo desactivar en casos EXTREMADAMENTE específicos que el usuario confirme manualmente
+        # 
+        # REALIDAD: Los soportes dentro de piezas son CASI SIEMPRE un problema
+        # Es mejor tener un segmento flotante ocasional que soportes irremovibles
         
-        # Determinar si es una pieza COMPLEJA (necesita soportes en todas partes)
-        is_complex_geometry = (
-            has_floating_islands or 
-            (very_high_overhang and extreme_angles) or
-            (very_high_overhang and large_critical_area)
+        has_floating_islands = len(islands) > 0
+        very_high_overhang = overhang_pct > 70  # Aumentado de 50 a 70
+        extreme_angles = max_angle > 170  # Aumentado de 135 a 170 (casi completamente invertido)
+        massive_critical_area = critical_area > 1000  # Aumentado de 150 a 1000 (área masiva)
+        
+        # ⚠️ CRITERIO EXTREMADAMENTE ESTRICTO para soportes en todas partes:
+        # Solo si la pieza es MASIVA y está casi completamente invertida
+        # En la práctica, esto será MUY raro - mejor pedir al usuario rotar el modelo
+        needs_internal_supports = (
+            extreme_angles and 
+            massive_critical_area and 
+            very_high_overhang and
+            has_floating_islands  # Y además tiene islas flotantes
         )
         
-        # Decisión de tipo de soporte y buildplate_only
-        if has_floating_islands:
-            # 🏝️ Islas flotantes: DEFINITIVAMENTE compleja
-            # Usar soportes tree en TODAS partes (no solo base)
-            support_type = "tree"
-            density = 15
-            buildplate_only = False  # 🔥 Soportes en todas partes
-            logger.info(f"   🏝️ Detectadas {len(islands)} islas flotantes → Tree supports SIN buildplate-only")
-            
-        elif is_complex_geometry:
-            # 🔺 Geometría compleja detectada: partes sobre otras partes
-            # Usar soportes tree en TODAS partes
+        # 🚫 REGLA DE ORO: Por defecto SIEMPRE buildplate_only = True
+        # Solo casos extremos excepcionales usan False
+        buildplate_only = True  # 🔥 Por defecto SIEMPRE True
+        
+        # Decisión de tipo de soporte
+        if needs_internal_supports:
+            # 🔺 Caso EXTREMADAMENTE raro: pieza masiva, invertida, con islas
+            # Solo aquí usamos soportes en todas partes
             support_type = "tree"
             density = 20
-            buildplate_only = False  # 🔥 Soportes en todas partes
-            logger.info(f"   🔺 Geometría compleja detectada (voladizos: {overhang_pct:.1f}%, ángulo: {max_angle:.1f}°)")
-            logger.info(f"      → Tree supports SIN buildplate-only (soportará partes internas)")
+            buildplate_only = False  # ⚠️ ÚNICO caso donde es False
+            logger.info(f"   ⚠️ CASO EXCEPCIONAL: Geometría masiva invertida con islas flotantes")
+            logger.info(f"      (voladizos: {overhang_pct:.1f}%, ángulo: {max_angle:.1f}°, área: {critical_area:.1f}mm², islas: {len(islands)})")
+            logger.info(f"      → Tree supports SIN buildplate-only (considere rotar el modelo)")
             
-        elif critical_area > 100:
-            # Área crítica grande pero geometría simple
-            support_type = "linear"
-            density = 25
-            buildplate_only = True  # Solo desde la base
+        elif has_floating_islands:
+            # 🏝️ Islas flotantes pero geometría normal
+            # Usar tree desde la base (alcanzará las islas)
+            support_type = "tree"
+            density = 20
+            buildplate_only = True  # ✅ Solo desde la base
+            logger.info(f"   🏝️ Detectadas {len(islands)} islas flotantes → Tree supports desde base")
+            
+        elif overhang_pct > 30 or critical_area > 500:
+            # 🌳 Alta complejidad: muchos voladizos O área crítica grande
+            # Usar tree que es mejor para geometría compleja y más fácil de remover
+            support_type = "tree"
+            density = 25 if critical_area > 500 else 20
+            buildplate_only = True  # ✅ Solo desde la base
+            logger.info(f"   🌳 Geometría compleja (voladizos: {overhang_pct:.1f}%, área: {critical_area:.1f}mm²) → Tree supports")
             
         elif overhang_pct > 20:
-            # Muchos voladizos pero geometría simple
+            # Voladizos moderados
             support_type = "tree"
-            density = 20
+            density = 18
             buildplate_only = True  # Solo desde la base
             
-        elif overhang_pct > 10:
-            # Voladizos moderados, geometría simple
+        elif overhang_pct > 10 or critical_area > 100:
+            # Voladizos o área moderada
             support_type = "linear"
             density = 15
             buildplate_only = True  # Solo desde la base

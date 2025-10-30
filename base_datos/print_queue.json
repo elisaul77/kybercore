@@ -13780,12 +13780,240 @@
       "started_at": "2025-10-30T02:20:43.565912",
       "queue_position": 115,
       "queued_at": "2025-10-30T02:20:43.573717"
+    },
+    {
+      "job_id": "8ea9482e-bfcf-4c51-8300-002bf1b42af0",
+      "session_id": "wizard_1761820116724_e0igkrrli",
+      "project_id": "116",
+      "status": "queued",
+      "priority": "normal",
+      "estimated_start_time": "2025-10-30T11:20:56.480074",
+      "created_at": "2025-10-30T11:20:56.480092",
+      "user_notes": "primera version muy bien ",
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "wizard_data": {
+        "project_id": "116",
+        "project_data": {
+          "id": 116,
+          "nombre": "5015 Proyecto",
+          "descripcion": "Es la tapa del ventilador\r\n",
+          "autor": "Usuario",
+          "fecha_creacion": "2025-10-29",
+          "estado": "listo",
+          "favorito": false,
+          "carpeta": "src/proyect/5015 Proyecto - 116",
+          "imagen": "/api/gallery/projects/5015-proyecto-116/images/stl_preview.png",
+          "badges": {
+            "estado": "Listo",
+            "tipo": "Herramientas",
+            "piezas": "1 piezas"
+          },
+          "progreso": {
+            "porcentaje": 100,
+            "mensaje": "Listo para imprimir"
+          },
+          "archivos": [
+            {
+              "nombre": "5015-selftap.stl",
+              "tipo": "STL",
+              "tamano": "588.95 KB"
+            }
+          ],
+          "estadisticas": {
+            "tiempo_estimado": "2-4 horas",
+            "filamento_estimado": "50-100g",
+            "complejidad": "Media"
+          },
+          "aiAnalysis": {
+            "tiempo_estimado": "3 horas",
+            "filamento_total": "75g",
+            "costo_estimado": "$2.50",
+            "recomendaciones": [
+              "Usar soporte en voladizos",
+              "Temperatura de cama: 60°C"
+            ]
+          }
+        },
+        "current_step": "validation",
+        "completed_steps": [
+          "piece_selection",
+          "material_selection",
+          "production_mode",
+          "printer_assignment",
+          "stl_processing"
+        ],
+        "created_at": "2025-10-30T10:28:41.572948",
+        "status": "active",
+        "piece_selection": {
+          "selection_type": "specific_pieces",
+          "selected_pieces": [
+            "5015-selftap.stl"
+          ],
+          "total_pieces": 1,
+          "total_estimated_filament_grams": 12.3,
+          "total_estimated_time_hours": 0.75,
+          "completed_at": "2025-10-30T10:28:41.572977"
+        },
+        "updated_at": "2025-10-30T10:51:10.957537",
+        "material_selection": {
+          "material_type": "ABS",
+          "color": "Blanco",
+          "brand": "Hatchbox",
+          "selected_material_data": {
+            "id": "fil_002",
+            "tipo": "ABS",
+            "color": "Blanco",
+            "marca": "Hatchbox",
+            "stock_actual": 300,
+            "stock_minimo": 200,
+            "precio_por_kg": 22.5,
+            "temperatura_extrusor": 200,
+            "temperatura_cama": 60
+          },
+          "quantity_needed": 150.0,
+          "stock_sufficient": true,
+          "estimated_cost": 3.38,
+          "completed_at": "2025-10-30T10:28:49.113295"
+        },
+        "production_mode": {
+          "mode": "factory",
+          "priority": "quality",
+          "settings": {
+            "layer_height": 0.1,
+            "infill_density": 25,
+            "print_speed": 40,
+            "quality_preset": "fine"
+          },
+          "estimated_impact": {
+            "time_factor": 1.3,
+            "quality_level": "alta",
+            "material_usage": "estándar"
+          },
+          "completed_at": "2025-10-30T10:28:56.956633"
+        },
+        "printer_assignment": {
+          "printer_id": "bb82edde-63fa-4148-8172-e1a2bcfbe4c3",
+          "printer_name": "Impresora Ender 3 V4.2.7",
+          "assignment_type": "manual",
+          "printer_capabilities": {
+            "volumen_impresion": {
+              "x": 220,
+              "y": 220,
+              "z": 250
+            },
+            "materiales_soportados": [
+              "PLA",
+              "PETG",
+              "ABS"
+            ],
+            "precision": 0.1,
+            "velocidad_maxima": 100
+          },
+          "printer_ip": "10.10.10.71:7125",
+          "confirmed_at": "2025-10-30T10:29:01.622268"
+        },
+        "support_analysis": {
+          "type": "tree",
+          "density": 30,
+          "buildplate_only": true,
+          "auto_detected": true,
+          "overhang_percentage": 80.84402469062958,
+          "recommendations": [
+            "🌳 Usar soportes tipo ÁRBOL (tree) con densidad 30%",
+            "   Ventaja: Más fáciles de remover, menos marcas en la pieza",
+            "⚠️  80.8% del modelo son voladizos - Considerar rotar el modelo",
+            "⚠️  Voladizos extremos detectados (>135°) - Aumentar densidad de soportes",
+            "💡 Sugerencia: Probar auto-rotación para reducir área de voladizos",
+            "🔧 Interface Z: 0.2mm (facilita remoción de soportes)",
+            "🔧 Branch angle: 45° (óptimo para estabilidad)"
+          ]
+        },
+        "stl_processing": {
+          "task_id": "task_1328bc82-29c3-49fb-8004-5e12d0de5ee2",
+          "successful": [
+            {
+              "filename": "5015-selftap.stl",
+              "success": true,
+              "rotated": true,
+              "rotation_info": {
+                "applied": true,
+                "degrees": [
+                  0.0,
+                  90.0,
+                  0.0
+                ],
+                "improvement": 871.6298734695158,
+                "contact_area": 516.9071722835923,
+                "original_area": 53.20000819219459
+              },
+              "gcode_path": "/tmp/kybercore_processing/wizard_1761820116724_e0igkrrli/gcode_wizard_1761820116724_e0igkrrli_rotated_5015-selftap.gcode",
+              "gcode_size": 11889484,
+              "error": null,
+              "processing_time_seconds": 0.27298498153686523
+            }
+          ],
+          "failed": [],
+          "processing_summary": {
+            "total_files": 1,
+            "successful": 1,
+            "failed": 0
+          },
+          "completed_at": "2025-10-30T10:50:58.151342"
+        }
+      },
+      "queue_position": 116,
+      "queued_at": "2025-10-30T11:20:56.487774"
+    },
+    {
+      "job_id": "wizard_1761820116724_e0igkrrli",
+      "printer_id": "bb82edde-63fa-4148-8172-e1a2bcfbe4c3",
+      "moonraker_url": "http://10.10.10.71:7125",
+      "status": "printing",
+      "current_file": "kybercore_wizard_1761820116724_e0igkrrli_gcode_wizard_1761820116724_e0igkrrli_rotated_5015-selftap.gcode",
+      "all_files": [
+        {
+          "original_filename": "5015-selftap.stl",
+          "gcode_filename": "kybercore_wizard_1761820116724_e0igkrrli_gcode_wizard_1761820116724_e0igkrrli_rotated_5015-selftap.gcode",
+          "gcode_path": "/tmp/kybercore_processing/wizard_1761820116724_e0igkrrli/gcode_wizard_1761820116724_e0igkrrli_rotated_5015-selftap.gcode",
+          "file_info": {
+            "filename": "5015-selftap.stl",
+            "success": true,
+            "rotated": true,
+            "rotation_info": {
+              "applied": true,
+              "degrees": [
+                0.0,
+                90.0,
+                0.0
+              ],
+              "improvement": 871.6298734695158,
+              "contact_area": 516.9071722835923,
+              "original_area": 53.20000819219459
+            },
+            "gcode_path": "/tmp/kybercore_processing/wizard_1761820116724_e0igkrrli/gcode_wizard_1761820116724_e0igkrrli_rotated_5015-selftap.gcode",
+            "gcode_size": 11889484,
+            "error": null,
+            "processing_time_seconds": 0.27298498153686523
+          }
+        }
+      ],
+      "failed_uploads": [],
+      "settings": {
+        "priority": "normal",
+        "notifications": true
+      },
+      "started_at": "2025-10-30T11:21:03.131722",
+      "queue_position": 117,
+      "queued_at": "2025-10-30T11:21:03.137172"
     }
   ],
   "metadata": {
     "version": "1.0",
     "created": "2025-09-14",
     "description": "Cola de trabajos de impresión pendientes y en proceso",
-    "next_queue_position": 116
+    "next_queue_position": 118
   }
 }
