@@ -1,5 +1,5 @@
 # Dockerfile para KyberCore (optimizado para evitar procesos zombie)
-FROM python:3.13-slim
+FROM python:3.14-slim
 
 # Instalar dependencias del sistema mínimas
 RUN apt-get update && apt-get install -y \
